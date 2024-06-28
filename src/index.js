@@ -1,4 +1,4 @@
-import Runtime from "./classes/engine/runtime.js";
+import Runtime from "./engine/runtime.js";
 
 window.runtime = new Runtime({
 	renderer: {
