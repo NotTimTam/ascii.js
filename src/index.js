@@ -1,4 +1,5 @@
 import Runtime from "./engine/runtime.js";
+import Player from "./game/Player.js";
 
 window.runtime = new Runtime({
 	renderer: {
@@ -10,7 +11,14 @@ window.runtime = new Runtime({
 		layerManager: {
 			layers: ["environment", "entities", "overlay", "ui"],
 		},
+
+		camera: {},
 	},
 });
 
 window.runtime.start();
+
+// Create base gameObjects and run their startups.
+const player = new Player(window.runtime, 0, 0);
+
+player.layer = "entities";

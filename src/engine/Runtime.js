@@ -1,5 +1,3 @@
-import LayerManager from "./LayerManager.js";
-import Player from "../game/Player.js";
 import Noise from "./Noise.js";
 import Renderer from "./renderer.js";
 
@@ -15,8 +13,6 @@ class Runtime {
 
 		this.noise = new Noise(Date.now());
 		this.renderer = new Renderer(this);
-
-		this.gameObjects = [];
 
 		this.running = false;
 		this.initialized = false;
@@ -71,12 +67,6 @@ class Runtime {
 
 		// Run renderer startup.
 		this.__runOnStartup(this.renderer);
-
-		// Create base gameObjects and run their startups.
-		new Player(this, 0, 0);
-
-		for (const gameObject of this.gameObjects)
-			this.__runOnStartup(gameObject);
 	}
 
 	/**
@@ -92,7 +82,6 @@ class Runtime {
 		// Input
 
 		// Logic
-		for (const gameObject of this.gameObjects) this.__runOnTick(gameObject);
 
 		// Render
 		this.__runOnTick(this.renderer);

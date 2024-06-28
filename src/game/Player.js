@@ -1,3 +1,4 @@
+import { Pixel } from "../engine/renderer.js";
 import Entity from "./Entity.js";
 
 class Player extends Entity {
@@ -11,8 +12,19 @@ class Player extends Entity {
 		super(runtime, x, y);
 	}
 
-	get pixel() {
-		return new Pixel("P", "cyan");
+	get renderable() {
+		return new Pixel(
+			(this.runtime.walltime / 8) % 64 > 32 ? "☺" : "P",
+			"cyan",
+			"800"
+		);
+	}
+
+	__onTick() {
+		const { runtime } = this;
+
+		this.x = (runtime.walltime / 64) % 64;
+		this.y = (runtime.walltime / 128) % 8;
 	}
 }
 

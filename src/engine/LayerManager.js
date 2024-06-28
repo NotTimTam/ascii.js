@@ -1,4 +1,4 @@
-import Renderer, { Frame, Pixel } from "./renderer.js";
+import Renderer, { Frame, Pixel, PixelMesh } from "./renderer.js";
 import Core from "../core/Core.js";
 
 export class Layer extends Core {
@@ -22,14 +22,29 @@ export class Layer extends Core {
 	 * Returns a frame composed of a layer's objects.
 	 */
 	get frame() {
-		return new Frame([
-			...`REMOVED${" ".repeat(
-				this.runtime.renderer.width *
-					this.layerManager.layers.indexOf(this)
-			)}`
-				.split("")
-				.map((letter) => Pixel.fromString(letter)),
-		]);
+		const {
+			layerManager: { renderer },
+		} = this;
+
+		const frameData = [];
+
+		for (const { renderable, x, y } of this.gameObjects) {
+			if (!renderable) continue;
+			else if (renderable instanceof Pixel) {
+				const index = renderer.coordinatesToIndex(x, y);
+
+				frameData[index] = renderable;
+			} else if (renderable instanceof PixelMesh) {
+			}
+		}
+
+		return new Frame(frameData);
+	}
+
+	__onTick() {
+		const { runtime, gameObjects } = this;
+
+		for (const gameObject of gameObjects) runtime.__runOnTick(gameObject);
 	}
 }
 
@@ -73,12 +88,17 @@ class LayerManager {
 
 	__onTick() {
 		const {
+			runtime,
 			runtime: { renderer },
 		} = this;
+
+		// Logic
+		for (const layer of this.layers) runtime.__runOnTick(layer);
+
+		// Render
 		const frame = renderer.compileFrames(
 			...this.layers.map((layer) => layer.frame)
 		);
-
 		renderer.drawFrame(frame);
 	}
 }

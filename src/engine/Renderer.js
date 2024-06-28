@@ -1,4 +1,5 @@
 import { displayArray } from "../util/data.js";
+import Camera from "./Camera.js";
 import LayerManager from "./LayerManager.js";
 
 export class Pixel {
@@ -6,8 +7,9 @@ export class Pixel {
 	 * Pixel data for a frame coordinate.
 	 * @param {string} value The text-value of this spixel.
 	 * @param {string} color The CSS color value of this pixel.
+	 * @param {string|number} fontWeight The CSS font weight value of this pixel.
 	 */
-	constructor(value, color) {
+	constructor(value, color = "#ffffff", fontWeight = "normal") {
 		if (typeof value !== "string" || value.length !== 1)
 			throw new Error(
 				"The value of this pixel can only be a 1-character long string."
@@ -15,6 +17,7 @@ export class Pixel {
 
 		this.value = value;
 		this.color = color;
+		this.fontWeight = fontWeight;
 	}
 
 	/**
@@ -22,7 +25,7 @@ export class Pixel {
 	 * @param {string} string The string to convert to a `Pixel`.
 	 * @returns {Pixel} the newly created `Pixel` object.
 	 */
-	static fromString = (string) => new Pixel(string, "#ffffff");
+	static fromString = (string) => new Pixel(string);
 }
 
 export class PixelMesh {
@@ -75,6 +78,7 @@ class Renderer {
 			throw new Error("No config object provided to renderer.");
 
 		this.layerManager = new LayerManager(this);
+		this.camera = new Camera(this);
 	}
 
 	/**
@@ -178,12 +182,6 @@ class Renderer {
 	 */
 	__rescaleDisplay() {
 		const {
-			innerWidth: vW,
-			innerHeight: vH,
-			devicePixelRatio: dPR,
-		} = window;
-
-		const {
 			element,
 			config: { scaling },
 		} = this;
@@ -253,7 +251,6 @@ class Renderer {
 			ctx,
 		} = this;
 
-		ctx.font = `${fontSize} monospace`;
 		ctx.textAlign = "left";
 		ctx.textBaseline = "top";
 
@@ -265,9 +262,11 @@ class Renderer {
 
 				if (!data || !(data instanceof Pixel)) continue;
 
-				const { value, color } = data;
+				const { value, color, fontWeight } = data;
 
 				ctx.beginPath();
+
+				ctx.font = `${fontWeight || "normal"} ${fontSize} monospace`;
 
 				ctx.fillStyle = color || "#FFFFFF";
 
