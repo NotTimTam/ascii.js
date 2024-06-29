@@ -1,4 +1,5 @@
 import { Pixel, PixelMesh } from "../engine/renderer.js";
+import { clamp } from "../util/math.js";
 import Area from "./Area.js";
 
 class GrassPatch extends Area {
@@ -50,8 +51,9 @@ class GrassPatch extends Area {
 
 				const pixel = new Pixel(
 					["*", "~", ";", ":", ",", ".", "´", " ", " ", " "][n],
-					o < 240 ? `rgb(0, ${o}, 0)` : "#FFD464",
-					100
+					o < 240 ? `rgb(0, ${clamp(o, 50, 200)}, 0)` : "#FFD464",
+					100,
+					`rgb(0, 100, 0)`
 				);
 
 				row.push(pixel);

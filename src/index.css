@@ -32,3 +32,11 @@ body canvas.display {
 	width: 100%;
 	height: 100%;
 }
+
+div.fps-display {
+	position: absolute;
+	top: 0;
+	left: 0;
+
+	font-size: 1.5rem;
+}

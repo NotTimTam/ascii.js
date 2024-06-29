@@ -4,7 +4,7 @@
  * @returns {string} Converts the array to a pretty string display.
  */
 export const displayArray = (array) =>
-	` [${array
+	`[${array
 		.map((item) => {
 			switch (typeof item) {
 				case "string":

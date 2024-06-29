@@ -8,8 +8,14 @@ export class Pixel {
 	 * @param {string} value The text-value of this spixel.
 	 * @param {string} color The CSS color value of this pixel.
 	 * @param {string|number} fontWeight The CSS font weight value of this pixel.
+	 * @param {string} backgroundColor An optional background color for the pixel.
 	 */
-	constructor(value, color = "#ffffff", fontWeight = "normal") {
+	constructor(
+		value,
+		color = "#ffffff",
+		fontWeight = "normal",
+		backgroundColor
+	) {
 		if (typeof value !== "string" || value.length !== 1)
 			throw new Error(
 				"The value of this pixel can only be a 1-character long string."
@@ -18,6 +24,7 @@ export class Pixel {
 		this.value = value;
 		this.color = color;
 		this.fontWeight = fontWeight;
+		this.backgroundColor = backgroundColor;
 	}
 
 	/**
@@ -150,6 +157,16 @@ class Renderer {
 			throw new Error(
 				"No layerManager configuration provided to Renderer config."
 			);
+
+		if (config.renderMode) {
+			const renderModes = ["stacked", "merged"];
+			if (!renderModes.includes(config.renderMode))
+				throw new Error(
+					`Provided render mode is invalid. Must be of type: ${displayArray(
+						renderModes
+					)}`
+				);
+		}
 	}
 
 	/**
@@ -157,6 +174,7 @@ class Renderer {
 	 */
 	__intializeDisplay() {
 		this.drawing = false;
+		this.hasDrawn = false;
 		this.element = document.body.querySelector("canvas.display");
 
 		if (!this.element)
@@ -228,7 +246,7 @@ class Renderer {
 	/**
 	 * Clear the screen;
 	 */
-	__clearDisplay() {
+	clearDisplay() {
 		const {
 			ctx,
 			ctx: {
@@ -255,9 +273,8 @@ class Renderer {
 				"Provided frame object is not an instance of the Frame constructor."
 			);
 
+		if (!this.hasDrawn) this.hasDrawn = true;
 		this.drawing = true;
-
-		this.__clearDisplay();
 
 		const {
 			config: { fontSize },
@@ -278,7 +295,17 @@ class Renderer {
 
 				if (!data || !(data instanceof Pixel)) continue;
 
-				const { value, color, fontWeight } = data;
+				const { value, color, fontWeight, backgroundColor } = data;
+
+				if (backgroundColor) {
+					ctx.beginPath();
+
+					ctx.fillStyle = backgroundColor;
+
+					ctx.fillRect(x * cW, y * cH, cW, cH);
+
+					ctx.closePath();
+				}
 
 				ctx.beginPath();
 

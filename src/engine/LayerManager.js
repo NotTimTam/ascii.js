@@ -1,5 +1,6 @@
 import Renderer, { Frame, Pixel, PixelMesh } from "./renderer.js";
 import Core from "../core/Core.js";
+import { displayArray } from "../util/data.js";
 
 export class Layer extends Core {
 	/**
@@ -140,25 +141,51 @@ class LayerManager {
 		for (const layer of layers) new Layer(this, layer);
 	}
 
+	__mergedRender() {
+		const {
+			runtime: { renderer },
+		} = this;
+
+		const frame = renderer.compileFrames(
+			...this.layers.map((layer) => layer.frame)
+		);
+
+		if (JSON.stringify(frame) === this.lastFrame && renderer.hasDrawn)
+			return;
+
+		this.lastFrame = JSON.stringify(frame);
+
+		renderer.clearDisplay();
+
+		renderer.drawFrame(frame);
+	}
+
+	__stackedRender() {
+		const {
+			runtime: { renderer },
+		} = this;
+
+		const frames = this.layers.map((layer) => layer.frame);
+
+		renderer.clearDisplay();
+
+		for (const frame of frames) renderer.drawFrame(frame);
+	}
+
 	__onTick() {
 		const {
 			runtime,
-			runtime: { renderer },
+			renderer: {
+				config: { renderMode },
+			},
 		} = this;
 
 		// Logic
 		for (const layer of this.layers) runtime.__runOnTick(layer);
 
 		// Render
-		const frame = renderer.compileFrames(
-			...this.layers.map((layer) => layer.frame)
-		);
-
-		if (JSON.stringify(frame) === this.lastFrame) return;
-
-		this.lastFrame = JSON.stringify(frame);
-
-		renderer.drawFrame(frame);
+		if (renderMode === "stacked") this.__stackedRender();
+		else this.__mergedRender();
 	}
 }
 

@@ -15,7 +15,7 @@ class Player extends Entity {
 	}
 
 	get renderable() {
-		return new Pixel("☺", "cyan", "800");
+		return new Pixel("☺", "cyan", "800", "blue");
 	}
 
 	handleInput(event) {
