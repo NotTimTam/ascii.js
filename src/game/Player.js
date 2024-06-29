@@ -10,21 +10,37 @@ class Player extends Entity {
 	 */
 	constructor(runtime, x, y) {
 		super(runtime, x, y);
+
+		runtime.inputManager.addEventListener(this.handleInput.bind(this));
 	}
 
 	get renderable() {
-		return new Pixel(
-			(this.runtime.walltime / 8) % 64 > 32 ? "☺" : "P",
-			"cyan",
-			"800"
-		);
+		return new Pixel("☺", "cyan", "800");
+	}
+
+	handleInput(event) {
+		if (event.type === "keydown") {
+			const {
+				keys: { up, down, left, right },
+			} = event;
+
+			if (up) this.y--;
+			if (down) this.y++;
+			if (left) this.x--;
+			if (right) this.x++;
+		}
 	}
 
 	__onTick() {
-		const { runtime } = this;
+		const {
+			runtime,
+			runtime: {
+				renderer: { camera, width, height },
+			},
+		} = this;
 
-		this.x = (runtime.walltime / 64) % 64;
-		this.y = (runtime.walltime / 128) % 8;
+		camera.x = this.x - width / 2;
+		camera.y = this.y - height / 2;
 	}
 }
 

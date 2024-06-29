@@ -23,15 +23,22 @@ export class Layer extends Core {
 	 */
 	get frame() {
 		const {
-			layerManager: { renderer },
+			layerManager: {
+				renderer,
+				renderer: { camera },
+			},
 		} = this;
 
 		const frameData = [];
 
 		for (const { renderable, x, y } of this.gameObjects) {
 			if (!renderable) continue;
-			else if (renderable instanceof Pixel) {
-				const index = renderer.coordinatesToIndex(x, y);
+			else if (
+				renderable instanceof Pixel &&
+				camera.isOnScreen(x, y, 1, 1)
+			) {
+				const [xOS, yOS] = [x - camera.x, y - camera.y];
+				const index = renderer.coordinatesToIndex(xOS, yOS);
 
 				frameData[index] = renderable;
 			} else if (renderable instanceof PixelMesh) {
@@ -83,6 +90,7 @@ class LayerManager {
 	__onStartup() {
 		const { layers } = this.config;
 
+		if (!layers.includes("system")) new Layer(this, "system");
 		for (const layer of layers) new Layer(this, layer);
 	}
 

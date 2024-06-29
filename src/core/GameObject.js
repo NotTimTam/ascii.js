@@ -28,6 +28,8 @@ class GameObject extends Core {
 
 		this.__rawX = x;
 		this.__rawY = y;
+
+		this.layer = "system";
 	}
 
 	get x() {

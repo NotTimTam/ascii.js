@@ -13,6 +13,10 @@ class Camera extends GameObject {
 		this.config = this.renderer.config && this.renderer.config.camera;
 	}
 
+	get renderable() {
+		return undefined;
+	}
+
 	/**
 	 * Check if a bounding box is on screen.
 	 * @param {number} x The x-coordinate to check.
@@ -20,17 +24,17 @@ class Camera extends GameObject {
 	 * @param {number} width The width to check.
 	 * @param {number} height The height to check.
 	 */
-	isOnScreen(x, y, width, height) {
-		const {
-			x: camX,
-			y: camY,
-			renderer: {
-				resolution: [screenWidth, screenHeight],
-			},
-		} = this;
-
-		return aabb(x, y, width, height, camX, camY, screenWidth, screenHeight);
-	}
+	isOnScreen = (x, y, width, height) =>
+		aabb(
+			x,
+			y,
+			width,
+			height,
+			this.x,
+			this.y,
+			this.renderer.width,
+			this.renderer.height
+		);
 }
 
 export default Camera;

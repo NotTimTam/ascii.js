@@ -1,3 +1,4 @@
+import InputManager from "./InputManager.js";
 import Noise from "./Noise.js";
 import Renderer from "./renderer.js";
 
@@ -13,6 +14,7 @@ class Runtime {
 
 		this.noise = new Noise(Date.now());
 		this.renderer = new Renderer(this);
+		this.inputManager = new InputManager(this);
 
 		this.running = false;
 		this.initialized = false;
@@ -92,15 +94,20 @@ class Runtime {
 
 	/**
 	 * Start the game loop.
+	 * @param {function} onInitialized A method to run when the runtime has been initialized.
 	 */
-	start() {
+	start(onInitialized) {
 		this.running = true;
 
 		// Trigger the onStartup code if this is the first time the render loop has been started.
 		if (!this.initialized) {
-			this.initialized = true;
-
 			this.__onStartup();
+
+			// Run initialization code.
+			this.initialized = true;
+			onInitialized &&
+				typeof onInitialized === "function" &&
+				onInitialized(this);
 		}
 
 		requestAnimationFrame((currentTime) => this.__onTick(currentTime));

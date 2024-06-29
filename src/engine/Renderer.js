@@ -76,9 +76,6 @@ class Renderer {
 
 		if (!this.config)
 			throw new Error("No config object provided to renderer.");
-
-		this.layerManager = new LayerManager(this);
-		this.camera = new Camera(this);
 	}
 
 	/**
@@ -321,14 +318,17 @@ class Renderer {
 	 * Code that runs when the project starts.
 	 */
 	__onStartup() {
+		const { runtime } = this;
+
+		this.layerManager = new LayerManager(this);
+		runtime.__runOnStartup(this.layerManager);
+
+		this.camera = new Camera(this);
+
 		this.__intializeDisplay();
 		this.__rescaleDisplay();
 
 		window.addEventListener("resize", () => this.__rescaleDisplay());
-
-		const { runtime } = this;
-
-		runtime.__runOnStartup(this.layerManager);
 	}
 
 	/**
