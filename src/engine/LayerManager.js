@@ -33,15 +33,61 @@ export class Layer extends Core {
 
 		for (const { renderable, x, y } of this.gameObjects) {
 			if (!renderable) continue;
-			else if (
-				renderable instanceof Pixel &&
-				camera.isOnScreen(x, y, 1, 1)
-			) {
+			else if (renderable instanceof Pixel) {
+				if (!camera.isOnScreen(x, y, 1, 1)) continue;
+
 				const [xOS, yOS] = [x - camera.x, y - camera.y];
 				const index = renderer.coordinatesToIndex(xOS, yOS);
 
 				frameData[index] = renderable;
 			} else if (renderable instanceof PixelMesh) {
+				if (
+					!camera.isOnScreen(
+						x,
+						y,
+						renderable.width,
+						renderable.height
+					)
+				)
+					continue;
+
+				for (
+					let pixelY = 0;
+					pixelY < renderable.data.length;
+					pixelY++
+				) {
+					const row = renderable.data[pixelY];
+
+					if (row.length === 0 || !row) continue;
+
+					for (let pixelX = 0; pixelX < row.length; pixelX++) {
+						const pixel = row[pixelX];
+						if (
+							!pixel ||
+							!(pixel instanceof Pixel) ||
+							!camera.isOnScreen(x + pixelX, y + pixelY, 1, 1)
+						)
+							continue;
+
+						const [xOS, yOS] = [
+							x + pixelX - camera.x,
+							y + pixelY - camera.y,
+						];
+
+						// Why are things that are off screen by one point considered on screen.
+						if (
+							xOS < 0 ||
+							yOS < 0 ||
+							xOS >= renderer.width ||
+							yOS >= renderer.height
+						)
+							continue;
+
+						const index = renderer.coordinatesToIndex(xOS, yOS);
+
+						frameData[index] = pixel;
+					}
+				}
 			}
 		}
 
@@ -107,6 +153,11 @@ class LayerManager {
 		const frame = renderer.compileFrames(
 			...this.layers.map((layer) => layer.frame)
 		);
+
+		if (JSON.stringify(frame) === this.lastFrame) return;
+
+		this.lastFrame = JSON.stringify(frame);
+
 		renderer.drawFrame(frame);
 	}
 }

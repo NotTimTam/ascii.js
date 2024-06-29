@@ -1,10 +1,12 @@
 import Runtime from "./engine/runtime.js";
+import Area from "./game/Area.js";
 import Entity from "./game/Entity.js";
+import GrassPatch from "./game/GrassPatch.js";
 import Player from "./game/Player.js";
 
 window.runtime = new Runtime({
 	renderer: {
-		resolution: [16 * 5, 9 * 5],
+		resolution: [16 * 3, 9 * 3],
 
 		fontSize: "32px",
 		scaling: "letterbox",
@@ -19,7 +21,9 @@ window.runtime = new Runtime({
 
 window.runtime.start((runtime) => {
 	// Create base gameObjects and run their startups.
-	const player = new Player(window.runtime, 0, 0);
+	const player = new Player(runtime, 1, 0);
 	player.layer = "entities";
-	const rando = new Entity(window.runtime, 0, 0);
+
+	const grassPatch = new GrassPatch(runtime, 0, 0, 64, 64);
+	grassPatch.layer = "environment";
 });

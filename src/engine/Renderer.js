@@ -36,6 +36,25 @@ export class PixelMesh {
 	constructor(data) {
 		this.data = data;
 	}
+
+	/**
+	 * Get the `Area`'s width.
+	 */
+	get width() {
+		let length = -1;
+
+		for (const row of this.data)
+			if (row.length > length) length = row.length;
+
+		return length === -1 ? undefined : length;
+	}
+
+	/**
+	 * Get the `Area`'s height.
+	 */
+	get height() {
+		return this.data.length;
+	}
 }
 
 export class Frame {
