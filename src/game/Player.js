@@ -1,5 +1,5 @@
 import { Pixel } from "../engine/renderer.js";
-import Entity from "./Entity.js";
+import Entity from "../core/Entity.js";
 
 class Player extends Entity {
 	/**
@@ -39,6 +39,7 @@ class Player extends Entity {
 	}
 
 	handleInput(event) {
+		if (this.paused) return;
 		if (event.type === "keydown") {
 			const {
 				keys: { up, down, left, right, escape },

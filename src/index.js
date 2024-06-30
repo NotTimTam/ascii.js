@@ -1,6 +1,5 @@
-import { Pixel } from "./engine/renderer.js";
 import Runtime from "./engine/runtime.js";
-import Entity from "./game/Entity.js";
+import Entity from "./core/Entity.js";
 import GrassPatch from "./game/GrassPatch.js";
 import Player from "./game/Player.js";
 import Room from "./game/Room.js";

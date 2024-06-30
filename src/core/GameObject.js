@@ -119,6 +119,20 @@ class GameObject extends Core {
 	}
 
 	/**
+	 * Whether the object is on a paused layer or the runtime is paused.
+	 *
+	 * This should be checked when input and logic functions are called, to ensure they do not run when the `GameObject` is paused.
+	 *
+	 * This **does not** need to be checked in the `GameObject`s `__onTick()` method, as the `__onTick()` method is not called by its parent layer when that layer is paused.
+	 */
+	get paused() {
+		const { runtime, layer } = this;
+
+		if ((layer && layer.paused) || runtime.paused) return true;
+		else return false;
+	}
+
+	/**
 	 * Filter this `GameObject` out of an array.
 	 * @param {Array<GameObject>} array The array of game objects. The items in the array can either be `GameObject`s or an object with a `gameObject` key set to a `GameObject` instance.
 	 * @returns {Array<GameObject>} An array without this `GameObject`.

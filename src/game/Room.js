@@ -1,6 +1,5 @@
 import { Pixel, PixelMesh } from "../engine/renderer.js";
-import { clamp } from "../util/math.js";
-import Area from "./Area.js";
+import Area from "../core/Area.js";
 
 class Room extends Area {
 	/**
