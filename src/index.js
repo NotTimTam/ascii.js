@@ -1,3 +1,4 @@
+import { Pixel } from "./engine/renderer.js";
 import Runtime from "./engine/runtime.js";
 import Entity from "./game/Entity.js";
 import GrassPatch from "./game/GrassPatch.js";
@@ -23,7 +24,7 @@ window.runtime = new Runtime({
 
 window.runtime.start((runtime) => {
 	// Create base gameObjects and run their startups.
-	const player = new Player(runtime, 1, 0);
+	const player = new Player(runtime, 3, 2);
 	player.layer = "entities";
 
 	const size = 512;
@@ -36,12 +37,18 @@ window.runtime.start((runtime) => {
 	);
 	grassPatch.layer = "environment";
 
-	const room = new Room(runtime, -2, -2, [
-		[1, 1, 1, 1, 1, 1, 1],
-		[1, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0],
-		[1, 0, 0, 0, 0, 0, 1],
-		[1, 1, 1, 1, 1, 1, 1],
+	const room = new Room(runtime, 0, 0, [
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+		[1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
 	]);
 	room.layer = "environment";
 
@@ -69,8 +76,10 @@ window.runtime.start((runtime) => {
 
 		while (pastFPS.length > 25) pastFPS.shift();
 
-		fpsDisplay.innerHTML = `${Math.round(
-			pastFPS.reduce((p, c) => p + c) / pastFPS.length
-		)}FPS`;
+		fpsDisplay.innerHTML = runtime.paused
+			? "PAUSED"
+			: `${Math.round(
+					pastFPS.reduce((p, c) => p + c) / pastFPS.length
+			  )}FPS`;
 	};
 });

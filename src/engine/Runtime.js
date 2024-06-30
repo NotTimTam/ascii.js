@@ -18,6 +18,8 @@ class Runtime {
 
 		this.running = false;
 		this.initialized = false;
+
+		this.paused = false;
 	}
 
 	/**
@@ -85,11 +87,7 @@ class Runtime {
 		this.__dtm = currentTime - this.__lastFrame;
 		this.__lastFrame = currentTime;
 
-		// Input
-
-		// Logic
-
-		// Render
+		// Run renderer.
 		this.__runOnTick(this.renderer);
 
 		// Trigger next loop.
@@ -115,13 +113,6 @@ class Runtime {
 		}
 
 		requestAnimationFrame((currentTime) => this.__onTick(currentTime));
-	}
-
-	/**
-	 * End the game loop. (triggers on the next frame)
-	 */
-	stop() {
-		this.running = false;
 	}
 }
 

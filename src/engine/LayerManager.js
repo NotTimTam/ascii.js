@@ -17,6 +17,8 @@ export class Layer extends Core {
 		this.layerManager.layers.push(this);
 
 		this.gameObjects = [];
+
+		this.paused = false;
 	}
 
 	/**
@@ -96,7 +98,9 @@ export class Layer extends Core {
 	}
 
 	__onTick() {
-		const { runtime, gameObjects } = this;
+		const { runtime, gameObjects, paused } = this;
+
+		if (paused || runtime.paused) return; // Don't run this layer's code if it or the runtime is paused.
 
 		for (const gameObject of gameObjects) runtime.__runOnTick(gameObject);
 	}
@@ -246,7 +250,9 @@ class LayerManager {
 		} = this;
 
 		// Logic
-		for (const layer of this.layers) runtime.__runOnTick(layer);
+		if (!runtime.paused) {
+			for (const layer of this.layers) runtime.__runOnTick(layer);
+		}
 
 		// Render
 		if (renderMode === "stacked") this.__stackedRender();

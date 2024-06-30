@@ -41,13 +41,15 @@ class Player extends Entity {
 	handleInput(event) {
 		if (event.type === "keydown") {
 			const {
-				keys: { up, down, left, right },
+				keys: { up, down, left, right, escape },
 			} = event;
 
 			if (up) this.tryToMoveToPosition(this.x, this.y - 1);
 			if (down) this.tryToMoveToPosition(this.x, this.y + 1);
 			if (left) this.tryToMoveToPosition(this.x - 1, this.y);
 			if (right) this.tryToMoveToPosition(this.x + 1, this.y);
+
+			if (escape) this.runtime.paused = !this.runtime.paused;
 		}
 	}
 
