@@ -6,10 +6,14 @@ export class Layer extends Core {
 	/**
 	 * A layer is a construct of other objects. The layer manages these objects and can optionally render them to the screen.
 	 * @param {LayerManager} layerManager The `LayerManager` parent object.
-	 * @param {string} label This layer's label.
+	 * @param {*} config The `Layer`'s config object.
+	 * @param {string} config.label This layer's label.
+	 * @param {Array<Number>} config.parallax This layer's parallax array. `[x, y]` Numbers 0-1 determine how much this layer moves with the camera. `[0, 0]` for layers that do not move.
 	 */
-	constructor(layerManager, label) {
+	constructor(layerManager, config) {
 		super(layerManager.runtime);
+
+		const { label, parallax = [1, 1] } = config;
 
 		this.layerManager = layerManager;
 		this.label = label;
@@ -19,6 +23,8 @@ export class Layer extends Core {
 		this.gameObjects = [];
 
 		this.paused = false;
+
+		this.parallax = parallax;
 	}
 
 	/**
@@ -30,16 +36,22 @@ export class Layer extends Core {
 				renderer,
 				renderer: { camera },
 			},
+			parallax: [pX, pY],
 		} = this;
+
+		const [adjustedCameraX, adjustedCameraY] = [
+			Math.round(camera.x * pX),
+			Math.round(camera.y * pY),
+		];
 
 		const frameData = [];
 
 		for (const { renderable, x, y } of this.gameObjects) {
 			if (!renderable) continue;
 			else if (renderable instanceof Pixel) {
-				if (!camera.isOnScreen(x, y, 1, 1)) continue;
+				if (!camera.isOnScreen(x, y, 1, 1, pX, pY)) continue;
 
-				const [xOS, yOS] = [x - camera.x, y - camera.y];
+				const [xOS, yOS] = [x - adjustedCameraX, y - adjustedCameraY];
 				const index = renderer.coordinatesToIndex(xOS, yOS);
 
 				frameData[index] = renderable;
@@ -68,13 +80,20 @@ export class Layer extends Core {
 						if (
 							!pixel ||
 							!(pixel instanceof Pixel) ||
-							!camera.isOnScreen(x + pixelX, y + pixelY, 1, 1)
+							!camera.isOnScreen(
+								x + pixelX,
+								y + pixelY,
+								1,
+								1,
+								pX,
+								pY
+							)
 						)
 							continue;
 
 						const [xOS, yOS] = [
-							x + pixelX - camera.x,
-							y + pixelY - camera.y,
+							x + pixelX - adjustedCameraX,
+							y + pixelY - adjustedCameraY,
 						];
 
 						// Why are things that are off screen by one point considered on screen.
@@ -131,8 +150,8 @@ class LayerManager {
 				"No 'layers' configuration provided to LayerManager config."
 			);
 
-		for (const layerName of config.layers)
-			if (typeof layerName !== "string")
+		for (const { label } of config.layers)
+			if (typeof label !== "string")
 				throw new Error(
 					`Provided layer name <${layerName}> is not of type 'string'.`
 				);
@@ -206,8 +225,8 @@ class LayerManager {
 	__onStartup() {
 		const { layers } = this.config;
 
-		if (!layers.includes("system")) new Layer(this, "system");
-		for (const layer of layers) new Layer(this, layer);
+		if (!layers.includes("system")) new Layer(this, { label: "system" });
+		for (const config of layers) new Layer(this, config);
 	}
 
 	__mergedRender() {

@@ -23,15 +23,17 @@ class Camera extends GameObject {
 	 * @param {number} y The y-coordinate to check.
 	 * @param {number} width The width to check.
 	 * @param {number} height The height to check.
+	 * @param {number} parallaxX Optional parallax x-value. (0-1)
+	 * @param {number} parallaxY Optional parallax y-value. (0-1)
 	 */
-	isOnScreen = (x, y, width, height) =>
+	isOnScreen = (x, y, width, height, parallaxX = 1, parallaxY = 1) =>
 		aabb(
 			x,
 			y,
 			width,
 			height,
-			this.x,
-			this.y,
+			this.x * parallaxX,
+			this.y * parallaxY,
 			this.renderer.width,
 			this.renderer.height
 		);

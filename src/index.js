@@ -14,7 +14,13 @@ window.runtime = new Runtime({
 		renderMode: "merged", // "stacked" or "merged"
 
 		layerManager: {
-			layers: ["background", "environment", "entities", "overlay", "ui"],
+			layers: [
+				{ label: "background" },
+				{ label: "environment" },
+				{ label: "entities" },
+				{ label: "overlay" },
+				{ label: "ui", parallax: [0, 0] },
+			],
 		},
 
 		camera: {},
@@ -34,7 +40,7 @@ window.runtime.start((runtime) => {
 		size,
 		size
 	);
-	grassPatch.layer = "environment";
+	grassPatch.layer = "background";
 
 	const room = new Room(runtime, 0, 0, [
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
