@@ -15,7 +15,27 @@ class Player extends Entity {
 	}
 
 	get renderable() {
-		return new Pixel("☺", "cyan", "800", "blue");
+		return new Pixel({
+			value: "☺",
+			color: "cyan",
+			fontWeight: "800",
+			backgroundColor: "blue",
+		});
+	}
+
+	tryToMoveToPosition(x, y) {
+		const {
+			runtime: {
+				renderer: { layerManager },
+			},
+		} = this;
+
+		const solidAt = layerManager.solidAtPosition(x, y);
+
+		if (!solidAt || solidAt.gameObject === this) {
+			this.x = x;
+			this.y = y;
+		}
 	}
 
 	handleInput(event) {
@@ -24,10 +44,10 @@ class Player extends Entity {
 				keys: { up, down, left, right },
 			} = event;
 
-			if (up) this.y--;
-			if (down) this.y++;
-			if (left) this.x--;
-			if (right) this.x++;
+			if (up) this.tryToMoveToPosition(this.x, this.y - 1);
+			if (down) this.tryToMoveToPosition(this.x, this.y + 1);
+			if (left) this.tryToMoveToPosition(this.x - 1, this.y);
+			if (right) this.tryToMoveToPosition(this.x + 1, this.y);
 		}
 	}
 

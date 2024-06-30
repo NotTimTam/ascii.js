@@ -13,7 +13,7 @@ class Entity extends GameObject {
 	}
 
 	get renderable() {
-		return new Pixel("E", "green");
+		return new Pixel({value: "E", color: "green"});
 	}
 }
 

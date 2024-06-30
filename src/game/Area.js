@@ -7,48 +7,24 @@ class Area extends GameObject {
 	 * @param {Runtime} runtime The main runtime object.
 	 * @param {number} x This `Area`'s x-coordinate.
 	 * @param {number} y This `Area`'s y-coordinate.
+	 * @param {boolean} solid Whether the area's renderable is solid. Empty spaces in the renderable are not solid.
 	 */
-	constructor(runtime, x, y) {
+	constructor(runtime, x, y, solid = false) {
 		super(runtime, x, y);
+
+		this.solid = solid;
 	}
 
 	get renderable() {
+		const p = new Pixel({ value: "#", solid: this.solid });
+
 		return new PixelMesh([
-			[
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-			],
-			[
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-			],
-			[
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-			],
-			[
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-			],
-			[
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-				Pixel.fromString("#"),
-			],
+			[p, p, p, p, p],
+			[p, p, p, p, p],
+			[p, p, p, p, p],
+			[p, p, p, p, p],
+			[p, p, p, p, p],
+			[p, p, p, p, p],
 		]);
 	}
 }

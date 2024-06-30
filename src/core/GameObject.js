@@ -81,14 +81,16 @@ class GameObject extends Core {
 	 * @param {string} layer The name of the layer to move to.
 	 */
 	set layer(label) {
-		if (!label) {
-			if (this.layer) {
-				// Filter this object from its layer.
-				this.layer.gameObjects = this.layer.gameObjects.filter(
-					(gameObject) => gameObject !== this
-				);
-			}
-		} else {
+		// Remove from its current layer.
+		if (this.layer) {
+			// Filter this object from its layer.
+			this.layer.gameObjects = this.layer.gameObjects.filter(
+				(gameObject) => gameObject !== this
+			);
+		}
+
+		// If the label was undefined, we don't add to a new layer, if it was defined, we do.
+		if (label) {
 			if (typeof label !== "string")
 				throw new Error("Provided layer label is not a string.");
 
@@ -113,8 +115,20 @@ class GameObject extends Core {
 	 * The object's renderable element.
 	 */
 	get renderable() {
-		return new Pixel("#", "red");
+		return new Pixel({ value: "#", color: "red" });
 	}
+
+	/**
+	 * Filter this `GameObject` out of an array.
+	 * @param {Array<GameObject>} array The array of game objects. The items in the array can either be `GameObject`s or an object with a `gameObject` key set to a `GameObject` instance.
+	 * @returns {Array<GameObject>} An array without this `GameObject`.
+	 */
+	filterThis = (array) =>
+		array.filter((item) =>
+			item instanceof GameObject
+				? item !== this
+				: item.gameObject !== this
+		);
 }
 
 export default GameObject;

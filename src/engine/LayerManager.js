@@ -1,6 +1,6 @@
 import Renderer, { Frame, Pixel, PixelMesh } from "./renderer.js";
 import Core from "../core/Core.js";
-import { displayArray } from "../util/data.js";
+import { aabb } from "../util/math.js";
 
 export class Layer extends Core {
 	/**
@@ -132,6 +132,71 @@ class LayerManager {
 				throw new Error(
 					`Provided layer name <${layerName}> is not of type 'string'.`
 				);
+	}
+
+	/**
+	 * Check for content at a location.
+	 * @param {number} x The x-coordinate to check.
+	 * @param {number} y The y-coordinate to check.
+	 * @param {string} layer An optional layer to check. If no layer is provided, all layer's are checked.
+	 */
+	getAtPosition(x, y, layer) {
+		const layerWithLabel = this.layers.find(({ label }) => label === layer);
+		if (layer && !layerWithLabel)
+			throw new Error(`No layer exists with label "${layer}".`);
+
+		const layersToCheck = layer ? [layerWithLabel] : this.layers;
+
+		const atPosition = [];
+
+		for (const layer of layersToCheck) {
+			const { gameObjects } = layer;
+
+			for (const gameObject of gameObjects) {
+				const { renderable, x: gX, y: gY } = gameObject;
+				if (renderable instanceof Pixel && gX === x && gY === y)
+					atPosition.push({ gameObject, pixel: renderable });
+				else if (
+					renderable instanceof PixelMesh &&
+					aabb(
+						x,
+						y,
+						1,
+						1,
+						gX,
+						gY,
+						renderable.width,
+						renderable.height
+					)
+				) {
+					const pixel =
+						renderable.data[y - gY] &&
+						renderable.data[y - gY][x - gX];
+
+					if (!pixel) continue;
+
+					atPosition.push({
+						gameObject,
+						pixel,
+					});
+				}
+			}
+		}
+
+		return atPosition;
+	}
+
+	/**
+	 * Check for a solid at a location.
+	 * @param {number} x The x-coordinate to check.
+	 * @param {number} y The y-coordinate to check.
+	 * @param {string} layer An optional layer to check. If no layer is provided, all layer's are checked.
+	 */
+	solidAtPosition(x, y, layer) {
+		const thingsAt = this.getAtPosition(x, y, layer);
+
+		for (const thing of thingsAt) if (thing.pixel.solid) return thing;
+		return false;
 	}
 
 	__onStartup() {

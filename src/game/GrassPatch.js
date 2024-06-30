@@ -12,7 +12,7 @@ class GrassPatch extends Area {
 	 * @param {number} height This `GrassPatch`'s y-coordinate.
 	 */
 	constructor(runtime, x, y, width, height) {
-		super(runtime, x, y);
+		super(runtime, x, y, false);
 
 		this.__generate(width, height);
 	}
@@ -49,12 +49,22 @@ class GrassPatch extends Area {
 					) * 255
 				);
 
-				const pixel = new Pixel(
-					["*", "~", ";", ":", ",", ".", "´", " ", " ", " "][n],
-					o < 240 ? `rgb(0, ${clamp(o, 50, 200)}, 0)` : "#FFD464",
-					100,
-					`rgb(0, 100, 0)`
-				);
+				let char = ["~", ";", ":", ",", ".", "´", " ", " ", " ", " "][
+					n
+				];
+
+				if (n > 8 && Math.random() > 0.8) char = "*";
+
+				const pixel = new Pixel({
+					value: char,
+					color:
+						char === "*"
+							? "#FFD464"
+							: `rgb(0, ${clamp(o, 50, 200)}, 0)`,
+					fontWeight: 100,
+					backgroundColor: `rgb(0, 100, 0)`,
+					solid: false,
+				});
 
 				row.push(pixel);
 			}

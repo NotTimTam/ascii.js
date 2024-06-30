@@ -2,6 +2,7 @@ import Runtime from "./engine/runtime.js";
 import Entity from "./game/Entity.js";
 import GrassPatch from "./game/GrassPatch.js";
 import Player from "./game/Player.js";
+import Room from "./game/Room.js";
 
 window.runtime = new Runtime({
 	renderer: {
@@ -34,6 +35,27 @@ window.runtime.start((runtime) => {
 		size
 	);
 	grassPatch.layer = "environment";
+
+	const room = new Room(runtime, -2, -2, [
+		[1, 1, 1, 1, 1, 1, 1],
+		[1, 0, 0, 0, 0, 0, 1],
+		[1, 0, 0, 0, 0, 0, 0],
+		[1, 0, 0, 0, 0, 0, 1],
+		[1, 1, 1, 1, 1, 1, 1],
+	]);
+	room.layer = "environment";
+
+	/**
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 */
 
 	const fpsDisplay = document.createElement("div");
 	fpsDisplay.className = "fps-display";

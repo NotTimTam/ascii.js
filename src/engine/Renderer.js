@@ -5,17 +5,22 @@ import LayerManager from "./LayerManager.js";
 export class Pixel {
 	/**
 	 * Pixel data for a frame coordinate.
-	 * @param {string} value The text-value of this spixel.
-	 * @param {string} color The CSS color value of this pixel.
-	 * @param {string|number} fontWeight The CSS font weight value of this pixel.
-	 * @param {string} backgroundColor An optional background color for the pixel.
+	 * @param {*} config The pixel config object.
+	 * @param {string} config.value The text-value of this spixel.
+	 * @param {string} config.color The CSS color value of this pixel.
+	 * @param {string|number} config.fontWeight The CSS font weight value of this pixel.
+	 * @param {string} config.backgroundColor An optional background color for the pixel.
+	 * @param {boolean} config.solid Whether or not this pixel is solid.
 	 */
-	constructor(
-		value,
-		color = "#ffffff",
-		fontWeight = "normal",
-		backgroundColor
-	) {
+	constructor(config) {
+		const {
+			value,
+			color = "#ffffff",
+			fontWeight = "normal",
+			backgroundColor,
+			solid = false,
+		} = config;
+
 		if (typeof value !== "string" || value.length !== 1)
 			throw new Error(
 				"The value of this pixel can only be a 1-character long string."
@@ -25,6 +30,7 @@ export class Pixel {
 		this.color = color;
 		this.fontWeight = fontWeight;
 		this.backgroundColor = backgroundColor;
+		this.solid = solid;
 	}
 
 	/**
@@ -32,7 +38,7 @@ export class Pixel {
 	 * @param {string} string The string to convert to a `Pixel`.
 	 * @returns {Pixel} the newly created `Pixel` object.
 	 */
-	static fromString = (string) => new Pixel(string);
+	static fromString = (string) => new Pixel({ value: string });
 }
 
 export class PixelMesh {
@@ -80,7 +86,7 @@ export class Frame {
 	 * @returns {Frame} the generated Frame.
 	 */
 	static fromString = (string) =>
-		new Frame(string.split("").map((item) => new Pixel(item)));
+		new Frame(string.split("").map((item) => new Pixel({ value: item })));
 
 	/**
 	 * Convert a 2D array of `Pixel`s to a Frame.

@@ -78,7 +78,7 @@ class Runtime {
 		if (!this.running) return; // End the game loop.
 
 		// Run delta time calculation loop.
-		this.dt = currentTime - this.__lastFrame;
+		this.dt = (currentTime - this.__lastFrame) / 1000;
 		this.__lastFrame = currentTime;
 
 		// Input
