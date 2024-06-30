@@ -1,10 +1,5 @@
 import Runtime from "./engine/runtime.js";
-import Entity from "./core/Entity.js";
-import GrassPatch from "./game/GrassPatch.js";
-import Player from "./game/Player.js";
-import Room from "./game/Room.js";
-import Text from "./extensions/Text.js";
-import Box from "./extensions/Box.js";
+
 import Menu from "./extensions/Menu.js";
 
 window.runtime = new Runtime({
@@ -38,11 +33,46 @@ window.runtime.start((runtime) => {
 	const menu = new Menu(runtime, {
 		x: 0,
 		y: 0,
-		title: "Paused (this is a pause menu)",
+		title: "Paused",
 		options: {
 			option1: "Option 1",
 			option2: "Option 2",
 			option3: "Option 3",
+			option4: "Option 4",
+			option5: "Option 5",
+			option6: "Option 6",
+			option7: "Option 7",
+			option8: "Option 8",
+			option9: "Option 9",
+			option10: "Option 10",
+			option12: "Option 12",
+			option13: "Option 13",
+			option14: "Option 14",
+			option15: "Option 15",
+			option16: "Option 16",
+			option17: "Option 17",
+			option18: "Option 18",
+			option19: "Option 19",
+			option20: "Option 20",
+			option21: "Option 21",
+			option22: "Option 22",
+			option23: "Option 23",
+			option24: "Option 24",
+			option25: "Option 25",
+			option26: "Option 26",
+			option27: "Option 27",
+			option28: "Option 28",
+			option29: "Option 29",
+			option30: "Option 30",
+			option31: "Option 31",
+			option32: "Option 32",
+			option33: "Option 33",
+			option34: "Option 34",
+			option35: "Option 35",
+			option36: "Option 36",
+			option37: "Option 37",
+			option38: "Option 38",
+			option39: "Option 39",
 		},
 	});
 	menu.layer = "ui";

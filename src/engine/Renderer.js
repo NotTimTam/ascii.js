@@ -143,6 +143,9 @@ class Renderer {
 				"Resolution array must be in format: [width (number), height (number)]"
 			);
 
+		if (config.resolution[0] < 5 || config.resolution[1] < 5)
+			throw new Error("Resolution cannot be smaller than 5x5.");
+
 		if (config.fontSize && typeof config.fontSize !== "string")
 			throw new Error(
 				"Invalid fontSize parameter provided to renderer config. Must be of type 'string'"

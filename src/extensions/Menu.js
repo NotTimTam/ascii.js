@@ -60,14 +60,29 @@ class Menu extends GameObject {
 	}
 
 	get width() {
+		const {
+			runtime: {
+				renderer: { width },
+			},
+		} = this;
+
 		const optionsWidth = Math.round(this.longestOption + 2);
 		const titleWidth = this.title ? this.title.length + 4 : 0;
 
-		return Math.max(optionsWidth, titleWidth);
+		return Math.max(optionsWidth, titleWidth, width / 4);
 	}
 
 	get height() {
-		return Math.round(Object.keys(this.options).length + 2);
+		const {
+			runtime: {
+				renderer: { height },
+			},
+		} = this;
+
+		return Math.min(
+			Math.round(Object.keys(this.options).length + 4),
+			height
+		);
 	}
 
 	determineLongestOption() {
@@ -76,7 +91,7 @@ class Menu extends GameObject {
 		let longestOption = 0;
 
 		Object.values(options).forEach((value, index) => {
-			const optionDisplay = `> ${value}`;
+			const optionDisplay = value;
 			if (optionDisplay.length > longestOption)
 				longestOption = optionDisplay.length;
 		});
@@ -89,7 +104,7 @@ class Menu extends GameObject {
 			options,
 			runtime,
 			runtime: {
-				renderer: { width },
+				renderer: { width, height },
 			},
 			title,
 		} = this;
@@ -98,18 +113,42 @@ class Menu extends GameObject {
 
 		const data = [];
 
-		if (options)
-			Object.values(options).forEach((value, index) => {
-				const str = `> ${value}`.slice(0, maxWidth);
-				const remainingSpace = this.width - 2 - str.length;
+		if (options) {
+			const optionValues = Object.values(options);
+
+			let displayOptions = optionValues;
+			if (optionValues.length + 4 > height) {
+				const toDisplay = Math.min(optionValues.length, height - 4);
+
+				if (this.index < Math.floor(toDisplay / 2))
+					displayOptions = optionValues.slice(0, toDisplay);
+				else if (
+					this.index >
+					optionValues.length - Math.ceil(toDisplay / 2)
+				)
+					displayOptions = optionValues.slice(
+						optionValues.length - toDisplay
+					);
+				else if (this.index >= Math.floor(toDisplay / 2))
+					displayOptions = optionValues.slice(
+						this.index - Math.floor(toDisplay / 2),
+						this.index + Math.ceil(toDisplay / 2)
+					);
+				// displayOptions = optionValues.slice(startIndex, endIndex + 1);
+			}
+
+			displayOptions.forEach((value) => {
+				const str = value.slice(0, maxWidth);
+				const remainingSpace = this.width - 1 - str.length;
+
+				const index = optionValues.indexOf(value);
 
 				const text = new Text(runtime, {
 					x: 0,
 					y: 0,
-					value: str
-						.padStart(Math.floor(remainingSpace), " ")
-						.padEnd(this.width - 2, " "),
-
+					value: `${" ".repeat(
+						Math.floor(remainingSpace) / 2
+					)}${str}${" ".repeat(Math.ceil(remainingSpace) / 2)}`,
 					wrap: false,
 					color: index === this.index ? "#000000" : "#ffffff",
 					backgroundColor:
@@ -119,18 +158,21 @@ class Menu extends GameObject {
 
 				data.push(text);
 			});
+		}
 
 		const box = new Box(runtime, {
 			x: 0,
 			y: 0,
 			width: this.width,
-			height: Object.keys(options).length + 2,
+			height: Object.keys(options).length + 4,
 		}).renderable.data;
 
-		data.unshift(box[0]);
-		data.push(box[box.length - 1]);
+		data.unshift(box[1]); // Add top padding.
+		data.unshift(box[0]); // Add top bar.
+		data.push(box[1]); // Add bottom padding.
+		data.push(box[box.length - 1]); // Add bottom bar.
 
-		for (let column = 1; column < box.length - 1; column++) {
+		for (let column = 2; column < data.length - 2; column++) {
 			data[column].unshift(box[column][0]);
 			data[column][this.width - 1] = box[column][box[column].length - 1];
 		}
