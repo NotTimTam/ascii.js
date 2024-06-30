@@ -144,7 +144,7 @@ class Menu extends GameObject {
 				color: "#ffffff",
 			}).renderable.data[0];
 
-			const startIndex = (this.width - titleText.length) / 2;
+			const startIndex = Math.floor((this.width - titleText.length) / 2);
 
 			for (let i = 0; i < titleText.length; i++) {
 				data[0][i + startIndex] = titleText[i];
