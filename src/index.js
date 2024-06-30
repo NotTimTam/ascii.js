@@ -38,6 +38,7 @@ window.runtime.start((runtime) => {
 	const menu = new Menu(runtime, {
 		x: 0,
 		y: 0,
+		title: "Paused (this is a pause menu)",
 		options: {
 			option1: "Option 1",
 			option2: "Option 2",

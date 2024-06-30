@@ -13,11 +13,13 @@ class Menu extends GameObject {
 	 * @param {number} config.y This `Box` object's y-coordinate.
 	 * @param {*} config.options An object of key value pairs, the values representing option labels, and the keys being what is returned when an object is selected.
 	 * @param {function} config.callback A callback function that is called when a menu option is selected. Passed the key of the selected option.
+	 * @param {string} config.title Optional menu title.
 	 */
 	constructor(runtime, config) {
 		const {
 			x,
 			y,
+			title,
 			options,
 			callback = (option) => console.log(option),
 		} = config;
@@ -29,6 +31,13 @@ class Menu extends GameObject {
 		this.index = 0;
 
 		this.longestOption = this.determineLongestOption();
+
+		if (title && typeof title !== "string")
+			throw new Error(
+				`Provided menu title "${title}" is not of type "string".`
+			);
+
+		this.title = title;
 
 		runtime.inputManager.addEventListener(this.handleInput.bind(this));
 	}
@@ -51,7 +60,10 @@ class Menu extends GameObject {
 	}
 
 	get width() {
-		return Math.round(this.longestOption + 2);
+		const optionsWidth = Math.round(this.longestOption + 2);
+		const titleWidth = this.title ? this.title.length + 4 : 0;
+
+		return Math.max(optionsWidth, titleWidth);
 	}
 
 	get height() {
@@ -77,8 +89,9 @@ class Menu extends GameObject {
 			options,
 			runtime,
 			runtime: {
-				renderer: { width, height },
+				renderer: { width },
 			},
+			title,
 		} = this;
 
 		const maxWidth = width - 2;
@@ -87,12 +100,16 @@ class Menu extends GameObject {
 
 		if (options)
 			Object.values(options).forEach((value, index) => {
+				const str = `> ${value}`.slice(0, maxWidth);
+				const remainingSpace = this.width - 2 - str.length;
+
 				const text = new Text(runtime, {
 					x: 0,
 					y: 0,
-					value: `> ${value}`
-						.padEnd(this.longestOption, " ")
-						.slice(0, maxWidth),
+					value: str
+						.padStart(Math.floor(remainingSpace), " ")
+						.padEnd(this.width - 2, " "),
+
 					wrap: false,
 					color: index === this.index ? "#000000" : "#ffffff",
 					backgroundColor:
@@ -106,7 +123,7 @@ class Menu extends GameObject {
 		const box = new Box(runtime, {
 			x: 0,
 			y: 0,
-			width: this.longestOption + 2,
+			width: this.width,
 			height: Object.keys(options).length + 2,
 		}).renderable.data;
 
@@ -115,7 +132,23 @@ class Menu extends GameObject {
 
 		for (let column = 1; column < box.length - 1; column++) {
 			data[column].unshift(box[column][0]);
-			data[column].push(box[column][box[column].length - 1]);
+			data[column][this.width - 1] = box[column][box[column].length - 1];
+		}
+
+		if (title) {
+			const titleText = new Text(runtime, {
+				x: 0,
+				y: 0,
+				value: title.slice(0, maxWidth - 2),
+				wrap: false,
+				color: "#ffffff",
+			}).renderable.data[0];
+
+			const startIndex = (this.width - titleText.length) / 2;
+
+			for (let i = 0; i < titleText.length; i++) {
+				data[0][i + startIndex] = titleText[i];
+			}
 		}
 
 		return new PixelMesh(data);
