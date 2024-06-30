@@ -3,6 +3,7 @@ import Entity from "./core/Entity.js";
 import GrassPatch from "./game/GrassPatch.js";
 import Player from "./game/Player.js";
 import Room from "./game/Room.js";
+import Text from "./extensions/Text.js";
 
 window.runtime = new Runtime({
 	renderer: {
@@ -11,7 +12,7 @@ window.runtime = new Runtime({
 		fontSize: "48px",
 		scaling: "letterbox",
 
-		renderMode: "merged", // "stacked" or "merged"
+		renderMode: "stacked", // "stacked" or "merged"
 
 		layerManager: {
 			layers: [
@@ -32,14 +33,15 @@ window.runtime.start((runtime) => {
 	const player = new Player(runtime, 3, 2);
 	player.layer = "entities";
 
-	const size = 512;
-	const grassPatch = new GrassPatch(
-		runtime,
-		-Math.round(size / 2),
-		-Math.round(size / 2),
-		size,
-		size
-	);
+	// const size = 512;
+	// const grassPatch = new GrassPatch(
+	// 	runtime,
+	// 	-Math.round(size / 2),
+	// 	-Math.round(size / 2),
+	// 	size,
+	// 	size
+	// );
+	const grassPatch = new GrassPatch(runtime, 0, 0, 16 * 5, 9 * 3);
 	grassPatch.layer = "background";
 
 	const room = new Room(runtime, 0, 0, [
@@ -56,6 +58,20 @@ window.runtime.start((runtime) => {
 		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
 	]);
 	room.layer = "environment";
+
+	/**
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 *
+	 */
+
+	const text = new Text(runtime, 0, 0, "This is a test.\nHEHE", false);
+	text.layer = "ui";
 
 	/**
 	 *

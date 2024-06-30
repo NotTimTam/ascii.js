@@ -1,6 +1,7 @@
 import Renderer, { Frame, Pixel, PixelMesh } from "./renderer.js";
 import Core from "../core/Core.js";
 import { aabb } from "../util/math.js";
+import Text from "../extensions/Text.js";
 
 export class Layer extends Core {
 	/**
@@ -46,7 +47,8 @@ export class Layer extends Core {
 
 		const frameData = [];
 
-		for (const { renderable, x, y } of this.gameObjects) {
+		for (const gameObject of this.gameObjects) {
+			const { renderable, x, y } = gameObject;
 			if (!renderable) continue;
 			else if (renderable instanceof Pixel) {
 				if (!camera.isOnScreen(x, y, 1, 1, pX, pY)) continue;
@@ -61,7 +63,9 @@ export class Layer extends Core {
 						x,
 						y,
 						renderable.width,
-						renderable.height
+						renderable.height,
+						pX,
+						pY
 					)
 				)
 					continue;
@@ -95,15 +99,6 @@ export class Layer extends Core {
 							x + pixelX - adjustedCameraX,
 							y + pixelY - adjustedCameraY,
 						];
-
-						// Why are things that are off screen by one point considered on screen.
-						if (
-							xOS < 0 ||
-							yOS < 0 ||
-							xOS >= renderer.width ||
-							yOS >= renderer.height
-						)
-							continue;
 
 						const index = renderer.coordinatesToIndex(xOS, yOS);
 
