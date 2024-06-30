@@ -40,10 +40,15 @@ class Menu extends GameObject {
 		this.title = title;
 
 		runtime.inputManager.addEventListener(this.handleInput.bind(this));
+
+		this.__inputMode = "keyboard";
 	}
 
 	handleInput(event) {
+		if (!this.visible) return;
 		if (event.type === "keydown") {
+			this.__inputMode = "keyboard";
+
 			const {
 				keys: { up, down, enter },
 			} = event;
@@ -56,6 +61,29 @@ class Menu extends GameObject {
 
 			if (this.index < 0) this.index = topIndex;
 			if (this.index > topIndex) this.index = 0;
+		} else if (event.type === "mousemove") {
+			const { x, y } = event;
+
+			const [menuX, menuY] = [x - this.x, y - this.y];
+
+			const mouseMenuIndex = Math.floor(menuY - 1.5);
+
+			if (
+				mouseMenuIndex >= 0 &&
+				mouseMenuIndex < Object.keys(this.options).length &&
+				menuX >= 0 &&
+				menuX <= this.width
+			) {
+				this.__inputMode = "mouse";
+				this.index = mouseMenuIndex;
+			}
+		} else if (
+			event.type === "mousedown" &&
+			this.__inputMode === "mouse" &&
+			this.index >= 0 &&
+			this.index < Object.keys(this.options).length
+		) {
+			this.callback(Object.keys(this.options)[this.index]);
 		}
 	}
 
@@ -138,6 +166,8 @@ class Menu extends GameObject {
 			}
 
 			displayOptions.forEach((value) => {
+				if (!value || typeof value !== "string") return;
+
 				const str = value.slice(0, maxWidth);
 				const remainingSpace = this.width - 1 - str.length;
 
@@ -156,6 +186,7 @@ class Menu extends GameObject {
 					// fontWeight: index === this.index ? "800" : "400",
 					color: index === this.index ? "#ffffff" : "grey",
 					fontWeight: index === this.index ? "800" : "100",
+					backgroundColor: "#000000",
 				}).renderable.data[0];
 
 				data.push(text);
@@ -167,6 +198,7 @@ class Menu extends GameObject {
 			y: 0,
 			width: this.width,
 			height: Object.keys(options).length + 4,
+			backgroundColor: "#000000",
 		}).renderable.data;
 
 		data.unshift(box[1]); // Add top padding.
@@ -186,6 +218,7 @@ class Menu extends GameObject {
 				value: title.slice(0, maxWidth - 2),
 				wrap: false,
 				color: "#ffffff",
+				backgroundColor: "#000000",
 			}).renderable.data[0];
 
 			const startIndex = Math.floor((this.width - titleText.length) / 2);

@@ -47,7 +47,9 @@ export class Layer extends Core {
 
 		const frameData = [];
 
-		for (const gameObject of this.gameObjects) {
+		for (const gameObject of this.gameObjects.filter(
+			({ visible }) => visible
+		)) {
 			const { renderable, x, y } = gameObject;
 			if (!renderable) continue;
 			else if (renderable instanceof Pixel) {

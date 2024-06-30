@@ -28,11 +28,33 @@ class GameObject extends Core {
 
 		this.__rawX = x;
 		this.__rawY = y;
+		this.__rawVisible = true;
 	}
 
+	/**
+	 * Get the `GameObject`'s visibility status.
+	 */
+	get visible() {
+		return this.__rawVisible;
+	}
+
+	/**
+	 * Set the `GameObject`'s visibility status.
+	 */
+	set visible(value) {
+		this.__rawVisible = Boolean(value);
+	}
+
+	/**
+	 * Get the game object's adjusted x-coordinate.
+	 */
 	get x() {
 		return Math.round(this.__rawX);
 	}
+
+	/**
+	 * Set the game object's x-coordinate.
+	 */
 	set x(n) {
 		if (typeof n !== "number")
 			throw new Error(
@@ -41,9 +63,16 @@ class GameObject extends Core {
 		this.__rawX = n;
 	}
 
+	/**
+	 * Get the game object's adjusted y-coordinate.
+	 */
 	get y() {
 		return Math.round(this.__rawY);
 	}
+
+	/**
+	 * Set the game object's y-coordinate.
+	 */
 	set y(n) {
 		if (typeof n !== "number")
 			throw new Error(

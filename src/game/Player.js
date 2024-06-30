@@ -51,7 +51,7 @@ class Player extends Entity {
 				if (right) this.tryToMoveToPosition(this.x + 1, this.y);
 			}
 
-			if (escape) this.runtime.paused = !this.runtime.paused;
+			if (escape) this.layer.paused = !this.layer.paused;
 		}
 	}
 
