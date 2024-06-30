@@ -37,11 +37,15 @@ class Runtime {
 		return this.initialized ? performance.now() - this.running : 0;
 	}
 
+	get dt() {
+		return this.__dtm / 1000;
+	}
+
 	/**
 	 * Get the current frames-per-second value.
 	 */
 	get fps() {
-		return this.initialized ? 1000 / this.dt : 0;
+		return this.initialized ? 1000 / this.__dtm : 0;
 	}
 
 	/**
@@ -78,7 +82,7 @@ class Runtime {
 		if (!this.running) return; // End the game loop.
 
 		// Run delta time calculation loop.
-		this.dt = (currentTime - this.__lastFrame) / 1000;
+		this.__dtm = currentTime - this.__lastFrame;
 		this.__lastFrame = currentTime;
 
 		// Input
