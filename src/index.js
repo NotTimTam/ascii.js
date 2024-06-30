@@ -4,12 +4,14 @@ import GrassPatch from "./game/GrassPatch.js";
 import Player from "./game/Player.js";
 import Room from "./game/Room.js";
 import Text from "./extensions/Text.js";
+import Box from "./extensions/Box.js";
+import Menu from "./extensions/Menu.js";
 
 window.runtime = new Runtime({
 	renderer: {
-		resolution: [16 * 5, 9 * 3],
+		resolution: [96, 32],
 
-		fontSize: "48px",
+		fontSize: "32px",
 		scaling: "letterbox",
 
 		renderMode: "stacked", // "stacked" or "merged"
@@ -29,10 +31,26 @@ window.runtime = new Runtime({
 });
 
 window.runtime.start((runtime) => {
-	// Create base gameObjects and run their startups.
-	const player = new Player(runtime, 3, 2);
-	player.layer = "entities";
+	const {
+		renderer: { width, height },
+	} = runtime;
 
+	const menu = new Menu(runtime, {
+		x: 0,
+		y: 0,
+		options: {
+			option1: "Option 1",
+			option2: "Option 2",
+			option3: "Option 3",
+		},
+	});
+	menu.layer = "ui";
+	menu.x = width / 2 - menu.width / 2;
+	menu.y = height / 2 - menu.height / 2;
+
+	// // Create base gameObjects and run their startups.
+	// const player = new Player(runtime, 3, 2);
+	// player.layer = "entities";
 	// const size = 512;
 	// const grassPatch = new GrassPatch(
 	// 	runtime,
@@ -41,66 +59,49 @@ window.runtime.start((runtime) => {
 	// 	size,
 	// 	size
 	// );
-	const grassPatch = new GrassPatch(runtime, 0, 0, 16 * 5, 9 * 3);
-	grassPatch.layer = "background";
-
-	const room = new Room(runtime, 0, 0, [
-		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-		[1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-		[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
-	]);
-	room.layer = "environment";
-
-	/**
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 */
-
-	const text = new Text(runtime, 0, 0, "This is a test.\nHEHE", false);
-	text.layer = "ui";
-
-	/**
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 *
-	 */
-
-	const fpsDisplay = document.createElement("div");
-	fpsDisplay.className = "fps-display";
-	document.body.appendChild(fpsDisplay);
-
-	let pastFPS = [];
-
-	const dev = new Entity(runtime, 0, 0);
-	dev.__onTick = () => {
-		pastFPS.push(runtime.fps);
-
-		while (pastFPS.length > 25) pastFPS.shift();
-
-		fpsDisplay.innerHTML = runtime.paused
-			? "PAUSED"
-			: `${Math.round(
-					pastFPS.reduce((p, c) => p + c) / pastFPS.length
-			  )}FPS`;
-	};
+	// grassPatch.layer = "background";
+	// const room = new Room(runtime, 0, 0, [
+	// 	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+	// 	[1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	// 	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	// 	[1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	// 	[1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	// 	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	// 	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	// 	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	// 	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	// 	[1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+	// 	[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1],
+	// ]);
+	// room.layer = "environment";
+	// /**
+	//  *
+	//  *
+	//  *
+	//  *
+	//  *
+	//  *
+	//  *
+	//  *
+	//  */
+	// const devNotice = new Text(
+	// 	runtime,
+	// 	0,
+	// 	runtime.renderer.height - 1,
+	// 	"ALPHA BUILD! BUGS MAY OCCUR",
+	// 	false
+	// );
+	// devNotice.layer = "ui";
+	// const fpsText = new Text(runtime, 0, 0, String(runtime.fps), false);
+	// fpsText.layer = "ui";
+	// fpsText.prevFPS = [];
+	// fpsText.__onTick = () => {
+	// 	fpsText.prevFPS.push(runtime.fps);
+	// 	while (fpsText.prevFPS.length > 100) fpsText.prevFPS.shift();
+	// 	fpsText.text = String(
+	// 		Math.round(
+	// 			fpsText.prevFPS.reduce((p, c) => p + c) / fpsText.prevFPS.length
+	// 		)
+	// 	);
+	// };
 });

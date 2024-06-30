@@ -201,8 +201,11 @@ class Renderer {
 		ctx.font = `${fontSize} monospace`;
 		const {
 			width: characterWidth,
-			actualBoundingBoxAscent: characterHeight,
+			fontBoundingBoxAscent,
+			fontBoundingBoxDescent,
 		} = this.ctx.measureText("█");
+
+		const characterHeight = fontBoundingBoxAscent + fontBoundingBoxDescent;
 
 		this.characterSize = [characterWidth, characterHeight];
 
@@ -288,6 +291,8 @@ class Renderer {
 			characterSize: [cW, cH],
 
 			ctx,
+
+			width,
 		} = this;
 
 		ctx.textAlign = "left";
@@ -308,7 +313,12 @@ class Renderer {
 
 					ctx.fillStyle = backgroundColor;
 
-					ctx.fillRect(x * cW, y * cH, cW, cH);
+					ctx.fillRect(
+						x * cW,
+						y * cH,
+						cW + Math.max(1 / width, 1),
+						cH
+					);
 
 					ctx.closePath();
 				}
