@@ -150,10 +150,12 @@ class Menu extends GameObject {
 						Math.floor(remainingSpace) / 2
 					)}${str}${" ".repeat(Math.ceil(remainingSpace) / 2)}`,
 					wrap: false,
-					color: index === this.index ? "#000000" : "#ffffff",
-					backgroundColor:
-						index === this.index ? "#ffffff" : "#000000",
-					fontWeight: index === this.index ? "800" : "400",
+					// color: index === this.index ? "#000000" : "#ffffff",
+					// backgroundColor:
+					// 	index === this.index ? "#ffffff" : "#000000",
+					// fontWeight: index === this.index ? "800" : "400",
+					color: index === this.index ? "#ffffff" : "grey",
+					fontWeight: index === this.index ? "800" : "100",
 				}).renderable.data[0];
 
 				data.push(text);
