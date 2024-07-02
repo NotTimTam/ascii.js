@@ -12,13 +12,6 @@ class InputManager {
 		this.mouse = { buttons: {} };
 
 		this.__eventListeners = [];
-
-		window.addEventListener("keydown", (e) => this.__onEvent(e));
-		window.addEventListener("keyup", (e) => this.__onEvent(e));
-		window.addEventListener("mousemove", (e) => this.__onEvent(e));
-		window.addEventListener("mousedown", (e) => this.__onEvent(e));
-		window.addEventListener("mouseup", (e) => this.__onEvent(e));
-		window.addEventListener("contextmenu", (e) => e.preventDefault());
 	}
 
 	__formatKey(key) {
@@ -165,6 +158,15 @@ class InputManager {
 		this.__eventListeners = this.__eventListeners.filter(
 			(eventListener) => eventListener !== listener
 		);
+	}
+
+	__onStartup() {
+		window.addEventListener("keydown", (e) => this.__onEvent(e));
+		window.addEventListener("keyup", (e) => this.__onEvent(e));
+		window.addEventListener("mousemove", (e) => this.__onEvent(e));
+		window.addEventListener("mousedown", (e) => this.__onEvent(e));
+		window.addEventListener("mouseup", (e) => this.__onEvent(e));
+		window.addEventListener("contextmenu", (e) => e.preventDefault());
 	}
 }
 

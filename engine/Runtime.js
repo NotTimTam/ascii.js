@@ -86,6 +86,7 @@ class Runtime {
 
 		// Run renderer startup.
 		this.__runOnStartup(this.renderer);
+		this.__runOnStartup(this.inputManager);
 	}
 
 	/**
@@ -97,6 +98,9 @@ class Runtime {
 		// Run delta time calculation loop.
 		this.__dtm = currentTime - this.__lastFrame;
 		this.__lastFrame = currentTime;
+
+		// Run scene logic.
+		this.__runOnTick(this.scene, this);
 
 		// Run renderer.
 		this.__runOnTick(this.renderer);
@@ -110,19 +114,26 @@ class Runtime {
 	 * @param {Scene} scene The scene to load.
 	 */
 	loadScene(scene) {
+		if (!this.running)
+			throw new Error(
+				`A scene loading attempt was made, but the Runtime's "start" method has not yet been called.`
+			);
+
 		if (!(scene instanceof Scene))
 			throw new Error(`Provided scene is not a "Scene" object`);
 
-		const { label, layers } = scene;
+		const { label, layers, __onLoad } = scene;
 
-		this.scene = label;
+		this.scene = scene;
 
 		this.renderer.layerManager.loadLayers(layers);
+
+		__onLoad && __onLoad(this);
 	}
 
 	/**
 	 * Start the game loop.
-	 * @param {function} onInitialized A method to run when the runtime has been initialized.
+	 * @param {function} onInitialized An optional method to run when the runtime has been initialized.
 	 */
 	start(onInitialized) {
 		this.running = true;

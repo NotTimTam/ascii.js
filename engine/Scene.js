@@ -6,10 +6,13 @@ class Scene {
 	constructor(config) {
 		Scene.validateConfig(config);
 
-		const { label, layers } = config;
+		const { label, layers, onLoad, onTick } = config;
 
 		this.label = label;
 		this.layers = layers;
+
+		if (onLoad) this.__onLoad = onLoad;
+		if (onTick) this.__onTick = onTick;
 	}
 
 	/**
@@ -52,6 +55,16 @@ class Scene {
 					);
 			}
 		}
+
+		if (config.onLoad && typeof config.onLoad !== "function")
+			throw new Error(
+				`"onLoad" method provided to scene config is not of type "function".`
+			);
+
+		if (config.onTick && typeof config.onTick !== "function")
+			throw new Error(
+				`"onTick" method provided to scene config is not of type "function".`
+			);
 	}
 }
 
