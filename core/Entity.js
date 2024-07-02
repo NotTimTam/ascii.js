@@ -1,4 +1,4 @@
-import { Pixel } from "../engine/renderer.js";
+import { Pixel } from "../engine/Renderer.js";
 import GameObject from "../core/GameObject.js";
 
 class Entity extends GameObject {
@@ -13,7 +13,7 @@ class Entity extends GameObject {
 	}
 
 	get renderable() {
-		return new Pixel({value: "E", color: "green"});
+		return new Pixel({ value: "E", color: "green" });
 	}
 }
 

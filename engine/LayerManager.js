@@ -1,4 +1,4 @@
-import Renderer, { Frame, Pixel, PixelMesh } from "./renderer.js";
+import Renderer, { Frame, Pixel, PixelMesh } from "./Renderer.js";
 import Core from "../core/Core.js";
 import { aabb } from "../util/math.js";
 import Text from "../extensions/Text.js";

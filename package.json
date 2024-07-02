@@ -1,0 +1,25 @@
+{
+  "name": "ascii.js",
+  "version": "1.0.0",
+  "description": "A text-based 2d-canvas-rendered game engine.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NotTimTam/ascii.js.git"
+  },
+  "keywords": [
+    "game",
+    "engine",
+    "ascii",
+    "text"
+  ],
+  "author": "NotTimTam",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/NotTimTam/ascii.js/issues"
+  },
+  "homepage": "https://github.com/NotTimTam/ascii.js#readme"
+}

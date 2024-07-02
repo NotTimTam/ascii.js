@@ -1,6 +1,6 @@
 import InputManager from "./InputManager.js";
 import Noise from "./Noise.js";
-import Renderer from "./renderer.js";
+import Renderer from "./Renderer.js";
 
 class Runtime {
 	/**

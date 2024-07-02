@@ -1,4 +1,4 @@
-import { Pixel, PixelMesh } from "../engine/renderer.js";
+import { Pixel, PixelMesh } from "../engine/Renderer.js";
 import GameObject from "../core/GameObject.js";
 
 class Area extends GameObject {
