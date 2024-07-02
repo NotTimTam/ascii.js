@@ -13,7 +13,7 @@ class GameObject extends Core {
 	 * @param {number} x This entity's x-coordinate.
 	 * @param {number} y This entity's y-coordinate.
 	 */
-	constructor(runtime, x, y) {
+	constructor(runtime, x = 0, y = 0) {
 		super(runtime);
 
 		if (typeof x !== "number")

@@ -75,7 +75,7 @@ class Runtime {
 	 * @param  {...any} passthrough The data to pass through to that method.
 	 */
 	__runOnTick = (object, ...passthrough) =>
-		object.__onTick && object.__onTick(...passthrough);
+		object.__onTick && object.__onTick(this, ...passthrough);
 
 	/**
 	 * Code that runs when the project starts.
@@ -100,7 +100,7 @@ class Runtime {
 		this.__lastFrame = currentTime;
 
 		// Run scene logic.
-		this.__runOnTick(this.scene, this);
+		this.__runOnTick(this.scene);
 
 		// Run renderer.
 		this.__runOnTick(this.renderer);
