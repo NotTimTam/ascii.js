@@ -1,8 +1,8 @@
-import Runtime from "./src/engine/runtime.js";
-import Player from "./src/game/Player.js";
-import GrassPatch from "./src/game/GrassPatch.js";
-import Room from "./src/game/Room.js";
-import Menu from "./src/extensions/Menu.js";
+import Runtime from "../src/engine/runtime.js";
+import Player from "./Player.js";
+import GrassPatch from "./GrassPatch.js";
+import Room from "./Room.js";
+import Menu from "../src/extensions/Menu.js";
 
 window.runtime = new Runtime({
 	renderer: {
