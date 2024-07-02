@@ -176,6 +176,28 @@ class Renderer {
 					)}`
 				);
 		}
+
+		if (!config.canvas)
+			throw new Error(
+				`No "canvas" value provided to Renderer configuration.`
+			);
+
+		if (typeof config.canvas === "string") {
+			const canvas = document.querySelector(config.canvas);
+
+			if (!canvas)
+				throw new Error(
+					`No canvas element found in DOM with query selector "${config.canvas}"`
+				);
+		} else if (config.canvas instanceof Element) {
+			if (config.canvas.tagName.toLowerCase() !== "canvas")
+				throw new Error(
+					`Renderer config provided HTML element for "canvas" field, but the element is not a canvas.`
+				);
+		} else
+			throw new Error(
+				`Invalid "canvas" configuration provided to Renderer config. Must be a canvas element or query selector string that points to a canvas.`
+			);
 	}
 
 	/**
@@ -184,17 +206,45 @@ class Renderer {
 	__intializeDisplay() {
 		this.drawing = false;
 		this.hasDrawn = false;
-		this.element = document.body.querySelector("canvas.display");
 
-		if (!this.element)
-			throw new Error(
-				"No 'canvas.display' rendering element present in DOM."
-			);
+		const { fontSize, canvas } = this.config;
+
+		// Load in the renderer's canvas.
+		if (typeof canvas === "string")
+			this.element = document.querySelector(canvas);
+		else if (
+			canvas instanceof Element &&
+			canvas.tagName.toLowerCase() === "canvas"
+		)
+			this.element = canvas;
+
+		document.body.style = `
+			width: 100vw;
+			height: 100vh;
+			overflow: hidden;
+			background-color: black;
+			padding: 0;
+			margin: 0;
+			box-sizing: border-box;
+		`;
+
+		this.element.style = `
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translateX(-50%) translateY(-50%);
+
+			box-sizing: border-box;
+			padding: 0;
+			margin: 0;
+
+			width: 100%;
+			height: 100%;
+		`;
 
 		this.ctx = this.element.getContext("2d");
 
 		const { ctx } = this;
-		const { fontSize } = this.config;
 
 		ctx.canvas.width = window.innerWidth;
 		ctx.canvas.height = window.innerHeight;
