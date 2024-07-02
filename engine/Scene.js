@@ -54,6 +54,22 @@ class Scene {
 						`Invalid parallax data provided to layer configuration. Required format: [<x>, <y>]`
 					);
 			}
+
+			if (layer.gameObjects) {
+				if (!(layer.gameObjects instanceof Array))
+					throw new Error(
+						`Invalid "gameObjects" data provided to layer configuration. Required format: [GameObject, () => {}]`
+					);
+
+				for (const gameObject of layer.gameObjects)
+					if (
+						typeof gameObject !== "function" &&
+						typeof gameObject !== "object"
+					)
+						throw new Error(
+							`GameObject array must contain constructed GameObject instances/extensions, or callback functions that return a constructed GameObject instance.`
+						);
+			}
 		}
 
 		if (config.onLoad && typeof config.onLoad !== "function")

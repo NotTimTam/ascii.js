@@ -1,7 +1,7 @@
 import Renderer, { Frame, Pixel, PixelMesh } from "./Renderer.js";
 import Core from "../core/Core.js";
 import { aabb } from "../util/math.js";
-import Text from "../extensions/Text.js";
+import GameObject from "../core/GameObject.js";
 
 export class Layer extends Core {
 	/**
@@ -14,18 +14,38 @@ export class Layer extends Core {
 	constructor(layerManager, config) {
 		super(layerManager.runtime);
 
-		const { label, parallax = [1, 1] } = config;
+		const { label, parallax = [1, 1], gameObjects } = config;
 
 		this.layerManager = layerManager;
 		this.label = label;
 
 		this.layerManager.layers.push(this);
 
-		this.gameObjects = [];
+		if (gameObjects) this.__populateGameObjects(gameObjects);
+		else this.gameObjects = [];
 
 		this.paused = false;
 
 		this.parallax = parallax;
+	}
+
+	/**
+	 * Converts the config array of gameObjects into active `GameObject`s.
+	 * @param {Array<Function|GameObject>} gameObjects The array to populate.
+	 * @returns {Array<GameObject>} The new array of `GameObject`s.
+	 */
+	__populateGameObjects(gameObjects) {
+		this.gameObjects = gameObjects
+			.map((gameObject) => {
+				if (typeof gameObject === "function")
+					gameObject = gameObject(this.runtime);
+
+				return gameObject;
+			})
+			.filter((gameObject) => gameObject);
+
+		for (const gameObject of this.gameObjects)
+			gameObject.layer = this.label; // Put game object on this layer.
 	}
 
 	/**
@@ -133,6 +153,14 @@ class LayerManager {
 
 		this.layers = [];
 	}
+
+	/**
+	 * Get a layer by its label.
+	 * @param {string} label The label of the layer to get.
+	 * @returns {Layer} A layer with the label provided. Or `undefined` if no layer was found.
+	 */
+	getLayerByLabel = (label) =>
+		this.layers.find((layer) => layer.label === label);
 
 	/**
 	 * Check for content at a location.
