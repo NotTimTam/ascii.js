@@ -108,6 +108,9 @@ class Renderer {
 
 		if (!this.config)
 			throw new Error("No config object provided to renderer.");
+
+		this.layerManager = new LayerManager(this);
+		this.camera = new Camera(this);
 	}
 
 	/**
@@ -161,11 +164,6 @@ class Renderer {
 					)}`
 				);
 		}
-
-		if (!config.layerManager)
-			throw new Error(
-				"No layerManager configuration provided to Renderer config."
-			);
 
 		if (config.renderMode) {
 			const renderModes = ["stacked", "merged"];
@@ -433,13 +431,6 @@ class Renderer {
 	 * Code that runs when the project starts.
 	 */
 	__onStartup() {
-		const { runtime } = this;
-
-		this.layerManager = new LayerManager(this);
-		runtime.__runOnStartup(this.layerManager);
-
-		this.camera = new Camera(this);
-
 		this.__intializeDisplay();
 		this.__rescaleDisplay();
 

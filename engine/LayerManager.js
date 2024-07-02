@@ -130,28 +130,8 @@ class LayerManager {
 	constructor(renderer) {
 		this.renderer = renderer;
 		this.runtime = renderer.runtime;
-		this.config = this.renderer.config && this.renderer.config.layerManager;
-
-		LayerManager.validateConfig(this.config);
 
 		this.layers = [];
-	}
-
-	/**
-	 * Validates a renderer configuration file and throws an error if it is invalid.
-	 * @param {*} config The config object to validate.
-	 */
-	static validateConfig(config) {
-		if (!config.layers || config.layers.length === 0)
-			throw new Error(
-				"No 'layers' configuration provided to LayerManager config."
-			);
-
-		for (const { label } of config.layers)
-			if (typeof label !== "string")
-				throw new Error(
-					`Provided layer name <${layerName}> is not of type 'string'.`
-				);
 	}
 
 	/**
@@ -219,8 +199,12 @@ class LayerManager {
 		return false;
 	}
 
-	__onStartup() {
-		const { layers } = this.config;
+	/**
+	 * Load layers into the layer manager.
+	 * @param {Array<*>} layers The layer creation array.
+	 */
+	loadLayers(layers) {
+		this.layers = [];
 
 		if (!layers.includes("system")) new Layer(this, { label: "system" });
 		for (const config of layers) new Layer(this, config);

@@ -1,6 +1,7 @@
 import InputManager from "./InputManager.js";
 import Noise from "./Noise.js";
 import Renderer from "./Renderer.js";
+import Scene from "./Scene.js";
 
 class Runtime {
 	/**
@@ -12,7 +13,8 @@ class Runtime {
 
 		this.validateConfig(config);
 
-		this.noise = new Noise(Date.now());
+		this.noise = new Noise(config.seed || Date.now());
+
 		this.renderer = new Renderer(this);
 		this.inputManager = new InputManager(this);
 
@@ -27,6 +29,15 @@ class Runtime {
 	 * @param {*} config The config object to validate.
 	 */
 	validateConfig(config) {
+		if (
+			config.seed &&
+			typeof config.seed !== "number" &&
+			typeof config.seed !== "string"
+		)
+			throw new Error(
+				`Invalid random noise "seed" value provided to Runtime: "${config.seed}". String or number value required.`
+			);
+
 		if (!config.renderer)
 			throw new Error("No 'renderer' config provided to config object.");
 		Renderer.validateConfig(config.renderer);
@@ -92,6 +103,21 @@ class Runtime {
 
 		// Trigger next loop.
 		requestAnimationFrame((currentTime) => this.__onTick(currentTime));
+	}
+
+	/**
+	 * Load a scene into the runtime. This will replace all `GameObject` and `Layer` instances.
+	 * @param {Scene} scene The scene to load.
+	 */
+	loadScene(scene) {
+		if (!(scene instanceof Scene))
+			throw new Error(`Provided scene is not a "Scene" object`);
+
+		const { label, layers } = scene;
+
+		this.scene = label;
+
+		this.renderer.layerManager.loadLayers(layers);
 	}
 
 	/**
