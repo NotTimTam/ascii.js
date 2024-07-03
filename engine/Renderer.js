@@ -39,6 +39,20 @@ export class Pixel {
 	 * @returns {Pixel} the newly created `Pixel` object.
 	 */
 	static fromString = (string) => new Pixel({ value: string });
+
+	/**
+	 * Get the `Pixel`'s width.
+	 */
+	get width() {
+		return 1;
+	}
+
+	/**
+	 * Get the `Pixel`'s height.
+	 */
+	get height() {
+		return 1;
+	}
 }
 
 export class PixelMesh {

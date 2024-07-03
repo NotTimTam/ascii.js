@@ -9,14 +9,14 @@ export { default as __InputManager } from "./engine/InputManager.js";
 export { default as __Camera } from "./engine/Camera.js";
 export { default as Scene } from "./engine/Scene.js";
 
-export { default as Area } from "./core/Area.js";
 export { default as Core } from "./core/Core.js";
-export { default as Entity } from "./core/Entity.js";
 export { default as GameObject } from "./core/GameObject.js";
 
-export { default as Box } from "./extensions/Box.js";
-export { default as Menu } from "./extensions/Menu.js";
-export { default as Text } from "./extensions/Text.js";
+export { default as Area } from "./objects/Area.js";
+export { default as Entity } from "./objects/Entity.js";
+export { default as Box } from "./objects/Box.js";
+export { default as Menu } from "./objects/Menu.js";
+export { default as Text } from "./objects/Text.js";
 
 export { default as __Noise } from "./engine/Noise.js";
 

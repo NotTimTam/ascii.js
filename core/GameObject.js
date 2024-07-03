@@ -32,6 +32,26 @@ class GameObject extends Core {
 	}
 
 	/**
+	 * Get whether the game object is on-screen.
+	 */
+	get isOnScreen() {
+		const {
+			runtime: {
+				renderer: { camera },
+			},
+			x,
+			y,
+		} = this;
+
+		if (!this.renderable) return false;
+
+		const { width, height } = this.renderable;
+		const [pX, pY] = this.layer.parallax;
+
+		return camera.isOnScreen(x, y, width, height, pX, pY);
+	}
+
+	/**
 	 * Get the `GameObject`'s visibility status.
 	 */
 	get visible() {
