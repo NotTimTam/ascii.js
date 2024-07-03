@@ -18,7 +18,6 @@ export { default as Entity } from "./objects/Entity.js";
 export { default as Box } from "./objects/Box.js";
 export { default as Menu } from "./objects/Menu.js";
 export { default as Text } from "./objects/Text.js";
-export { default as Particles } from "./objects/Particles.js";
 
 export { default as __Noise } from "./engine/Noise.js";
 

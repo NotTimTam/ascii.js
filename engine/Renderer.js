@@ -70,7 +70,7 @@ export class PixelMesh {
 	get width() {
 		let length = -1;
 
-		for (const row of this.data)
+		for (const row of this.data.filter((row) => row))
 			if (row.length > length) length = row.length;
 
 		return length === -1 ? undefined : length;

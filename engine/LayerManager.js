@@ -99,7 +99,7 @@ export class Layer extends Core {
 				) {
 					const row = renderable.data[pixelY];
 
-					if (row.length === 0 || !row) continue;
+					if (!row || row.length === 0) continue;
 
 					for (let pixelX = 0; pixelX < row.length; pixelX++) {
 						const pixel = row[pixelX];
