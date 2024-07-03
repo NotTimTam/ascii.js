@@ -138,7 +138,10 @@ export class Layer extends Core {
 
 		if (paused || runtime.paused) return; // Don't run this layer's code if it or the runtime is paused.
 
-		for (const gameObject of gameObjects) runtime.__runOnTick(gameObject);
+		for (const gameObject of gameObjects) {
+			gameObject.__behave();
+			runtime.__runOnTick(gameObject);
+		}
 	}
 }
 

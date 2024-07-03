@@ -11,6 +11,7 @@ export { default as Scene } from "./engine/Scene.js";
 
 export { default as Core } from "./core/Core.js";
 export { default as GameObject } from "./core/GameObject.js";
+export { default as Behavior } from "./core/Behavior.js";
 
 export { default as Area } from "./objects/Area.js";
 export { default as Entity } from "./objects/Entity.js";
@@ -19,6 +20,8 @@ export { default as Menu } from "./objects/Menu.js";
 export { default as Text } from "./objects/Text.js";
 
 export { default as __Noise } from "./engine/Noise.js";
+
+export { default as ScrollTo } from "./behaviors/ScrollTo.js";
 
 export * as dataUtils from "./util/data.js";
 export * as AdvMath from "./util/math.js";

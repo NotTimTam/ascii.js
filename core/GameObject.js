@@ -29,6 +29,8 @@ class GameObject extends Core {
 		this.__rawX = x;
 		this.__rawY = y;
 		this.__rawVisible = true;
+
+		this.behaviors = [];
 	}
 
 	/**
@@ -177,6 +179,16 @@ class GameObject extends Core {
 
 		if ((layer && layer.paused) || runtime.paused) return true;
 		else return false;
+	}
+
+	/**
+	 * Run the events of each object behavior.
+	 *
+	 * Runs before this `GameObject`'s `__onTick` method.
+	 */
+	__behave() {
+		for (const behavior of this.behaviors)
+			behavior.__onTick && behavior.__onTick();
 	}
 
 	/**
