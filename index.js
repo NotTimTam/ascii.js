@@ -22,6 +22,12 @@ export { default as Text } from "./objects/Text.js";
 export { default as __Noise } from "./engine/Noise.js";
 
 export { default as ScrollTo } from "./behaviors/ScrollTo.js";
+export { default as TopDownMovement } from "./behaviors/TopDownMovement.js";
+export {
+	default as Animate,
+	Animation,
+	AnimationFrame,
+} from "./behaviors/Animate.js";
 
 export * as dataUtils from "./util/data.js";
 export * as AdvMath from "./util/math.js";

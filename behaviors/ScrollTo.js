@@ -2,7 +2,7 @@ import Behavior from "../core/Behavior.js";
 
 class ScrollTo extends Behavior {
 	/**
-	 * A core object that modifies the behavior of a GameObject.
+	 * Scroll the camera to a `GameObject`.
 	 * @param {Runtime} runtime The main runtime object.
 	 * @param {GameObject} gameObject The game object to append this behavior to.
 	 * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
@@ -13,11 +13,7 @@ class ScrollTo extends Behavior {
 
 	__onTick() {
 		const {
-			gameObject: {
-				x,
-				y,
-				renderable: { width, height },
-			},
+			gameObject: { x, y, width, height },
 			runtime: {
 				renderer: { camera, width: screenWidth, height: screenHeight },
 			},

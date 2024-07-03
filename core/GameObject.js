@@ -93,6 +93,20 @@ class GameObject extends Core {
 	}
 
 	/**
+	 * Get the width of this `GameObject`'s renderable.
+	 */
+	get width() {
+		return (this.renderable && this.renderable.width) || 0;
+	}
+
+	/**
+	 * Get the height of this `GameObject`'s renderable.
+	 */
+	get height() {
+		return (this.renderable && this.renderable.height) || 0;
+	}
+
+	/**
 	 * Set the game object's y-coordinate.
 	 */
 	set y(n) {
@@ -187,8 +201,9 @@ class GameObject extends Core {
 	 * Runs before this `GameObject`'s `__onTick` method.
 	 */
 	__behave() {
-		for (const behavior of this.behaviors)
-			behavior.enabled && behavior.__onTick && behavior.__onTick();
+		if (!this.paused)
+			for (const behavior of this.behaviors)
+				behavior.enabled && behavior.__onTick && behavior.__onTick();
 	}
 
 	/**
