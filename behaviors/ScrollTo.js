@@ -5,9 +5,10 @@ class ScrollTo extends Behavior {
 	 * A core object that modifies the behavior of a GameObject.
 	 * @param {Runtime} runtime The main runtime object.
 	 * @param {GameObject} gameObject The game object to append this behavior to.
+	 * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
 	 */
-	constructor(runtime, gameObject) {
-		super(runtime, gameObject);
+	constructor(runtime, gameObject, enabledByDefault = true) {
+		super(runtime, gameObject, enabledByDefault);
 	}
 
 	__onTick() {

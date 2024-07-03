@@ -188,7 +188,7 @@ class GameObject extends Core {
 	 */
 	__behave() {
 		for (const behavior of this.behaviors)
-			behavior.__onTick && behavior.__onTick();
+			behavior.enabled && behavior.__onTick && behavior.__onTick();
 	}
 
 	/**
