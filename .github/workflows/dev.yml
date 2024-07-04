@@ -44,3 +44,4 @@ jobs:
                   tag: v${{ env.VERSION }}-canary
                   artifacts: "bundle.js"
                   commit: ${{ github.sha }}
+                  token: ${{ secrets.GITHUB_TOKEN }}
