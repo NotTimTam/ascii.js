@@ -31,6 +31,15 @@ jobs:
                   VERSION=$(echo $VERSION | sed -e 's/^"//' -e 's/"$//')
                   echo "VERSION=$VERSION" >> $GITHUB_ENV
 
+            - name: Move bundle.js to cdn branch
+              run: |
+                  git checkout --orphan cdn
+                  git rm -rf .
+                  git add bundle.js
+                  git commit -m "ascii.js v${{ env.VERSION }}"
+                  git branch -M cdn
+                  git push -u origin cdn
+
             - name: Upload bundled file as artifact
               uses: actions/upload-artifact@v2
               with:
