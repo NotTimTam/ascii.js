@@ -5,7 +5,7 @@ export class AnimationFrame {
 	/**
 	 * An animation frame. The `renderable` value of this Frame should return a `Pixel` or `PixelMesh` that will determine what is displayed on this frame.
 	 * @param {Pixel|PixelMesh} renderable The renderable item to display for this frame.
-	 * @param {number} duration The duration (in seconds) of this frame.
+	 * @param {number} duration The duration (in frames) of this frame. Example: a value of `2` will make this frame last twice as long as the rest.
 	 */
 	constructor(renderable = Pixel.fromString("#"), duration) {
 		if (
@@ -239,7 +239,11 @@ class Animate extends Behavior {
 			runtime: { dt },
 		} = this;
 
-		const effectiveDuration = this.currentAnimationFrame.duration || 1;
+		const currentFrame = this.currentAnimationFrame;
+		const effectiveDuration =
+			currentFrame.duration && typeof currentFrame.duration === "number"
+				? currentFrame.duration
+				: 1;
 
 		this.__rawCurrentAnimationFrameIndex +=
 			(currentAnimation.speed * dt) / effectiveDuration;
