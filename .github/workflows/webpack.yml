@@ -18,5 +18,6 @@ jobs:
 
     - name: Build Production
       run: |
+        npm install webpack
         npm install
         npx webpack
