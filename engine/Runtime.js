@@ -1,3 +1,4 @@
+import AudioManager from "./AudioManager.js";
 import InputManager from "./InputManager.js";
 import Noise from "./Noise.js";
 import Renderer from "./Renderer.js";
@@ -17,6 +18,7 @@ class Runtime {
 
 		this.renderer = new Renderer(this);
 		this.inputManager = new InputManager(this);
+		this.audioManager = new AudioManager(this);
 
 		this.running = false;
 		this.initialized = false;

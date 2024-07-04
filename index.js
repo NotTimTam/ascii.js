@@ -6,6 +6,10 @@ export {
 } from "./engine/Renderer.js";
 export { default as __LayerManager, Layer } from "./engine/LayerManager.js";
 export { default as __InputManager } from "./engine/InputManager.js";
+export {
+	default as __AudioManager,
+	Sound as __Sound,
+} from "./engine/AudioManager.js";
 export { default as __Camera } from "./engine/Camera.js";
 export { default as Scene } from "./engine/Scene.js";
 
