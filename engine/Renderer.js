@@ -11,6 +11,7 @@ export class Pixel {
 	 * @param {string|number} config.fontWeight The CSS font weight value of this pixel.
 	 * @param {string} config.backgroundColor An optional background color for the pixel.
 	 * @param {boolean} config.solid Whether or not this pixel is solid.
+	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
 	 */
 	constructor(config) {
 		const {
@@ -19,6 +20,7 @@ export class Pixel {
 			fontWeight = "normal",
 			backgroundColor,
 			solid = false,
+			origin,
 		} = config;
 
 		if (typeof value !== "string" || value.length !== 1)
@@ -26,11 +28,17 @@ export class Pixel {
 				"The value of this pixel can only be a 1-character long string."
 			);
 
+		if (origin && !(origin instanceof Array))
+			throw new Error(
+				'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
+			);
+
 		this.value = value;
 		this.color = color;
 		this.fontWeight = fontWeight;
 		this.backgroundColor = backgroundColor;
 		this.solid = solid;
+		this.origin = origin;
 	}
 
 	/**
@@ -58,10 +66,19 @@ export class Pixel {
 export class PixelMesh {
 	/**
 	 * A pixel mesh stores a 2-dimensional array of `Pixels`.
-	 * @param {Array<Pixel>} data The frame's 2-dimensional (array of row arrays of `Pixels`) (left-to-right, top-to-bottom) data array.
+	 * @param {Array<Pixel>} config.data The frame's 2-dimensional (array of row arrays of `Pixels`) (left-to-right, top-to-bottom) data array.
+	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
 	 */
-	constructor(data) {
+	constructor(config) {
+		const { data, origin } = config;
+
+		if (origin && !(origin instanceof Array))
+			throw new Error(
+				'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
+			);
+
 		this.data = data;
+		this.origin = origin;
 	}
 
 	/**

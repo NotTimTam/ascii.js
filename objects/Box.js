@@ -113,7 +113,7 @@ class Box extends GameObject {
 			data.push(row);
 		}
 
-		return new PixelMesh(data);
+		return new PixelMesh({  data });
 	}
 }
 

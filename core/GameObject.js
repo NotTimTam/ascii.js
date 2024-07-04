@@ -107,6 +107,13 @@ class GameObject extends Core {
 	}
 
 	/**
+	 * Get the origin of this `GameObject`'s renderable.
+	 */
+	get origin() {
+		return (this.renderable && this.renderable.origin) || [0, 0];
+	}
+
+	/**
 	 * Set the game object's y-coordinate.
 	 */
 	set y(n) {

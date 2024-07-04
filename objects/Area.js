@@ -18,14 +18,14 @@ class Area extends GameObject {
 	get renderable() {
 		const p = new Pixel({ value: "#", solid: this.solid });
 
-		return new PixelMesh([
+		return new PixelMesh({data: [
 			[p, p, p, p, p],
 			[p, p, p, p, p],
 			[p, p, p, p, p],
 			[p, p, p, p, p],
 			[p, p, p, p, p],
 			[p, p, p, p, p],
-		]);
+		]});
 	}
 }
 

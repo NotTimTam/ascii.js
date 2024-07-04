@@ -120,7 +120,7 @@ class Text extends GameObject {
 			}
 		}
 
-		return new PixelMesh(data);
+		return new PixelMesh({ data});
 	}
 }
 

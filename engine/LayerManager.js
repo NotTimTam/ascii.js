@@ -70,61 +70,78 @@ export class Layer extends Core {
 		for (const gameObject of this.gameObjects.filter(
 			({ visible }) => visible
 		)) {
-			const { renderable, x, y } = gameObject;
+			const { renderable } = gameObject;
+			let { x, y } = gameObject;
+
 			if (!renderable) continue;
-			else if (renderable instanceof Pixel) {
-				if (!camera.isOnScreen(x, y, 1, 1, pX, pY)) continue;
+			else {
+				if (renderable.origin) {
+					const [oX, oY] = renderable.origin;
 
-				const [xOS, yOS] = [x - adjustedCameraX, y - adjustedCameraY];
-				const index = renderer.coordinatesToIndex(xOS, yOS);
+					x -= oX;
+					y -= oY;
 
-				frameData[index] = renderable;
-			} else if (renderable instanceof PixelMesh) {
-				if (
-					!camera.isOnScreen(
-						x,
-						y,
-						renderable.width,
-						renderable.height,
-						pX,
-						pY
-					)
-				)
-					continue;
+					x = Math.round(x);
+					y = Math.round(y);
+				}
 
-				for (
-					let pixelY = 0;
-					pixelY < renderable.data.length;
-					pixelY++
-				) {
-					const row = renderable.data[pixelY];
+				if (renderable instanceof Pixel) {
+					if (!camera.isOnScreen(x, y, 1, 1, pX, pY)) continue;
 
-					if (!row || row.length === 0) continue;
+					const [xOS, yOS] = [
+						x - adjustedCameraX,
+						y - adjustedCameraY,
+					];
+					const index = renderer.coordinatesToIndex(xOS, yOS);
 
-					for (let pixelX = 0; pixelX < row.length; pixelX++) {
-						const pixel = row[pixelX];
-						if (
-							!pixel ||
-							!(pixel instanceof Pixel) ||
-							!camera.isOnScreen(
-								x + pixelX,
-								y + pixelY,
-								1,
-								1,
-								pX,
-								pY
-							)
+					frameData[index] = renderable;
+				} else if (renderable instanceof PixelMesh) {
+					if (
+						!camera.isOnScreen(
+							x,
+							y,
+							renderable.width,
+							renderable.height,
+							pX,
+							pY
 						)
-							continue;
+					)
+						continue;
 
-						const [xOS, yOS] = [
-							x + pixelX - adjustedCameraX,
-							y + pixelY - adjustedCameraY,
-						];
+					for (
+						let pixelY = 0;
+						pixelY < renderable.data.length;
+						pixelY++
+					) {
+						const row = renderable.data[pixelY];
 
-						const index = renderer.coordinatesToIndex(xOS, yOS);
+						if (!row || row.length === 0) continue;
 
-						frameData[index] = pixel;
+						for (let pixelX = 0; pixelX < row.length; pixelX++) {
+							const pixel = row[pixelX];
+							if (
+								!pixel ||
+								!(pixel instanceof Pixel) ||
+								!camera.isOnScreen(
+									x + pixelX,
+									y + pixelY,
+									1,
+									1,
+									pX,
+									pY
+								)
+							)
+								continue;
+
+							const [xOS, yOS] = [
+								x + pixelX - adjustedCameraX,
+								y + pixelY - adjustedCameraY,
+							];
+
+							const index = renderer.coordinatesToIndex(xOS, yOS);
+
+							frameData[index] = pixel;
+						}
 					}
 				}
 			}

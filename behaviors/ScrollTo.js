@@ -13,15 +13,21 @@ class ScrollTo extends Behavior {
 
 	__onTick() {
 		const {
-			gameObject: { x, y, width, height },
+			gameObject: {
+				x,
+				y,
+				width,
+				height,
+				origin: [oX, oY],
+			},
 			runtime: {
 				renderer: { camera, width: screenWidth, height: screenHeight },
 			},
 		} = this;
 
 		// Put the center of the screen over the center of the object.
-		camera.x = x + width / 2 - screenWidth / 2;
-		camera.y = y + height / 2 - screenHeight / 2;
+		camera.x = x - oX + width / 2 - screenWidth / 2;
+		camera.y = y - oY + height / 2 - screenHeight / 2;
 	}
 }
 
