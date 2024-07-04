@@ -93,27 +93,6 @@ class TopDownMovement extends Behavior {
 		}
 	}
 
-	// /**
-	//  * Check if it is clear to move to a position, and then move there.
-	//  * @param {number} x The x-coordinate to check.
-	//  * @param {number} y The y-coordinate to check.
-	//  */
-	// __tryToMoveToPosition(x, y) {
-	// 	const {
-	// 		gameObject,
-	// 		runtime: {
-	// 			renderer: { layerManager },
-	// 		},
-	// 	} = this;
-
-	// 	const solidAt = layerManager.solidAtPosition(x, y);
-
-	// 	if (!solidAt || solidAt.gameObject === gameObject) {
-	// 		gameObject.x = x;
-	// 		gameObject.y = y;
-	// 	}
-	// }
-
 	/**
 	 * Check if it is clear to move to a position, and then move there.
 	 * @param {number} x The x-coordinate to check.
