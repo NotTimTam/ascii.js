@@ -43,3 +43,4 @@ jobs:
                   name: ascii.js v${{ env.VERSION }}-canary
                   tag: v${{ env.VERSION }}-canary
                   artifacts: "bundle.js"
+                  commit: ${{ github.sha }}
