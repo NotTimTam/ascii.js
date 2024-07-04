@@ -17,19 +17,32 @@ jobs:
             - name: Set up Node.js
               uses: actions/setup-node@v2
               with:
-                  node-version: "14" # or any Node.js version you are using
+                  node-version: "20"
 
             - name: Install dependencies
-              run: npm install # Replace with yarn if using yarn
+              run: npm install
 
             - name: Build library
-              run: npm run build # Replace with your build command if different
+              run: npm run build
 
             - name: Bundle index.js and its imports
-              run: npm run bundle-index # Replace with your bundling script/command
+              run: npm run bundle-index
 
             - name: Upload bundled file as artifact
               uses: actions/upload-artifact@v2
               with:
                   name: bundled-library
-                  path: path/to/your/bundled/index.js # Adjust the path to your bundled index.js file
+                  path: dist/index.bundle.js
+
+            - name: Create GitHub Release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+              with:
+                  tag_name: ${{ github.ref }}
+                  release_name: Release ${{ github.ref }}
+                  draft: false
+                  prerelease: false
+                  files: |
+                      dist/index.bundle.js  # Add more files if needed
