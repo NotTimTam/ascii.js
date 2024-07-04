@@ -32,7 +32,11 @@ jobs:
                   echo "VERSION=$VERSION" >> $GITHUB_ENV
 
             - name: Move bundle.js to cdn branch
+              env:
+                  GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
               run: |
+                  git config --global user.email "github@bot.com"
+                  git config --global user.name "Build Bot"
                   git checkout --orphan cdn
                   git rm -rf .
                   git add bundle.js
