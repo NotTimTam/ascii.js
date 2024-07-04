@@ -3,6 +3,7 @@
 	"version": "1.0.0",
 	"description": "A text-based 2d-canvas-rendered game engine.",
 	"main": "index.js",
+  "type": "module",
 	"scripts": {
 		"build": "rollup -c",
 		"bundle-index": "rollup -c --format umd --file dist/bundle.js"
