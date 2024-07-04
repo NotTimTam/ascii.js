@@ -5,8 +5,7 @@
 	"main": "index.js",
 	"type": "module",
 	"scripts": {
-		"build": "rollup -config rollup.config.mjs",
-		"bundle-index": "rollup -c rollup.config.mjs --format umd --file dist/bundle.js"
+		"build": "rollup -c rollup.config.mjs"
 	},
 	"repository": {
 		"type": "git",

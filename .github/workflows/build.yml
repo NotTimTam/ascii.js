@@ -25,14 +25,11 @@ jobs:
             - name: Build library
               run: npm run build
 
-            - name: Bundle index.js and its imports
-              run: npm run bundle-index
-
             - name: Upload bundled file as artifact
               uses: actions/upload-artifact@v2
               with:
                   name: bundled-library
-                  path: dist/index.bundle.js
+                  path: ./bundle.js
 
             - name: Create GitHub Release
               id: create_release
@@ -45,4 +42,4 @@ jobs:
                   draft: false
                   prerelease: false
                   files: |
-                      dist/index.bundle.js
+                      ./bundle.js
