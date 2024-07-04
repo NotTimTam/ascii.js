@@ -6,9 +6,8 @@ export class AnimationFrame {
 	 * An animation frame. The `renderable` value of this Frame should return a `Pixel` or `PixelMesh` that will determine what is displayed on this frame.
 	 * @param {Pixel|PixelMesh} renderable The renderable item to display for this frame.
 	 * @param {number} duration The duration (in seconds) of this frame.
-	 * @param {string} tag This frame's unique tag.
 	 */
-	constructor(renderable = Pixel.fromString("#"), duration, tag) {
+	constructor(renderable = Pixel.fromString("#"), duration) {
 		if (
 			!renderable ||
 			(!(renderable instanceof Pixel) &&
@@ -23,13 +22,7 @@ export class AnimationFrame {
 				`Invalid duration provided to Frame: ${duration}. Must be of type "number".`
 			);
 
-		if (tag && typeof tag !== "string")
-			throw new Error(
-				`Invalid tag provided to Frame: ${tag}. Must be of type "string".`
-			);
-
 		this.duration = duration;
-		this.tag = tag;
 		this.renderable = renderable;
 	}
 }
@@ -246,7 +239,12 @@ class Animate extends Behavior {
 			runtime: { dt },
 		} = this;
 
-		this.__rawCurrentAnimationFrameIndex += currentAnimation.speed * dt;
+		const effectiveDuration = this.currentAnimationFrame.duration || 1;
+
+		this.__rawCurrentAnimationFrameIndex +=
+			(currentAnimation.speed * dt) / effectiveDuration;
+
+		// this.__rawCurrentAnimationFrameIndex += currentAnimation.speed * dt;
 
 		// When the animation reaches the last frame.
 		if (this.__rawCurrentAnimationFrameIndex >= animationFrameCount) {
