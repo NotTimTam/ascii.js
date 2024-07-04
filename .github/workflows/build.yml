@@ -45,4 +45,4 @@ jobs:
                   draft: false
                   prerelease: false
                   files: |
-                      dist/index.bundle.js  # Add more files if needed
+                      dist/index.bundle.js
