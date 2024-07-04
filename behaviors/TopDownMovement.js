@@ -40,6 +40,8 @@ class TopDownMovement extends Behavior {
 	 * Attempt to move `GameObject` up.
 	 */
 	simulateControlUp = () => {
+		if (this.gameObject.paused) return;
+
 		const {
 			gameObject: { x, y },
 		} = this;
@@ -51,6 +53,8 @@ class TopDownMovement extends Behavior {
 	 * Attempt to move `GameObject` down.
 	 */
 	simulateControlDown = () => {
+		if (this.gameObject.paused) return;
+
 		const {
 			gameObject: { x, y },
 		} = this;
@@ -62,6 +66,8 @@ class TopDownMovement extends Behavior {
 	 * Attempt to move `GameObject` left.
 	 */
 	simulateControlLeft = () => {
+		if (this.gameObject.paused) return;
+
 		const {
 			gameObject: { x, y },
 		} = this;
@@ -73,6 +79,8 @@ class TopDownMovement extends Behavior {
 	 * Attempt to move `GameObject` right.
 	 */
 	simulateControlRight = () => {
+		if (this.gameObject.paused) return;
+
 		const {
 			gameObject: { x, y },
 		} = this;
@@ -81,6 +89,8 @@ class TopDownMovement extends Behavior {
 	};
 
 	handleInput(event) {
+		if (this.gameObject.paused) return;
+
 		if (event.type === "keydown") {
 			const {
 				keys: { up, down, left, right },
@@ -99,6 +109,8 @@ class TopDownMovement extends Behavior {
 	 * @param {number} y The y-coordinate to check.
 	 */
 	__tryToMoveToPosition(x, y) {
+		if (this.gameObject.paused) return;
+
 		const {
 			gameObject,
 			gameObject: {

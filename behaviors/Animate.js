@@ -231,7 +231,7 @@ class Animate extends Behavior {
 	}
 
 	__onTick() {
-		if (!this.playing) return;
+		if (this.gameObject.paused || !this.playing) return;
 
 		const {
 			currentAnimation,
