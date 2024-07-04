@@ -6,7 +6,7 @@
 	"type": "module",
 	"scripts": {
 		"build": "rollup -config rollup.config.mjs",
-		"bundle-index": "rollup -c --format umd --file dist/bundle.js"
+		"bundle-index": "rollup -c rollup.config.mjs --format umd --file dist/bundle.js"
 	},
 	"repository": {
 		"type": "git",
