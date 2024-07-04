@@ -1,0 +1,53 @@
+name: Main Branch Workflow
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: "14"
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Build library
+              run: npm run build
+
+            - name: Read version from package.json using npm
+              id: version
+              run: |
+                  VERSION=$(npm pkg get version)
+                  # Remove leading and trailing quotes from version
+                  VERSION=$(echo $VERSION | sed -e 's/^"//' -e 's/"$//')
+                  echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+            - name: Upload bundled file as artifact
+              uses: actions/upload-artifact@v2
+              with:
+                  name: bundled-library
+                  path: dist/bundle.js
+
+            - name: Create GitHub Release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+              with:
+                  tag_name: ${{ env.VERSION }}
+                  release_name: Release ${{ env.VERSION }}
+                  body: |
+                      Release for version ${{ env.VERSION }}
+                      Uploaded artifact: [bundle.js](https://github.com/username/repo/raw/main/dist/bundle.js)
+                  draft: false
+                  prerelease: false
