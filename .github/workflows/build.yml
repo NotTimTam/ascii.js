@@ -1,0 +1,35 @@
+name: Build Library
+
+on:
+    push:
+        branches:
+            - main
+            - dev
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: "14" # or any Node.js version you are using
+
+            - name: Install dependencies
+              run: npm install # Replace with yarn if using yarn
+
+            - name: Build library
+              run: npm run build # Replace with your build command if different
+
+            - name: Bundle index.js and its imports
+              run: npm run bundle-index # Replace with your bundling script/command
+
+            - name: Upload bundled file as artifact
+              uses: actions/upload-artifact@v2
+              with:
+                  name: bundled-library
+                  path: path/to/your/bundled/index.js # Adjust the path to your bundled index.js file
