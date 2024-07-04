@@ -32,18 +32,14 @@ jobs:
                   echo "VERSION=$VERSION" >> $GITHUB_ENV
 
             - name: Upload bundled file as artifact
-              uses: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v4
               with:
                   name: bundled-library
                   path: bundle.js
 
             - name: Create GitHub Release
-              id: create_release
-              uses: actions/create-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+              uses: ncipollo/release-action@v1
               with:
-                  tag_name: v${{ env.VERSION }}-canary
-                  release_name: Release v${{ env.VERSION }}-canary
-                  draft: false
-                  prerelease: false
+                  name: ascii.js v${{ env.VERSION }}-canary
+                  tag: v${{ env.VERSION }}-canary
+                  artifacts: "bundle.js"

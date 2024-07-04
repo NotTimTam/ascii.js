@@ -38,12 +38,8 @@ jobs:
                   path: bundle.js
 
             - name: Create GitHub Release
-              id: create_release
-              uses: actions/create-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+              uses: ncipollo/release-action@v1
               with:
-                  tag_name: v${{ env.VERSION }}
-                  release_name: Release v${{ env.VERSION }}
-                  draft: false
-                  prerelease: false
+                  name: ascii.js v${{ env.VERSION }}
+                  tag: v${{ env.VERSION }}
+                  artifacts: "bundle.js"
