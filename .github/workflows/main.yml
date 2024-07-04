@@ -4,7 +4,6 @@ on:
     push:
         branches:
             - main
-            - dev
 
 jobs:
     build:
@@ -25,24 +24,24 @@ jobs:
             - name: Build library
               run: npm run build
 
-            - name: Bundle index.js and its imports
-              run: npm run bundle-index
+            - name: Read version from package.json using npm
+              id: version
+              run: |
+                  VERSION=$(npm pkg get version)
+                  VERSION=$(echo $VERSION | sed -e 's/^"//' -e 's/"$//')
+                  echo "VERSION=$VERSION" >> $GITHUB_ENV
 
             - name: Upload bundled file as artifact
               uses: actions/upload-artifact@v2
               with:
                   name: bundled-library
-                  path: dist/index.bundle.js
+                  path: bundle.js
 
             - name: Create GitHub Release
-              id: create_release
-              uses: actions/create-release@v1
-              env:
-                  GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+              uses: ncipollo/release-action@v1.14.0
               with:
-                  tag_name: ${{ github.ref }}
-                  release_name: Release ${{ github.ref }}
-                  draft: false
-                  prerelease: false
-                  files: |
-                      dist/index.bundle.js
+                  name: ascii.js v${{ env.VERSION }}
+                  tag: v${{ env.VERSION }}
+                  artifacts: "bundle.js"
+                  commit: ${{ github.sha }}
+                  token: ${{ secrets.REPO_TOKEN }}
