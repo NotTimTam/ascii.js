@@ -93,6 +93,27 @@ class TopDownMovement extends Behavior {
 		}
 	}
 
+	// /**
+	//  * Check if it is clear to move to a position, and then move there.
+	//  * @param {number} x The x-coordinate to check.
+	//  * @param {number} y The y-coordinate to check.
+	//  */
+	// __tryToMoveToPosition(x, y) {
+	// 	const {
+	// 		gameObject,
+	// 		runtime: {
+	// 			renderer: { layerManager },
+	// 		},
+	// 	} = this;
+
+	// 	const solidAt = layerManager.solidAtPosition(x, y);
+
+	// 	if (!solidAt || solidAt.gameObject === gameObject) {
+	// 		gameObject.x = x;
+	// 		gameObject.y = y;
+	// 	}
+	// }
+
 	/**
 	 * Check if it is clear to move to a position, and then move there.
 	 * @param {number} x The x-coordinate to check.
@@ -101,14 +122,66 @@ class TopDownMovement extends Behavior {
 	__tryToMoveToPosition(x, y) {
 		const {
 			gameObject,
+			gameObject: {
+				width,
+				height,
+				origin: [oX, oY],
+			},
 			runtime: {
 				renderer: { layerManager },
 			},
 		} = this;
 
-		const solidAt = layerManager.solidAtPosition(x, y);
+		if (width <= 1 && height <= 1) {
+			const solidAt = layerManager.solidAtPosition(x, y);
 
-		if (!solidAt || solidAt.gameObject === gameObject) {
+			if (!solidAt || solidAt.gameObject === gameObject) {
+				gameObject.x = x;
+				gameObject.y = y;
+			}
+
+			return;
+		}
+
+		let canMove = true;
+
+		// Determine direction of movement
+		const moveRight = x > gameObject.x;
+		const moveLeft = x < gameObject.x;
+		const moveDown = y > gameObject.y;
+		const moveUp = y < gameObject.y;
+
+		// Check collision along the direction of movement
+		if (moveRight || moveLeft) {
+			const startY = gameObject.y - oY;
+			const endY = startY + height - 1;
+
+			for (let posY = startY; posY <= endY; posY++) {
+				const posX = moveRight ? x + width - 1 - oX : x - oX;
+				const solidAt = layerManager.solidAtPosition(posX, posY);
+
+				if (solidAt && solidAt.gameObject !== gameObject) {
+					canMove = false;
+					break;
+				}
+			}
+		} else if (moveDown || moveUp) {
+			const startX = gameObject.x - oX;
+			const endX = startX + width - 1;
+
+			for (let posX = startX; posX <= endX; posX++) {
+				const posY = moveDown ? y + height - 1 - oY : y - oY;
+				const solidAt = layerManager.solidAtPosition(posX, posY);
+
+				if (solidAt && solidAt.gameObject !== gameObject) {
+					canMove = false;
+					break;
+				}
+			}
+		}
+
+		// If all pixels are clear, move the gameObject
+		if (canMove) {
 			gameObject.x = x;
 			gameObject.y = y;
 		}
