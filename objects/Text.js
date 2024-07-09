@@ -1,5 +1,5 @@
 import GameObject from "../core/GameObject.js";
-import { Pixel, PixelMesh } from "../engine/Renderer.js";
+import Pixel, { PixelMesh } from "../core/Pixel.js";
 
 class Text extends GameObject {
 	/**
@@ -31,11 +31,25 @@ class Text extends GameObject {
 				`Provided text value "${value}" is not of type "string".`
 			);
 
-		this.value = value;
+		this.__rawValue = value;
 		this.wrap = wrap;
 		this.color = color;
 		this.backgroundColor = backgroundColor;
 		this.fontWeight = fontWeight;
+	}
+
+	/**
+	 * Get the value of the text object.
+	 */
+	get value() {
+		return String(this.__rawValue);
+	}
+
+	/**
+	 * Set the value of the text object.
+	 */
+	set value(value) {
+		this.__rawValue = value;
 	}
 
 	get renderable() {
@@ -120,7 +134,7 @@ class Text extends GameObject {
 			}
 		}
 
-		return new PixelMesh({ data});
+		return new PixelMesh({ data });
 	}
 }
 

@@ -1,9 +1,4 @@
-export {
-	default as __Renderer,
-	Pixel,
-	PixelMesh,
-	Frame,
-} from "./engine/Renderer.js";
+export { default as __CanvasRenderer } from "./engine/CanvasRenderer.js";
 export { default as __LayerManager, Layer } from "./engine/LayerManager.js";
 export { default as __InputManager } from "./engine/InputManager.js";
 export {
@@ -12,10 +7,12 @@ export {
 } from "./engine/AudioManager.js";
 export { default as __Camera } from "./engine/Camera.js";
 export { default as Scene } from "./engine/Scene.js";
+export { default as Frame } from "./engine/Frame.js";
 
 export { default as Core } from "./core/Core.js";
 export { default as GameObject } from "./core/GameObject.js";
 export { default as Behavior } from "./core/Behavior.js";
+export { default as Pixel, PixelMesh } from "./core/Pixel.js";
 
 export { default as Area } from "./objects/Area.js";
 export { default as Entity } from "./objects/Entity.js";

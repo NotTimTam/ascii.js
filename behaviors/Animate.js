@@ -1,5 +1,5 @@
 import Behavior from "../core/Behavior.js";
-import { Pixel, PixelMesh } from "../engine/Renderer.js";
+import Pixel, { PixelMesh } from "../core/Pixel.js";
 
 export class AnimationFrame {
 	/**

@@ -1,5 +1,5 @@
 import GameObject from "../core/GameObject.js";
-import { Pixel, PixelMesh } from "../engine/Renderer.js";
+import Pixel, { PixelMesh } from "../core/Pixel.js";
 import { displayArray } from "../util/data.js";
 
 // ┌─┬┐  ╔═╦╗  ╓─╥╖  ╒═╤╕
@@ -113,7 +113,7 @@ class Box extends GameObject {
 			data.push(row);
 		}
 
-		return new PixelMesh({  data });
+		return new PixelMesh({ data });
 	}
 }
 

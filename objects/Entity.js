@@ -1,4 +1,4 @@
-import { Pixel } from "../engine/Renderer.js";
+import Pixel from "../core/Pixel.js";
 import GameObject from "../core/GameObject.js";
 
 class Entity extends GameObject {

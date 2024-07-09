@@ -2,131 +2,10 @@ import { displayArray } from "../util/data.js";
 import Camera from "./Camera.js";
 import LayerManager from "./LayerManager.js";
 
-export class Pixel {
-	/**
-	 * Pixel data for a frame coordinate.
-	 * @param {*} config The pixel config object.
-	 * @param {string} config.value The text-value of this spixel.
-	 * @param {string} config.color The CSS color value of this pixel.
-	 * @param {string|number} config.fontWeight The CSS font weight value of this pixel.
-	 * @param {string} config.backgroundColor An optional background color for the pixel.
-	 * @param {boolean} config.solid Whether or not this pixel is solid.
-	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
-	 */
-	constructor(config) {
-		const {
-			value,
-			color = "#ffffff",
-			fontWeight = "normal",
-			backgroundColor,
-			solid = false,
-			origin,
-		} = config;
+import Pixel from "../core/Pixel.js";
+import Frame from "./Frame.js";
 
-		if (typeof value !== "string" || value.length !== 1)
-			throw new Error(
-				"The value of this pixel can only be a 1-character long string."
-			);
-
-		if (origin && !(origin instanceof Array))
-			throw new Error(
-				'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
-			);
-
-		this.value = value;
-		this.color = color;
-		this.fontWeight = fontWeight;
-		this.backgroundColor = backgroundColor;
-		this.solid = solid;
-		this.origin = origin;
-	}
-
-	/**
-	 * Create a `Pixel` object from a string.
-	 * @param {string} string The string to convert to a `Pixel`.
-	 * @returns {Pixel} the newly created `Pixel` object.
-	 */
-	static fromString = (string) => new Pixel({ value: string });
-
-	/**
-	 * Get the `Pixel`'s width.
-	 */
-	get width() {
-		return 1;
-	}
-
-	/**
-	 * Get the `Pixel`'s height.
-	 */
-	get height() {
-		return 1;
-	}
-}
-
-export class PixelMesh {
-	/**
-	 * A pixel mesh stores a 2-dimensional array of `Pixels`.
-	 * @param {Array<Pixel>} config.data The frame's 2-dimensional (array of row arrays of `Pixels`) (left-to-right, top-to-bottom) data array.
-	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
-	 */
-	constructor(config) {
-		const { data, origin } = config;
-
-		if (origin && !(origin instanceof Array))
-			throw new Error(
-				'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
-			);
-
-		this.data = data;
-		this.origin = origin;
-	}
-
-	/**
-	 * Get the `Area`'s width.
-	 */
-	get width() {
-		let length = -1;
-
-		for (const row of this.data.filter((row) => row))
-			if (row.length > length) length = row.length;
-
-		return length === -1 ? undefined : length;
-	}
-
-	/**
-	 * Get the `Area`'s height.
-	 */
-	get height() {
-		return this.data.length;
-	}
-}
-
-export class Frame {
-	/**
-	 * A display frame.
-	 * @param {Array<Pixel>} data The frame's 1-dimensional (left-to-right, top-to-bottom) data array.
-	 * Any index after `Screen Width * Screen Height` will not be displayed, no max size is enforced.
-	 */
-	constructor(data) {
-		this.data = data;
-	}
-
-	/**
-	 * Convert a string to a frame.
-	 * @param {string} string The string to convert.
-	 * @returns {Frame} the generated Frame.
-	 */
-	static fromString = (string) =>
-		new Frame(string.split("").map((item) => new Pixel({ value: item })));
-
-	/**
-	 * Convert a 2D array of `Pixel`s to a Frame.
-	 * @param {Array<Array<Pixel>} array The array to convert.
-	 */
-	static from2DArray = (array) => new Frame(array.flat());
-}
-
-class Renderer {
+class CanvasRenderer {
 	/**
 	 * Handles rendering the game.
 	 * @param {Runtime} runtime The game's runtime object.
@@ -135,7 +14,7 @@ class Renderer {
 		this.runtime = runtime;
 		this.config = this.runtime.config && this.runtime.config.renderer;
 
-		Renderer.validateConfig(this.config);
+		CanvasRenderer.validateConfig(this.config);
 
 		if (!this.config)
 			throw new Error("No config object provided to renderer.");
@@ -478,4 +357,4 @@ class Renderer {
 	}
 }
 
-export default Renderer;
+export default CanvasRenderer;

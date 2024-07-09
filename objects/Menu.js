@@ -1,6 +1,5 @@
 import GameObject from "../core/GameObject.js";
-import { Pixel, PixelMesh } from "../engine/Renderer.js";
-import { displayArray } from "../util/data.js";
+import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Box from "./Box.js";
 import Text from "./Text.js";
 

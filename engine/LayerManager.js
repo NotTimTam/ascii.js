@@ -1,7 +1,9 @@
-import Renderer, { Frame, Pixel, PixelMesh } from "./Renderer.js";
+import Renderer from "./CanvasRenderer.js";
 import Core from "../core/Core.js";
 import { aabb } from "../util/math.js";
 import GameObject from "../core/GameObject.js";
+import Pixel, { PixelMesh } from "../core/Pixel.js";
+import Frame from "./Frame.js";
 
 export class Layer extends Core {
 	/**

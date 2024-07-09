@@ -1,5 +1,5 @@
-import { Pixel, PixelMesh } from "../engine/Renderer.js";
 import GameObject from "../core/GameObject.js";
+import Pixel, { PixelMesh } from "../core/Pixel.js";
 
 class Area extends GameObject {
 	/**
@@ -18,14 +18,16 @@ class Area extends GameObject {
 	get renderable() {
 		const p = new Pixel({ value: "#", solid: this.solid });
 
-		return new PixelMesh({data: [
-			[p, p, p, p, p],
-			[p, p, p, p, p],
-			[p, p, p, p, p],
-			[p, p, p, p, p],
-			[p, p, p, p, p],
-			[p, p, p, p, p],
-		]});
+		return new PixelMesh({
+			data: [
+				[p, p, p, p, p],
+				[p, p, p, p, p],
+				[p, p, p, p, p],
+				[p, p, p, p, p],
+				[p, p, p, p, p],
+				[p, p, p, p, p],
+			],
+		});
 	}
 }
 

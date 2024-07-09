@@ -1,7 +1,7 @@
 import AudioManager from "./AudioManager.js";
 import InputManager from "./InputManager.js";
 import Noise from "./Noise.js";
-import Renderer from "./Renderer.js";
+import Renderer from "./CanvasRenderer.js";
 import Scene from "./Scene.js";
 
 class Runtime {

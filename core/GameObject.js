@@ -1,5 +1,5 @@
-import { Pixel } from "../engine/Renderer.js";
 import Core from "./Core.js";
+import Pixel from "./Pixel.js";
 
 class GameObject extends Core {
 	/**
