@@ -1,4 +1,4 @@
-import Renderer from "./CanvasRenderer.js";
+import Renderer from "./Renderer.js";
 import Core from "../core/Core.js";
 import { aabb } from "../util/math.js";
 import GameObject from "../core/GameObject.js";

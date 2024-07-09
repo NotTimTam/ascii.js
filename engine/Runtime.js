@@ -1,8 +1,9 @@
 import AudioManager from "./AudioManager.js";
 import InputManager from "./InputManager.js";
 import Noise from "./Noise.js";
-import Renderer from "./CanvasRenderer.js";
 import Scene from "./Scene.js";
+
+import Renderer from "./Renderer.js";
 
 class Runtime {
 	/**
@@ -17,6 +18,7 @@ class Runtime {
 		this.noise = new Noise(config.seed || Date.now());
 
 		this.renderer = new Renderer(this);
+
 		this.inputManager = new InputManager(this);
 		this.audioManager = new AudioManager(this);
 
@@ -24,6 +26,20 @@ class Runtime {
 		this.initialized = false;
 
 		this.paused = false;
+	}
+
+	get webGLSupported() {
+		// Check if the browser supports WebGL
+		try {
+			const canvas = document.createElement("canvas");
+			return !!(
+				window.WebGLRenderingContext &&
+				(canvas.getContext("webgl") ||
+					canvas.getContext("experimental-webgl"))
+			);
+		} catch (e) {
+			return false;
+		}
 	}
 
 	/**
@@ -42,7 +58,6 @@ class Runtime {
 
 		if (!config.renderer)
 			throw new Error("No 'renderer' config provided to config object.");
-		Renderer.validateConfig(config.renderer);
 	}
 
 	/**

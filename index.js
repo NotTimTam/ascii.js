@@ -1,4 +1,4 @@
-export { default as __CanvasRenderer } from "./engine/CanvasRenderer.js";
+export { default as __Renderer } from "./engine/Renderer.js";
 export { default as __LayerManager, Layer } from "./engine/LayerManager.js";
 export { default as __InputManager } from "./engine/InputManager.js";
 export {
