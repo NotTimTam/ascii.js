@@ -1,0 +1,60 @@
+name: Build and Release
+
+on:
+    push:
+        branches:
+            - main
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v3
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v3
+              with:
+                  node-version: "18" # Or whatever Node.js version you use
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Run Rollup build
+              run: npm run build
+
+            - name: Get version from package.json
+              id: get_version
+              run: echo "VERSION=$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
+
+            - name: Create GitHub Release
+              id: create_release
+              uses: actions/create-release@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+              with:
+                  tag_name: v${{ env.VERSION }} # Tag with 'v' followed by version
+                  release_name: Version ${{ env.VERSION }} # Title of the release
+                  draft: false
+                  prerelease: false
+
+            - name: Upload CJS file to release
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: dist/bundle.cjs.js
+                  asset_name: bundle.cjs.js
+                  asset_content_type: application/javascript
+
+            - name: Upload ESM file to release
+              uses: actions/upload-release-asset@v1
+              env:
+                  GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
+              with:
+                  upload_url: ${{ steps.create_release.outputs.upload_url }}
+                  asset_path: dist/bundle.esm.js
+                  asset_name: bundle.esm.js
+                  asset_content_type: application/javascript
