@@ -8,7 +8,7 @@ import Renderer from "./Renderer.js";
 class Runtime {
 	/**
 	 * The overall game state and management system.
-	 * @param {*} config The game's config object.
+	 * @param {Object} config The game's config object.
 	 */
 	constructor(config) {
 		this.config = config;
@@ -44,7 +44,7 @@ class Runtime {
 
 	/**
 	 * Validates a renderer configuration file and throws an error if it is invalid.
-	 * @param {*} config The config object to validate.
+	 * @param {Object} config The config object to validate.
 	 */
 	validateConfig(config) {
 		if (
@@ -80,7 +80,7 @@ class Runtime {
 
 	/**
 	 * Run the __onStartup method of any object.
-	 * @param {*} object The object whose method should be run.
+	 * @param {Object} object The object whose method should be run.
 	 * @param  {...any} passthrough The data to pass through to that method.
 	 */
 	__runOnStartup = (object, ...passthrough) =>
@@ -88,7 +88,7 @@ class Runtime {
 
 	/**
 	 * Run the __onTick method of any object.
-	 * @param {*} object The object whose method should be run.
+	 * @param {Object} object The object whose method should be run.
 	 * @param  {...any} passthrough The data to pass through to that method.
 	 */
 	__runOnTick = (object, ...passthrough) =>

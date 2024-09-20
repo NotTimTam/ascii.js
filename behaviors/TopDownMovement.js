@@ -6,7 +6,7 @@ class TopDownMovement extends Behavior {
 	 * @param {Runtime} runtime The main runtime object.
 	 * @param {GameObject} gameObject The game object to append this behavior to.
 	 * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
-	 * @param {*} config The configuration for this `TopDownMovement`.
+	 * @param {Object} config The configuration for this `TopDownMovement`.
 	 * @param {boolean} config.defaultControls Whether to automatically handle input using the arrow keys. Default: `true`.
 	 */
 	constructor(
@@ -27,7 +27,7 @@ class TopDownMovement extends Behavior {
 
 	/**
 	 * Validates a TopDownMovement configuration object and throws an error if it is invalid.
-	 * @param {*} config The config object to validate.
+	 * @param {Object} config The config object to validate.
 	 */
 	static validateConfig(config) {
 		if (!config)

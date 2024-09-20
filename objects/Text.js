@@ -5,7 +5,7 @@ class Text extends GameObject {
 	/**
 	 * A string of text that can be rendered on screen.
 	 * @param {Runtime} runtime The main runtime object.
-	 * @param {*} config The `Text`'s config object.
+	 * @param {Object} config The `Text`'s config object.
 	 * @param {number} config.x This `Text` object's x-coordinate.
 	 * @param {number} config.y This `Text` object's y-coordinate.
 	 * @param {string} config.value The text to display. (use `"\n"` for newlines)

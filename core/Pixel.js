@@ -39,7 +39,7 @@ export class PixelMesh {
 class Pixel {
 	/**
 	 * Pixel data for a frame coordinate.
-	 * @param {*} config The pixel config object.
+	 * @param {Object} config The pixel config object.
 	 * @param {string} config.value The text-value of this spixel.
 	 * @param {string} config.color The CSS color value of this pixel.
 	 * @param {string|number} config.fontWeight The CSS font weight value of this pixel.

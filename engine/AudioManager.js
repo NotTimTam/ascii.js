@@ -116,7 +116,7 @@ export class Sound {
 
 	/**
 	 * Begin audio playback.
-	 * @param {*} config Playback configuration data.
+	 * @param {Object} config Playback configuration data.
 	 * @param {boolean} config.allowConcurrentPlayback Whether to allow the sound to be played, even if it is already playing.
 	 * @param {number} config.volume Optionally overwrite the current volume level before playing.
 	 * @param {boolean} config.loop Whether to loop audio playback.
@@ -192,7 +192,7 @@ class AudioManager {
 	/**
 	 * Play a preloaded audio file.
 	 * @param {string} label The identifier of the audio to play.
-	 * @param {*} config Playback configuration.
+	 * @param {Object} config Playback configuration.
 	 */
 	play(label, config) {
 		if (!this.sounds.hasOwnProperty(label))

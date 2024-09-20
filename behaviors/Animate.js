@@ -30,7 +30,7 @@ export class AnimationFrame {
 export class Animation {
 	/**
 	 * An animation. The `Animate` behavior operates on the data in this object.
-	 * @param {*} config The configuration for this `Animation`.
+	 * @param {Object} config The configuration for this `Animation`.
 	 * @param {string} config.label This `Animation`'s label.
 	 * @param {Array<AnimationFrame>} config.animationFrames An array of this `Animation`'s frames.
 	 * @param {number} config.speed The speed at which this `Animation` should play. In frames per second.
@@ -69,7 +69,7 @@ export class Animation {
 
 	/**
 	 * Validates a TopDownMovement configuration object and throws an error if it is invalid.
-	 * @param {*} config The config object to validate.
+	 * @param {Object} config The config object to validate.
 	 */
 	static validateConfig(config) {
 		if (!config)
@@ -103,7 +103,7 @@ class Animate extends Behavior {
 	 * @param {Runtime} runtime The main runtime object.
 	 * @param {GameObject} gameObject The game object to append this behavior to.
 	 * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
-	 * @param {*} config The configuration for this `Animate`.
+	 * @param {Object} config The configuration for this `Animate`.
 	 * @param {Array<Animation>} config.animations The animations for this behavior.
 	 * @param {string} config.initialAnimation The label of the animation to start on.
 	 * @param {number} config.initialFrame The frame of the animation to start on.
@@ -198,7 +198,7 @@ class Animate extends Behavior {
 
 	/**
 	 * Validates a TopDownMovement configuration object and throws an error if it is invalid.
-	 * @param {*} config The config object to validate.
+	 * @param {Object} config The config object to validate.
 	 */
 	static validateConfig(config) {
 		if (!config)

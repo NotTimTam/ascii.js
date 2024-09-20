@@ -39,7 +39,7 @@ class Renderer {
 
 	/**
 	 * Validates a renderer configuration file and throws an error if it is invalid.
-	 * @param {*} config The config object to validate.
+	 * @param {Object} config The config object to validate.
 	 */
 	static validateConfig(config) {
 		if (!config.resolution)

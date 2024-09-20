@@ -1,7 +1,7 @@
 class Scene {
 	/**
 	 * A scene is a level, screen, or world that can be load in at any point during the runtime.
-	 * @param {*} config The scene configuration object.
+	 * @param {Object} config The scene configuration object.
 	 */
 	constructor(config) {
 		Scene.validateConfig(config);
@@ -17,7 +17,7 @@ class Scene {
 
 	/**
 	 * Validates a scene configuration file and throws an error if it is invalid.
-	 * @param {*} config The config object to validate.
+	 * @param {Object} config The config object to validate.
 	 */
 	static validateConfig(config) {
 		if (!config.label || typeof config.label !== "string")

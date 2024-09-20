@@ -7,10 +7,10 @@ class Menu extends GameObject {
 	/**
 	 * A box that can be rendered on screen.
 	 * @param {Runtime} runtime The main runtime object.
-	 * @param {*} config The `Box`'s config object.
+	 * @param {Object} config The `Box`'s config object.
 	 * @param {number} config.x This `Box` object's x-coordinate.
 	 * @param {number} config.y This `Box` object's y-coordinate.
-	 * @param {*} config.options An object of key value pairs, the values representing option labels, and the keys being what is returned when an object is selected.
+	 * @param {Object} config.options An object of key value pairs, the values representing option labels, and the keys being what is returned when an object is selected.
 	 * @param {function} config.callback A callback function that is called when a menu option is selected. Passed the key of the selected option.
 	 * @param {string} config.title Optional menu title.
 	 */

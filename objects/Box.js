@@ -24,7 +24,7 @@ class Box extends GameObject {
 	/**
 	 * A box that can be rendered on screen.
 	 * @param {Runtime} runtime The main runtime object.
-	 * @param {*} config The `Box`'s config object.
+	 * @param {Object} config The `Box`'s config object.
 	 * @param {number} config.x This `Box` object's x-coordinate.
 	 * @param {number} config.y This `Box` object's y-coordinate.
 	 * @param {number} config.width This `Box` object's width.

@@ -71,7 +71,7 @@ class PixelMesh {
 class Pixel {
 	/**
 	 * Pixel data for a frame coordinate.
-	 * @param {*} config The pixel config object.
+	 * @param {Object} config The pixel config object.
 	 * @param {string} config.value The text-value of this spixel.
 	 * @param {string} config.color The CSS color value of this pixel.
 	 * @param {string|number} config.fontWeight The CSS font weight value of this pixel.
@@ -545,7 +545,7 @@ class Layer extends Core {
 	/**
 	 * A layer is a construct of other objects. The layer manages these objects and can optionally render them to the screen.
 	 * @param {LayerManager} layerManager The `LayerManager` parent object.
-	 * @param {*} config The `Layer`'s config object.
+	 * @param {Object} config The `Layer`'s config object.
 	 * @param {string} config.label This layer's label.
 	 * @param {Array<Number>} config.parallax This layer's parallax array. `[x, y]` Numbers 0-1 determine how much this layer moves with the camera. `[0, 0]` for layers that do not move.
 	 */
@@ -880,7 +880,7 @@ class Renderer {
 
 	/**
 	 * Validates a renderer configuration file and throws an error if it is invalid.
-	 * @param {*} config The config object to validate.
+	 * @param {Object} config The config object to validate.
 	 */
 	static validateConfig(config) {
 		if (!config.resolution)
@@ -1553,7 +1553,7 @@ class Sound {
 
 	/**
 	 * Begin audio playback.
-	 * @param {*} config Playback configuration data.
+	 * @param {Object} config Playback configuration data.
 	 * @param {boolean} config.allowConcurrentPlayback Whether to allow the sound to be played, even if it is already playing.
 	 * @param {number} config.volume Optionally overwrite the current volume level before playing.
 	 * @param {boolean} config.loop Whether to loop audio playback.
@@ -1629,7 +1629,7 @@ class AudioManager {
 	/**
 	 * Play a preloaded audio file.
 	 * @param {string} label The identifier of the audio to play.
-	 * @param {*} config Playback configuration.
+	 * @param {Object} config Playback configuration.
 	 */
 	play(label, config) {
 		if (!this.sounds.hasOwnProperty(label))
@@ -1657,7 +1657,7 @@ class AudioManager {
 class Scene {
 	/**
 	 * A scene is a level, screen, or world that can be load in at any point during the runtime.
-	 * @param {*} config The scene configuration object.
+	 * @param {Object} config The scene configuration object.
 	 */
 	constructor(config) {
 		Scene.validateConfig(config);
@@ -1673,7 +1673,7 @@ class Scene {
 
 	/**
 	 * Validates a scene configuration file and throws an error if it is invalid.
-	 * @param {*} config The config object to validate.
+	 * @param {Object} config The config object to validate.
 	 */
 	static validateConfig(config) {
 		if (!config.label || typeof config.label !== "string")
@@ -1825,7 +1825,7 @@ class Box extends GameObject {
 	/**
 	 * A box that can be rendered on screen.
 	 * @param {Runtime} runtime The main runtime object.
-	 * @param {*} config The `Box`'s config object.
+	 * @param {Object} config The `Box`'s config object.
 	 * @param {number} config.x This `Box` object's x-coordinate.
 	 * @param {number} config.y This `Box` object's y-coordinate.
 	 * @param {number} config.width This `Box` object's width.
@@ -1922,7 +1922,7 @@ class Text extends GameObject {
 	/**
 	 * A string of text that can be rendered on screen.
 	 * @param {Runtime} runtime The main runtime object.
-	 * @param {*} config The `Text`'s config object.
+	 * @param {Object} config The `Text`'s config object.
 	 * @param {number} config.x This `Text` object's x-coordinate.
 	 * @param {number} config.y This `Text` object's y-coordinate.
 	 * @param {string} config.value The text to display. (use `"\n"` for newlines)
@@ -2059,10 +2059,10 @@ class Menu extends GameObject {
 	/**
 	 * A box that can be rendered on screen.
 	 * @param {Runtime} runtime The main runtime object.
-	 * @param {*} config The `Box`'s config object.
+	 * @param {Object} config The `Box`'s config object.
 	 * @param {number} config.x This `Box` object's x-coordinate.
 	 * @param {number} config.y This `Box` object's y-coordinate.
-	 * @param {*} config.options An object of key value pairs, the values representing option labels, and the keys being what is returned when an object is selected.
+	 * @param {Object} config.options An object of key value pairs, the values representing option labels, and the keys being what is returned when an object is selected.
 	 * @param {function} config.callback A callback function that is called when a menu option is selected. Passed the key of the selected option.
 	 * @param {string} config.title Optional menu title.
 	 */
@@ -2724,7 +2724,7 @@ class TopDownMovement extends Behavior {
 	 * @param {Runtime} runtime The main runtime object.
 	 * @param {GameObject} gameObject The game object to append this behavior to.
 	 * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
-	 * @param {*} config The configuration for this `TopDownMovement`.
+	 * @param {Object} config The configuration for this `TopDownMovement`.
 	 * @param {boolean} config.defaultControls Whether to automatically handle input using the arrow keys. Default: `true`.
 	 */
 	constructor(
@@ -2745,7 +2745,7 @@ class TopDownMovement extends Behavior {
 
 	/**
 	 * Validates a TopDownMovement configuration object and throws an error if it is invalid.
-	 * @param {*} config The config object to validate.
+	 * @param {Object} config The config object to validate.
 	 */
 	static validateConfig(config) {
 		if (!config)
@@ -2928,7 +2928,7 @@ class AnimationFrame {
 class Animation {
 	/**
 	 * An animation. The `Animate` behavior operates on the data in this object.
-	 * @param {*} config The configuration for this `Animation`.
+	 * @param {Object} config The configuration for this `Animation`.
 	 * @param {string} config.label This `Animation`'s label.
 	 * @param {Array<AnimationFrame>} config.animationFrames An array of this `Animation`'s frames.
 	 * @param {number} config.speed The speed at which this `Animation` should play. In frames per second.
@@ -2967,7 +2967,7 @@ class Animation {
 
 	/**
 	 * Validates a TopDownMovement configuration object and throws an error if it is invalid.
-	 * @param {*} config The config object to validate.
+	 * @param {Object} config The config object to validate.
 	 */
 	static validateConfig(config) {
 		if (!config)
@@ -3001,7 +3001,7 @@ class Animate extends Behavior {
 	 * @param {Runtime} runtime The main runtime object.
 	 * @param {GameObject} gameObject The game object to append this behavior to.
 	 * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
-	 * @param {*} config The configuration for this `Animate`.
+	 * @param {Object} config The configuration for this `Animate`.
 	 * @param {Array<Animation>} config.animations The animations for this behavior.
 	 * @param {string} config.initialAnimation The label of the animation to start on.
 	 * @param {number} config.initialFrame The frame of the animation to start on.
@@ -3096,7 +3096,7 @@ class Animate extends Behavior {
 
 	/**
 	 * Validates a TopDownMovement configuration object and throws an error if it is invalid.
-	 * @param {*} config The config object to validate.
+	 * @param {Object} config The config object to validate.
 	 */
 	static validateConfig(config) {
 		if (!config)
@@ -3190,7 +3190,7 @@ class Animate extends Behavior {
 class Runtime {
 	/**
 	 * The overall game state and management system.
-	 * @param {*} config The game's config object.
+	 * @param {Object} config The game's config object.
 	 */
 	constructor(config) {
 		this.config = config;
@@ -3226,7 +3226,7 @@ class Runtime {
 
 	/**
 	 * Validates a renderer configuration file and throws an error if it is invalid.
-	 * @param {*} config The config object to validate.
+	 * @param {Object} config The config object to validate.
 	 */
 	validateConfig(config) {
 		if (
@@ -3262,7 +3262,7 @@ class Runtime {
 
 	/**
 	 * Run the __onStartup method of any object.
-	 * @param {*} object The object whose method should be run.
+	 * @param {Object} object The object whose method should be run.
 	 * @param  {...any} passthrough The data to pass through to that method.
 	 */
 	__runOnStartup = (object, ...passthrough) =>
@@ -3270,7 +3270,7 @@ class Runtime {
 
 	/**
 	 * Run the __onTick method of any object.
-	 * @param {*} object The object whose method should be run.
+	 * @param {Object} object The object whose method should be run.
 	 * @param  {...any} passthrough The data to pass through to that method.
 	 */
 	__runOnTick = (object, ...passthrough) =>

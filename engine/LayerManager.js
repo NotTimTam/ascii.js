@@ -9,7 +9,7 @@ export class Layer extends Core {
 	/**
 	 * A layer is a construct of other objects. The layer manages these objects and can optionally render them to the screen.
 	 * @param {LayerManager} layerManager The `LayerManager` parent object.
-	 * @param {*} config The `Layer`'s config object.
+	 * @param {Object} config The `Layer`'s config object.
 	 * @param {string} config.label This layer's label.
 	 * @param {Array<Number>} config.parallax This layer's parallax array. `[x, y]` Numbers 0-1 determine how much this layer moves with the camera. `[0, 0]` for layers that do not move.
 	 */
