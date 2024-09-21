@@ -3,12 +3,13 @@ import { aabb } from "../util/math.js";
 
 class Camera extends GameObject {
 	/**
-	 * The layer manager contains variable layers and compiles them into one frame to render to the screen.
-	 * @param {Renderer} renderer The main runtime's renderer object.
+	 * The scene contains variable layers and compiles them into one frame to render to the screen.
+	 * @param {Scene} scene The scene this Object is a part of.
 	 */
-	constructor(renderer) {
-		super(renderer.runtime, 0, 0);
-		this.renderer = renderer;
+	constructor(scene) {
+		super(scene, 0, 0);
+
+		this.renderer = scene.runtime.renderer;
 
 		this.config = this.renderer.config && this.renderer.config.camera;
 	}

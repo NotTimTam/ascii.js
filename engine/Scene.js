@@ -1,3 +1,4 @@
+import Camera from "./Camera.js";
 import InputManager from "./InputManager.js";
 import Runtime from "./Runtime.js";
 
@@ -18,6 +19,7 @@ class Scene {
 		this.layers = layers;
 
 		this.inputManager = new InputManager(this);
+		this.camera = new Camera(this);
 
 		if (onLoad) this.__onLoad = onLoad;
 		if (onTick) this.__onTick = onTick;

@@ -3,12 +3,12 @@ import Behavior from "../core/Behavior.js";
 class ScrollTo extends Behavior {
 	/**
 	 * Scroll the camera to a `GameObject`.
-	 * @param {Runtime} runtime The main runtime object.
+	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {GameObject} gameObject The game object to append this behavior to.
 	 * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
 	 */
-	constructor(runtime, gameObject, enabledByDefault = true) {
-		super(runtime, gameObject, enabledByDefault);
+	constructor(scene, gameObject, enabledByDefault = true) {
+		super(scene, gameObject, enabledByDefault);
 	}
 
 	__onTick() {

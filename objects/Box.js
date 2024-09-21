@@ -23,7 +23,7 @@ const lineSource = {
 class Box extends GameObject {
 	/**
 	 * A box that can be rendered on screen.
-	 * @param {Runtime} runtime The main runtime object.
+	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {Object} config The `Box`'s config object.
 	 * @param {number} config.x This `Box` object's x-coordinate.
 	 * @param {number} config.y This `Box` object's y-coordinate.
@@ -33,7 +33,7 @@ class Box extends GameObject {
 	 * @param {string} config.backgroundColor Optional background color.
 	 * @param {string} config.style The box line style. `"line" || "double"`
 	 */
-	constructor(runtime, config) {
+	constructor(scene, config) {
 		const {
 			x,
 			y,
@@ -43,7 +43,7 @@ class Box extends GameObject {
 			backgroundColor,
 			style = "double",
 		} = config;
-		super(runtime, x, y);
+		super(scene, x, y);
 
 		this.__rawWidth = width;
 		this.__rawHeight = height;

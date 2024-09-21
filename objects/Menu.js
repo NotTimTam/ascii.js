@@ -1,12 +1,13 @@
 import GameObject from "../core/GameObject.js";
-import Pixel, { PixelMesh } from "../core/Pixel.js";
+import { PixelMesh } from "../core/Pixel.js";
+import Scene from "../engine/Scene.js";
 import Box from "./Box.js";
 import Text from "./Text.js";
 
 class Menu extends GameObject {
 	/**
 	 * A box that can be rendered on screen.
-	 * @param {Runtime} runtime The main runtime object.
+	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {Object} config The `Box`'s config object.
 	 * @param {number} config.x This `Box` object's x-coordinate.
 	 * @param {number} config.y This `Box` object's y-coordinate.
@@ -14,7 +15,7 @@ class Menu extends GameObject {
 	 * @param {function} config.callback A callback function that is called when a menu option is selected. Passed the key of the selected option.
 	 * @param {string} config.title Optional menu title.
 	 */
-	constructor(runtime, config) {
+	constructor(scene, config) {
 		const {
 			x,
 			y,
@@ -22,7 +23,7 @@ class Menu extends GameObject {
 			options,
 			callback = (option) => console.log(option),
 		} = config;
-		super(runtime, x, y);
+		super(scene, x, y);
 
 		this.options = options;
 		this.callback = callback;
@@ -38,9 +39,7 @@ class Menu extends GameObject {
 
 		this.title = title;
 
-		runtime.scene.inputManager.addEventListener(
-			this.handleInput.bind(this)
-		);
+		scene.inputManager.addEventListener(this.handleInput.bind(this));
 
 		this.__inputMode = "keyboard";
 	}
@@ -133,7 +132,7 @@ class Menu extends GameObject {
 	get renderable() {
 		const {
 			options,
-			runtime,
+			scene,
 			runtime: {
 				renderer: { width, height },
 			},
@@ -176,7 +175,7 @@ class Menu extends GameObject {
 
 				const index = optionValues.indexOf(value);
 
-				const text = new Text(runtime, {
+				const text = new Text(scene, {
 					x: 0,
 					y: 0,
 					value: `${" ".repeat(
@@ -196,7 +195,7 @@ class Menu extends GameObject {
 			});
 		}
 
-		const box = new Box(runtime, {
+		const box = new Box(scene, {
 			x: 0,
 			y: 0,
 			width: this.width,
@@ -215,7 +214,7 @@ class Menu extends GameObject {
 		}
 
 		if (title) {
-			const titleText = new Text(runtime, {
+			const titleText = new Text(scene, {
 				x: 0,
 				y: 0,
 				value: title.slice(0, maxWidth - 2),

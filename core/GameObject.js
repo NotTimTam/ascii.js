@@ -9,12 +9,12 @@ class GameObject extends Core {
 	 * `GameObject`s do not always need to be rendered, and a `get renderable()` method is not indicative of whether the `GameObject`'s logic will function.
 	 * `GameObject`s will not be rendered unless they are added to a layer.
 	 *
-	 * @param {Runtime} runtime The main runtime object.
+	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {number} x This entity's x-coordinate.
 	 * @param {number} y This entity's y-coordinate.
 	 */
-	constructor(runtime, x = 0, y = 0) {
-		super(runtime);
+	constructor(scene, x = 0, y = 0) {
+		super(scene);
 
 		if (typeof x !== "number")
 			throw new Error(

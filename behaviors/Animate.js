@@ -100,7 +100,7 @@ export class Animation {
 class Animate extends Behavior {
 	/**
 	 * Animate a `GameObject`.
-	 * @param {Runtime} runtime The main runtime object.
+	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {GameObject} gameObject The game object to append this behavior to.
 	 * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
 	 * @param {Object} config The configuration for this `Animate`.
@@ -108,8 +108,8 @@ class Animate extends Behavior {
 	 * @param {string} config.initialAnimation The label of the animation to start on.
 	 * @param {number} config.initialFrame The frame of the animation to start on.
 	 */
-	constructor(runtime, gameObject, enabledByDefault = true, config) {
-		super(runtime, gameObject, enabledByDefault);
+	constructor(scene, gameObject, enabledByDefault = true, config) {
+		super(scene, gameObject, enabledByDefault);
 
 		Animate.validateConfig(config);
 

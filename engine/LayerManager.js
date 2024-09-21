@@ -1,11 +1,10 @@
 import Renderer from "./Renderer.js";
-import Core from "../core/Core.js";
 import { aabb } from "../util/math.js";
 import GameObject from "../core/GameObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Frame from "./Frame.js";
 
-export class Layer extends Core {
+export class Layer {
 	/**
 	 * A layer is a construct of other objects. The layer manages these objects and can optionally render them to the screen.
 	 * @param {LayerManager} layerManager The `LayerManager` parent object.
@@ -14,10 +13,9 @@ export class Layer extends Core {
 	 * @param {Array<Number>} config.parallax This layer's parallax array. `[x, y]` Numbers 0-1 determine how much this layer moves with the camera. `[0, 0]` for layers that do not move.
 	 */
 	constructor(layerManager, config) {
-		super(layerManager.runtime);
-
 		const { label, parallax = [1, 1], gameObjects } = config;
 
+		this.runtime = layerManager.runtime;
 		this.layerManager = layerManager;
 		this.label = label;
 

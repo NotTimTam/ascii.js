@@ -20,7 +20,13 @@ class Renderer {
 			throw new Error("No config object provided to renderer.");
 
 		this.layerManager = new LayerManager(this);
-		this.camera = new Camera(this);
+	}
+
+	/**
+	 * Get the current camera.
+	 */
+	get camera() {
+		if (this.runtime.scene) return this.runtime.scene.camera;
 	}
 
 	/**

@@ -4,7 +4,7 @@ import Pixel, { PixelMesh } from "../core/Pixel.js";
 class Text extends GameObject {
 	/**
 	 * A string of text that can be rendered on screen.
-	 * @param {Runtime} runtime The main runtime object.
+	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {Object} config The `Text`'s config object.
 	 * @param {number} config.x This `Text` object's x-coordinate.
 	 * @param {number} config.y This `Text` object's y-coordinate.
@@ -14,7 +14,7 @@ class Text extends GameObject {
 	 * @param {string} config.backgroundColor Optional background color.
 	 * @param {string} config.fontWeight Optional font weight.
 	 */
-	constructor(runtime, config) {
+	constructor(scene, config) {
 		const {
 			x,
 			y,
@@ -24,7 +24,7 @@ class Text extends GameObject {
 			backgroundColor,
 			fontWeight = 400,
 		} = config;
-		super(runtime, x, y);
+		super(scene, x, y);
 
 		if (typeof value !== "string")
 			throw new Error(

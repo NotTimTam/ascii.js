@@ -4,12 +4,12 @@ import GameObject from "../core/GameObject.js";
 class Entity extends GameObject {
 	/**
 	 * An `Entity` is generally a non-static `GameObject`, interactable in some way.
-	 * @param {Runtime} runtime The main runtime object.
+	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {number} x This `Entity`'s x-coordinate.
 	 * @param {number} y This `Entity`'s y-coordinate.
 	 */
-	constructor(runtime, x, y) {
-		super(runtime, x, y);
+	constructor(scene, x, y) {
+		super(scene, x, y);
 	}
 
 	get renderable() {
