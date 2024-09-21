@@ -139,6 +139,11 @@ class Runtime {
 		if (!(scene instanceof Scene))
 			throw new Error(`Provided scene is not a "Scene" object`);
 
+		this.renderer.layerManager.layers = [];
+
+		for (const eventListener of this.inputManager.__eventListeners)
+			this.inputManager.removeEventListener(eventListener);
+
 		const { label, layers, __onLoad } = scene;
 
 		this.scene = scene;
