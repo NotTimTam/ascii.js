@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, '__esModule', { value: true });
 
 /**
  * Prettify an array when displaying it in a string.
@@ -19,9 +19,9 @@ const displayArray = (array) =>
 		})
 		.join(", ")}]`;
 
-var data = /*#__PURE__*/ Object.freeze({
+var data = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	displayArray: displayArray,
+	displayArray: displayArray
 });
 
 class Core {
@@ -405,7 +405,8 @@ const degreeToRadian = (degree) => degree * (Math.PI / 180);
  * @param {number} max The maximum value.
  * @returns {number} A random integer between two values.
  */
-const range = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const range = (min, max) =>
+	Math.floor(Math.random() * (max - min + 1)) + min;
 
 /**
  * Returns the factorial of a number.
@@ -467,7 +468,7 @@ const angleBetweenPoints = (x1, y1, x2, y2) => {
 const distanceBetweenPoints = (x1, y1, x2, y2) =>
 	Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 
-var math = /*#__PURE__*/ Object.freeze({
+var math = /*#__PURE__*/Object.freeze({
 	__proto__: null,
 	aabb: aabb,
 	angleBetweenPoints: angleBetweenPoints,
@@ -478,7 +479,7 @@ var math = /*#__PURE__*/ Object.freeze({
 	fact: fact,
 	radianToDegree: radianToDegree,
 	range: range,
-	vectorToCartesian: vectorToCartesian,
+	vectorToCartesian: vectorToCartesian
 });
 
 class Camera extends GameObject {
@@ -1201,25 +1202,115 @@ class Renderer {
 	}
 }
 
+class Scene {
+	/**
+	 * A scene is a level, screen, or world that can be load in at any point during the runtime.
+	 * @param {Object} config The scene configuration object.
+	 */
+	constructor(config) {
+		Scene.validateConfig(config);
+
+		const { label, layers, onLoad, onTick } = config;
+
+		this.label = label;
+		this.layers = layers;
+
+		this.inputManager = new InputManager(this);
+
+		if (onLoad) this.__onLoad = onLoad;
+		if (onTick) this.__onTick = onTick;
+	}
+
+	/**
+	 * Validates a scene configuration file and throws an error if it is invalid.
+	 * @param {Object} config The config object to validate.
+	 */
+	static validateConfig(config) {
+		if (!config.label || typeof config.label !== "string")
+			throw new Error(
+				`Invalid label value provided to Scene configuration: "${config.label}". Must be a string.`
+			);
+
+		if (!config.layers || config.layers.length === 0)
+			throw new Error(
+				"No 'layers' configuration provided to LayerManager config."
+			);
+
+		for (const layer of config.layers) {
+			if (!layer)
+				throw new Error(
+					`Invalid layer provided to Scene layers config: ${layer}`
+				);
+
+			if (!layer.label)
+				throw new Error("No label provided to layer in Scene config.");
+
+			if (typeof layer.label !== "string")
+				throw new Error(
+					`Provided layer name <${layerName}> is not of type 'string'.`
+				);
+
+			if (layer.parallax) {
+				if (
+					!(layer.parallax instanceof Array) ||
+					typeof layer.parallax[0] !== "number" ||
+					typeof layer.parallax[1] !== "number"
+				)
+					throw new Error(
+						`Invalid parallax data provided to layer configuration. Required format: [<x>, <y>]`
+					);
+			}
+
+			if (layer.gameObjects) {
+				if (!(layer.gameObjects instanceof Array))
+					throw new Error(
+						`Invalid "gameObjects" data provided to layer configuration. Required format: [GameObject, () => {}]`
+					);
+
+				for (const gameObject of layer.gameObjects)
+					if (
+						typeof gameObject !== "function" &&
+						typeof gameObject !== "object"
+					)
+						throw new Error(
+							`GameObject array must contain constructed GameObject instances/extensions, or callback functions that return a constructed GameObject instance.`
+						);
+			}
+		}
+
+		if (config.onLoad && typeof config.onLoad !== "function")
+			throw new Error(
+				`"onLoad" method provided to scene config is not of type "function".`
+			);
+
+		if (config.onTick && typeof config.onTick !== "function")
+			throw new Error(
+				`"onTick" method provided to scene config is not of type "function".`
+			);
+	}
+}
+
 class InputManager {
 	/**
 	 * Handles user input.
-	 * @param {Runtime} runtime The game's runtime object.
+	 * @param {Scene} scene The current scene.
 	 */
-	constructor(runtime) {
-		this.runtime = runtime;
+	constructor(scene) {
+		this.scene = scene;
 
 		this.keyboard = { keys: {}, keyCodes: {} };
 		this.mouse = { buttons: {} };
 
 		this.__eventListeners = [];
+
+		this.__onCreated();
 	}
 
 	/**
 	 * Get the pointer lock status.
 	 */
 	get hasPointerLock() {
-		const { element } = this.runtime.renderer;
+		const { element } = this.scene.runtime.renderer;
 		if (document.pointerLockElement === element) return true;
 		else return false;
 	}
@@ -1228,7 +1319,7 @@ class InputManager {
 	 * Initiate a pointer lock request. Pointer lock cannot be achieved unless the user clicks the screen after this method is called.
 	 */
 	async requestPointerLock() {
-		const { element } = this.runtime.renderer;
+		const { element } = this.scene.runtime.renderer;
 
 		const initiatePointerLock = () => {
 			if (!this.hasPointerLock) element.requestPointerLock();
@@ -1333,13 +1424,15 @@ class InputManager {
 		const { clientX, clientY, movementX, movementY } = event;
 
 		const {
-			runtime: {
-				renderer: {
-					width: characterWidth,
-					height: characterHeight,
-					element,
-					layerManager: { layers },
-					camera: { x: cameraX, y: cameraY },
+			scene: {
+				runtime: {
+					renderer: {
+						width: characterWidth,
+						height: characterHeight,
+						element,
+						layerManager: { layers },
+						camera: { x: cameraX, y: cameraY },
+					},
 				},
 			},
 		} = this;
@@ -1446,7 +1539,7 @@ class InputManager {
 		);
 	}
 
-	__onStartup() {
+	__onCreated() {
 		window.addEventListener("keydown", (e) => this.__onEvent(e));
 		window.addEventListener("keyup", (e) => this.__onEvent(e));
 		window.addEventListener("mousemove", (e) => this.__onEvent(e));
@@ -1670,92 +1763,6 @@ class AudioManager {
 			/* the audio is now playable; play it if permissions allow */
 			audio.play();
 		});
-	}
-}
-
-class Scene {
-	/**
-	 * A scene is a level, screen, or world that can be load in at any point during the runtime.
-	 * @param {Object} config The scene configuration object.
-	 */
-	constructor(config) {
-		Scene.validateConfig(config);
-
-		const { label, layers, onLoad, onTick } = config;
-
-		this.label = label;
-		this.layers = layers;
-
-		if (onLoad) this.__onLoad = onLoad;
-		if (onTick) this.__onTick = onTick;
-	}
-
-	/**
-	 * Validates a scene configuration file and throws an error if it is invalid.
-	 * @param {Object} config The config object to validate.
-	 */
-	static validateConfig(config) {
-		if (!config.label || typeof config.label !== "string")
-			throw new Error(
-				`Invalid label value provided to Scene configuration: "${config.label}". Must be a string.`
-			);
-
-		if (!config.layers || config.layers.length === 0)
-			throw new Error(
-				"No 'layers' configuration provided to LayerManager config."
-			);
-
-		for (const layer of config.layers) {
-			if (!layer)
-				throw new Error(
-					`Invalid layer provided to Scene layers config: ${layer}`
-				);
-
-			if (!layer.label)
-				throw new Error("No label provided to layer in Scene config.");
-
-			if (typeof layer.label !== "string")
-				throw new Error(
-					`Provided layer name <${layerName}> is not of type 'string'.`
-				);
-
-			if (layer.parallax) {
-				if (
-					!(layer.parallax instanceof Array) ||
-					typeof layer.parallax[0] !== "number" ||
-					typeof layer.parallax[1] !== "number"
-				)
-					throw new Error(
-						`Invalid parallax data provided to layer configuration. Required format: [<x>, <y>]`
-					);
-			}
-
-			if (layer.gameObjects) {
-				if (!(layer.gameObjects instanceof Array))
-					throw new Error(
-						`Invalid "gameObjects" data provided to layer configuration. Required format: [GameObject, () => {}]`
-					);
-
-				for (const gameObject of layer.gameObjects)
-					if (
-						typeof gameObject !== "function" &&
-						typeof gameObject !== "object"
-					)
-						throw new Error(
-							`GameObject array must contain constructed GameObject instances/extensions, or callback functions that return a constructed GameObject instance.`
-						);
-			}
-		}
-
-		if (config.onLoad && typeof config.onLoad !== "function")
-			throw new Error(
-				`"onLoad" method provided to scene config is not of type "function".`
-			);
-
-		if (config.onTick && typeof config.onTick !== "function")
-			throw new Error(
-				`"onTick" method provided to scene config is not of type "function".`
-			);
 	}
 }
 
@@ -3226,7 +3233,6 @@ class Runtime {
 
 		this.renderer = new Renderer(this);
 
-		this.inputManager = new InputManager(this);
 		this.audioManager = new AudioManager(this);
 
 		this.running = false;
@@ -3310,7 +3316,6 @@ class Runtime {
 
 		// Run renderer startup.
 		this.__runOnStartup(this.renderer);
-		this.__runOnStartup(this.inputManager);
 	}
 
 	/**
@@ -3348,8 +3353,7 @@ class Runtime {
 
 		this.renderer.layerManager.layers = [];
 
-		for (const eventListener of this.inputManager.__eventListeners)
-			this.inputManager.removeEventListener(eventListener);
+		scene.runtime = this;
 
 		const { label, layers, __onLoad } = scene;
 
