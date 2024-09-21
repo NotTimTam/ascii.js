@@ -138,8 +138,6 @@ class Runtime {
 
 		this.renderer.layerManager.layers = [];
 
-		scene.runtime = this;
-
 		const { label, layers, __onLoad } = scene;
 
 		this.scene = scene;

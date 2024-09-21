@@ -1,11 +1,15 @@
 import InputManager from "./InputManager.js";
+import Runtime from "./Runtime.js";
 
 class Scene {
 	/**
 	 * A scene is a level, screen, or world that can be load in at any point during the runtime.
+	 * @param {Runtime} runtime The main runtime object.
 	 * @param {Object} config The scene configuration object.
 	 */
-	constructor(config) {
+	constructor(runtime, config) {
+		this.runtime = runtime;
+
 		Scene.validateConfig(config);
 
 		const { label, layers, onLoad, onTick } = config;
