@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-Object.defineProperty(exports, "__esModule", { value: true });
+Object.defineProperty(exports, '__esModule', { value: true });
 
 /**
  * Prettify an array when displaying it in a string.
@@ -19,9 +19,9 @@ const displayArray = (array) =>
 		})
 		.join(", ")}]`;
 
-var data = /*#__PURE__*/ Object.freeze({
+var data = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	displayArray: displayArray,
+	displayArray: displayArray
 });
 
 /**
@@ -71,7 +71,8 @@ const degreeToRadian = (degree) => degree * (Math.PI / 180);
  * @param {number} max The maximum value.
  * @returns {number} A random integer between two values.
  */
-const range = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const range = (min, max) =>
+	Math.floor(Math.random() * (max - min + 1)) + min;
 
 /**
  * Returns the factorial of a number.
@@ -133,7 +134,7 @@ const angleBetweenPoints = (x1, y1, x2, y2) => {
 const distanceBetweenPoints = (x1, y1, x2, y2) =>
 	Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 
-var math = /*#__PURE__*/ Object.freeze({
+var math = /*#__PURE__*/Object.freeze({
 	__proto__: null,
 	aabb: aabb,
 	angleBetweenPoints: angleBetweenPoints,
@@ -144,7 +145,7 @@ var math = /*#__PURE__*/ Object.freeze({
 	fact: fact,
 	radianToDegree: radianToDegree,
 	range: range,
-	vectorToCartesian: vectorToCartesian,
+	vectorToCartesian: vectorToCartesian
 });
 
 class InputManager {
@@ -284,6 +285,7 @@ class InputManager {
 		const {
 			scene: {
 				camera: { x: cameraX, y: cameraY },
+
 				renderer: {
 					width: characterWidth,
 					height: characterHeight,
@@ -1726,14 +1728,21 @@ class Layer {
 	 */
 	__populateGameObjects(gameObjectConstructors) {
 		for (const gameObjectConstructor of gameObjectConstructors)
-			if (typeof gameObject !== "function")
+			if (typeof gameObjectConstructor !== "function")
 				throw new TypeError(
 					'Each value provided to a Layer\'s "configuration.gameObjects"'
 				);
 
 		this.gameObjects = gameObjectConstructors
 			.map((gameObjectConstructor) => {
-				return gameObjectConstructor(this.scene);
+				const gameObject = gameObjectConstructor(this.scene);
+
+				if (!(gameObject instanceof GameObject))
+					throw new TypeError(
+						'Each gameObjectConstructor function must return an object of type "GameObject".'
+					);
+
+				return gameObject;
 			})
 			.filter((gameObject) => gameObject);
 
@@ -1746,10 +1755,7 @@ class Layer {
 	 */
 	get frame() {
 		const {
-			layerManager: {
-				renderer,
-				renderer: { camera },
-			},
+			scene: { renderer, camera },
 			parallax: [pX, pY],
 		} = this;
 
@@ -1866,7 +1872,7 @@ class LayerManager {
 		this.runtime = renderer.runtime;
 		this.scene = renderer.scene;
 
-		this.layers = this.loadLayers(layers);
+		this.loadLayers(layers);
 	}
 
 	/**
@@ -2020,13 +2026,6 @@ class Renderer {
 			throw new Error("No config object provided to renderer.");
 
 		this.layerManager = new LayerManager(this, layers);
-	}
-
-	/**
-	 * Get the current camera.
-	 */
-	get camera() {
-		if (this.scene) return this.scene.camera;
 	}
 
 	/**
@@ -2931,7 +2930,8 @@ class ScrollTo extends Behavior {
 				origin: [oX, oY],
 			},
 			scene: {
-				renderer: { camera, width: screenWidth, height: screenHeight },
+				camera,
+				renderer: { width: screenWidth, height: screenHeight },
 			},
 		} = this;
 

@@ -280,12 +280,13 @@ class InputManager {
 
 		const {
 			scene: {
+				camera: { x: cameraX, y: cameraY },
+
 				renderer: {
 					width: characterWidth,
 					height: characterHeight,
 					element,
 					layerManager: { layers },
-					camera: { x: cameraX, y: cameraY },
 				},
 			},
 		} = this;
@@ -1438,9 +1439,7 @@ class GameObject extends Core {
 	 */
 	get isOnScreen() {
 		const {
-			scene: {
-				renderer: { camera },
-			},
+			scene: { camera },
 			x,
 			y,
 		} = this;
@@ -1725,14 +1724,21 @@ class Layer {
 	 */
 	__populateGameObjects(gameObjectConstructors) {
 		for (const gameObjectConstructor of gameObjectConstructors)
-			if (typeof gameObject !== "function")
+			if (typeof gameObjectConstructor !== "function")
 				throw new TypeError(
 					'Each value provided to a Layer\'s "configuration.gameObjects"'
 				);
 
 		this.gameObjects = gameObjectConstructors
 			.map((gameObjectConstructor) => {
-				return gameObjectConstructor(this.scene);
+				const gameObject = gameObjectConstructor(this.scene);
+
+				if (!(gameObject instanceof GameObject))
+					throw new TypeError(
+						'Each gameObjectConstructor function must return an object of type "GameObject".'
+					);
+
+				return gameObject;
 			})
 			.filter((gameObject) => gameObject);
 
@@ -1745,10 +1751,7 @@ class Layer {
 	 */
 	get frame() {
 		const {
-			layerManager: {
-				renderer,
-				renderer: { camera },
-			},
+			scene: { renderer, camera },
 			parallax: [pX, pY],
 		} = this;
 
@@ -1865,7 +1868,7 @@ class LayerManager {
 		this.runtime = renderer.runtime;
 		this.scene = renderer.scene;
 
-		this.layers = this.loadLayers(layers);
+		this.loadLayers(layers);
 	}
 
 	/**
@@ -2019,13 +2022,6 @@ class Renderer {
 			throw new Error("No config object provided to renderer.");
 
 		this.layerManager = new LayerManager(this, layers);
-	}
-
-	/**
-	 * Get the current camera.
-	 */
-	get camera() {
-		if (this.scene) return this.scene.camera;
 	}
 
 	/**
@@ -2930,7 +2926,8 @@ class ScrollTo extends Behavior {
 				origin: [oX, oY],
 			},
 			scene: {
-				renderer: { camera, width: screenWidth, height: screenHeight },
+				camera,
+				renderer: { width: screenWidth, height: screenHeight },
 			},
 		} = this;
 
