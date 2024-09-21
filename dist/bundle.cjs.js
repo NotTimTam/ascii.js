@@ -1339,6 +1339,8 @@ class InputManager {
 					width: characterWidth,
 					height: characterHeight,
 					element,
+					layerManager: { layers },
+					camera: { x: cameraX, y: cameraY },
 				},
 			},
 		} = this;
@@ -1371,6 +1373,20 @@ class InputManager {
 				0,
 				characterHeight
 			);
+
+			this.mouse.onLayer = {};
+
+			for (const layer of layers) {
+				const {
+					label,
+					parallax: [parallaxX, parallaxY],
+				} = layer;
+
+				this.mouse.onLayer[label] = [
+					this.mouse.x + cameraX * parallaxX,
+					this.mouse.y + cameraY * parallaxY,
+				];
+			}
 		}
 	}
 
@@ -2117,7 +2133,9 @@ class Menu extends GameObject {
 			if (this.index < 0) this.index = topIndex;
 			if (this.index > topIndex) this.index = 0;
 		} else if (event.type === "mousemove") {
-			const { x, y } = event;
+			const { onLayer } = event;
+
+			const [x, y] = onLayer[this.layer.label];
 
 			const [menuX, menuY] = [x - this.x, y - this.y];
 

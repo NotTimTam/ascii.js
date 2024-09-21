@@ -61,7 +61,9 @@ class Menu extends GameObject {
 			if (this.index < 0) this.index = topIndex;
 			if (this.index > topIndex) this.index = 0;
 		} else if (event.type === "mousemove") {
-			const { x, y } = event;
+			const { onLayer } = event;
+
+			const [x, y] = onLayer[this.layer.label];
 
 			const [menuX, menuY] = [x - this.x, y - this.y];
 

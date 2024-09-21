@@ -137,6 +137,8 @@ class InputManager {
 					width: characterWidth,
 					height: characterHeight,
 					element,
+					layerManager: { layers },
+					camera: { x: cameraX, y: cameraY },
 				},
 			},
 		} = this;
@@ -169,6 +171,20 @@ class InputManager {
 				0,
 				characterHeight
 			);
+
+			this.mouse.onLayer = {};
+
+			for (const layer of layers) {
+				const {
+					label,
+					parallax: [parallaxX, parallaxY],
+				} = layer;
+
+				this.mouse.onLayer[label] = [
+					this.mouse.x + cameraX * parallaxX,
+					this.mouse.y + cameraY * parallaxY,
+				];
+			}
 		}
 	}
 
