@@ -22,7 +22,9 @@ class TopDownMovement extends Behavior {
 		const { defaultControls = true } = config;
 
 		if (defaultControls)
-			runtime.inputManager.addEventListener(this.handleInput.bind(this));
+			runtime.scene.inputManager.addEventListener(
+				this.handleInput.bind(this)
+			);
 	}
 
 	/**

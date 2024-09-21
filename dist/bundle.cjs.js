@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', { value: true });
+Object.defineProperty(exports, "__esModule", { value: true });
 
 /**
  * Prettify an array when displaying it in a string.
@@ -19,9 +19,9 @@ const displayArray = (array) =>
 		})
 		.join(", ")}]`;
 
-var data = /*#__PURE__*/Object.freeze({
+var data = /*#__PURE__*/ Object.freeze({
 	__proto__: null,
-	displayArray: displayArray
+	displayArray: displayArray,
 });
 
 class Core {
@@ -405,8 +405,7 @@ const degreeToRadian = (degree) => degree * (Math.PI / 180);
  * @param {number} max The maximum value.
  * @returns {number} A random integer between two values.
  */
-const range = (min, max) =>
-	Math.floor(Math.random() * (max - min + 1)) + min;
+const range = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 /**
  * Returns the factorial of a number.
@@ -468,7 +467,7 @@ const angleBetweenPoints = (x1, y1, x2, y2) => {
 const distanceBetweenPoints = (x1, y1, x2, y2) =>
 	Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 
-var math = /*#__PURE__*/Object.freeze({
+var math = /*#__PURE__*/ Object.freeze({
 	__proto__: null,
 	aabb: aabb,
 	angleBetweenPoints: angleBetweenPoints,
@@ -479,7 +478,7 @@ var math = /*#__PURE__*/Object.freeze({
 	fact: fact,
 	radianToDegree: radianToDegree,
 	range: range,
-	vectorToCartesian: vectorToCartesian
+	vectorToCartesian: vectorToCartesian,
 });
 
 class Camera extends GameObject {
@@ -2110,7 +2109,9 @@ class Menu extends GameObject {
 
 		this.title = title;
 
-		runtime.inputManager.addEventListener(this.handleInput.bind(this));
+		runtime.scene.inputManager.addEventListener(
+			this.handleInput.bind(this)
+		);
 
 		this.__inputMode = "keyboard";
 	}
@@ -2762,7 +2763,9 @@ class TopDownMovement extends Behavior {
 		const { defaultControls = true } = config;
 
 		if (defaultControls)
-			runtime.inputManager.addEventListener(this.handleInput.bind(this));
+			runtime.scene.inputManager.addEventListener(
+				this.handleInput.bind(this)
+			);
 	}
 
 	/**

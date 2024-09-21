@@ -1,24 +1,27 @@
 import { clamp } from "../util/math.js";
+import Scene from "./Scene.js";
 
 class InputManager {
 	/**
 	 * Handles user input.
-	 * @param {Runtime} runtime The game's runtime object.
+	 * @param {Scene} scene The current scene.
 	 */
-	constructor(runtime) {
-		this.runtime = runtime;
+	constructor(scene) {
+		this.scene = scene;
 
 		this.keyboard = { keys: {}, keyCodes: {} };
 		this.mouse = { buttons: {} };
 
 		this.__eventListeners = [];
+
+		this.__onCreated();
 	}
 
 	/**
 	 * Get the pointer lock status.
 	 */
 	get hasPointerLock() {
-		const { element } = this.runtime.renderer;
+		const { element } = this.scene.runtime.renderer;
 		if (document.pointerLockElement === element) return true;
 		else return false;
 	}
@@ -27,7 +30,7 @@ class InputManager {
 	 * Initiate a pointer lock request. Pointer lock cannot be achieved unless the user clicks the screen after this method is called.
 	 */
 	async requestPointerLock() {
-		const { element } = this.runtime.renderer;
+		const { element } = this.scene.runtime.renderer;
 
 		const initiatePointerLock = () => {
 			if (!this.hasPointerLock) element.requestPointerLock();
@@ -132,13 +135,15 @@ class InputManager {
 		const { clientX, clientY, movementX, movementY } = event;
 
 		const {
-			runtime: {
-				renderer: {
-					width: characterWidth,
-					height: characterHeight,
-					element,
-					layerManager: { layers },
-					camera: { x: cameraX, y: cameraY },
+			scene: {
+				runtime: {
+					renderer: {
+						width: characterWidth,
+						height: characterHeight,
+						element,
+						layerManager: { layers },
+						camera: { x: cameraX, y: cameraY },
+					},
 				},
 			},
 		} = this;
@@ -245,7 +250,7 @@ class InputManager {
 		);
 	}
 
-	__onStartup() {
+	__onCreated() {
 		window.addEventListener("keydown", (e) => this.__onEvent(e));
 		window.addEventListener("keyup", (e) => this.__onEvent(e));
 		window.addEventListener("mousemove", (e) => this.__onEvent(e));

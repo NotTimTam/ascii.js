@@ -1,5 +1,4 @@
 import AudioManager from "./AudioManager.js";
-import InputManager from "./InputManager.js";
 import Noise from "./Noise.js";
 import Scene from "./Scene.js";
 
@@ -19,7 +18,6 @@ class Runtime {
 
 		this.renderer = new Renderer(this);
 
-		this.inputManager = new InputManager(this);
 		this.audioManager = new AudioManager(this);
 
 		this.running = false;
@@ -103,7 +101,6 @@ class Runtime {
 
 		// Run renderer startup.
 		this.__runOnStartup(this.renderer);
-		this.__runOnStartup(this.inputManager);
 	}
 
 	/**
@@ -141,8 +138,7 @@ class Runtime {
 
 		this.renderer.layerManager.layers = [];
 
-		for (const eventListener of this.inputManager.__eventListeners)
-			this.inputManager.removeEventListener(eventListener);
+		scene.runtime = this;
 
 		const { label, layers, __onLoad } = scene;
 

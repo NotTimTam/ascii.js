@@ -1,3 +1,5 @@
+import InputManager from "./InputManager.js";
+
 class Scene {
 	/**
 	 * A scene is a level, screen, or world that can be load in at any point during the runtime.
@@ -10,6 +12,8 @@ class Scene {
 
 		this.label = label;
 		this.layers = layers;
+
+		this.inputManager = new InputManager(this);
 
 		if (onLoad) this.__onLoad = onLoad;
 		if (onTick) this.__onTick = onTick;
