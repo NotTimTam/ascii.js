@@ -16,7 +16,6 @@ class Scene {
 		const { label, layers, onLoad, onTick } = config;
 
 		this.label = label;
-		this.layers = layers;
 
 		this.renderer = new Renderer(this, layers);
 		this.inputManager = new InputManager(this);
