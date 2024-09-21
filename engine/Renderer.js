@@ -1,9 +1,9 @@
 import { displayArray } from "../util/data.js";
-import Camera from "./Camera.js";
 import LayerManager from "./LayerManager.js";
 
 import Pixel from "../core/Pixel.js";
 import Frame from "./Frame.js";
+import Camera from "./Camera.js";
 
 class Renderer {
 	/**
@@ -22,6 +22,7 @@ class Renderer {
 			throw new Error("No config object provided to renderer.");
 
 		this.layerManager = new LayerManager(this, layers);
+		this.camera = new Camera(this);
 	}
 
 	/**

@@ -1,15 +1,15 @@
 import GameObject from "../core/GameObject.js";
 import { aabb } from "../util/math.js";
+import Renderer from "./Renderer.js";
 
 class Camera extends GameObject {
 	/**
 	 * The scene contains variable layers and compiles them into one frame to render to the screen.
-	 * @param {Scene} scene The scene this Object is a part of.
+	 * @param {Renderer} renderer The `Renderer` this `Camera` is a part of.
 	 */
-	constructor(scene) {
-		super(scene, 0, 0);
-
-		this.renderer = scene.renderer;
+	constructor(renderer) {
+		super(renderer.scene, 0, 0);
+		this.renderer = renderer;
 
 		this.config = this.renderer.config && this.renderer.config.camera;
 	}

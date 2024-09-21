@@ -1,4 +1,3 @@
-import Camera from "./Camera.js";
 import InputManager from "./InputManager.js";
 import Renderer from "./Renderer.js";
 import Runtime from "./Runtime.js";
@@ -21,7 +20,6 @@ class Scene {
 
 		this.renderer = new Renderer(this, layers);
 		this.inputManager = new InputManager(this);
-		this.camera = new Camera(this);
 
 		if (onLoad) this.onLoadPassthrough = onLoad;
 		if (onTick) this.onTickPassthrough = onTick;
@@ -29,6 +27,10 @@ class Scene {
 		this.__onTick.bind(this);
 
 		this.__onLoad();
+	}
+
+	get camera() {
+		return this.renderer && this.renderer.camera;
 	}
 
 	/**
