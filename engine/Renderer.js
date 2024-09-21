@@ -7,11 +7,13 @@ import Frame from "./Frame.js";
 
 class Renderer {
 	/**
-	 * Handles rendering the game using **2D Context**. (slower, CPU only)
-	 * @param {Runtime} runtime The game's runtime object.
+	 * Handles rendering the game using **2D Context**.
+	 * @param {Scene} scene The scene this Object is a part of.
+	 * @param {Array<Object>} layers The layer configuration objects to pass to this `Renderer` instance's `LayerManager` instance.
 	 */
-	constructor(runtime) {
-		this.runtime = runtime;
+	constructor(scene, layers) {
+		this.scene = scene;
+		this.runtime = scene.runtime;
 		this.config = this.runtime.config && this.runtime.config.renderer;
 
 		Renderer.validateConfig(this.config);
@@ -19,14 +21,7 @@ class Renderer {
 		if (!this.config)
 			throw new Error("No config object provided to renderer.");
 
-		this.layerManager = new LayerManager(this);
-	}
-
-	/**
-	 * Get the current camera.
-	 */
-	get camera() {
-		if (this.runtime.scene) return this.runtime.scene.camera;
+		this.layerManager = new LayerManager(this, layers);
 	}
 
 	/**

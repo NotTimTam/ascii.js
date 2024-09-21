@@ -1,6 +1,6 @@
-'use strict';
+"use strict";
 
-Object.defineProperty(exports, '__esModule', { value: true });
+Object.defineProperty(exports, "__esModule", { value: true });
 
 /**
  * Prettify an array when displaying it in a string.
@@ -19,9 +19,9 @@ const displayArray = (array) =>
 		})
 		.join(", ")}]`;
 
-var data = /*#__PURE__*/Object.freeze({
+var data = /*#__PURE__*/ Object.freeze({
 	__proto__: null,
-	displayArray: displayArray
+	displayArray: displayArray,
 });
 
 /**
@@ -71,8 +71,7 @@ const degreeToRadian = (degree) => degree * (Math.PI / 180);
  * @param {number} max The maximum value.
  * @returns {number} A random integer between two values.
  */
-const range = (min, max) =>
-	Math.floor(Math.random() * (max - min + 1)) + min;
+const range = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 /**
  * Returns the factorial of a number.
@@ -134,7 +133,7 @@ const angleBetweenPoints = (x1, y1, x2, y2) => {
 const distanceBetweenPoints = (x1, y1, x2, y2) =>
 	Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 
-var math = /*#__PURE__*/Object.freeze({
+var math = /*#__PURE__*/ Object.freeze({
 	__proto__: null,
 	aabb: aabb,
 	angleBetweenPoints: angleBetweenPoints,
@@ -145,7 +144,7 @@ var math = /*#__PURE__*/Object.freeze({
 	fact: fact,
 	radianToDegree: radianToDegree,
 	range: range,
-	vectorToCartesian: vectorToCartesian
+	vectorToCartesian: vectorToCartesian,
 });
 
 class InputManager {
@@ -169,7 +168,7 @@ class InputManager {
 	 * Get the pointer lock status.
 	 */
 	get hasPointerLock() {
-		const { element } = this.runtime.renderer;
+		const { element } = this.scene.renderer;
 		if (document.pointerLockElement === element) return true;
 		else return false;
 	}
@@ -178,7 +177,7 @@ class InputManager {
 	 * Initiate a pointer lock request. Pointer lock cannot be achieved unless the user clicks the screen after this method is called.
 	 */
 	async requestPointerLock() {
-		const { element } = this.runtime.renderer;
+		const { element } = this.scene.renderer;
 
 		const initiatePointerLock = () => {
 			if (!this.hasPointerLock) element.requestPointerLock();
@@ -283,13 +282,13 @@ class InputManager {
 		const { clientX, clientY, movementX, movementY } = event;
 
 		const {
-			runtime: {
+			scene: {
+				camera: { x: cameraX, y: cameraY },
 				renderer: {
 					width: characterWidth,
 					height: characterHeight,
 					element,
 					layerManager: { layers },
-					camera: { x: cameraX, y: cameraY },
 				},
 			},
 		} = this;
@@ -1037,14 +1036,19 @@ class Runtime {
 
 		this.noise = new Noise(config.seed || Date.now());
 
-		this.renderer = new Renderer(this);
-
 		this.audioManager = new AudioManager(this);
 
 		this.running = false;
 		this.initialized = false;
 
 		this.paused = false;
+	}
+
+	/**
+	 * Get the renderer in the current scene.
+	 */
+	get renderer() {
+		return this.scene && this.scene.renderer;
 	}
 
 	get webGLSupported() {
@@ -1119,9 +1123,6 @@ class Runtime {
 	__onStartup() {
 		this.start = performance.now();
 		this.__lastFrame = 0;
-
-		// Run renderer startup.
-		this.__runOnStartup(this.renderer);
 	}
 
 	/**
@@ -1135,10 +1136,7 @@ class Runtime {
 		this.__lastFrame = currentTime;
 
 		// Run scene logic.
-		this.__runOnTick(this.scene);
-
-		// Run renderer.
-		this.__runOnTick(this.renderer);
+		if (this.scene) this.__runOnTick(this.scene);
 
 		// Trigger next loop.
 		requestAnimationFrame((currentTime) => this.__onTick(currentTime));
@@ -1157,15 +1155,7 @@ class Runtime {
 		if (!(scene instanceof Scene))
 			throw new Error(`Provided scene is not a "Scene" object`);
 
-		this.renderer.layerManager.layers = [];
-
-		const { label, layers, __onLoad } = scene;
-
 		this.scene = scene;
-
-		this.renderer.layerManager.loadLayers(layers);
-
-		__onLoad && __onLoad(this);
 	}
 
 	/**
@@ -1206,11 +1196,16 @@ class Scene {
 		this.label = label;
 		this.layers = layers;
 
+		this.renderer = new Renderer(this, layers);
 		this.inputManager = new InputManager(this);
 		this.camera = new Camera(this);
 
-		if (onLoad) this.__onLoad = onLoad;
-		if (onTick) this.__onTick = onTick;
+		if (onLoad) this.onLoadPassthrough = onLoad;
+		if (onTick) this.onTickPassthrough = onTick;
+
+		this.__onTick.bind(this);
+
+		this.__onLoad();
 	}
 
 	/**
@@ -1279,6 +1274,17 @@ class Scene {
 			throw new Error(
 				`"onTick" method provided to scene config is not of type "function".`
 			);
+	}
+
+	__onLoad() {
+		// Run renderer startup.
+		this.runtime.__runOnStartup(this.renderer);
+
+		if (this.onLoadPassthrough) this.onLoadPassthrough(this);
+	}
+
+	__onTick() {
+		if (this.onTickPassthrough) this.onTickPassthrough(this);
 	}
 }
 
@@ -1435,9 +1441,7 @@ class GameObject extends Core {
 	 */
 	get isOnScreen() {
 		const {
-			runtime: {
-				renderer: { camera },
-			},
+			scene: { camera },
 			x,
 			y,
 		} = this;
@@ -1526,7 +1530,7 @@ class GameObject extends Core {
 	 */
 	get layer() {
 		const {
-			runtime: {
+			scene: {
 				renderer: {
 					layerManager: { layers },
 				},
@@ -1562,7 +1566,7 @@ class GameObject extends Core {
 				throw new Error("Provided layer label is not a string.");
 
 			const {
-				runtime: {
+				scene: {
 					renderer: {
 						layerManager: { layers },
 					},
@@ -1631,7 +1635,7 @@ class Camera extends GameObject {
 	constructor(scene) {
 		super(scene, 0, 0);
 
-		this.renderer = scene.runtime.renderer;
+		this.renderer = scene.renderer;
 
 		this.config = this.renderer.config && this.renderer.config.camera;
 	}
@@ -1694,17 +1698,20 @@ class Layer {
 	 * @param {Object} config The `Layer`'s config object.
 	 * @param {string} config.label This layer's label.
 	 * @param {Array<Number>} config.parallax This layer's parallax array. `[x, y]` Numbers 0-1 determine how much this layer moves with the camera. `[0, 0]` for layers that do not move.
+	 * @param {Array<function>} config.gameObjectConstructors An array of functions that return game objects.
 	 */
 	constructor(layerManager, config) {
-		const { label, parallax = [1, 1], gameObjects } = config;
+		const { label, parallax = [1, 1], gameObjectConstructors } = config;
 
 		this.runtime = layerManager.runtime;
+		this.scene = layerManager.scene;
 		this.layerManager = layerManager;
 		this.label = label;
 
 		this.layerManager.layers.push(this);
 
-		if (gameObjects) this.__populateGameObjects(gameObjects);
+		if (gameObjectConstructors)
+			this.__populateGameObjects(gameObjectConstructors);
 		else this.gameObjects = [];
 
 		this.paused = false;
@@ -1714,16 +1721,19 @@ class Layer {
 
 	/**
 	 * Converts the config array of gameObjects into active `GameObject`s.
-	 * @param {Array<Function|GameObject>} gameObjects The array to populate.
+	 * @param {Array<Function|GameObject>} gameObjectConstructors The array of `GameObject` population functions to run. Each function is passed the current `Scene` instance.
 	 * @returns {Array<GameObject>} The new array of `GameObject`s.
 	 */
-	__populateGameObjects(gameObjects) {
-		this.gameObjects = gameObjects
-			.map((gameObject) => {
-				if (typeof gameObject === "function")
-					gameObject = gameObject(this.runtime);
+	__populateGameObjects(gameObjectConstructors) {
+		for (const gameObjectConstructor of gameObjectConstructors)
+			if (typeof gameObject !== "function")
+				throw new TypeError(
+					'Each value provided to a Layer\'s "configuration.gameObjects"'
+				);
 
-				return gameObject;
+		this.gameObjects = gameObjectConstructors
+			.map((gameObjectConstructor) => {
+				return gameObjectConstructor(this.scene);
 			})
 			.filter((gameObject) => gameObject);
 
@@ -1849,12 +1859,14 @@ class LayerManager {
 	/**
 	 * The layer manager contains variable layers and compiles them into one frame to render to the screen.
 	 * @param {Renderer} renderer The main runtime's renderer object.
+	 * @param {Array<Object>} layers The layer configuration objects.
 	 */
-	constructor(renderer) {
+	constructor(renderer, layers) {
 		this.renderer = renderer;
 		this.runtime = renderer.runtime;
+		this.scene = renderer.scene;
 
-		this.layers = [];
+		this.layers = this.loadLayers(layers);
 	}
 
 	/**
@@ -1943,7 +1955,7 @@ class LayerManager {
 
 	__mergedRender() {
 		const {
-			runtime: { renderer },
+			scene: { renderer },
 		} = this;
 
 		const frame = renderer.compileFrames(
@@ -1962,7 +1974,7 @@ class LayerManager {
 
 	__stackedRender() {
 		const {
-			runtime: { renderer },
+			scene: { renderer },
 		} = this;
 
 		const frames = this.layers.map((layer) => layer.frame);
@@ -1993,11 +2005,13 @@ class LayerManager {
 
 class Renderer {
 	/**
-	 * Handles rendering the game using **2D Context**. (slower, CPU only)
-	 * @param {Runtime} runtime The game's runtime object.
+	 * Handles rendering the game using **2D Context**.
+	 * @param {Scene} scene The scene this Object is a part of.
+	 * @param {Array<Object>} layers The layer configuration objects to pass to this `Renderer` instance's `LayerManager` instance.
 	 */
-	constructor(runtime) {
-		this.runtime = runtime;
+	constructor(scene, layers) {
+		this.scene = scene;
+		this.runtime = scene.runtime;
 		this.config = this.runtime.config && this.runtime.config.renderer;
 
 		Renderer.validateConfig(this.config);
@@ -2005,14 +2019,14 @@ class Renderer {
 		if (!this.config)
 			throw new Error("No config object provided to renderer.");
 
-		this.layerManager = new LayerManager(this);
+		this.layerManager = new LayerManager(this, layers);
 	}
 
 	/**
 	 * Get the current camera.
 	 */
 	get camera() {
-		if (this.runtime.scene) return this.runtime.scene.camera;
+		if (this.scene) return this.scene.camera;
 	}
 
 	/**
@@ -2582,7 +2596,7 @@ class Text extends GameObject {
 		const {
 			wrap,
 			value,
-			runtime: {
+			scene: {
 				renderer: { width },
 			},
 			color,
@@ -2751,7 +2765,7 @@ class Menu extends GameObject {
 
 	get width() {
 		const {
-			runtime: {
+			scene: {
 				renderer: { width },
 			},
 		} = this;
@@ -2764,7 +2778,7 @@ class Menu extends GameObject {
 
 	get height() {
 		const {
-			runtime: {
+			scene: {
 				renderer: { height },
 			},
 		} = this;
@@ -2793,7 +2807,7 @@ class Menu extends GameObject {
 		const {
 			options,
 			scene,
-			runtime: {
+			scene: {
 				renderer: { width, height },
 			},
 			title,
@@ -2916,7 +2930,7 @@ class ScrollTo extends Behavior {
 				height,
 				origin: [oX, oY],
 			},
-			runtime: {
+			scene: {
 				renderer: { camera, width: screenWidth, height: screenHeight },
 			},
 		} = this;
@@ -3045,7 +3059,7 @@ class TopDownMovement extends Behavior {
 				height,
 				origin: [oX, oY],
 			},
-			runtime: {
+			scene: {
 				renderer: { layerManager },
 			},
 		} = this;

@@ -1,5 +1,6 @@
 import Camera from "./Camera.js";
 import InputManager from "./InputManager.js";
+import Renderer from "./Renderer.js";
 import Runtime from "./Runtime.js";
 
 class Scene {
@@ -18,11 +19,16 @@ class Scene {
 		this.label = label;
 		this.layers = layers;
 
+		this.renderer = new Renderer(this, layers);
 		this.inputManager = new InputManager(this);
 		this.camera = new Camera(this);
 
-		if (onLoad) this.__onLoad = onLoad;
-		if (onTick) this.__onTick = onTick;
+		if (onLoad) this.onLoadPassthrough = onLoad;
+		if (onTick) this.onTickPassthrough = onTick;
+
+		this.__onTick.bind(this);
+
+		this.__onLoad();
 	}
 
 	/**
@@ -91,6 +97,17 @@ class Scene {
 			throw new Error(
 				`"onTick" method provided to scene config is not of type "function".`
 			);
+	}
+
+	__onLoad() {
+		// Run renderer startup.
+		this.runtime.__runOnStartup(this.renderer);
+
+		if (this.onLoadPassthrough) this.onLoadPassthrough(this);
+	}
+
+	__onTick() {
+		if (this.onTickPassthrough) this.onTickPassthrough(this);
 	}
 }
 

@@ -16,14 +16,19 @@ class Runtime {
 
 		this.noise = new Noise(config.seed || Date.now());
 
-		this.renderer = new Renderer(this);
-
 		this.audioManager = new AudioManager(this);
 
 		this.running = false;
 		this.initialized = false;
 
 		this.paused = false;
+	}
+
+	/**
+	 * Get the renderer in the current scene.
+	 */
+	get renderer() {
+		return this.scene && this.scene.renderer;
 	}
 
 	get webGLSupported() {
@@ -98,9 +103,6 @@ class Runtime {
 	__onStartup() {
 		this.start = performance.now();
 		this.__lastFrame = 0;
-
-		// Run renderer startup.
-		this.__runOnStartup(this.renderer);
 	}
 
 	/**
@@ -114,10 +116,7 @@ class Runtime {
 		this.__lastFrame = currentTime;
 
 		// Run scene logic.
-		this.__runOnTick(this.scene);
-
-		// Run renderer.
-		this.__runOnTick(this.renderer);
+		if (this.scene) this.__runOnTick(this.scene);
 
 		// Trigger next loop.
 		requestAnimationFrame((currentTime) => this.__onTick(currentTime));
@@ -136,15 +135,7 @@ class Runtime {
 		if (!(scene instanceof Scene))
 			throw new Error(`Provided scene is not a "Scene" object`);
 
-		this.renderer.layerManager.layers = [];
-
-		const { label, layers, __onLoad } = scene;
-
 		this.scene = scene;
-
-		this.renderer.layerManager.loadLayers(layers);
-
-		__onLoad && __onLoad(this);
 	}
 
 	/**

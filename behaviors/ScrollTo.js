@@ -22,8 +22,9 @@ class ScrollTo extends Behavior {
 				height,
 				origin: [oX, oY],
 			},
-			runtime: {
-				renderer: { camera, width: screenWidth, height: screenHeight },
+			scene: {
+				camera,
+				renderer: { width: screenWidth, height: screenHeight },
 			},
 		} = this;
 

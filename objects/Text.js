@@ -56,7 +56,7 @@ class Text extends GameObject {
 		const {
 			wrap,
 			value,
-			runtime: {
+			scene: {
 				renderer: { width },
 			},
 			color,

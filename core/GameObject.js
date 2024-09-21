@@ -38,9 +38,7 @@ class GameObject extends Core {
 	 */
 	get isOnScreen() {
 		const {
-			runtime: {
-				renderer: { camera },
-			},
+			scene: { camera },
 			x,
 			y,
 		} = this;
@@ -129,7 +127,7 @@ class GameObject extends Core {
 	 */
 	get layer() {
 		const {
-			runtime: {
+			scene: {
 				renderer: {
 					layerManager: { layers },
 				},
@@ -165,7 +163,7 @@ class GameObject extends Core {
 				throw new Error("Provided layer label is not a string.");
 
 			const {
-				runtime: {
+				scene: {
 					renderer: {
 						layerManager: { layers },
 					},

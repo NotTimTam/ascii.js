@@ -91,7 +91,7 @@ class Menu extends GameObject {
 
 	get width() {
 		const {
-			runtime: {
+			scene: {
 				renderer: { width },
 			},
 		} = this;
@@ -104,7 +104,7 @@ class Menu extends GameObject {
 
 	get height() {
 		const {
-			runtime: {
+			scene: {
 				renderer: { height },
 			},
 		} = this;
@@ -133,7 +133,7 @@ class Menu extends GameObject {
 		const {
 			options,
 			scene,
-			runtime: {
+			scene: {
 				renderer: { width, height },
 			},
 			title,

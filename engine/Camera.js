@@ -9,7 +9,7 @@ class Camera extends GameObject {
 	constructor(scene) {
 		super(scene, 0, 0);
 
-		this.renderer = scene.runtime.renderer;
+		this.renderer = scene.renderer;
 
 		this.config = this.renderer.config && this.renderer.config.camera;
 	}

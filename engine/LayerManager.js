@@ -11,17 +11,20 @@ export class Layer {
 	 * @param {Object} config The `Layer`'s config object.
 	 * @param {string} config.label This layer's label.
 	 * @param {Array<Number>} config.parallax This layer's parallax array. `[x, y]` Numbers 0-1 determine how much this layer moves with the camera. `[0, 0]` for layers that do not move.
+	 * @param {Array<function>} config.gameObjectConstructors An array of functions that return game objects.
 	 */
 	constructor(layerManager, config) {
-		const { label, parallax = [1, 1], gameObjects } = config;
+		const { label, parallax = [1, 1], gameObjectConstructors } = config;
 
 		this.runtime = layerManager.runtime;
+		this.scene = layerManager.scene;
 		this.layerManager = layerManager;
 		this.label = label;
 
 		this.layerManager.layers.push(this);
 
-		if (gameObjects) this.__populateGameObjects(gameObjects);
+		if (gameObjectConstructors)
+			this.__populateGameObjects(gameObjectConstructors);
 		else this.gameObjects = [];
 
 		this.paused = false;
@@ -31,14 +34,24 @@ export class Layer {
 
 	/**
 	 * Converts the config array of gameObjects into active `GameObject`s.
-	 * @param {Array<Function|GameObject>} gameObjects The array to populate.
+	 * @param {Array<Function|GameObject>} gameObjectConstructors The array of `GameObject` population functions to run. Each function is passed the current `Scene` instance.
 	 * @returns {Array<GameObject>} The new array of `GameObject`s.
 	 */
-	__populateGameObjects(gameObjects) {
-		this.gameObjects = gameObjects
-			.map((gameObject) => {
-				if (typeof gameObject === "function")
-					gameObject = gameObject(this.runtime);
+	__populateGameObjects(gameObjectConstructors) {
+		for (const gameObjectConstructor of gameObjectConstructors)
+			if (typeof gameObjectConstructor !== "function")
+				throw new TypeError(
+					'Each value provided to a Layer\'s "configuration.gameObjects"'
+				);
+
+		this.gameObjects = gameObjectConstructors
+			.map((gameObjectConstructor) => {
+				const gameObject = gameObjectConstructor(this.scene);
+
+				if (!(gameObject instanceof GameObject))
+					throw new TypeError(
+						'Each gameObjectConstructor function must return an object of type "GameObject".'
+					);
 
 				return gameObject;
 			})
@@ -53,10 +66,7 @@ export class Layer {
 	 */
 	get frame() {
 		const {
-			layerManager: {
-				renderer,
-				renderer: { camera },
-			},
+			scene: { renderer, camera },
 			parallax: [pX, pY],
 		} = this;
 
@@ -166,12 +176,14 @@ class LayerManager {
 	/**
 	 * The layer manager contains variable layers and compiles them into one frame to render to the screen.
 	 * @param {Renderer} renderer The main runtime's renderer object.
+	 * @param {Array<Object>} layers The layer configuration objects.
 	 */
-	constructor(renderer) {
+	constructor(renderer, layers) {
 		this.renderer = renderer;
 		this.runtime = renderer.runtime;
+		this.scene = renderer.scene;
 
-		this.layers = [];
+		this.loadLayers(layers);
 	}
 
 	/**
@@ -260,7 +272,7 @@ class LayerManager {
 
 	__mergedRender() {
 		const {
-			runtime: { renderer },
+			scene: { renderer },
 		} = this;
 
 		const frame = renderer.compileFrames(
@@ -279,7 +291,7 @@ class LayerManager {
 
 	__stackedRender() {
 		const {
-			runtime: { renderer },
+			scene: { renderer },
 		} = this;
 
 		const frames = this.layers.map((layer) => layer.frame);
