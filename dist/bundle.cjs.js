@@ -1286,6 +1286,9 @@ class Scene {
 	}
 
 	__onTick() {
+		// Run renderer startup.
+		this.runtime.__runOnTick(this.renderer);
+
 		if (this.onTickPassthrough) this.onTickPassthrough(this);
 	}
 }
