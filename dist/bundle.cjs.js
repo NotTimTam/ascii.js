@@ -1199,6 +1199,11 @@ class Scene {
 	constructor(runtime, config) {
 		this.runtime = runtime;
 
+		if (!runtime || !(runtime instanceof Runtime))
+			throw new TypeError(
+				"Scene constructor was not provided an instance of Runtime."
+			);
+
 		Scene.validateConfig(config);
 
 		const { label, layers, onLoad, onTick } = config;
@@ -1214,6 +1219,10 @@ class Scene {
 		this.__onTick.bind(this);
 
 		this.__onLoad();
+	}
+
+	get layerManager() {
+		return this.renderer.layerManager;
 	}
 
 	get camera() {
@@ -1455,6 +1464,8 @@ class GameObject extends Core {
 	 * Get whether the game object is on-screen.
 	 */
 	get isOnScreen() {
+		if (!this.scene || !this.layer) return false;
+
 		const {
 			scene: { camera },
 			x,
@@ -2738,7 +2749,8 @@ class Menu extends GameObject {
 	}
 
 	handleInput(event) {
-		if (!this.visible) return;
+		if (!this.isOnScreen || !this.visible) return;
+
 		if (event.type === "keydown") {
 			this.__inputMode = "keyboard";
 
@@ -2813,7 +2825,7 @@ class Menu extends GameObject {
 
 		let longestOption = 0;
 
-		Object.values(options).forEach((value, index) => {
+		Object.values(options).forEach((value) => {
 			const optionDisplay = value;
 			if (optionDisplay.length > longestOption)
 				longestOption = optionDisplay.length;

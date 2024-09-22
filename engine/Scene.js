@@ -11,6 +11,11 @@ class Scene {
 	constructor(runtime, config) {
 		this.runtime = runtime;
 
+		if (!runtime || !(runtime instanceof Runtime))
+			throw new TypeError(
+				"Scene constructor was not provided an instance of Runtime."
+			);
+
 		Scene.validateConfig(config);
 
 		const { label, layers, onLoad, onTick } = config;
@@ -26,6 +31,10 @@ class Scene {
 		this.__onTick.bind(this);
 
 		this.__onLoad();
+	}
+
+	get layerManager() {
+		return this.renderer.layerManager;
 	}
 
 	get camera() {

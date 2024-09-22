@@ -37,6 +37,8 @@ class GameObject extends Core {
 	 * Get whether the game object is on-screen.
 	 */
 	get isOnScreen() {
+		if (!this.scene || !this.layer) return false;
+
 		const {
 			scene: { camera },
 			x,

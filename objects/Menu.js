@@ -45,7 +45,8 @@ class Menu extends GameObject {
 	}
 
 	handleInput(event) {
-		if (!this.visible) return;
+		if (!this.isOnScreen || !this.visible) return;
+
 		if (event.type === "keydown") {
 			this.__inputMode = "keyboard";
 
@@ -120,7 +121,7 @@ class Menu extends GameObject {
 
 		let longestOption = 0;
 
-		Object.values(options).forEach((value, index) => {
+		Object.values(options).forEach((value) => {
 			const optionDisplay = value;
 			if (optionDisplay.length > longestOption)
 				longestOption = optionDisplay.length;
