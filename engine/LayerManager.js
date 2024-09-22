@@ -55,7 +55,9 @@ export class Layer {
 
 				return gameObject;
 			})
-			.filter((gameObject) => gameObject);
+			.filter(
+				(gameObject) => gameObject && gameObject instanceof GameObject
+			);
 
 		for (const gameObject of this.gameObjects)
 			gameObject.layer = this.label; // Put game object on this layer.
@@ -182,8 +184,7 @@ class LayerManager {
 		this.renderer = renderer;
 		this.runtime = renderer.runtime;
 		this.scene = renderer.scene;
-
-		this.loadLayers(layers);
+		this.layers = layers;
 	}
 
 	/**
@@ -299,6 +300,10 @@ class LayerManager {
 		renderer.clearDisplay();
 
 		for (const frame of frames) renderer.drawFrame(frame);
+	}
+
+	__onLoad() {
+		this.loadLayers(this.layers);
 	}
 
 	__onTick() {

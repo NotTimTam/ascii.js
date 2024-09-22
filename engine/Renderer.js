@@ -342,11 +342,13 @@ class Renderer {
 	/**
 	 * Code that runs when the project starts.
 	 */
-	__onStartup() {
+	__onLoad() {
 		this.__intializeDisplay();
 		this.__rescaleDisplay();
 
 		window.addEventListener("resize", () => this.__rescaleDisplay());
+
+		this.runtime.__runOnLoad(this.layerManager);
 	}
 
 	/**

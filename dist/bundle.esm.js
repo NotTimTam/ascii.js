@@ -1116,6 +1116,14 @@ class Runtime {
 		object.__onTick && object.__onTick(this, ...passthrough);
 
 	/**
+	 * Run the __onLoad method of any object.
+	 * @param {Object} object The object whose method should be run.
+	 * @param  {...any} passthrough The data to pass through to that method.
+	 */
+	__runOnLoad = (object, ...passthrough) =>
+		object.__onLoad && object.__onLoad(...passthrough);
+
+	/**
 	 * Code that runs when the project starts.
 	 */
 	__onStartup() {
@@ -1278,7 +1286,7 @@ class Scene {
 
 	__onLoad() {
 		// Run renderer startup.
-		this.runtime.__runOnStartup(this.renderer);
+		this.runtime.__runOnLoad(this.renderer);
 
 		if (this.onLoadPassthrough) this.onLoadPassthrough(this);
 	}
@@ -1706,7 +1714,9 @@ class Layer {
 
 				return gameObject;
 			})
-			.filter((gameObject) => gameObject);
+			.filter(
+				(gameObject) => gameObject && gameObject instanceof GameObject
+			);
 
 		for (const gameObject of this.gameObjects)
 			gameObject.layer = this.label; // Put game object on this layer.
@@ -1833,8 +1843,7 @@ class LayerManager {
 		this.renderer = renderer;
 		this.runtime = renderer.runtime;
 		this.scene = renderer.scene;
-
-		this.loadLayers(layers);
+		this.layers = layers;
 	}
 
 	/**
@@ -1950,6 +1959,10 @@ class LayerManager {
 		renderer.clearDisplay();
 
 		for (const frame of frames) renderer.drawFrame(frame);
+	}
+
+	__onLoad() {
+		this.loadLayers(this.layers);
 	}
 
 	__onTick() {
@@ -2346,11 +2359,13 @@ class Renderer {
 	/**
 	 * Code that runs when the project starts.
 	 */
-	__onStartup() {
+	__onLoad() {
 		this.__intializeDisplay();
 		this.__rescaleDisplay();
 
 		window.addEventListener("resize", () => this.__rescaleDisplay());
+
+		this.runtime.__runOnLoad(this.layerManager);
 	}
 
 	/**

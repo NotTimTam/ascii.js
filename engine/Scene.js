@@ -102,7 +102,7 @@ class Scene {
 
 	__onLoad() {
 		// Run renderer startup.
-		this.runtime.__runOnStartup(this.renderer);
+		this.runtime.__runOnLoad(this.renderer);
 
 		if (this.onLoadPassthrough) this.onLoadPassthrough(this);
 	}

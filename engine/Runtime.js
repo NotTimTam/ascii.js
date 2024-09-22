@@ -98,6 +98,14 @@ class Runtime {
 		object.__onTick && object.__onTick(this, ...passthrough);
 
 	/**
+	 * Run the __onLoad method of any object.
+	 * @param {Object} object The object whose method should be run.
+	 * @param  {...any} passthrough The data to pass through to that method.
+	 */
+	__runOnLoad = (object, ...passthrough) =>
+		object.__onLoad && object.__onLoad(...passthrough);
+
+	/**
 	 * Code that runs when the project starts.
 	 */
 	__onStartup() {
