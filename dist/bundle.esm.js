@@ -160,6 +160,8 @@ class InputManager {
 
 		this.__onCreated();
 	}
+	__eventHandler = (e) => this.__onEvent(e);
+	__contextHandler = (e) => e.preventDefault();
 
 	/**
 	 * Get the pointer lock status.
@@ -394,12 +396,24 @@ class InputManager {
 	}
 
 	__onCreated() {
-		window.addEventListener("keydown", (e) => this.__onEvent(e));
-		window.addEventListener("keyup", (e) => this.__onEvent(e));
-		window.addEventListener("mousemove", (e) => this.__onEvent(e));
-		window.addEventListener("mousedown", (e) => this.__onEvent(e));
-		window.addEventListener("mouseup", (e) => this.__onEvent(e));
-		window.addEventListener("contextmenu", (e) => e.preventDefault());
+		window.addEventListener("keydown", this.__eventHandler);
+		window.addEventListener("keyup", this.__eventHandler);
+		window.addEventListener("mousemove", this.__eventHandler);
+		window.addEventListener("mousedown", this.__eventHandler);
+		window.addEventListener("mouseup", this.__eventHandler);
+		window.addEventListener("contextmenu", this.__contextHandler);
+	}
+
+	/**
+	 * Unload the `InputManager` instance by removing all system event listeners.
+	 */
+	__unLoad() {
+		window.removeEventListener("keydown", this.__eventHandler);
+		window.removeEventListener("keyup", this.__eventHandler);
+		window.removeEventListener("mousemove", this.__eventHandler);
+		window.removeEventListener("mousedown", this.__eventHandler);
+		window.removeEventListener("mouseup", this.__eventHandler);
+		window.removeEventListener("contextmenu", this.__contextHandler);
 	}
 }
 
@@ -1161,6 +1175,8 @@ class Runtime {
 		if (!(scene instanceof Scene))
 			throw new Error(`Provided scene is not a "Scene" object`);
 
+		if (this.scene) this.scene.__unLoad();
+
 		this.scene = scene;
 	}
 
@@ -1291,6 +1307,13 @@ class Scene {
 			throw new Error(
 				`"onTick" method provided to scene config is not of type "function".`
 			);
+	}
+
+	/**
+	 * Unload the scene.
+	 */
+	__unLoad() {
+		this.inputManager.__unLoad(); // Unload input events.
 	}
 
 	__onLoad() {
@@ -2745,6 +2768,9 @@ class Menu extends GameObject {
 	}
 
 	handleInput(event) {
+		if (event.type === "keydown" && event.keys.enter)
+			console.log("HANDLE INPUT", Object.keys(this.options)[this.index]);
+
 		if (!this.isOnScreen || !this.visible) return;
 
 		if (event.type === "keydown") {

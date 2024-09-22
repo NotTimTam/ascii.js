@@ -17,6 +17,8 @@ class InputManager {
 
 		this.__onCreated();
 	}
+	__eventHandler = (e) => this.__onEvent(e);
+	__contextHandler = (e) => e.preventDefault();
 
 	/**
 	 * Get the pointer lock status.
@@ -251,24 +253,24 @@ class InputManager {
 	}
 
 	__onCreated() {
-		window.addEventListener("keydown", (e) => this.__onEvent(e));
-		window.addEventListener("keyup", (e) => this.__onEvent(e));
-		window.addEventListener("mousemove", (e) => this.__onEvent(e));
-		window.addEventListener("mousedown", (e) => this.__onEvent(e));
-		window.addEventListener("mouseup", (e) => this.__onEvent(e));
-		window.addEventListener("contextmenu", (e) => e.preventDefault());
+		window.addEventListener("keydown", this.__eventHandler);
+		window.addEventListener("keyup", this.__eventHandler);
+		window.addEventListener("mousemove", this.__eventHandler);
+		window.addEventListener("mousedown", this.__eventHandler);
+		window.addEventListener("mouseup", this.__eventHandler);
+		window.addEventListener("contextmenu", this.__contextHandler);
 	}
 
 	/**
 	 * Unload the `InputManager` instance by removing all system event listeners.
 	 */
 	__unLoad() {
-		window.removeEventListener("keydown", (e) => this.__onEvent(e));
-		window.removeEventListener("keyup", (e) => this.__onEvent(e));
-		window.removeEventListener("mousemove", (e) => this.__onEvent(e));
-		window.removeEventListener("mousedown", (e) => this.__onEvent(e));
-		window.removeEventListener("mouseup", (e) => this.__onEvent(e));
-		window.removeEventListener("contextmenu", (e) => e.preventDefault());
+		window.removeEventListener("keydown", this.__eventHandler);
+		window.removeEventListener("keyup", this.__eventHandler);
+		window.removeEventListener("mousemove", this.__eventHandler);
+		window.removeEventListener("mousedown", this.__eventHandler);
+		window.removeEventListener("mouseup", this.__eventHandler);
+		window.removeEventListener("contextmenu", this.__contextHandler);
 	}
 }
 

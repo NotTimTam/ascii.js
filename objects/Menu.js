@@ -45,6 +45,9 @@ class Menu extends GameObject {
 	}
 
 	handleInput(event) {
+		if (event.type === "keydown" && event.keys.enter)
+			console.log("HANDLE INPUT", Object.keys(this.options)[this.index]);
+
 		if (!this.isOnScreen || !this.visible) return;
 
 		if (event.type === "keydown") {
