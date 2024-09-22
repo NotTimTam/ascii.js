@@ -109,6 +109,13 @@ class Scene {
 			);
 	}
 
+	/**
+	 * Unload the scene.
+	 */
+	__unLoad() {
+		this.inputManager.__unLoad(); // Unload input events.
+	}
+
 	__onLoad() {
 		// Run renderer startup.
 		this.runtime.__runOnLoad(this.renderer);

@@ -143,6 +143,8 @@ class Runtime {
 		if (!(scene instanceof Scene))
 			throw new Error(`Provided scene is not a "Scene" object`);
 
+		if (this.scene) this.scene.__unLoad();
+
 		this.scene = scene;
 	}
 

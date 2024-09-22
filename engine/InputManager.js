@@ -258,6 +258,18 @@ class InputManager {
 		window.addEventListener("mouseup", (e) => this.__onEvent(e));
 		window.addEventListener("contextmenu", (e) => e.preventDefault());
 	}
+
+	/**
+	 * Unload the `InputManager` instance by removing all system event listeners.
+	 */
+	__unLoad() {
+		window.removeEventListener("keydown", (e) => this.__onEvent(e));
+		window.removeEventListener("keyup", (e) => this.__onEvent(e));
+		window.removeEventListener("mousemove", (e) => this.__onEvent(e));
+		window.removeEventListener("mousedown", (e) => this.__onEvent(e));
+		window.removeEventListener("mouseup", (e) => this.__onEvent(e));
+		window.removeEventListener("contextmenu", (e) => e.preventDefault());
+	}
 }
 
 export default InputManager;
