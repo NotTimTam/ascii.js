@@ -20,6 +20,14 @@ new Layer(layerManager, config);
 
 ---
 
+## Attributes
+
+### `paused`
+
+A `boolean` that indicates whether or not this layer is currently paused. A paused frame, or a frame in a paused runtime does not run its object's `__onTick` methods.
+
+---
+
 ## Methods
 
 ### `get frame`
