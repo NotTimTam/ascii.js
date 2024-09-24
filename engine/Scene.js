@@ -21,9 +21,9 @@ class Scene {
 		const { label, layers, onLoad, onTick } = config;
 
 		this.label = label;
-		this.inputManager = new InputManager(this);
-
 		this.renderer = new Renderer(this, layers);
+
+		this.inputManager = new InputManager(this);
 
 		if (onLoad) this.onLoadPassthrough = onLoad;
 		if (onTick) this.onTickPassthrough = onTick;
