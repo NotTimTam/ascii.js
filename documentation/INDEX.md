@@ -3,6 +3,7 @@
 ## Get Started
 
 [Quick Start Guide](./getting-started/QUICKSTART.md)
+
 [Installation Guide](./getting-started/INSTALLATION.md)
 
 ## Learn ascii.js
