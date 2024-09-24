@@ -2,8 +2,6 @@ import AudioManager from "./AudioManager.js";
 import Noise from "./Noise.js";
 import Scene from "./Scene.js";
 
-import Renderer from "./Renderer.js";
-
 class Runtime {
 	/**
 	 * The overall game state and management system.

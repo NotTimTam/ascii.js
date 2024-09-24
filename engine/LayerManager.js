@@ -264,7 +264,7 @@ class LayerManager {
 	 * Load layers into the layer manager.
 	 * @param {Array<*>} layers The layer creation array.
 	 */
-	loadLayers(layers) {
+	__loadLayers(layers) {
 		this.layers = [];
 
 		if (!layers.includes("system")) new Layer(this, { label: "system" });
@@ -303,7 +303,7 @@ class LayerManager {
 	}
 
 	__onLoad() {
-		this.loadLayers(this.layers);
+		this.__loadLayers(this.layers);
 	}
 
 	__onTick() {
