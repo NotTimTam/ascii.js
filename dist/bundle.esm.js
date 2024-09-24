@@ -1716,9 +1716,10 @@ class Layer {
 
 		this.layerManager.layers.push(this);
 
+		this.gameObjects = [];
+
 		if (gameObjectConstructors)
 			this.__populateGameObjects(gameObjectConstructors);
-		else this.gameObjects = [];
 
 		this.paused = false;
 
