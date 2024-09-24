@@ -2733,11 +2733,11 @@ class Text extends GameObject {
 
 class Menu extends GameObject {
 	/**
-	 * A box that can be rendered on screen.
+	 * A list of user input options that can be rendered on screen.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {Object} config The `Box`'s config object.
-	 * @param {number} config.x This `Box` object's x-coordinate.
-	 * @param {number} config.y This `Box` object's y-coordinate.
+	 * @param {Object} config The `Menu`'s config object.
+	 * @param {number} config.x This `Menu` object's x-coordinate.
+	 * @param {number} config.y This `Menu` object's y-coordinate.
 	 * @param {Object} config.options An object of key value pairs, the values representing option labels, and the keys being what is returned when an object is selected.
 	 * @param {function} config.callback A callback function that is called when a menu option is selected. Passed the key of the selected option.
 	 * @param {string} config.title Optional menu title.
