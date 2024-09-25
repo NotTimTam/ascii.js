@@ -24,6 +24,6 @@
 	},
 	"homepage": "https://github.com/NotTimTam/ascii.js#readme",
 	"devDependencies": {
-		"rollup": "^4.22.0"
+		"rollup": "^4.22.4"
 	}
 }
