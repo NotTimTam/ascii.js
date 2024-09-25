@@ -233,6 +233,10 @@ class Menu extends GameObject {
 
 		return new PixelMesh({ data });
 	}
+
+	set renderable(_) {
+		return;
+	}
 }
 
 export default Menu;

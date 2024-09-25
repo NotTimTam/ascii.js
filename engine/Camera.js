@@ -18,6 +18,10 @@ class Camera extends GameObject {
 		return undefined;
 	}
 
+	set renderable(_) {
+		return;
+	}
+
 	/**
 	 * Check if a bounding box is on screen.
 	 * @param {number} x The x-coordinate to check.

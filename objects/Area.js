@@ -13,12 +13,10 @@ class Area extends GameObject {
 		super(scene, x, y);
 
 		this.solid = solid;
-	}
 
-	get renderable() {
 		const p = new Pixel({ value: "#", solid: this.solid });
 
-		return new PixelMesh({
+		this.__rawRenderable = new PixelMesh({
 			data: [
 				[p, p, p, p, p],
 				[p, p, p, p, p],
@@ -28,6 +26,25 @@ class Area extends GameObject {
 				[p, p, p, p, p],
 			],
 		});
+	}
+
+	/**
+	 * The `Area`'s renderable element.
+	 */
+	get renderable() {
+		return this.__rawRenderable;
+	}
+
+	/**
+	 * Set this `Area`'s renderable.
+	 */
+	set renderable(value) {
+		if (value && !(value instanceof PixelMesh))
+			throw new TypeError(
+				"A Area's renderable property must be an instance of PixelMesh, or falsey."
+			);
+
+		this.__rawRenderable = value;
 	}
 }
 

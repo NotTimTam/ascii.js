@@ -76,9 +76,7 @@ Change the `GameObject`'s layer. Set to a falsey value to remove from any active
 
 ### `get renderable`
 
-The object's renderable element. `GameObject`s and all classes that extend them have a `renderable` property that the `Renderer` grabs for rendering them to the screen. When extending the `GameObject` class, you can overwrite this getter with one that returns a `Pixel` or `PixelMesh` instance for custom rendering.
-
-You can also overwrite the getter by setting the `renderable` property of a `GameObject` instance after it has been instantiated.
+The object's renderable element. `GameObject`s and all classes that extend them have a `renderable` property, which the `Renderer` uses to display them on the screen. By default, there is both a getter and a setter for this property, to retrieve/update the object's renderable at runtime.
 
 Example:
 
@@ -93,6 +91,22 @@ instance.renderable = new Pixel({
 	solid: false,
 	origin: [-1, 3],
 });
+```
+
+However, when extending the `GameObject` class, you can override the getter to return a `Pixel` or `PixelMesh` instance for custom rendering. This is useful, for example, when the `GameObject` has an `Animate` behavior, and you want the `GameObject`'s `renderable` property to return `<AnimateInstance>.renderable`. That way you won't have to manually updating the renderable each tick to match the current animation.
+
+```js
+class MyObject extends GameObject() {
+	constructor(scene, x, y) {
+		super(scene, x, y);
+
+		new Animate(scene, this, true, myAnimateConfigObject);
+	}
+
+	get renderable() {
+		return this.behaviors[0].renderable;
+	}
+}
 ```
 
 ### `get paused`

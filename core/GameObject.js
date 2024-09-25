@@ -1,5 +1,5 @@
 import Core from "./Core.js";
-import Pixel from "./Pixel.js";
+import Pixel, { PixelMesh } from "./Pixel.js";
 
 class GameObject extends Core {
 	/**
@@ -29,6 +29,7 @@ class GameObject extends Core {
 		this.__rawX = x;
 		this.__rawY = y;
 		this.__rawVisible = true;
+		this.__rawRenderable = new Pixel({ value: "#", color: "magenta" });
 
 		this.behaviors = [];
 	}
@@ -185,7 +186,19 @@ class GameObject extends Core {
 	 * The object's renderable element.
 	 */
 	get renderable() {
-		return new Pixel({ value: "#", color: "red" });
+		return this.__rawRenderable;
+	}
+
+	/**
+	 * Set this `GameObject`'s renderable.
+	 */
+	set renderable(value) {
+		if (value && !(value instanceof Pixel) && !(value instanceof PixelMesh))
+			throw new TypeError(
+				"A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
+			);
+
+		this.__rawRenderable = value;
 	}
 
 	/**

@@ -10,10 +10,8 @@ class Entity extends GameObject {
 	 */
 	constructor(scene, x, y) {
 		super(scene, x, y);
-	}
 
-	get renderable() {
-		return new Pixel({ value: "E", color: "green" });
+		this.__rawRenderable = new Pixel({ value: "E", color: "green" });
 	}
 }
 
