@@ -1,3 +1,4 @@
+import GameObject from "../core/GameObject.js";
 import { clamp } from "../util/math.js";
 import Scene from "./Scene.js";
 
@@ -14,6 +15,7 @@ class InputManager {
 		this.mouse = { buttons: {} };
 
 		this.__eventListeners = [];
+		this.__clickListeners = [];
 
 		this.__onCreated();
 	}
@@ -77,6 +79,8 @@ class InputManager {
 
 		this.keyboard.keys[this.__formatKey(key)] = true;
 		this.keyboard.keyCodes[keyCode] = true;
+		this.keyboard.keyCode = keyCode;
+		this.keyboard.key = key;
 	}
 
 	/**
@@ -108,6 +112,40 @@ class InputManager {
 				this.mouse.buttons.right = true;
 				break;
 		}
+	}
+
+	/**
+	 * Calls when a mouse button is clicked.
+	 * @param {Event} event The listener's event.
+	 */
+	__onClick(event) {
+		const { button, type } = event;
+
+		switch (button) {
+			case 0:
+				this.mouse.buttons.left = true;
+				break;
+			case 1:
+				this.mouse.buttons.middle = true;
+				break;
+			case 2:
+				this.mouse.buttons.right = true;
+				break;
+		}
+
+		const { x, y } = this.mouse;
+
+		this.mouse.target = this.scene.renderer.layerManager.getAtPosition(
+			x,
+			y
+		);
+
+		const targetIds = this.mouse.target.map(
+			({ gameObject }) => gameObject.id
+		);
+
+		for (const [id, eventListener] of this.__clickListeners)
+			if (targetIds.includes(id)) eventListener({ type, ...this.mouse });
 	}
 
 	/**
@@ -213,10 +251,15 @@ class InputManager {
 				case "mousemove":
 					this.__onMouseMove(event);
 					break;
+				case "click":
+					this.__onClick(event);
+					break;
 			}
 
 			for (const eventListener of this.__eventListeners)
 				eventListener({ type, ...this.mouse });
+
+			if (type === "click" && this.mouse.target) delete this.mouse.target; // Delete target items to clear for next event.
 		} else if (event instanceof KeyboardEvent) {
 			const { type } = event;
 
@@ -243,12 +286,32 @@ class InputManager {
 	}
 
 	/**
-	 * Remove an event listener from the input manager.
+	 * Add an event listener to check when an element is clicked.
+	 * @param {GameObject} gameObject The game object that, when clicked, triggers the event.
 	 * @param {function} listener The event listener function.
+	 */
+	addOnClick(gameObject, listener) {
+		this.__clickListeners.push([gameObject.id, listener]);
+	}
+
+	/**
+	 * Remove an event listener from the input manager.
+	 * @param {function} listener The event listener function that was added to the event listener.
 	 */
 	removeEventListener(listener) {
 		this.__eventListeners = this.__eventListeners.filter(
 			(eventListener) => eventListener !== listener
+		);
+	}
+
+	/**
+	 * Remove a click event listener.
+	 * @param {GameObject} gameObject The game object that the event was created for.
+	 * @param {function} listener The event listener function that was added to the event listener.
+	 */
+	removeOnClick(gameObject, listener) {
+		this.__clickListeners = this.__clickListeners.filter(
+			(arr) => arr[0] !== gameObject.id && arr[1] !== listener
 		);
 	}
 
@@ -258,6 +321,7 @@ class InputManager {
 		window.addEventListener("mousemove", this.__eventHandler);
 		window.addEventListener("mousedown", this.__eventHandler);
 		window.addEventListener("mouseup", this.__eventHandler);
+		window.addEventListener("click", this.__eventHandler);
 		window.addEventListener("contextmenu", this.__contextHandler);
 	}
 
@@ -270,6 +334,7 @@ class InputManager {
 		window.removeEventListener("mousemove", this.__eventHandler);
 		window.removeEventListener("mousedown", this.__eventHandler);
 		window.removeEventListener("mouseup", this.__eventHandler);
+		window.removeEventListener("click", this.__eventHandler);
 		window.removeEventListener("contextmenu", this.__contextHandler);
 	}
 }

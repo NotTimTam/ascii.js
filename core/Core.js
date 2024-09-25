@@ -21,8 +21,6 @@ class Core {
 		this.runtime = scene.runtime;
 
 		this.id = crypto.randomUUID();
-
-		console.log(this);
 	}
 }
 
