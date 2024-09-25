@@ -1,6 +1,7 @@
 export class PixelMesh {
 	/**
 	 * A pixel mesh stores a 2-dimensional array of `Pixels`.
+	 * @param {Object} config The config for this `PixelMesh` instance.
 	 * @param {Array<Pixel>} config.data The frame's 2-dimensional (array of row arrays of `Pixels`) (left-to-right, top-to-bottom) data array.
 	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
 	 */
