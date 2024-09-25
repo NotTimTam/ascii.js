@@ -161,6 +161,7 @@ class InputManager {
 		this.mouse = { buttons: {} };
 
 		this.__eventListeners = [];
+		this.__clickListeners = [];
 
 		this.__onCreated();
 	}
@@ -224,6 +225,8 @@ class InputManager {
 
 		this.keyboard.keys[this.__formatKey(key)] = true;
 		this.keyboard.keyCodes[keyCode] = true;
+		this.keyboard.keyCode = keyCode;
+		this.keyboard.key = key;
 	}
 
 	/**
@@ -255,6 +258,40 @@ class InputManager {
 				this.mouse.buttons.right = true;
 				break;
 		}
+	}
+
+	/**
+	 * Calls when a mouse button is clicked.
+	 * @param {Event} event The listener's event.
+	 */
+	__onClick(event) {
+		const { button, type } = event;
+
+		switch (button) {
+			case 0:
+				this.mouse.buttons.left = true;
+				break;
+			case 1:
+				this.mouse.buttons.middle = true;
+				break;
+			case 2:
+				this.mouse.buttons.right = true;
+				break;
+		}
+
+		const { x, y } = this.mouse;
+
+		this.mouse.target = this.scene.renderer.layerManager.getAtPosition(
+			x,
+			y
+		);
+
+		const targetIds = this.mouse.target.map(
+			({ gameObject }) => gameObject.id
+		);
+
+		for (const [id, eventListener] of this.__clickListeners)
+			if (targetIds.includes(id)) eventListener({ type, ...this.mouse });
 	}
 
 	/**
@@ -360,10 +397,15 @@ class InputManager {
 				case "mousemove":
 					this.__onMouseMove(event);
 					break;
+				case "click":
+					this.__onClick(event);
+					break;
 			}
 
 			for (const eventListener of this.__eventListeners)
 				eventListener({ type, ...this.mouse });
+
+			if (type === "click" && this.mouse.target) delete this.mouse.target; // Delete target items to clear for next event.
 		} else if (event instanceof KeyboardEvent) {
 			const { type } = event;
 
@@ -390,12 +432,32 @@ class InputManager {
 	}
 
 	/**
-	 * Remove an event listener from the input manager.
+	 * Add an event listener to check when an element is clicked.
+	 * @param {GameObject} gameObject The game object that, when clicked, triggers the event.
 	 * @param {function} listener The event listener function.
+	 */
+	addOnClick(gameObject, listener) {
+		this.__clickListeners.push([gameObject.id, listener]);
+	}
+
+	/**
+	 * Remove an event listener from the input manager.
+	 * @param {function} listener The event listener function that was added to the event listener.
 	 */
 	removeEventListener(listener) {
 		this.__eventListeners = this.__eventListeners.filter(
 			(eventListener) => eventListener !== listener
+		);
+	}
+
+	/**
+	 * Remove a click event listener.
+	 * @param {GameObject} gameObject The game object that the event was created for.
+	 * @param {function} listener The event listener function that was added to the event listener.
+	 */
+	removeOnClick(gameObject, listener) {
+		this.__clickListeners = this.__clickListeners.filter(
+			(arr) => arr[0] !== gameObject.id && arr[1] !== listener
 		);
 	}
 
@@ -405,6 +467,7 @@ class InputManager {
 		window.addEventListener("mousemove", this.__eventHandler);
 		window.addEventListener("mousedown", this.__eventHandler);
 		window.addEventListener("mouseup", this.__eventHandler);
+		window.addEventListener("click", this.__eventHandler);
 		window.addEventListener("contextmenu", this.__contextHandler);
 	}
 
@@ -417,6 +480,7 @@ class InputManager {
 		window.removeEventListener("mousemove", this.__eventHandler);
 		window.removeEventListener("mousedown", this.__eventHandler);
 		window.removeEventListener("mouseup", this.__eventHandler);
+		window.removeEventListener("click", this.__eventHandler);
 		window.removeEventListener("contextmenu", this.__contextHandler);
 	}
 }
@@ -1399,6 +1463,11 @@ class Core {
 	 * @param {Scene} scene The scene this Object is a part of.
 	 */
 	constructor(scene) {
+		if (!crypto || !crypto.randomUUID)
+			throw new Error(
+				'This environment does not support the JavaScript "crypto" library. Only secure contexts (HTTPS) support "crypto.randomUUID".'
+			);
+
 		if (!(scene instanceof Scene))
 			throw new TypeError(
 				'Invalid object provided to Core class constructor. Expected an instance of "Scene".'
@@ -1407,6 +1476,8 @@ class Core {
 		this.scene = scene;
 
 		this.runtime = scene.runtime;
+
+		this.id = crypto.randomUUID();
 	}
 }
 
@@ -1538,6 +1609,7 @@ class GameObject extends Core {
 		this.__rawX = x;
 		this.__rawY = y;
 		this.__rawVisible = true;
+		this.__rawRenderable = new Pixel({ value: "#", color: "magenta" });
 
 		this.behaviors = [];
 	}
@@ -1694,7 +1766,19 @@ class GameObject extends Core {
 	 * The object's renderable element.
 	 */
 	get renderable() {
-		return new Pixel({ value: "#", color: "red" });
+		return this.__rawRenderable;
+	}
+
+	/**
+	 * Set this `GameObject`'s renderable.
+	 */
+	set renderable(value) {
+		if (value && !(value instanceof Pixel) && !(value instanceof PixelMesh))
+			throw new TypeError(
+				"A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
+			);
+
+		this.__rawRenderable = value;
 	}
 
 	/**
@@ -2096,6 +2180,10 @@ class Camera extends GameObject {
 
 	get renderable() {
 		return undefined;
+	}
+
+	set renderable(_) {
+		return;
 	}
 
 	/**
@@ -2505,12 +2593,10 @@ class Area extends GameObject {
 		super(scene, x, y);
 
 		this.solid = solid;
-	}
 
-	get renderable() {
 		const p = new Pixel({ value: "#", solid: this.solid });
 
-		return new PixelMesh({
+		this.__rawRenderable = new PixelMesh({
 			data: [
 				[p, p, p, p, p],
 				[p, p, p, p, p],
@@ -2520,6 +2606,25 @@ class Area extends GameObject {
 				[p, p, p, p, p],
 			],
 		});
+	}
+
+	/**
+	 * The `Area`'s renderable element.
+	 */
+	get renderable() {
+		return this.__rawRenderable;
+	}
+
+	/**
+	 * Set this `Area`'s renderable.
+	 */
+	set renderable(value) {
+		if (value && !(value instanceof PixelMesh))
+			throw new TypeError(
+				"A Area's renderable property must be an instance of PixelMesh, or falsey."
+			);
+
+		this.__rawRenderable = value;
 	}
 }
 
@@ -2532,10 +2637,8 @@ class Entity extends GameObject {
 	 */
 	constructor(scene, x, y) {
 		super(scene, x, y);
-	}
 
-	get renderable() {
-		return new Pixel({ value: "E", color: "green" });
+		this.__rawRenderable = new Pixel({ value: "E", color: "green" });
 	}
 }
 
@@ -2651,6 +2754,10 @@ class Box extends GameObject {
 		}
 
 		return new PixelMesh({ data });
+	}
+
+	set renderable(_) {
+		return;
 	}
 }
 
@@ -2788,6 +2895,10 @@ class Text extends GameObject {
 		}
 
 		return new PixelMesh({ data });
+	}
+
+	set renderable(_) {
+		return;
 	}
 }
 
@@ -3019,6 +3130,226 @@ class Menu extends GameObject {
 		}
 
 		return new PixelMesh({ data });
+	}
+
+	set renderable(_) {
+		return;
+	}
+}
+
+class TextInput extends Text {
+	/**
+	 * A text input that can be rendered on screen.
+	 * @param {Scene} scene The scene this Object is a part of.
+	 * @param {Object} config The `TextInput`'s config object.
+	 * @param {number} config.x This `TextInput` object's x-coordinate.
+	 * @param {number} config.y This `TextInput` object's y-coordinate.
+	 * @param {number} config.width The maximum width of the `TextInput`.
+	 * @param {string} config.value The text to display. (use `"\n"` for newlines)
+	 * @param {string} config.color Optional text color.
+	 * @param {string} config.activeColor Optional text color for active character.
+	 * @param {string} config.backgroundColor Optional background color.
+	 * @param {string} config.backgroundColorActive Optional background color for active key.
+	 * @param {string} config.fontWeight Optional font weight.
+	 * @param {string} config.autoFocus Automatically focus on element once it is instantiated.
+	 * @param {function} config.onChange Callback that runs when the input's value changes.
+	 * @param {function} config.onKeyDown Callback that runs when the input recieves a keypress.
+	 */
+	constructor(scene, config) {
+		config.wrap = false;
+
+		super(scene, config);
+
+		if (!config.width) config.width = 8;
+		if (
+			typeof config.width !== "number" ||
+			!Number.isInteger(config.width) ||
+			config.width < 1
+		)
+			throw new TypeError(
+				"Invalid config.width value provided to TextInput. Expected an integer greater than 0."
+			);
+
+		const {
+			activeColor = "black",
+			backgroundColor = "transparent",
+			backgroundColorActive = "white",
+			onChange,
+			onKeyDown,
+		} = config;
+
+		if (activeColor) {
+			if (typeof activeColor !== "string")
+				return new TypeError(
+					"Expected a string for Text config.activeColor value."
+				);
+			this.activeColor = activeColor;
+		}
+
+		if (backgroundColor) {
+			if (typeof backgroundColor !== "string")
+				return new TypeError(
+					"Expected a string for Text config.backgroundColor value."
+				);
+			this.backgroundColor = backgroundColor;
+		}
+
+		if (backgroundColorActive) {
+			if (typeof backgroundColorActive !== "string")
+				return new TypeError(
+					"Expected a string for Text config.backgroundColorActive value."
+				);
+			this.backgroundColorActive = backgroundColorActive;
+		}
+
+		if (onChange) {
+			if (typeof onChange !== "function")
+				throw new TypeError(
+					"Expected a function for TextInput config.onChange value."
+				);
+
+			this.onChange = onChange;
+		}
+
+		if (onKeyDown) {
+			if (typeof onKeyDown !== "function")
+				throw new TypeError(
+					"Expected a function for TextInput config.onKeyDown value."
+				);
+
+			this.onKeyDown = onKeyDown;
+		}
+
+		this.__inputWidth = config.width;
+		this.scroll = 0;
+
+		this.focused = Boolean(config.autoFocus);
+		this.__rawCaret = 0;
+
+		scene.inputManager.addOnClick(this, this.onClick.bind(this));
+		scene.inputManager.addEventListener(this.eventListener.bind(this));
+	}
+
+	/**
+	 * Listens to click events.
+	 */
+	onClick() {
+		this.focused = true;
+	}
+
+	/**
+	 * Listen to other input events.
+	 */
+	eventListener(event) {
+		const { caret } = this;
+
+		if (
+			event.type === "click" &&
+			!event.target
+				.map(({ gameObject }) => gameObject.id)
+				.includes(this.id)
+		) {
+			// Defocus when not clicking on this input.
+			this.focused = false;
+		} else if (event.type === "keydown" && this.focused) {
+			const { key } = event;
+
+			// Only allow ASCII range typeable keys.
+			if (/^[\x20-\x7E]$/.test(key)) {
+				this.value =
+					this.value.slice(0, this.caret) +
+					key +
+					this.value.slice(this.caret);
+				this.caret++;
+			} else if (key === "Backspace") {
+				this.value =
+					this.value.slice(0, caret - 1) + this.value.slice(caret);
+
+				this.caret--;
+			} else if (key === "Delete") {
+				this.value =
+					this.value.slice(0, caret) + this.value.slice(caret + 1);
+			} else if (key === "Tab") {
+				this.value += "    ";
+				this.caret += 4;
+			} else if (key === "Escape") this.focused = false;
+			else if (key === "ArrowLeft") this.caret--;
+			else if (key === "ArrowRight") this.caret++;
+
+			while (this.caret < this.scroll) this.scroll--;
+			while (this.caret > this.scroll + this.__inputWidth - 2)
+				this.scroll++;
+
+			this.onChange && this.onChange({ target: this });
+			this.onKeyDown && this.onKeyDown({ target: this, key });
+		}
+	}
+
+	get caret() {
+		if (this.__rawCaret < 0) this.__rawCaret = 0;
+		if (this.__rawCaret > this.value.length)
+			this.__rawCaret = this.value.length;
+
+		return this.__rawCaret;
+	}
+
+	set caret(n) {
+		if (typeof n !== "number" || !Number.isInteger(n))
+			throw new TypeError("TextInput caret value should be an integer.");
+
+		if (n < 0) n = 0;
+		if (n > this.value.length) n = this.value.length;
+
+		this.__rawCaret = n;
+	}
+
+	get renderable() {
+		const {
+			value,
+			scene: {
+				renderer: { width },
+			},
+			fontWeight,
+			__inputWidth,
+			caret,
+			color,
+			activeColor,
+			backgroundColor,
+			backgroundColorActive,
+			focused,
+		} = this;
+
+		const data = [];
+
+		const maxScroll = value.length - __inputWidth + 1;
+		if (this.scroll > maxScroll) this.scroll = maxScroll;
+		if (this.scroll < 0) this.scroll = 0;
+
+		const { scroll } = this;
+
+		const display = value
+			.substring(scroll, scroll + __inputWidth)
+			.padEnd(__inputWidth, " ")
+			.split("");
+
+		for (let i = 0; i < display.length; i++) {
+			const char = display[i];
+			const active = i + scroll === caret && focused;
+			data.push(
+				new Pixel({
+					value: char,
+					color: active ? activeColor : color,
+					backgroundColor: active
+						? backgroundColorActive
+						: backgroundColor,
+					fontWeight,
+				})
+			);
+		}
+
+		// Push the remaining characters in the current line
+
+		return new PixelMesh({ data: [data] });
 	}
 }
 
@@ -3543,6 +3874,7 @@ exports.PixelMesh = PixelMesh;
 exports.Scene = Scene;
 exports.ScrollTo = ScrollTo;
 exports.Text = Text;
+exports.TextInput = TextInput;
 exports.TopDownMovement = TopDownMovement;
 exports.__AudioManager = AudioManager;
 exports.__Camera = Camera;
