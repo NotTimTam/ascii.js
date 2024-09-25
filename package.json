@@ -1,6 +1,6 @@
 {
 	"name": "ascii.js",
-	"version": "1.0.19",
+	"version": "1.0.20",
 	"description": "A text-based 2d-canvas-rendered game engine.",
 	"main": "index.js",
 	"type": "module",
