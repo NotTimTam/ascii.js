@@ -33,6 +33,7 @@ These objects extend the `GameObject` class for quicker `Scene` implementation.
 -   [Box](./objects/BOX.md) &mdash; An object that uses ASCII box-drawing characters to create a box on screen.
 -   [Menu](./objects/MENU.md) &mdash; A simple interface for a user to select from a list of options.
 -   [Text](./objects/TEXT.md) &mdash; A quick way to display a string of text to the screen.
+-   [TextInput](./objects/TEXTINPUT.md) &mdash; A simple text input box to take user input.
 
 ### Behaviors
 
