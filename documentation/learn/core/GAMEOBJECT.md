@@ -76,7 +76,24 @@ Change the `GameObject`'s layer. Set to a falsey value to remove from any active
 
 ### `get renderable`
 
-The object's renderable element.
+The object's renderable element. `GameObject`s and all classes that extend them have a `renderable` property that the `Renderer` grabs for rendering them to the screen. When extending the `GameObject` class, you can overwrite this getter with one that returns a `Pixel` or `PixelMesh` instance for custom rendering.
+
+You can also overwrite the getter by setting the `renderable` property of a `GameObject` instance after it has been instantiated.
+
+Example:
+
+```js
+const instance = new GameObject(myLevel, 0, 0);
+
+instance.renderable = new Pixel({
+	value: "E",
+	color: "white",
+	fontWeight: 800,
+	backgroundColor: "red",
+	solid: false,
+	origin: [-1, 3],
+});
+```
 
 ### `get paused`
 
