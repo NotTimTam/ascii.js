@@ -130,7 +130,7 @@ class TextInput extends Text {
 				this.value =
 					this.value.slice(0, caret - 1) + this.value.slice(caret);
 
-				this.caret--;
+				if (this.caret !== this.value.length) this.caret--;
 			} else if (key === "Delete") {
 				this.value =
 					this.value.slice(0, caret) + this.value.slice(caret + 1);
