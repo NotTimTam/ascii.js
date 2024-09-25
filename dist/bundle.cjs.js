@@ -682,7 +682,14 @@ class Grad {
 	}
 }
 
+/**
+ * A perlin/simplex noise generator.
+ */
 class Noise {
+	/**
+	 * Create a new `Noise` instance.
+	 * @param {number} seed The seed for noise generation.
+	 */
 	constructor(seed = 0) {
 		this.permutationTable = [
 			151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7,
@@ -752,6 +759,12 @@ class Noise {
 		}
 	}
 
+	/**
+	 * Generate a 2D simplex noise value.
+	 * @param {number} xin x-coordinate.
+	 * @param {number} yin y-coordinate.
+	 * @returns {number} The random noise for those coordinates.
+	 */
 	simplex2(xin, yin) {
 		let n0, n1, n2; // Noise contributions from the three corners
 		// Skew the input space to determine which simplex cell we're in
@@ -813,6 +826,13 @@ class Noise {
 		return 70 * (n0 + n1 + n2);
 	}
 
+	/**
+	 * Generate a 3D simplex noise value.
+	 * @param {number} xin x-coordinate.
+	 * @param {number} yin y-coordinate.
+	 * @param {number} zin z-coordinate.
+	 * @returns {number} The random noise for those coordinates.
+	 */
 	simplex3(xin, yin, zin) {
 		let n0, n1, n2, n3; // Noise contributions from the four corners
 
@@ -947,6 +967,12 @@ class Noise {
 		return (1 - t) * a + t * b;
 	}
 
+	/**
+	 * Generate a 2D perlin noise value.
+	 * @param {number} x x-coordinate.
+	 * @param {number} y y-coordinate.
+	 * @returns {number} The random noise for those coordinates.
+	 */
 	perlin2(x, y) {
 		let X = Math.floor(x),
 			Y = Math.floor(y);
@@ -974,6 +1000,13 @@ class Noise {
 		);
 	}
 
+	/**
+	 * Generate a 3D perlin noise value.
+	 * @param {number} x x-coordinate.
+	 * @param {number} y y-coordinate.
+	 * @param {number} z z-coordinate.
+	 * @returns {number} The random noise for those coordinates.
+	 */
 	perlin3(x, y, z) {
 		// Find unit grid cell containing point
 		let X = Math.floor(x),
@@ -1044,6 +1077,26 @@ class Runtime {
 	/**
 	 * The overall game state and management system.
 	 * @param {Object} config The game's config object.
+	 * @param {number} config.seed A seed for random value generation.
+	 * @param {Object} config.renderer Configuration for the `Renderer` class.
+	 * @param {Array<Number>} config.renderer.resolution Determines the resolution (in characters) of the renderer. Format: `[integer width, integer height]`
+	 * @param {Element|string} config.renderer.canvas A DOM `<canvas/>` element, or a CSS selector string that targets one. This element will be used for rendering.
+	 * @param {string} config.renderer.fontSize A string CSS `font-size` value that will be used for text displayed in the renderer.
+	 * @param {"off"|"letterbox"} config.renderer.scaling The scaling mode for the canvas. Should be one of: `"off"`, `"letterbox"`.
+	 * - "letterbox" &mdash; Scales the canvas element to fit the viewport without changing its aspect ratio.
+	 * - "off" &mdash; Does not modify the scale of the canvas element.
+	 * @param {"stacked"|"merged"} config.renderer.renderMode Should be one of: `"stacked"`, `"merged"`.
+	 * #### Stacked Mode
+	 *
+	 * -   **Description:** Draws each layer in order, stacked on top of each other.
+	 * -   **Behavior:** Layers are drawn one on top of the other, allowing characters to overlap.
+	 * -   **Performance:** More expensive due to multiple render calls, but offers higher quality graphics.
+	 *
+	 * #### Merged Mode
+	 *
+	 * -   **Description:** Compiles all layer frames into a single frame before rendering.
+	 * -   **Behavior:** Characters cannot overlap as all layers are combined into one frame.
+	 * -   **Performance:** Faster rendering compared to stacked mode due to the compilation of all frames. Additionally, identifies and skips rendering frames that are identical to the currently drawn frame, saving processing time when the screen is static. Due to the nature of this rendering mode, some graphical issues can occur, and it should only be used on lower-end devices.
 	 */
 	constructor(config) {
 		this.config = config;
@@ -1210,7 +1263,15 @@ class Scene {
 	/**
 	 * A scene is a level, screen, or world that can be load in at any point during the runtime.
 	 * @param {Runtime} runtime The main runtime object.
-	 * @param {Object} config The scene configuration object.
+	 * @param {Object} config The `Scene` configuration object.
+	 * @param {string} config.label The `Scene`'s label.
+	 * @param {Array<Object>} config.layers The configuration objects for each layer in the `Scene`.
+	 * @param {string} config.layers[].label The layer's label.
+	 * @param {Array<number>} [config.layers[].parallax] Optional parallax data, where the format is [integer, integer]. (`[1, 1]` is 100% parallax, `[0, 0]` is 0% parallax)
+	 * @param {Array<function>} [config.layers[].gameObjectConstructors] Optional callback functions that return `GameObject`s for this layer.
+	 * @param {function} [config.layers[].gameObjectConstructors[]] A callback function, passed this `Scene` as an argument, that return an instance of `GameObject`.
+	 * @param {function} config.onLoad A callback (passed this `Scene` as an argument) that runs when the `Scene` has finished loading.
+	 * @param {function} config.onTick A callback (passed this `Scene` as an argument) that runs every frame that this `Scene` is loaded.
 	 */
 	constructor(runtime, config) {
 		this.runtime = runtime;
@@ -1285,19 +1346,16 @@ class Scene {
 					);
 			}
 
-			if (layer.gameObjects) {
-				if (!(layer.gameObjects instanceof Array))
+			if (layer.gameObjectConstructors) {
+				if (!(layer.gameObjectConstructors instanceof Array))
 					throw new Error(
-						`Invalid "gameObjects" data provided to layer configuration. Required format: [GameObject, () => {}]`
+						`Invalid "gameObjectConstructors" data provided to layer configuration. Required format: [(scene) => { return <instance of GameObject> }]`
 					);
 
-				for (const gameObject of layer.gameObjects)
-					if (
-						typeof gameObject !== "function" &&
-						typeof gameObject !== "object"
-					)
+				for (const gameObjectConstructor of layer.gameObjectConstructors)
+					if (typeof gameObjectConstructor !== "function")
 						throw new Error(
-							`GameObject array must contain constructed GameObject instances/extensions, or callback functions that return a constructed GameObject instance.`
+							`gameObjectConstructors array must contain callback functions that return constructed GameObject instances.`
 						);
 			}
 		}

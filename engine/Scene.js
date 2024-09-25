@@ -6,7 +6,15 @@ class Scene {
 	/**
 	 * A scene is a level, screen, or world that can be load in at any point during the runtime.
 	 * @param {Runtime} runtime The main runtime object.
-	 * @param {Object} config The scene configuration object.
+	 * @param {Object} config The `Scene` configuration object.
+	 * @param {string} config.label The `Scene`'s label.
+	 * @param {Array<Object>} config.layers The configuration objects for each layer in the `Scene`.
+	 * @param {string} config.layers[].label The layer's label.
+	 * @param {Array<number>} [config.layers[].parallax] Optional parallax data, where the format is [integer, integer]. (`[1, 1]` is 100% parallax, `[0, 0]` is 0% parallax)
+	 * @param {Array<function>} [config.layers[].gameObjectConstructors] Optional callback functions that return `GameObject`s for this layer.
+	 * @param {function} [config.layers[].gameObjectConstructors[]] A callback function, passed this `Scene` as an argument, that return an instance of `GameObject`.
+	 * @param {function} config.onLoad A callback (passed this `Scene` as an argument) that runs when the `Scene` has finished loading.
+	 * @param {function} config.onTick A callback (passed this `Scene` as an argument) that runs every frame that this `Scene` is loaded.
 	 */
 	constructor(runtime, config) {
 		this.runtime = runtime;
@@ -81,19 +89,16 @@ class Scene {
 					);
 			}
 
-			if (layer.gameObjects) {
-				if (!(layer.gameObjects instanceof Array))
+			if (layer.gameObjectConstructors) {
+				if (!(layer.gameObjectConstructors instanceof Array))
 					throw new Error(
-						`Invalid "gameObjects" data provided to layer configuration. Required format: [GameObject, () => {}]`
+						`Invalid "gameObjectConstructors" data provided to layer configuration. Required format: [(scene) => { return <instance of GameObject> }]`
 					);
 
-				for (const gameObject of layer.gameObjects)
-					if (
-						typeof gameObject !== "function" &&
-						typeof gameObject !== "object"
-					)
+				for (const gameObjectConstructor of layer.gameObjectConstructors)
+					if (typeof gameObjectConstructor !== "function")
 						throw new Error(
-							`GameObject array must contain constructed GameObject instances/extensions, or callback functions that return a constructed GameObject instance.`
+							`gameObjectConstructors array must contain callback functions that return constructed GameObject instances.`
 						);
 			}
 		}

@@ -42,7 +42,14 @@ class Grad {
 	}
 }
 
+/**
+ * A perlin/simplex noise generator.
+ */
 class Noise {
+	/**
+	 * Create a new `Noise` instance.
+	 * @param {number} seed The seed for noise generation.
+	 */
 	constructor(seed = 0) {
 		this.permutationTable = [
 			151, 160, 137, 91, 90, 15, 131, 13, 201, 95, 96, 53, 194, 233, 7,
@@ -112,6 +119,12 @@ class Noise {
 		}
 	}
 
+	/**
+	 * Generate a 2D simplex noise value.
+	 * @param {number} xin x-coordinate.
+	 * @param {number} yin y-coordinate.
+	 * @returns {number} The random noise for those coordinates.
+	 */
 	simplex2(xin, yin) {
 		let n0, n1, n2; // Noise contributions from the three corners
 		// Skew the input space to determine which simplex cell we're in
@@ -173,6 +186,13 @@ class Noise {
 		return 70 * (n0 + n1 + n2);
 	}
 
+	/**
+	 * Generate a 3D simplex noise value.
+	 * @param {number} xin x-coordinate.
+	 * @param {number} yin y-coordinate.
+	 * @param {number} zin z-coordinate.
+	 * @returns {number} The random noise for those coordinates.
+	 */
 	simplex3(xin, yin, zin) {
 		let n0, n1, n2, n3; // Noise contributions from the four corners
 
@@ -307,6 +327,12 @@ class Noise {
 		return (1 - t) * a + t * b;
 	}
 
+	/**
+	 * Generate a 2D perlin noise value.
+	 * @param {number} x x-coordinate.
+	 * @param {number} y y-coordinate.
+	 * @returns {number} The random noise for those coordinates.
+	 */
 	perlin2(x, y) {
 		let X = Math.floor(x),
 			Y = Math.floor(y);
@@ -334,6 +360,13 @@ class Noise {
 		);
 	}
 
+	/**
+	 * Generate a 3D perlin noise value.
+	 * @param {number} x x-coordinate.
+	 * @param {number} y y-coordinate.
+	 * @param {number} z z-coordinate.
+	 * @returns {number} The random noise for those coordinates.
+	 */
 	perlin3(x, y, z) {
 		// Find unit grid cell containing point
 		let X = Math.floor(x),
