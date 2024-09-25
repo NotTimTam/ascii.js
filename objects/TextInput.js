@@ -19,6 +19,7 @@ class TextInput extends Text {
 	 * @param {string} config.autoFocus Automatically focus on element once it is instantiated.
 	 * @param {function} config.onChange Callback that runs when the input's value changes.
 	 * @param {function} config.onKeyDown Callback that runs when the input recieves a keypress.
+	 * @param {number} config.maxLength An optional maximum input length.
 	 */
 	constructor(scene, config) {
 		config.wrap = false;
@@ -41,6 +42,7 @@ class TextInput extends Text {
 			backgroundColorActive = "white",
 			onChange,
 			onKeyDown,
+			maxLength,
 		} = config;
 
 		if (activeColor) {
@@ -85,6 +87,19 @@ class TextInput extends Text {
 			this.onKeyDown = onKeyDown;
 		}
 
+		if (maxLength) {
+			if (
+				typeof maxLength !== "number" ||
+				!Number.isInteger(maxLength) ||
+				maxLength < 0
+			)
+				throw new TypeError(
+					"Invalid config.maxLength value provided to TextInput. Expected an integer greater than or equal to 0."
+				);
+
+			this.maxLength = maxLength;
+		}
+
 		this.__inputWidth = config.width;
 		this.scroll = 0;
 
@@ -120,7 +135,11 @@ class TextInput extends Text {
 			const { key } = event;
 
 			// Only allow ASCII range typeable keys.
-			if (/^[\x20-\x7E]$/.test(key)) {
+			if (
+				/^[\x20-\x7E]$/.test(key) &&
+				(typeof this.maxLength !== "number" ||
+					this.value.length < this.maxLength)
+			) {
 				this.value =
 					this.value.slice(0, this.caret) +
 					key +

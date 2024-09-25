@@ -24,6 +24,7 @@ A text input that can be rendered on screen.
     -   `config.autoFocus` &mdash; `boolean` Automatically focus on element once it is instantiated.
     -   `config.onChange` &mdash; `function` Callback that runs when the input's value changes.
     -   `config.onKeyDown` &mdash; `function` Callback that runs when the input receives a keypress.
+    -   `config.maxLength` &mdash; `number` An optional maximum input length.
 
 ---
 
