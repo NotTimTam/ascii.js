@@ -8,7 +8,7 @@ class Text extends GameObject {
 	 * @param {Object} config The `Text`'s config object.
 	 * @param {number} config.x This `Text` object's x-coordinate.
 	 * @param {number} config.y This `Text` object's y-coordinate.
-	 * @param {number} config.width The maximum width of the `Text`. Defaults to `Renderer.width`.
+	 * @param {number} config.maxWidth The maximum width of the `Text`. Defaults to `Renderer.width`.
 	 * @param {string} config.value The text to display. (use `"\n"` for newlines)
 	 * @param {boolean} config.wrap Whether to wrap the text if it overflows the screen.
 	 * @param {string} config.color Option text color.
@@ -24,17 +24,17 @@ class Text extends GameObject {
 			color = "#ffffff",
 			backgroundColor,
 			fontWeight = 400,
-			width = scene.renderer.width,
+			maxWidth = scene.renderer.width,
 		} = config;
 		super(scene, x, y);
 
 		if (
-			typeof config.width !== "number" ||
-			!Number.isInteger(config.width) ||
-			config.width < 1
+			typeof config.maxWidth !== "number" ||
+			!Number.isInteger(config.maxWidth) ||
+			config.maxWidth < 1
 		)
 			throw new TypeError(
-				"Invalid config.width value provided to Text. Expected an integer greater than 0."
+				"Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
 			);
 
 		if (typeof value !== "string")
@@ -47,7 +47,7 @@ class Text extends GameObject {
 		this.color = color;
 		this.backgroundColor = backgroundColor;
 		this.fontWeight = fontWeight;
-		this.width = width;
+		this.maxWidth = maxWidth;
 	}
 
 	/**
@@ -65,18 +65,19 @@ class Text extends GameObject {
 	}
 
 	get renderable() {
-		const { wrap, value, width, color, backgroundColor, fontWeight } = this;
+		const { wrap, value, maxWidth, color, backgroundColor, fontWeight } =
+			this;
 
 		const lines = value.split("\n");
 
 		const data = [];
 
 		for (const line of lines) {
-			if (!wrap && line.length > width) {
-				// If wrap is false and line length exceeds width, ignore overflowing text
+			if (!wrap && line.length > maxWidth) {
+				// If wrap is false and line length exceeds maxWidth, ignore overflowing text
 				data.push(
 					line
-						.substring(0, width)
+						.substring(0, maxWidth)
 						.split("")
 						.map(
 							(char) =>
@@ -94,7 +95,7 @@ class Text extends GameObject {
 				let currentLength = 0;
 
 				for (const char of line) {
-					if (currentLength >= width) {
+					if (currentLength >= maxWidth) {
 						if (wrap) {
 							// If wrap is true, move to the next line
 							data.push(

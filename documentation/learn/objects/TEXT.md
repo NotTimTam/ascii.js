@@ -14,7 +14,7 @@ A string of text that can be rendered on screen.
 -   `config` &mdash; `Object` The `Text`'s config object.
     -   `config.x` &mdash; `number` This `Text` object's x-coordinate.
     -   `config.y` &mdash; `number` This `Text` object's y-coordinate.
-    -   `config.width` &mdash; `number` The maximum width of the `Text`. Defaults to `Renderer.width`.
+    -   `config.maxWidth` &mdash; `number` The maximum width of the `Text`. Defaults to `Renderer.width`.
     -   `config.value` &mdash; `string` The text to display. (use `"\n"` for newlines)
     -   `config.wrap` &mdash; `boolean` Whether to wrap the text if it overflows the screen.
     -   `config.color` &mdash; `string` Optional text color.

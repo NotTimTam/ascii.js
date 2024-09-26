@@ -14,7 +14,7 @@ A text input that can be rendered on screen.
 -   `config` &mdash; `Object` The `TextInput`'s config object.
     -   `config.x` &mdash; `number` This `TextInput` object's x-coordinate.
     -   `config.y` &mdash; `number` This `TextInput` object's y-coordinate.
-    -   `config.width` &mdash; `number` The maximum width of the `TextInput`.
+    -   `config.maxWidth` &mdash; `number` The maximum width of the `TextInput`.
     -   `config.value` &mdash; `string` The text to display. (use `"\n"` for newlines)
     -   `config.color` &mdash; `string` Optional text color.
     -   `config.activeColor` &mdash; `string` Optional text color for active character.

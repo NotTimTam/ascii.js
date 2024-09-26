@@ -9,7 +9,7 @@ class TextInput extends Text {
 	 * @param {Object} config The `TextInput`'s config object.
 	 * @param {number} config.x This `TextInput` object's x-coordinate.
 	 * @param {number} config.y This `TextInput` object's y-coordinate.
-	 * @param {number} config.width The maximum width of the `TextInput`.
+	 * @param {number} config.maxWidth The maximum width of the `TextInput`.
 	 * @param {string} config.value The text to display. (use `"\n"` for newlines)
 	 * @param {string} config.color Optional text color.
 	 * @param {string} config.activeColor Optional text color for active character.
@@ -23,10 +23,9 @@ class TextInput extends Text {
 	 */
 	constructor(scene, config) {
 		config.wrap = false;
+		if (!config.maxWidth) config.maxWidth = 8;
 
 		super(scene, config);
-
-		if (!config.width) config.width = 8;
 
 		const {
 			activeColor = "black",
@@ -92,7 +91,7 @@ class TextInput extends Text {
 			this.maxLength = maxLength;
 		}
 
-		this.__inputWidth = config.width;
+		this.maxWidth = config.width;
 		this.scroll = 0;
 
 		this.focused = Boolean(config.autoFocus);
@@ -153,8 +152,7 @@ class TextInput extends Text {
 			else if (key === "ArrowRight") this.caret++;
 
 			while (this.caret < this.scroll) this.scroll--;
-			while (this.caret > this.scroll + this.__inputWidth - 2)
-				this.scroll++;
+			while (this.caret > this.scroll + this.maxWidth - 2) this.scroll++;
 
 			this.onChange && this.onChange({ target: this });
 			this.onKeyDown && this.onKeyDown({ target: this, key });
@@ -186,7 +184,7 @@ class TextInput extends Text {
 				renderer: { width },
 			},
 			fontWeight,
-			__inputWidth,
+			maxWidth,
 			caret,
 			color,
 			activeColor,
@@ -197,15 +195,15 @@ class TextInput extends Text {
 
 		const data = [];
 
-		const maxScroll = value.length - __inputWidth + 1;
+		const maxScroll = value.length - maxWidth + 1;
 		if (this.scroll > maxScroll) this.scroll = maxScroll;
 		if (this.scroll < 0) this.scroll = 0;
 
 		const { scroll } = this;
 
 		const display = value
-			.substring(scroll, scroll + __inputWidth)
-			.padEnd(__inputWidth, " ")
+			.substring(scroll, scroll + maxWidth)
+			.padEnd(maxWidth, " ")
 			.split("");
 
 		for (let i = 0; i < display.length; i++) {
