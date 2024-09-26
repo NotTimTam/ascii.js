@@ -3231,7 +3231,6 @@ class TextInput extends Text {
 			this.maxLength = maxLength;
 		}
 
-		this.maxWidth = config.maxWidth;
 		this.scroll = 0;
 
 		this.focused = Boolean(config.autoFocus);
