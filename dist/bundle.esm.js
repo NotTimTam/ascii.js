@@ -2764,6 +2764,7 @@ class Text extends GameObject {
 	 * @param {Object} config The `Text`'s config object.
 	 * @param {number} config.x This `Text` object's x-coordinate.
 	 * @param {number} config.y This `Text` object's y-coordinate.
+	 * @param {number} config.width The maximum width of the `Text`. Defaults to `Renderer.width`.
 	 * @param {string} config.value The text to display. (use `"\n"` for newlines)
 	 * @param {boolean} config.wrap Whether to wrap the text if it overflows the screen.
 	 * @param {string} config.color Option text color.
@@ -2779,8 +2780,18 @@ class Text extends GameObject {
 			color = "#ffffff",
 			backgroundColor,
 			fontWeight = 400,
+			width = scene.renderer.width,
 		} = config;
 		super(scene, x, y);
+
+		if (
+			typeof config.width !== "number" ||
+			!Number.isInteger(config.width) ||
+			config.width < 1
+		)
+			throw new TypeError(
+				"Invalid config.width value provided to Text. Expected an integer greater than 0."
+			);
 
 		if (typeof value !== "string")
 			throw new Error(
@@ -2792,6 +2803,7 @@ class Text extends GameObject {
 		this.color = color;
 		this.backgroundColor = backgroundColor;
 		this.fontWeight = fontWeight;
+		this.width = width;
 	}
 
 	/**
@@ -2809,16 +2821,7 @@ class Text extends GameObject {
 	}
 
 	get renderable() {
-		const {
-			wrap,
-			value,
-			scene: {
-				renderer: { width },
-			},
-			color,
-			backgroundColor,
-			fontWeight,
-		} = this;
+		const { wrap, value, width, color, backgroundColor, fontWeight } = this;
 
 		const lines = value.split("\n");
 
@@ -3158,14 +3161,6 @@ class TextInput extends Text {
 		super(scene, config);
 
 		if (!config.width) config.width = 8;
-		if (
-			typeof config.width !== "number" ||
-			!Number.isInteger(config.width) ||
-			config.width < 1
-		)
-			throw new TypeError(
-				"Invalid config.width value provided to TextInput. Expected an integer greater than 0."
-			);
 
 		const {
 			activeColor = "black",

@@ -27,14 +27,6 @@ class TextInput extends Text {
 		super(scene, config);
 
 		if (!config.width) config.width = 8;
-		if (
-			typeof config.width !== "number" ||
-			!Number.isInteger(config.width) ||
-			config.width < 1
-		)
-			throw new TypeError(
-				"Invalid config.width value provided to TextInput. Expected an integer greater than 0."
-			);
 
 		const {
 			activeColor = "black",
