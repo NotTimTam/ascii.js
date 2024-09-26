@@ -29,9 +29,10 @@ class Text extends GameObject {
 		super(scene, x, y);
 
 		if (
-			typeof config.maxWidth !== "number" ||
-			!Number.isInteger(config.maxWidth) ||
-			config.maxWidth < 1
+			maxWidth &&
+			(typeof maxWidth !== "number" ||
+				!Number.isInteger(maxWidth) ||
+				maxWidth < 1)
 		)
 			throw new TypeError(
 				"Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."

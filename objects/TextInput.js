@@ -9,7 +9,7 @@ class TextInput extends Text {
 	 * @param {Object} config The `TextInput`'s config object.
 	 * @param {number} config.x This `TextInput` object's x-coordinate.
 	 * @param {number} config.y This `TextInput` object's y-coordinate.
-	 * @param {number} config.maxWidth The maximum width of the `TextInput`.
+	 * @param {number} config.maxWidth The maximum width of the `TextInput`. Defaults to `8`.
 	 * @param {string} config.value The text to display. (use `"\n"` for newlines)
 	 * @param {string} config.color Optional text color.
 	 * @param {string} config.activeColor Optional text color for active character.
