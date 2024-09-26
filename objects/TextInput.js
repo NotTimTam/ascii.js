@@ -94,7 +94,7 @@ class TextInput extends Text {
 		this.scroll = 0;
 
 		this.focused = Boolean(config.autoFocus);
-		this.__rawCaret = 0;
+		this.caret = config.value ? config.value.length : 0;
 
 		scene.inputManager.addOnClick(this, this.onClick.bind(this));
 		scene.inputManager.addEventListener(this.eventListener.bind(this));
