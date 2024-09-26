@@ -2768,7 +2768,7 @@ class Text extends GameObject {
 	 * @param {Object} config The `Text`'s config object.
 	 * @param {number} config.x This `Text` object's x-coordinate.
 	 * @param {number} config.y This `Text` object's y-coordinate.
-	 * @param {number} config.width The maximum width of the `Text`. Defaults to `Renderer.width`.
+	 * @param {number} config.maxWidth The maximum width of the `Text`. Defaults to `Renderer.width`.
 	 * @param {string} config.value The text to display. (use `"\n"` for newlines)
 	 * @param {boolean} config.wrap Whether to wrap the text if it overflows the screen.
 	 * @param {string} config.color Option text color.
@@ -2784,17 +2784,18 @@ class Text extends GameObject {
 			color = "#ffffff",
 			backgroundColor,
 			fontWeight = 400,
-			width = scene.renderer.width,
+			maxWidth = scene.renderer.width,
 		} = config;
 		super(scene, x, y);
 
 		if (
-			typeof config.width !== "number" ||
-			!Number.isInteger(config.width) ||
-			config.width < 1
+			maxWidth &&
+			(typeof maxWidth !== "number" ||
+				!Number.isInteger(maxWidth) ||
+				maxWidth < 1)
 		)
 			throw new TypeError(
-				"Invalid config.width value provided to Text. Expected an integer greater than 0."
+				"Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
 			);
 
 		if (typeof value !== "string")
@@ -2807,7 +2808,7 @@ class Text extends GameObject {
 		this.color = color;
 		this.backgroundColor = backgroundColor;
 		this.fontWeight = fontWeight;
-		this.width = width;
+		this.maxWidth = maxWidth;
 	}
 
 	/**
@@ -2825,18 +2826,19 @@ class Text extends GameObject {
 	}
 
 	get renderable() {
-		const { wrap, value, width, color, backgroundColor, fontWeight } = this;
+		const { wrap, value, maxWidth, color, backgroundColor, fontWeight } =
+			this;
 
 		const lines = value.split("\n");
 
 		const data = [];
 
 		for (const line of lines) {
-			if (!wrap && line.length > width) {
-				// If wrap is false and line length exceeds width, ignore overflowing text
+			if (!wrap && line.length > maxWidth) {
+				// If wrap is false and line length exceeds maxWidth, ignore overflowing text
 				data.push(
 					line
-						.substring(0, width)
+						.substring(0, maxWidth)
 						.split("")
 						.map(
 							(char) =>
@@ -2854,7 +2856,7 @@ class Text extends GameObject {
 				let currentLength = 0;
 
 				for (const char of line) {
-					if (currentLength >= width) {
+					if (currentLength >= maxWidth) {
 						if (wrap) {
 							// If wrap is true, move to the next line
 							data.push(
@@ -3147,7 +3149,7 @@ class TextInput extends Text {
 	 * @param {Object} config The `TextInput`'s config object.
 	 * @param {number} config.x This `TextInput` object's x-coordinate.
 	 * @param {number} config.y This `TextInput` object's y-coordinate.
-	 * @param {number} config.width The maximum width of the `TextInput`.
+	 * @param {number} config.maxWidth The maximum width of the `TextInput`. Defaults to `8`.
 	 * @param {string} config.value The text to display. (use `"\n"` for newlines)
 	 * @param {string} config.color Optional text color.
 	 * @param {string} config.activeColor Optional text color for active character.
@@ -3161,10 +3163,9 @@ class TextInput extends Text {
 	 */
 	constructor(scene, config) {
 		config.wrap = false;
+		if (!config.maxWidth) config.maxWidth = 8;
 
 		super(scene, config);
-
-		if (!config.width) config.width = 8;
 
 		const {
 			activeColor = "black",
@@ -3230,7 +3231,7 @@ class TextInput extends Text {
 			this.maxLength = maxLength;
 		}
 
-		this.__inputWidth = config.width;
+		this.maxWidth = config.width;
 		this.scroll = 0;
 
 		this.focused = Boolean(config.autoFocus);
@@ -3291,8 +3292,7 @@ class TextInput extends Text {
 			else if (key === "ArrowRight") this.caret++;
 
 			while (this.caret < this.scroll) this.scroll--;
-			while (this.caret > this.scroll + this.__inputWidth - 2)
-				this.scroll++;
+			while (this.caret > this.scroll + this.maxWidth - 2) this.scroll++;
 
 			this.onChange && this.onChange({ target: this });
 			this.onKeyDown && this.onKeyDown({ target: this, key });
@@ -3324,7 +3324,7 @@ class TextInput extends Text {
 				renderer: { width },
 			},
 			fontWeight,
-			__inputWidth,
+			maxWidth,
 			caret,
 			color,
 			activeColor,
@@ -3335,15 +3335,15 @@ class TextInput extends Text {
 
 		const data = [];
 
-		const maxScroll = value.length - __inputWidth + 1;
+		const maxScroll = value.length - maxWidth + 1;
 		if (this.scroll > maxScroll) this.scroll = maxScroll;
 		if (this.scroll < 0) this.scroll = 0;
 
 		const { scroll } = this;
 
 		const display = value
-			.substring(scroll, scroll + __inputWidth)
-			.padEnd(__inputWidth, " ")
+			.substring(scroll, scroll + maxWidth)
+			.padEnd(maxWidth, " ")
 			.split("");
 
 		for (let i = 0; i < display.length; i++) {
