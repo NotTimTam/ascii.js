@@ -3231,7 +3231,7 @@ class TextInput extends Text {
 			this.maxLength = maxLength;
 		}
 
-		this.maxWidth = config.width;
+		this.maxWidth = config.maxWidth;
 		this.scroll = 0;
 
 		this.focused = Boolean(config.autoFocus);
@@ -3320,9 +3320,6 @@ class TextInput extends Text {
 	get renderable() {
 		const {
 			value,
-			scene: {
-				renderer: { width },
-			},
 			fontWeight,
 			maxWidth,
 			caret,
