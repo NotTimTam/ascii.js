@@ -56,9 +56,12 @@ class GameObject extends Core {
 
 	/**
 	 * Get the `GameObject`'s visibility status.
+	 * If the `GameObject` is not part of a layer,
+	 * or is in a `Layer` whose `visible` parameter is false,
+	 * it will also be false.
 	 */
 	get visible() {
-		return this.__rawVisible;
+		return this.__rawVisible && this.layer && this.layer.visible;
 	}
 
 	/**

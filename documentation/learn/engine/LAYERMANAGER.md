@@ -17,6 +17,14 @@ new LayerManager(renderer, layers);
 
 ---
 
+## Attributes
+
+### `get visibleLayers`
+
+Get all `Layer`s associated with this `LayerManager` instance, whose `visible` attribute is set to `true`.
+
+---
+
 ## Methods
 
 ### `getLayerByLabel(label)`

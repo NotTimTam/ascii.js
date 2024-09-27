@@ -31,6 +31,8 @@ export class Layer {
 		this.paused = false;
 
 		this.parallax = parallax;
+
+		this.__rawVisible = true;
 	}
 
 	/**
@@ -62,6 +64,20 @@ export class Layer {
 
 		for (const gameObject of this.gameObjects)
 			gameObject.layer = this.label; // Put game object on this layer.
+	}
+
+	/**
+	 * Get the `Layer`'s visibility status.
+	 */
+	get visible() {
+		return this.__rawVisible;
+	}
+
+	/**
+	 * Set the `Layer`'s visibility status.
+	 */
+	set visible(value) {
+		this.__rawVisible = Boolean(value);
 	}
 
 	/**
@@ -189,6 +205,13 @@ class LayerManager {
 	}
 
 	/**
+	 * Get all visible layers in this `LayerManager`.
+	 */
+	get visibleLayers() {
+		return this.layers.filter((layer) => layer.visible);
+	}
+
+	/**
 	 * Get a layer by its label.
 	 * @param {string} label The label of the layer to get.
 	 * @returns {Layer} A layer with the label provided. Or `undefined` if no layer was found.
@@ -278,7 +301,7 @@ class LayerManager {
 		} = this;
 
 		const frame = renderer.compileFrames(
-			...this.layers.map((layer) => layer.frame)
+			...this.visibleLayers.map((layer) => layer.frame)
 		);
 
 		if (JSON.stringify(frame) === this.lastFrame && renderer.hasDrawn)
@@ -296,7 +319,7 @@ class LayerManager {
 			scene: { renderer },
 		} = this;
 
-		const frames = this.layers.map((layer) => layer.frame);
+		const frames = this.visibleLayers.map((layer) => layer.frame);
 
 		renderer.clearDisplay();
 
