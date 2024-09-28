@@ -1,50 +1,73 @@
-# LayerManager
+# Noise
 
-The layer manager contains variable layers and compiles them into one frame to render to the screen.
+A perlin/simplex noise generator.
 
 ---
 
 ## Constructor
 
-`new LayerManager(renderer, layers);`
+```javascript
+new Noise(seed);
+```
 
 ### Arguments
 
--   `renderer` &mdash; `Renderer` The main runtime's renderer object.
--   `layers` &mdash; `Array<Object>` The layer configuration objects.
+-   `seed` &mdash; `number` The seed for noise generation.
 
 ---
 
 ## Methods
 
-### `getLayerByLabel(label)`
+### simplex2(xin, yin)
 
-Get a layer by its label.
+Generate a 2D simplex noise value.
 
 #### Arguments
 
--   `label` &mdash; `string` The label of the layer to get.
+-   `xin` &mdash; `number` The x-coordinate.
+-   `yin` &mdash; `number` The y-coordinate.
 
 #### Returns
 
--   `Layer` A layer with the label provided. Or `undefined` if no layer was found.
+The random noise for the provided coordinates.
 
-### `getAtPosition(x, y, layer)`
+### simplex3(xin, yin, zin)
 
-Check for content at a location.
-
-#### Arguments
-
--   `x` &mdash; `number` The x-coordinate to check.
--   `y` &mdash; `number` The y-coordinate to check.
--   `layer` &mdash; `string` An optional layer to check. If no layer is provided, all layers are checked.
-
-### `solidAtPosition(x, y, layer)`
-
-Check for a solid at a location.
+Generate a 3D simplex noise value.
 
 #### Arguments
 
--   `x` &mdash; `number` The x-coordinate to check.
--   `y` &mdash; `number` The y-coordinate to check.
--   `layer` &mdash; `string` An optional layer to check. If no layer is provided, all layers are checked.
+-   `xin` &mdash; `number` The x-coordinate.
+-   `yin` &mdash; `number` The y-coordinate.
+-   `zin` &mdash; `number` The z-coordinate.
+
+#### Returns
+
+The random noise for the provided coordinates.
+
+### perlin2(x, y)
+
+Generate a 2D perlin noise value.
+
+#### Arguments
+
+-   `x` &mdash; `number` The x-coordinate.
+-   `y` &mdash; `number` The y-coordinate.
+
+#### Returns
+
+The random noise for the provided coordinates.
+
+### perlin3(x, y, z)
+
+Generate a 3D perlin noise value.
+
+#### Arguments
+
+-   `x` &mdash; `number` The x-coordinate.
+-   `y` &mdash; `number` The y-coordinate.
+-   `z` &mdash; `number` The z-coordinate.
+
+#### Returns
+
+The random noise for the provided coordinates.
