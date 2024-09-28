@@ -297,7 +297,7 @@ class LayerManager {
 	 * Create layers from config.
 	 * @param {Array<*>} layers The layer creation array.
 	 */
-	__createLayers(layers) {
+	__createLayers(layers = []) {
 		this.layers = [];
 
 		if (!layers.includes("system")) new Layer(this, { label: "system" });
