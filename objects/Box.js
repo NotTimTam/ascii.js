@@ -32,6 +32,7 @@ class Box extends GameObject {
 	 * @param {string} config.color Option Box color.
 	 * @param {string} config.backgroundColor Optional background color.
 	 * @param {string} config.style The box line style. `"line" || "double"`
+	 * @param {string} config.layer The label of the layer to start the `Box` on.
 	 */
 	constructor(scene, config) {
 		const {
@@ -42,8 +43,9 @@ class Box extends GameObject {
 			color = "#ffffff",
 			backgroundColor,
 			style = "double",
+			layer,
 		} = config;
-		super(scene, x, y);
+		super(scene, x, y, layer);
 
 		this.__rawWidth = width;
 		this.__rawHeight = height;

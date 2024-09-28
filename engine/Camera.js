@@ -1,25 +1,16 @@
-import GameObject from "../core/GameObject.js";
 import { aabb } from "../util/math.js";
-import Renderer from "./Renderer.js";
+import Scene from "./Scene.js";
 
-class Camera extends GameObject {
+class Camera {
 	/**
 	 * The scene contains variable layers and compiles them into one frame to render to the screen.
-	 * @param {Renderer} renderer The `Renderer` this `Camera` is a part of.
+	 * @param {Scene} scene The `Scene` this `Camera` is a part of.
 	 */
-	constructor(renderer) {
-		super(renderer.scene, 0, 0);
-		this.renderer = renderer;
+	constructor(scene) {
+		this.scene = scene;
 
-		this.config = this.renderer.config && this.renderer.config.camera;
-	}
-
-	get renderable() {
-		return undefined;
-	}
-
-	set renderable(_) {
-		return;
+		this.__rawX = 0;
+		this.__rawY = 0;
 	}
 
 	/**
@@ -28,8 +19,8 @@ class Camera extends GameObject {
 	 * @param {number} y The y-coordinate to check.
 	 * @param {number} width The width to check.
 	 * @param {number} height The height to check.
-	 * @param {number} parallaxX Optional parallax x-value. (0-1)
-	 * @param {number} parallaxY Optional parallax y-value. (0-1)
+	 * @param {number} parallaxX Optional parallax x-value.
+	 * @param {number} parallaxY Optional parallax y-value.
 	 */
 	isOnScreen = (x, y, width, height, parallaxX = 1, parallaxY = 1) =>
 		aabb(
@@ -39,9 +30,45 @@ class Camera extends GameObject {
 			height,
 			this.x * parallaxX,
 			this.y * parallaxY,
-			this.renderer.width,
-			this.renderer.height
+			this.scene.runtime.renderer.width,
+			this.scene.runtime.renderer.height
 		);
+
+	/**
+	 * Get the game object's adjusted x-coordinate.
+	 */
+	get x() {
+		return Math.round(this.__rawX);
+	}
+
+	/**
+	 * Set the game object's x-coordinate.
+	 */
+	set x(n) {
+		if (typeof n !== "number")
+			throw new Error(
+				"Entity x-coordinate value must be of type 'number'."
+			);
+		this.__rawX = n;
+	}
+
+	/**
+	 * Get the game object's adjusted y-coordinate.
+	 */
+	get y() {
+		return Math.round(this.__rawY);
+	}
+
+	/**
+	 * Set the game object's y-coordinate.
+	 */
+	set y(n) {
+		if (typeof n !== "number")
+			throw new Error(
+				"Entity y-coordinate value must be of type 'number'."
+			);
+		this.__rawY = n;
+	}
 }
 
 export default Camera;

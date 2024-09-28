@@ -20,6 +20,7 @@ class TextInput extends Text {
 	 * @param {function} config.onChange Callback that runs when the input's value changes.
 	 * @param {function} config.onKeyDown Callback that runs when the input recieves a keypress.
 	 * @param {number} config.maxLength An optional maximum input length.
+	 * @param {string} config.layer The label of the layer to start the `TextInput` on.
 	 */
 	constructor(scene, config) {
 		config.wrap = false;

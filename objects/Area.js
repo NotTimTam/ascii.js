@@ -8,9 +8,10 @@ class Area extends GameObject {
 	 * @param {number} x This `Area`'s x-coordinate.
 	 * @param {number} y This `Area`'s y-coordinate.
 	 * @param {boolean} solid Whether the area's renderable is solid. Empty spaces in the renderable are not solid.
+	 * @param {string} layer The label of the layer to start the `Area` on.
 	 */
-	constructor(scene, x, y, solid = false) {
-		super(scene, x, y);
+	constructor(scene, x, y, solid = false, layer) {
+		super(scene, x, y, layer);
 
 		this.solid = solid;
 

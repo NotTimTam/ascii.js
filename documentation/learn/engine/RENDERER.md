@@ -4,13 +4,12 @@ Handles rendering the game using **2D Context**.
 
 ## Constructor
 
-### `constructor(scene, layers)`
+### `constructor(runtime)`
 
 Creates an instance of the `Renderer`.
 
 -   **Parameters**
-    -   `scene` {Scene} - The scene this Object is a part of.
-    -   `layers` {Array<Object>} - The layer configuration objects to pass to this `Renderer` instance's `LayerManager` instance.
+    -   `runtime` {Runtime} - The current `Runtime` instance.
 
 ## Properties
 

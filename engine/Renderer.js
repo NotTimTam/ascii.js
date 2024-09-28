@@ -1,19 +1,17 @@
 import { displayArray } from "../util/data.js";
-import LayerManager from "./LayerManager.js";
 
 import Pixel from "../core/Pixel.js";
 import Frame from "./Frame.js";
-import Camera from "./Camera.js";
+import Runtime from "./Runtime.js";
 
 class Renderer {
 	/**
 	 * Handles rendering the game using **2D Context**.
-	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {Array<Object>} layers The layer configuration objects to pass to this `Renderer` instance's `LayerManager` instance.
+	 * @param {Runtime} runtime The current `Runtime` instance.
 	 */
-	constructor(scene, layers) {
-		this.scene = scene;
-		this.runtime = scene.runtime;
+	constructor(runtime) {
+		this.runtime = runtime;
+
 		this.config = this.runtime.config && this.runtime.config.renderer;
 
 		Renderer.validateConfig(this.config);
@@ -21,8 +19,7 @@ class Renderer {
 		if (!this.config)
 			throw new Error("No config object provided to renderer.");
 
-		this.layerManager = new LayerManager(this, layers);
-		this.camera = new Camera(this);
+		this.__onCreated();
 	}
 
 	/**
@@ -342,22 +339,11 @@ class Renderer {
 	/**
 	 * Code that runs when the project starts.
 	 */
-	__onLoad() {
+	__onCreated() {
 		this.__intializeDisplay();
 		this.__rescaleDisplay();
 
 		window.addEventListener("resize", () => this.__rescaleDisplay());
-
-		this.runtime.__runOnLoad(this.layerManager);
-	}
-
-	/**
-	 * Code that runs on every frame.
-	 */
-	__onTick() {
-		const { runtime } = this;
-
-		runtime.__runOnTick(this.layerManager);
 	}
 }
 

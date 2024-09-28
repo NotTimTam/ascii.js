@@ -9,7 +9,6 @@ class InputManager {
 	 */
 	constructor(scene) {
 		this.scene = scene;
-		this.runtime = this.scene.runtime;
 
 		this.keyboard = { keys: {}, keyCodes: {} };
 		this.mouse = { buttons: {} };
@@ -19,6 +18,7 @@ class InputManager {
 
 		this.__onCreated();
 	}
+
 	__eventHandler = (e) => this.__onEvent(e);
 	__contextHandler = (e) => e.preventDefault();
 
@@ -26,7 +26,7 @@ class InputManager {
 	 * Get the pointer lock status.
 	 */
 	get hasPointerLock() {
-		const { element } = this.scene.renderer;
+		const { element } = this.scene.runtime.renderer;
 		if (document.pointerLockElement === element) return true;
 		else return false;
 	}
@@ -35,7 +35,7 @@ class InputManager {
 	 * Initiate a pointer lock request. Pointer lock cannot be achieved unless the user clicks the screen after this method is called.
 	 */
 	async requestPointerLock() {
-		const { element } = this.scene.renderer;
+		const { element } = this.scene.runtime.renderer;
 
 		const initiatePointerLock = () => {
 			if (!this.hasPointerLock) element.requestPointerLock();
@@ -135,10 +135,7 @@ class InputManager {
 
 		const { x, y } = this.mouse;
 
-		this.mouse.target = this.scene.renderer.layerManager.getAtPosition(
-			x,
-			y
-		);
+		this.mouse.target = this.scene.layerManager.getAtPosition(x, y);
 
 		const targetIds = this.mouse.target.map(
 			({ gameObject }) => gameObject.id
@@ -178,12 +175,13 @@ class InputManager {
 		const {
 			scene: {
 				camera: { x: cameraX, y: cameraY },
-
-				renderer: {
-					width: characterWidth,
-					height: characterHeight,
-					element,
-					layerManager: { layers },
+				layerManager: { layers },
+				runtime: {
+					renderer: {
+						width: characterWidth,
+						height: characterHeight,
+						element,
+					},
 				},
 			},
 		} = this;

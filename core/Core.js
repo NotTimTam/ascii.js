@@ -18,9 +18,11 @@ class Core {
 
 		this.scene = scene;
 
-		this.runtime = scene.runtime;
-
 		this.id = crypto.randomUUID();
+	}
+
+	get runtime() {
+		return this.scene.runtime;
 	}
 }
 

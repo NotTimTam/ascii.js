@@ -12,8 +12,9 @@ class GameObject extends Core {
 	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {number} x This entity's x-coordinate.
 	 * @param {number} y This entity's y-coordinate.
+	 *@param {string} layer The label of the layer to start the `Area` on.
 	 */
-	constructor(scene, x = 0, y = 0) {
+	constructor(scene, x = 0, y = 0, layer) {
 		super(scene);
 
 		if (typeof x !== "number")
@@ -32,6 +33,8 @@ class GameObject extends Core {
 		this.__rawRenderable = new Pixel({ value: "#", color: "magenta" });
 
 		this.behaviors = [];
+
+		if (layer) this.layer = layer;
 	}
 
 	/**
@@ -97,6 +100,17 @@ class GameObject extends Core {
 	}
 
 	/**
+	 * Set the game object's y-coordinate.
+	 */
+	set y(n) {
+		if (typeof n !== "number")
+			throw new Error(
+				"Entity y-coordinate value must be of type 'number'."
+			);
+		this.__rawY = n;
+	}
+
+	/**
 	 * Get the width of this `GameObject`'s renderable.
 	 */
 	get width() {
@@ -118,29 +132,12 @@ class GameObject extends Core {
 	}
 
 	/**
-	 * Set the game object's y-coordinate.
-	 */
-	set y(n) {
-		if (typeof n !== "number")
-			throw new Error(
-				"Entity y-coordinate value must be of type 'number'."
-			);
-		this.__rawY = n;
-	}
-
-	/**
 	 * Get the `GameObject`'s current layer.
 	 */
 	get layer() {
-		const {
-			scene: {
-				renderer: {
-					layerManager: { layers },
-				},
-			},
-		} = this;
-
-		return layers.find(({ gameObjects }) => gameObjects.includes(this));
+		return this.scene.layerManager.layers.find(({ gameObjects }) =>
+			gameObjects.includes(this)
+		);
 	}
 
 	/**
@@ -170,9 +167,7 @@ class GameObject extends Core {
 
 			const {
 				scene: {
-					renderer: {
-						layerManager: { layers },
-					},
+					layerManager: { layers },
 				},
 			} = this;
 
@@ -240,6 +235,20 @@ class GameObject extends Core {
 				? item !== this
 				: item.gameObject !== this
 		);
+
+	/**
+	 * Delete this `GameObject`.
+	 *
+	 * **NOTE:** JavaScript has an automatic garbage collector, which means as long as an object is not referenced anywhere, it will be removed from memory.
+	 * This method will remove references to the object from engine-created runtime objects. Custom objects or variables that reference this object must stop referencing it before it is fully removed from memory.
+	 *
+	 *
+	 * At minimum, this functions behaviors and tick methods will stop when `GameObject.delete()` is executed. Unless they are called from somewhere other than its parent `Layer`.
+	 */
+	delete() {
+		if (this.layer) this.layer = undefined;
+		delete this;
+	}
 }
 
 export default GameObject;

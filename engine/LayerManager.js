@@ -1,8 +1,8 @@
-import Renderer from "./Renderer.js";
 import { aabb } from "../util/math.js";
 import GameObject from "../core/GameObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Frame from "./Frame.js";
+import Scene from "./Scene.js";
 
 export class Layer {
 	/**
@@ -16,8 +16,6 @@ export class Layer {
 	constructor(layerManager, config) {
 		const { label, parallax = [1, 1], gameObjectConstructors } = config;
 
-		this.runtime = layerManager.runtime;
-		this.scene = layerManager.scene;
 		this.layerManager = layerManager;
 		this.label = label;
 
@@ -49,7 +47,9 @@ export class Layer {
 
 		this.gameObjects = gameObjectConstructors
 			.map((gameObjectConstructor) => {
-				const gameObject = gameObjectConstructor(this.scene);
+				const gameObject = gameObjectConstructor(
+					this.layerManager.scene
+				);
 
 				if (!(gameObject instanceof GameObject))
 					throw new TypeError(
@@ -85,7 +85,12 @@ export class Layer {
 	 */
 	get frame() {
 		const {
-			scene: { renderer, camera },
+			layerManager: {
+				scene: {
+					camera,
+					runtime: { renderer },
+				},
+			},
 			parallax: [pX, pY],
 		} = this;
 
@@ -180,7 +185,13 @@ export class Layer {
 	}
 
 	__onTick() {
-		const { runtime, gameObjects, paused } = this;
+		const {
+			layerManager: {
+				scene: { runtime },
+			},
+			gameObjects,
+			paused,
+		} = this;
 
 		if (paused || runtime.paused) return; // Don't run this layer's code if it or the runtime is paused.
 
@@ -194,13 +205,11 @@ export class Layer {
 class LayerManager {
 	/**
 	 * The layer manager contains variable layers and compiles them into one frame to render to the screen.
-	 * @param {Renderer} renderer The main runtime's renderer object.
+	 * @param {Scene} scene The current loaded `Scene`.
 	 * @param {Array<Object>} layers The layer configuration objects.
 	 */
-	constructor(renderer, layers) {
-		this.renderer = renderer;
-		this.runtime = renderer.runtime;
-		this.scene = renderer.scene;
+	constructor(scene, layers) {
+		this.scene = scene;
 		this.layers = layers;
 	}
 
@@ -285,10 +294,10 @@ class LayerManager {
 	}
 
 	/**
-	 * Load layers into the layer manager.
+	 * Create layers from config.
 	 * @param {Array<*>} layers The layer creation array.
 	 */
-	__loadLayers(layers) {
+	__createLayers(layers) {
 		this.layers = [];
 
 		if (!layers.includes("system")) new Layer(this, { label: "system" });
@@ -297,7 +306,7 @@ class LayerManager {
 
 	__mergedRender() {
 		const {
-			scene: { renderer },
+			runtime: { renderer },
 		} = this;
 
 		const frame = renderer.compileFrames(
@@ -316,7 +325,9 @@ class LayerManager {
 
 	__stackedRender() {
 		const {
-			scene: { renderer },
+			scene: {
+				runtime: { renderer },
+			},
 		} = this;
 
 		const frames = this.visibleLayers.map((layer) => layer.frame);
@@ -327,14 +338,18 @@ class LayerManager {
 	}
 
 	__onLoad() {
-		this.__loadLayers(this.layers);
+		this.__createLayers(this.layers);
 	}
 
 	__onTick() {
 		const {
-			runtime,
-			renderer: {
-				config: { renderMode },
+			scene: {
+				runtime,
+				runtime: {
+					renderer: {
+						config: { renderMode },
+					},
+				},
 			},
 		} = this;
 

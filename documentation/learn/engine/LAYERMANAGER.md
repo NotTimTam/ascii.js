@@ -7,12 +7,12 @@ The layer manager contains variable layers and compiles them into one frame to r
 ## Constructor
 
 ```javascript
-new LayerManager(renderer, layers);
+new LayerManager(scene, layers);
 ```
 
 ### Arguments
 
--   `renderer` &mdash; `Renderer` The main runtime's renderer object.
+-   `scene` &mdash; `Scene` The scene this layerManager is for.
 -   `layers` &mdash; `Array<Object>` The layer configuration objects.
 
 ---

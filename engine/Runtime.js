@@ -1,5 +1,6 @@
 import AudioManager from "./AudioManager.js";
 import Noise from "./Noise.js";
+import Renderer from "./Renderer.js";
 import Scene from "./Scene.js";
 
 class Runtime {
@@ -35,18 +36,12 @@ class Runtime {
 		this.noise = new Noise(config.seed || Date.now());
 
 		this.audioManager = new AudioManager(this);
+		this.renderer = new Renderer(this);
 
 		this.running = false;
 		this.initialized = false;
 
 		this.paused = false;
-	}
-
-	/**
-	 * Get the renderer in the current scene.
-	 */
-	get renderer() {
-		return this.scene && this.scene.renderer;
 	}
 
 	get webGLSupported() {

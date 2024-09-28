@@ -14,6 +14,7 @@ class Text extends GameObject {
 	 * @param {string} config.color Option text color.
 	 * @param {string} config.backgroundColor Optional background color.
 	 * @param {string} config.fontWeight Optional font weight.
+	 * @param {string} config.layer The label of the layer to start the `Text` on.
 	 */
 	constructor(scene, config) {
 		const {
@@ -24,9 +25,10 @@ class Text extends GameObject {
 			color = "#ffffff",
 			backgroundColor,
 			fontWeight = 400,
-			maxWidth = scene.renderer.width,
+			maxWidth = scene.runtime.renderer.width,
+			layer,
 		} = config;
-		super(scene, x, y);
+		super(scene, x, y, layer);
 
 		if (
 			maxWidth &&

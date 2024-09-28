@@ -118,9 +118,7 @@ class TopDownMovement extends Behavior {
 				height,
 				origin: [oX, oY],
 			},
-			scene: {
-				renderer: { layerManager },
-			},
+			scene: { layerManager },
 		} = this;
 
 		if (width <= 1 && height <= 1) {

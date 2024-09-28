@@ -7,9 +7,10 @@ class Entity extends GameObject {
 	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {number} x This `Entity`'s x-coordinate.
 	 * @param {number} y This `Entity`'s y-coordinate.
+	 * @param {string} layer The label of the layer to start the `Entity` on.
 	 */
-	constructor(scene, x, y) {
-		super(scene, x, y);
+	constructor(scene, x, y, layer) {
+		super(scene, x, y, layer);
 
 		this.__rawRenderable = new Pixel({ value: "E", color: "green" });
 	}

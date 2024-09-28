@@ -14,6 +14,7 @@ class Menu extends GameObject {
 	 * @param {Object} config.options An object of key value pairs, the values representing option labels, and the keys being what is returned when an object is selected.
 	 * @param {function} config.callback A callback function that is called when a menu option is selected. Passed the key of the selected option.
 	 * @param {string} config.title Optional menu title.
+	 * @param {string} config.layer The label of the layer to start the `Menu` on.
 	 */
 	constructor(scene, config) {
 		const {
@@ -22,8 +23,9 @@ class Menu extends GameObject {
 			title,
 			options,
 			callback = (option) => console.log(option),
+			layer,
 		} = config;
-		super(scene, x, y);
+		super(scene, x, y, layer);
 
 		this.options = options;
 		this.callback = callback;
@@ -92,7 +94,7 @@ class Menu extends GameObject {
 
 	get width() {
 		const {
-			scene: {
+			runtime: {
 				renderer: { width },
 			},
 		} = this;
@@ -105,7 +107,7 @@ class Menu extends GameObject {
 
 	get height() {
 		const {
-			scene: {
+			runtime: {
 				renderer: { height },
 			},
 		} = this;
@@ -134,7 +136,7 @@ class Menu extends GameObject {
 		const {
 			options,
 			scene,
-			scene: {
+			runtime: {
 				renderer: { width, height },
 			},
 			title,

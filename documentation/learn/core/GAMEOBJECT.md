@@ -97,8 +97,8 @@ However, when extending the `GameObject` class, you can override the getter to r
 
 ```js
 class MyObject extends GameObject() {
-	constructor(scene, x, y) {
-		super(scene, x, y);
+	constructor(scene, x, y, layer) {
+		super(scene, x, y, layer);
 
 		new Animate(scene, this, true, myAnimateConfigObject);
 	}

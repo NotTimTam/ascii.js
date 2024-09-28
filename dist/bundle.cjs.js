@@ -1592,8 +1592,9 @@ class GameObject extends Core {
 	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {number} x This entity's x-coordinate.
 	 * @param {number} y This entity's y-coordinate.
+	 * @param {string} layer The label of the layer to start the `GameObject` on.
 	 */
-	constructor(scene, x = 0, y = 0) {
+	constructor(scene, x = 0, y = 0, layer) {
 		super(scene);
 
 		if (typeof x !== "number")
@@ -1820,6 +1821,20 @@ class GameObject extends Core {
 				? item !== this
 				: item.gameObject !== this
 		);
+
+	/**
+	 * Delete this `GameObject`.
+	 *
+	 * **NOTE:** JavaScript has an automatic garbage collector, which means as long as an object is not referenced anywhere, it will be removed from memory.
+	 * This method will remove references to the object from engine-created runtime objects. Custom objects or variables that reference this object must stop referencing it before it is fully removed from memory.
+	 *
+	 *
+	 * At minimum, this functions behaviors and tick methods will stop when `GameObject.delete()` is executed. Unless they are called from somewhere other than its parent `Layer`.
+	 */
+	delete() {
+		if (this.layer) this.layer = undefined;
+		delete this;
+	}
 }
 
 class Frame {

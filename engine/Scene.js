@@ -1,5 +1,6 @@
+import Camera from "./Camera.js";
 import InputManager from "./InputManager.js";
-import Renderer from "./Renderer.js";
+import LayerManager from "./LayerManager.js";
 import Runtime from "./Runtime.js";
 
 class Scene {
@@ -29,7 +30,10 @@ class Scene {
 		const { label, layers, onLoad, onTick } = config;
 
 		this.label = label;
-		this.renderer = new Renderer(this, layers);
+
+		this.camera = new Camera(this);
+
+		this.layerManager = new LayerManager(this, layers);
 
 		this.inputManager = new InputManager(this);
 
@@ -41,12 +45,13 @@ class Scene {
 		this.__onLoad();
 	}
 
-	get layerManager() {
-		return this.renderer.layerManager;
-	}
-
-	get camera() {
-		return this.renderer && this.renderer.camera;
+	/**
+	 * Get the number of `GameObject`s in the current scene.
+	 */
+	get gameObjects() {
+		return this.layerManager.layers // Get all layers.
+			.map(({ gameObjects }) => gameObjects.length) // Get the number of game objects in each layer.
+			.reduce((a, b) => a + b); // Add up all the numbers.
 	}
 
 	/**
@@ -122,15 +127,13 @@ class Scene {
 	}
 
 	__onLoad() {
-		// Run renderer startup.
-		this.runtime.__runOnLoad(this.renderer);
+		this.runtime.__runOnLoad(this.layerManager);
 
 		if (this.onLoadPassthrough) this.onLoadPassthrough(this);
 	}
 
 	__onTick() {
-		// Run renderer startup.
-		this.runtime.__runOnTick(this.renderer);
+		this.runtime.__runOnTick(this.layerManager);
 
 		if (this.onTickPassthrough) this.onTickPassthrough(this);
 	}
