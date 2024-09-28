@@ -15,8 +15,8 @@ Initializes the game object, associating it with a specific scene and setting it
 ### Arguments
 
 -   `scene` &mdash; `Scene` The scene this object is a part of.
--   `x` &mdash; `number` This entity's x-coordinate. Default: `0`.
--   `y` &mdash; `number` This entity's y-coordinate. Default: `0`.
+-   `x` &mdash; `number` This GameObject's x-coordinate. Default: `0`.
+-   `y` &mdash; `number` This GameObject's y-coordinate. Default: `0`.
 
 ---
 

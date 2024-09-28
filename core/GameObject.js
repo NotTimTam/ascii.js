@@ -9,22 +9,22 @@ class GameObject extends Core {
 	 * `GameObject`s do not always need to be rendered, and a `get renderable()` method is not indicative of whether the `GameObject`'s logic will function.
 	 * `GameObject`s will not be rendered unless they are added to a layer.
 	 *
-	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {number} x This entity's x-coordinate.
-	 * @param {number} y This entity's y-coordinate.
-	 *@param {string} layer The label of the layer to start the `Area` on.
+	 * @param {Scene} scene The scene this `GameObject` is a part of.
+	 * @param {number} x This `GameObject`'s x-coordinate.
+	 * @param {number} y This  `GameObject`'s y-coordinate.
+	 *@param {string} layer The label of the layer to start the `GameObject` on.
 	 */
 	constructor(scene, x = 0, y = 0, layer) {
 		super(scene);
 
 		if (typeof x !== "number")
 			throw new Error(
-				"Entity x-coordinate value must be of type 'number'."
+				"GameObject x-coordinate value must be of type 'number'."
 			);
 
 		if (typeof y !== "number")
 			throw new Error(
-				"Entity y-coordinate value must be of type 'number'."
+				"GameObject y-coordinate value must be of type 'number'."
 			);
 
 		this.__rawX = x;
@@ -87,7 +87,7 @@ class GameObject extends Core {
 	set x(n) {
 		if (typeof n !== "number")
 			throw new Error(
-				"Entity x-coordinate value must be of type 'number'."
+				"GameObject x-coordinate value must be of type 'number'."
 			);
 		this.__rawX = n;
 	}
@@ -105,7 +105,7 @@ class GameObject extends Core {
 	set y(n) {
 		if (typeof n !== "number")
 			throw new Error(
-				"Entity y-coordinate value must be of type 'number'."
+				"GameObject y-coordinate value must be of type 'number'."
 			);
 		this.__rawY = n;
 	}

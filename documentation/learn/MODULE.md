@@ -28,8 +28,6 @@ The core objects can be extended to create new object types, behaviors, and more
 
 These objects extend the `GameObject` class for quicker `Scene` implementation.
 
--   [Area](./objects/AREA.md) &mdash; An `Area` is generally a static `GameObject` that takes up more than one pixel of space. Such as a wall or textured background.
--   [Entity](./objects/ENTITY.md) &mdash; A non-static game object, such as a player character, treasure chest or NPC.
 -   [Box](./objects/BOX.md) &mdash; An object that uses ASCII box-drawing characters to create a box on screen.
 -   [Menu](./objects/MENU.md) &mdash; A simple interface for a user to select from a list of options.
 -   [Text](./objects/TEXT.md) &mdash; A quick way to display a string of text to the screen.
@@ -40,7 +38,7 @@ These objects extend the `GameObject` class for quicker `Scene` implementation.
 Behaviors extended the functionality of objects. You can create your own behaviors by `extend`ing the `Behavior` class.
 
 -   [ScrollTo](./behaviors/SCROLLTO.md) &mdash; Forces the camera to scroll to this behavior's parent object's position.
--   [TopDownMovement](./behaviors/TOPDOWNMOVEMENT.md) &mdash; A quick way to add top-down user controls to an `Entity`.
+-   [TopDownMovement](./behaviors/TOPDOWNMOVEMENT.md) &mdash; A quick way to add top-down user controls to an `GameObject`.
 
 #### Animate Behavior
 

@@ -47,7 +47,7 @@ class Camera {
 	set x(n) {
 		if (typeof n !== "number")
 			throw new Error(
-				"Entity x-coordinate value must be of type 'number'."
+				"Camera x-coordinate value must be of type 'number'."
 			);
 		this.__rawX = n;
 	}
@@ -65,7 +65,7 @@ class Camera {
 	set y(n) {
 		if (typeof n !== "number")
 			throw new Error(
-				"Entity y-coordinate value must be of type 'number'."
+				"Camera y-coordinate value must be of type 'number'."
 			);
 		this.__rawY = n;
 	}

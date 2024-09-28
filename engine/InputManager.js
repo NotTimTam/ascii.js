@@ -1,4 +1,5 @@
 import GameObject from "../core/GameObject.js";
+import { displayArray } from "../util/data.js";
 import { clamp } from "../util/math.js";
 import Scene from "./Scene.js";
 
@@ -10,13 +11,41 @@ class InputManager {
 	constructor(scene) {
 		this.scene = scene;
 
-		this.keyboard = { keys: {}, keyCodes: {} };
+		this.keyboard = {
+			keys: {},
+			keyCodes: {},
+			keyCode: undefined,
+			key: undefined,
+		};
 		this.mouse = { buttons: {} };
 
-		this.__eventListeners = [];
-		this.__clickListeners = [];
+		this.__eventListeners = {
+			all: [],
+			click: [
+				(e) => {
+					// Handle clicks on specific game objects.
+					for (const [targetId, listener] of this
+						.__gameObjectClicks) {
+						if (e.targets.includes(targetId)) {
+							let passthrough = { ...e };
+							delete passthrough.targets;
+							passthrough.target = targetId;
+							listener(passthrough);
+						}
+					}
+				},
+			],
+		};
+		this.__gameObjectClicks = [];
 
 		this.__onCreated();
+	}
+
+	/**
+	 * Get permitted event types.
+	 */
+	get types() {
+		return Object.keys(this.__eventListeners);
 	}
 
 	__eventHandler = (e) => this.__onEvent(e);
@@ -135,14 +164,13 @@ class InputManager {
 
 		const { x, y } = this.mouse;
 
-		this.mouse.target = this.scene.layerManager.getAtPosition(x, y);
+		this.mouse.targets = this.scene.layerManager.getAtPosition(x, y);
 
-		const targetIds = this.mouse.target.map(
-			({ gameObject }) => gameObject.id
-		);
-
-		for (const [id, eventListener] of this.__clickListeners)
-			if (targetIds.includes(id)) eventListener({ type, ...this.mouse });
+		// Convert target objects into an array of IDs.
+		if (this.mouse.targets)
+			this.mouse.targets = this.mouse.targets.map(
+				({ gameObject }) => gameObject.id
+			);
 	}
 
 	/**
@@ -231,6 +259,12 @@ class InputManager {
 		}
 	}
 
+	__triggerEvents(type, data) {
+		if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
+		for (const eventListener of this.__eventListeners[type])
+			eventListener(data);
+	}
+
 	/**
 	 * Manages different events firing, and maps them to the proper method.
 	 * @param {Event} event The listener's event.
@@ -254,8 +288,8 @@ class InputManager {
 					break;
 			}
 
-			for (const eventListener of this.__eventListeners)
-				eventListener({ type, ...this.mouse });
+			this.__triggerEvents(type, { type, ...this.mouse }); // Trigger the specific event type that fired.
+			this.__triggerEvents("all", { type, ...this.mouse }); // Trigger the "all" event type.
 
 			if (type === "click" && this.mouse.target) delete this.mouse.target; // Delete target items to clear for next event.
 		} else if (event instanceof KeyboardEvent) {
@@ -270,70 +304,105 @@ class InputManager {
 					break;
 			}
 
-			for (const eventListener of this.__eventListeners)
-				eventListener({ type, ...this.keyboard });
+			this.__triggerEvents(type, { type, ...this.keyboard }); // Trigger the specific event type that fired.
+			this.__triggerEvents("all", { type, ...this.keyboard }); // Trigger the "all" event type.
 		}
 	}
 
 	/**
 	 * Add an event listener to the input manager.
+	 * @param {string} type The type of event to add.
 	 * @param {function} listener The event listener function.
 	 */
-	addEventListener(listener) {
-		this.__eventListeners.push(listener);
-	}
+	addEventListener(type, listener) {
+		if (!this.types.includes(type))
+			throw new Error(
+				`"${type}" is not a valid event type. Must be one of: ${displayArray(
+					this.types
+				)}`
+			);
 
-	/**
-	 * Add an event listener to check when an element is clicked.
-	 * @param {GameObject} gameObject The game object that, when clicked, triggers the event.
-	 * @param {function} listener The event listener function.
-	 */
-	addOnClick(gameObject, listener) {
-		this.__clickListeners.push([gameObject.id, listener]);
+		this.__eventListeners[type].push(listener);
 	}
 
 	/**
 	 * Remove an event listener from the input manager.
+	 * @param {string} type The type of event to remove.
 	 * @param {function} listener The event listener function that was added to the event listener.
 	 */
-	removeEventListener(listener) {
-		this.__eventListeners = this.__eventListeners.filter(
+	removeEventListener(type, listener) {
+		if (!this.types.includes(type))
+			throw new Error(
+				`"${type}" is not a valid event type. Must be one of: ${displayArray(
+					this.types
+				)}`
+			);
+
+		this.__eventListeners[type] = this.__eventListeners[type].filter(
 			(eventListener) => eventListener !== listener
 		);
 	}
 
 	/**
-	 * Remove a click event listener.
-	 * @param {GameObject} gameObject The game object that the event was created for.
+	 * Add a listener for clicks on a `GameObject`.
+	 * @param {string} gameObjectId The ID of the `GameObject` that, when clicked, triggers the event.
+	 */
+	watchObjectClick(gameObjectId, listener) {
+		this.__gameObjectClicks.push([gameObjectId, listener]);
+	}
+
+	/**
+	 * Remove a listener for clicks on a `GameObject`.
+	 * @param {string} gameObjectId The ID of the `GameObject`.
 	 * @param {function} listener The event listener function that was added to the event listener.
 	 */
-	removeOnClick(gameObject, listener) {
-		this.__clickListeners = this.__clickListeners.filter(
-			(arr) => arr[0] !== gameObject.id && arr[1] !== listener
+	unwatchObjectClick(gameObjectId, listener) {
+		this.__gameObjectClicks = this.__gameObjectClicks.filter(
+			(arr) => arr[0] !== gameObjectId && arr[1] !== listener
 		);
 	}
 
+	/**
+	 * Add an event listener to the window for the entire `InputManager`.
+	 * @param {string} type The type of event to add.
+	 * @param {function} handler The handler for that event.
+	 */
+	__addGlobalEventListener(type, handler) {
+		if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
+		window.addEventListener(type, handler);
+	}
+
+	/**
+	 * Remove an event listener from the window.
+	 * @param {string} type The type of event to remove.
+	 * @param {function} handler The handler that was set for that event.
+	 */
+	__removeGlobalEventListener(type, handler) {
+		delete this.__eventListeners[type];
+		window.removeEventListener(type, handler);
+	}
+
 	__onCreated() {
-		window.addEventListener("keydown", this.__eventHandler);
-		window.addEventListener("keyup", this.__eventHandler);
-		window.addEventListener("mousemove", this.__eventHandler);
-		window.addEventListener("mousedown", this.__eventHandler);
-		window.addEventListener("mouseup", this.__eventHandler);
-		window.addEventListener("click", this.__eventHandler);
-		window.addEventListener("contextmenu", this.__contextHandler);
+		this.__addGlobalEventListener("keydown", this.__eventHandler);
+		this.__addGlobalEventListener("keyup", this.__eventHandler);
+		this.__addGlobalEventListener("mousemove", this.__eventHandler);
+		this.__addGlobalEventListener("mousedown", this.__eventHandler);
+		this.__addGlobalEventListener("mouseup", this.__eventHandler);
+		this.__addGlobalEventListener("click", this.__eventHandler);
+		this.__addGlobalEventListener("contextmenu", this.__contextHandler);
 	}
 
 	/**
 	 * Unload the `InputManager` instance by removing all system event listeners.
 	 */
 	__unLoad() {
-		window.removeEventListener("keydown", this.__eventHandler);
-		window.removeEventListener("keyup", this.__eventHandler);
-		window.removeEventListener("mousemove", this.__eventHandler);
-		window.removeEventListener("mousedown", this.__eventHandler);
-		window.removeEventListener("mouseup", this.__eventHandler);
-		window.removeEventListener("click", this.__eventHandler);
-		window.removeEventListener("contextmenu", this.__contextHandler);
+		this.__removeGlobalEventListener("keydown", this.__eventHandler);
+		this.__removeGlobalEventListener("keyup", this.__eventHandler);
+		this.__removeGlobalEventListener("mousemove", this.__eventHandler);
+		this.__removeGlobalEventListener("mousedown", this.__eventHandler);
+		this.__removeGlobalEventListener("mouseup", this.__eventHandler);
+		this.__removeGlobalEventListener("click", this.__eventHandler);
+		this.__removeGlobalEventListener("contextmenu", this.__contextHandler);
 	}
 }
 

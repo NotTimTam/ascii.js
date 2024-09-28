@@ -22,8 +22,8 @@ Initializes the pixel mesh with the specified data and origin.
 
 ### `get width`
 
-Get the `Area`'s width.
+Get the `PixelMesh`'s width.
 
 ### `get height`
 
-Get the `Area`'s height.
+Get the `PixelMesh`'s height.

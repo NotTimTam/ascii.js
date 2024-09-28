@@ -18,7 +18,7 @@ export class PixelMesh {
 	}
 
 	/**
-	 * Get the `Area`'s width.
+	 * Get the `PixelMesh`'s width.
 	 */
 	get width() {
 		let length = -1;
@@ -30,7 +30,7 @@ export class PixelMesh {
 	}
 
 	/**
-	 * Get the `Area`'s height.
+	 * Get the `PixelMesh`'s height.
 	 */
 	get height() {
 		return this.data.length;

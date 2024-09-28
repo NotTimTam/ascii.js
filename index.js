@@ -14,8 +14,6 @@ export { default as GameObject } from "./core/GameObject.js";
 export { default as Behavior } from "./core/Behavior.js";
 export { default as Pixel, PixelMesh } from "./core/Pixel.js";
 
-export { default as Area } from "./objects/Area.js";
-export { default as Entity } from "./objects/Entity.js";
 export { default as Box } from "./objects/Box.js";
 export { default as Menu } from "./objects/Menu.js";
 export { default as Text } from "./objects/Text.js";
