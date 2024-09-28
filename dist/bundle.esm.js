@@ -20,6 +20,131 @@ var data = /*#__PURE__*/Object.freeze({
 	displayArray: displayArray
 });
 
+class PixelMesh {
+	/**
+	 * A pixel mesh stores a 2-dimensional array of `Pixels`.
+	 * @param {Object} config The config for this `PixelMesh` instance.
+	 * @param {Array<Pixel>} config.data The frame's 2-dimensional (array of row arrays of `Pixels`) (left-to-right, top-to-bottom) data array.
+	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
+	 */
+	constructor(config) {
+		const { data, origin } = config;
+
+		if (origin && !(origin instanceof Array))
+			throw new Error(
+				'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
+			);
+
+		this.data = data;
+		this.origin = origin;
+	}
+
+	/**
+	 * Get the `Area`'s width.
+	 */
+	get width() {
+		let length = -1;
+
+		for (const row of this.data.filter((row) => row))
+			if (row.length > length) length = row.length;
+
+		return length === -1 ? undefined : length;
+	}
+
+	/**
+	 * Get the `Area`'s height.
+	 */
+	get height() {
+		return this.data.length;
+	}
+}
+
+class Pixel {
+	/**
+	 * Pixel data for a frame coordinate.
+	 * @param {Object} config The pixel config object.
+	 * @param {string} config.value The text-value of this spixel.
+	 * @param {string} config.color The CSS color value of this pixel.
+	 * @param {string|number} config.fontWeight The CSS font weight value of this pixel.
+	 * @param {string} config.backgroundColor An optional background color for the pixel.
+	 * @param {boolean} config.solid Whether or not this pixel is solid.
+	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
+	 */
+	constructor(config) {
+		const {
+			value,
+			color = "#ffffff",
+			fontWeight = "normal",
+			backgroundColor,
+			solid = false,
+			origin,
+		} = config;
+
+		if (typeof value !== "string" || value.length !== 1)
+			throw new Error(
+				"The value of this pixel can only be a 1-character long string."
+			);
+
+		if (origin && !(origin instanceof Array))
+			throw new Error(
+				'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
+			);
+
+		this.value = value;
+		this.color = color;
+		this.fontWeight = fontWeight;
+		this.backgroundColor = backgroundColor;
+		this.solid = solid;
+		this.origin = origin;
+	}
+
+	/**
+	 * Create a `Pixel` object from a string.
+	 * @param {string} string The string to convert to a `Pixel`.
+	 * @returns {Pixel} the newly created `Pixel` object.
+	 */
+	static fromString = (string) => new Pixel({ value: string });
+
+	/**
+	 * Get the `Pixel`'s width.
+	 */
+	get width() {
+		return 1;
+	}
+
+	/**
+	 * Get the `Pixel`'s height.
+	 */
+	get height() {
+		return 1;
+	}
+}
+
+class Frame {
+	/**
+	 * A display frame.
+	 * @param {Array<Pixel>} data The frame's 1-dimensional (left-to-right, top-to-bottom) data array.
+	 * Any index after `Screen Width * Screen Height` will not be displayed, no max size is enforced.
+	 */
+	constructor(data) {
+		this.data = data;
+	}
+
+	/**
+	 * Convert a string to a frame.
+	 * @param {string} string The string to convert.
+	 * @returns {Frame} the generated Frame.
+	 */
+	static fromString = (string) =>
+		new Frame(string.split("").map((item) => new Pixel({ value: item })));
+
+	/**
+	 * Convert a 2D array of `Pixel`s to a Frame.
+	 * @param {Array<Array<Pixel>} array The array to convert.
+	 */
+	static from2DArray = (array) => new Frame(array.flat());
+}
+
 /**
  * Check if two Axis-Aligned Bounding Boxes (AABBs) overlap.
  * @param {number} x1 The x-coordinate of the top-left corner of box 1.
@@ -143,343 +268,6 @@ var math = /*#__PURE__*/Object.freeze({
 	range: range,
 	vectorToCartesian: vectorToCartesian
 });
-
-class InputManager {
-	/**
-	 * Handles user input.
-	 * @param {Scene} scene The current scene.
-	 */
-	constructor(scene) {
-		this.scene = scene;
-		this.runtime = this.scene.runtime;
-
-		this.keyboard = { keys: {}, keyCodes: {} };
-		this.mouse = { buttons: {} };
-
-		this.__eventListeners = [];
-		this.__clickListeners = [];
-
-		this.__onCreated();
-	}
-	__eventHandler = (e) => this.__onEvent(e);
-	__contextHandler = (e) => e.preventDefault();
-
-	/**
-	 * Get the pointer lock status.
-	 */
-	get hasPointerLock() {
-		const { element } = this.scene.renderer;
-		if (document.pointerLockElement === element) return true;
-		else return false;
-	}
-
-	/**
-	 * Initiate a pointer lock request. Pointer lock cannot be achieved unless the user clicks the screen after this method is called.
-	 */
-	async requestPointerLock() {
-		const { element } = this.scene.renderer;
-
-		const initiatePointerLock = () => {
-			if (!this.hasPointerLock) element.requestPointerLock();
-		};
-
-		const lockChangeAlert = () => {
-			if (document.pointerLockElement === element) {
-				this.mouse = { buttons: {} };
-			}
-		};
-
-		document.body.addEventListener("click", initiatePointerLock);
-
-		document.addEventListener(
-			"pointerlockerror",
-			(e) => {
-				console.error("Pointer lock request failed.", e);
-			},
-			false
-		);
-
-		document.addEventListener("pointerlockchange", lockChangeAlert, false);
-	}
-
-	__formatKey(key) {
-		if (key === " ") return "space";
-		else if (key === "ArrowUp") return "up";
-		else if (key === "ArrowDown") return "down";
-		else if (key === "ArrowLeft") return "left";
-		else if (key === "ArrowRight") return "right";
-
-		return key.toLowerCase();
-	}
-
-	/**
-	 * Calls when a key is pushed.
-	 * @param {Event} event The listener's event.
-	 */
-	__onKeyDown(event) {
-		const { key, keyCode } = event;
-
-		this.keyboard.keys[this.__formatKey(key)] = true;
-		this.keyboard.keyCodes[keyCode] = true;
-		this.keyboard.keyCode = keyCode;
-		this.keyboard.key = key;
-	}
-
-	/**
-	 * Calls when a key is released.
-	 * @param {Event} event The listener's event.
-	 */
-	__onKeyUp(event) {
-		const { key, keyCode } = event;
-
-		this.keyboard.keys[this.__formatKey(key)] = false;
-		this.keyboard.keyCodes[keyCode] = false;
-	}
-
-	/**
-	 * Calls when a mouse button is pushed.
-	 * @param {Event} event The listener's event.
-	 */
-	__onMouseDown(event) {
-		const { button } = event;
-
-		switch (button) {
-			case 0:
-				this.mouse.buttons.left = true;
-				break;
-			case 1:
-				this.mouse.buttons.middle = true;
-				break;
-			case 2:
-				this.mouse.buttons.right = true;
-				break;
-		}
-	}
-
-	/**
-	 * Calls when a mouse button is clicked.
-	 * @param {Event} event The listener's event.
-	 */
-	__onClick(event) {
-		const { button, type } = event;
-
-		switch (button) {
-			case 0:
-				this.mouse.buttons.left = true;
-				break;
-			case 1:
-				this.mouse.buttons.middle = true;
-				break;
-			case 2:
-				this.mouse.buttons.right = true;
-				break;
-		}
-
-		const { x, y } = this.mouse;
-
-		this.mouse.target = this.scene.renderer.layerManager.getAtPosition(
-			x,
-			y
-		);
-
-		const targetIds = this.mouse.target.map(
-			({ gameObject }) => gameObject.id
-		);
-
-		for (const [id, eventListener] of this.__clickListeners)
-			if (targetIds.includes(id)) eventListener({ type, ...this.mouse });
-	}
-
-	/**
-	 * Calls when a mouse button is released.
-	 * @param {Event} event The listener's event.
-	 */
-	__onMouseUp(event) {
-		const { button } = event;
-
-		switch (button) {
-			case 0:
-				this.mouse.buttons.left = false;
-				break;
-			case 1:
-				this.mouse.buttons.middle = false;
-				break;
-			case 2:
-				this.mouse.buttons.right = false;
-				break;
-		}
-	}
-
-	/**
-	 * Calls when the mouse is moved on screen.
-	 * @param {Event} event The listener's event.
-	 */
-	__onMouseMove(event) {
-		const { clientX, clientY, movementX, movementY } = event;
-
-		const {
-			scene: {
-				camera: { x: cameraX, y: cameraY },
-
-				renderer: {
-					width: characterWidth,
-					height: characterHeight,
-					element,
-					layerManager: { layers },
-				},
-			},
-		} = this;
-
-		const {
-			x: canvasX,
-			y: canvasY,
-			width: canvasWidth,
-			height: canvasHeight,
-		} = element.getBoundingClientRect();
-
-		const [rX, rY] = [clientX - canvasX, clientY - canvasY];
-		const [relX, relY] = [rX / canvasWidth, rY / canvasHeight];
-
-		if (this.hasPointerLock) {
-			this.mouse.velocity = [movementX, movementY];
-		} else {
-			this.mouse.velocity = [movementX, movementY];
-			this.mouse.rawX = clientX;
-			this.mouse.rawY = clientY;
-			this.mouse.canvasX = rX;
-			this.mouse.canvasY = rY;
-			this.mouse.x = clamp(
-				Math.round(relX * characterWidth),
-				0,
-				characterWidth
-			);
-			this.mouse.y = clamp(
-				Math.round(relY * characterHeight),
-				0,
-				characterHeight
-			);
-
-			this.mouse.onLayer = {};
-
-			for (const layer of layers) {
-				const {
-					label,
-					parallax: [parallaxX, parallaxY],
-				} = layer;
-
-				this.mouse.onLayer[label] = [
-					this.mouse.x + cameraX * parallaxX,
-					this.mouse.y + cameraY * parallaxY,
-				];
-			}
-		}
-	}
-
-	/**
-	 * Manages different events firing, and maps them to the proper method.
-	 * @param {Event} event The listener's event.
-	 */
-	__onEvent(event) {
-		if (event instanceof MouseEvent) {
-			const { type } = event;
-
-			switch (type) {
-				case "mousedown":
-					this.__onMouseDown(event);
-					break;
-				case "mouseup":
-					this.__onMouseUp(event);
-					break;
-				case "mousemove":
-					this.__onMouseMove(event);
-					break;
-				case "click":
-					this.__onClick(event);
-					break;
-			}
-
-			for (const eventListener of this.__eventListeners)
-				eventListener({ type, ...this.mouse });
-
-			if (type === "click" && this.mouse.target) delete this.mouse.target; // Delete target items to clear for next event.
-		} else if (event instanceof KeyboardEvent) {
-			const { type } = event;
-
-			switch (type) {
-				case "keydown":
-					this.__onKeyDown(event);
-					break;
-				case "keyup":
-					this.__onKeyUp(event);
-					break;
-			}
-
-			for (const eventListener of this.__eventListeners)
-				eventListener({ type, ...this.keyboard });
-		}
-	}
-
-	/**
-	 * Add an event listener to the input manager.
-	 * @param {function} listener The event listener function.
-	 */
-	addEventListener(listener) {
-		this.__eventListeners.push(listener);
-	}
-
-	/**
-	 * Add an event listener to check when an element is clicked.
-	 * @param {GameObject} gameObject The game object that, when clicked, triggers the event.
-	 * @param {function} listener The event listener function.
-	 */
-	addOnClick(gameObject, listener) {
-		this.__clickListeners.push([gameObject.id, listener]);
-	}
-
-	/**
-	 * Remove an event listener from the input manager.
-	 * @param {function} listener The event listener function that was added to the event listener.
-	 */
-	removeEventListener(listener) {
-		this.__eventListeners = this.__eventListeners.filter(
-			(eventListener) => eventListener !== listener
-		);
-	}
-
-	/**
-	 * Remove a click event listener.
-	 * @param {GameObject} gameObject The game object that the event was created for.
-	 * @param {function} listener The event listener function that was added to the event listener.
-	 */
-	removeOnClick(gameObject, listener) {
-		this.__clickListeners = this.__clickListeners.filter(
-			(arr) => arr[0] !== gameObject.id && arr[1] !== listener
-		);
-	}
-
-	__onCreated() {
-		window.addEventListener("keydown", this.__eventHandler);
-		window.addEventListener("keyup", this.__eventHandler);
-		window.addEventListener("mousemove", this.__eventHandler);
-		window.addEventListener("mousedown", this.__eventHandler);
-		window.addEventListener("mouseup", this.__eventHandler);
-		window.addEventListener("click", this.__eventHandler);
-		window.addEventListener("contextmenu", this.__contextHandler);
-	}
-
-	/**
-	 * Unload the `InputManager` instance by removing all system event listeners.
-	 */
-	__unLoad() {
-		window.removeEventListener("keydown", this.__eventHandler);
-		window.removeEventListener("keyup", this.__eventHandler);
-		window.removeEventListener("mousemove", this.__eventHandler);
-		window.removeEventListener("mousedown", this.__eventHandler);
-		window.removeEventListener("mouseup", this.__eventHandler);
-		window.removeEventListener("click", this.__eventHandler);
-		window.removeEventListener("contextmenu", this.__contextHandler);
-	}
-}
 
 class Sound {
 	/**
@@ -1133,6 +921,1183 @@ class Noise {
 	}
 }
 
+class Camera {
+	/**
+	 * The scene contains variable layers and compiles them into one frame to render to the screen.
+	 * @param {Scene} scene The `Scene` this `Camera` is a part of.
+	 */
+	constructor(scene) {
+		this.scene = scene;
+
+		this.__rawX = 0;
+		this.__rawY = 0;
+	}
+
+	/**
+	 * Check if a bounding box is on screen.
+	 * @param {number} x The x-coordinate to check.
+	 * @param {number} y The y-coordinate to check.
+	 * @param {number} width The width to check.
+	 * @param {number} height The height to check.
+	 * @param {number} parallaxX Optional parallax x-value.
+	 * @param {number} parallaxY Optional parallax y-value.
+	 */
+	isOnScreen = (x, y, width, height, parallaxX = 1, parallaxY = 1) =>
+		aabb(
+			x,
+			y,
+			width,
+			height,
+			this.x * parallaxX,
+			this.y * parallaxY,
+			this.scene.runtime.renderer.width,
+			this.scene.runtime.renderer.height
+		);
+
+	/**
+	 * Get the game object's adjusted x-coordinate.
+	 */
+	get x() {
+		return Math.round(this.__rawX);
+	}
+
+	/**
+	 * Set the game object's x-coordinate.
+	 */
+	set x(n) {
+		if (typeof n !== "number")
+			throw new Error(
+				"Entity x-coordinate value must be of type 'number'."
+			);
+		this.__rawX = n;
+	}
+
+	/**
+	 * Get the game object's adjusted y-coordinate.
+	 */
+	get y() {
+		return Math.round(this.__rawY);
+	}
+
+	/**
+	 * Set the game object's y-coordinate.
+	 */
+	set y(n) {
+		if (typeof n !== "number")
+			throw new Error(
+				"Entity y-coordinate value must be of type 'number'."
+			);
+		this.__rawY = n;
+	}
+}
+
+class Core {
+	/**
+	 * The most core level object.
+	 * @param {Scene} scene The scene this Object is a part of.
+	 */
+	constructor(scene) {
+		if (!crypto || !crypto.randomUUID)
+			throw new Error(
+				'This environment does not support the JavaScript "crypto" library. Only secure contexts (HTTPS) support "crypto.randomUUID".'
+			);
+
+		if (!(scene instanceof Scene))
+			throw new TypeError(
+				'Invalid object provided to Core class constructor. Expected an instance of "Scene".'
+			);
+
+		this.scene = scene;
+
+		this.id = crypto.randomUUID();
+	}
+
+	get runtime() {
+		return this.scene.runtime;
+	}
+}
+
+class GameObject extends Core {
+	/**
+	 * A core object that can have its runtime methods managed by the runtime itself, or another object.
+	 *
+	 * `GameObject`s can have a `get renderable()` get method that returns a `Pixel` or `PixelMesh` object for rendering purposes.
+	 * `GameObject`s do not always need to be rendered, and a `get renderable()` method is not indicative of whether the `GameObject`'s logic will function.
+	 * `GameObject`s will not be rendered unless they are added to a layer.
+	 *
+	 * @param {Scene} scene The scene this Object is a part of.
+	 * @param {number} x This entity's x-coordinate.
+	 * @param {number} y This entity's y-coordinate.
+	 *@param {string} layer The label of the layer to start the `Area` on.
+	 */
+	constructor(scene, x = 0, y = 0, layer) {
+		super(scene);
+
+		if (typeof x !== "number")
+			throw new Error(
+				"Entity x-coordinate value must be of type 'number'."
+			);
+
+		if (typeof y !== "number")
+			throw new Error(
+				"Entity y-coordinate value must be of type 'number'."
+			);
+
+		this.__rawX = x;
+		this.__rawY = y;
+		this.__rawVisible = true;
+		this.__rawRenderable = new Pixel({ value: "#", color: "magenta" });
+
+		this.behaviors = [];
+
+		if (layer) this.layer = layer;
+	}
+
+	/**
+	 * Get whether the game object is on-screen.
+	 */
+	get isOnScreen() {
+		if (!this.scene || !this.layer) return false;
+
+		const {
+			scene: { camera },
+			x,
+			y,
+		} = this;
+
+		if (!this.renderable) return false;
+
+		const { width, height } = this.renderable;
+		const [pX, pY] = this.layer.parallax;
+
+		return camera.isOnScreen(x, y, width, height, pX, pY);
+	}
+
+	/**
+	 * Get the `GameObject`'s visibility status.
+	 * If the `GameObject` is not part of a layer,
+	 * or is in a `Layer` whose `visible` parameter is false,
+	 * it will also be false.
+	 */
+	get visible() {
+		return this.__rawVisible && this.layer && this.layer.visible;
+	}
+
+	/**
+	 * Set the `GameObject`'s visibility status.
+	 */
+	set visible(value) {
+		this.__rawVisible = Boolean(value);
+	}
+
+	/**
+	 * Get the game object's adjusted x-coordinate.
+	 */
+	get x() {
+		return Math.round(this.__rawX);
+	}
+
+	/**
+	 * Set the game object's x-coordinate.
+	 */
+	set x(n) {
+		if (typeof n !== "number")
+			throw new Error(
+				"Entity x-coordinate value must be of type 'number'."
+			);
+		this.__rawX = n;
+	}
+
+	/**
+	 * Get the game object's adjusted y-coordinate.
+	 */
+	get y() {
+		return Math.round(this.__rawY);
+	}
+
+	/**
+	 * Set the game object's y-coordinate.
+	 */
+	set y(n) {
+		if (typeof n !== "number")
+			throw new Error(
+				"Entity y-coordinate value must be of type 'number'."
+			);
+		this.__rawY = n;
+	}
+
+	/**
+	 * Get the width of this `GameObject`'s renderable.
+	 */
+	get width() {
+		return (this.renderable && this.renderable.width) || 0;
+	}
+
+	/**
+	 * Get the height of this `GameObject`'s renderable.
+	 */
+	get height() {
+		return (this.renderable && this.renderable.height) || 0;
+	}
+
+	/**
+	 * Get the origin of this `GameObject`'s renderable.
+	 */
+	get origin() {
+		return (this.renderable && this.renderable.origin) || [0, 0];
+	}
+
+	/**
+	 * Get the `GameObject`'s current layer.
+	 */
+	get layer() {
+		return this.scene.layerManager.layers.find(({ gameObjects }) =>
+			gameObjects.includes(this)
+		);
+	}
+
+	/**
+	 * Get the label of the `GameObject`'s current layer.
+	 */
+	get layerLabel() {
+		return this.layer && this.layer.label;
+	}
+
+	/**
+	 * Change the `GameObject`'s layer. Set to a falsey value to remove from any active layers.
+	 * @param {string} layer The name of the layer to move to.
+	 */
+	set layer(label) {
+		// Remove from its current layer.
+		if (this.layer) {
+			// Filter this object from its layer.
+			this.layer.gameObjects = this.layer.gameObjects.filter(
+				(gameObject) => gameObject !== this
+			);
+		}
+
+		// If the label was undefined, we don't add to a new layer, if it was defined, we do.
+		if (label) {
+			if (typeof label !== "string")
+				throw new Error("Provided layer label is not a string.");
+
+			const {
+				scene: {
+					layerManager: { layers },
+				},
+			} = this;
+
+			const layer = layers.find((layer) => layer.label === label);
+
+			if (!layer)
+				throw new Error(`No layer exists with label "${label}"`);
+
+			layer.gameObjects.push(this);
+		}
+	}
+
+	/**
+	 * The object's renderable element.
+	 */
+	get renderable() {
+		return this.__rawRenderable;
+	}
+
+	/**
+	 * Set this `GameObject`'s renderable.
+	 */
+	set renderable(value) {
+		if (value && !(value instanceof Pixel) && !(value instanceof PixelMesh))
+			throw new TypeError(
+				"A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
+			);
+
+		this.__rawRenderable = value;
+	}
+
+	/**
+	 * Whether the object is on a paused layer or the runtime is paused.
+	 *
+	 * This should be checked when input and logic functions are called, to ensure they do not run when the `GameObject` is paused.
+	 *
+	 * This **does not** need to be checked in the `GameObject`s `__onTick()` method, as the `__onTick()` method is not called by its parent layer when that layer is paused.
+	 */
+	get paused() {
+		const { runtime, layer } = this;
+
+		if ((layer && layer.paused) || runtime.paused) return true;
+		else return false;
+	}
+
+	/**
+	 * Run the events of each object behavior.
+	 *
+	 * Runs before this `GameObject`'s `__onTick` method.
+	 */
+	__behave() {
+		if (!this.paused)
+			for (const behavior of this.behaviors)
+				behavior.enabled && behavior.__onTick && behavior.__onTick();
+	}
+
+	/**
+	 * Filter this `GameObject` out of an array.
+	 * @param {Array<GameObject>} array The array of game objects. The items in the array can either be `GameObject`s or an object with a `gameObject` key set to a `GameObject` instance.
+	 * @returns {Array<GameObject>} An array without this `GameObject`.
+	 */
+	filterThis = (array) =>
+		array.filter((item) =>
+			item instanceof GameObject
+				? item !== this
+				: item.gameObject !== this
+		);
+
+	/**
+	 * Delete this `GameObject`.
+	 *
+	 * **NOTE:** JavaScript has an automatic garbage collector, which means as long as an object is not referenced anywhere, it will be removed from memory.
+	 * This method will remove references to the object from engine-created runtime objects. Custom objects or variables that reference this object must stop referencing it before it is fully removed from memory.
+	 *
+	 *
+	 * At minimum, this functions behaviors and tick methods will stop when `GameObject.delete()` is executed. Unless they are called from somewhere other than its parent `Layer`.
+	 */
+	delete() {
+		if (this.layer) this.layer = undefined;
+		delete this;
+	}
+}
+
+class InputManager {
+	/**
+	 * Handles user input.
+	 * @param {Scene} scene The current scene.
+	 */
+	constructor(scene) {
+		this.scene = scene;
+
+		this.keyboard = { keys: {}, keyCodes: {} };
+		this.mouse = { buttons: {} };
+
+		this.__eventListeners = [];
+		this.__clickListeners = [];
+
+		this.__onCreated();
+	}
+
+	__eventHandler = (e) => this.__onEvent(e);
+	__contextHandler = (e) => e.preventDefault();
+
+	/**
+	 * Get the pointer lock status.
+	 */
+	get hasPointerLock() {
+		const { element } = this.scene.runtime.renderer;
+		if (document.pointerLockElement === element) return true;
+		else return false;
+	}
+
+	/**
+	 * Initiate a pointer lock request. Pointer lock cannot be achieved unless the user clicks the screen after this method is called.
+	 */
+	async requestPointerLock() {
+		const { element } = this.scene.runtime.renderer;
+
+		const initiatePointerLock = () => {
+			if (!this.hasPointerLock) element.requestPointerLock();
+		};
+
+		const lockChangeAlert = () => {
+			if (document.pointerLockElement === element) {
+				this.mouse = { buttons: {} };
+			}
+		};
+
+		document.body.addEventListener("click", initiatePointerLock);
+
+		document.addEventListener(
+			"pointerlockerror",
+			(e) => {
+				console.error("Pointer lock request failed.", e);
+			},
+			false
+		);
+
+		document.addEventListener("pointerlockchange", lockChangeAlert, false);
+	}
+
+	__formatKey(key) {
+		if (key === " ") return "space";
+		else if (key === "ArrowUp") return "up";
+		else if (key === "ArrowDown") return "down";
+		else if (key === "ArrowLeft") return "left";
+		else if (key === "ArrowRight") return "right";
+
+		return key.toLowerCase();
+	}
+
+	/**
+	 * Calls when a key is pushed.
+	 * @param {Event} event The listener's event.
+	 */
+	__onKeyDown(event) {
+		const { key, keyCode } = event;
+
+		this.keyboard.keys[this.__formatKey(key)] = true;
+		this.keyboard.keyCodes[keyCode] = true;
+		this.keyboard.keyCode = keyCode;
+		this.keyboard.key = key;
+	}
+
+	/**
+	 * Calls when a key is released.
+	 * @param {Event} event The listener's event.
+	 */
+	__onKeyUp(event) {
+		const { key, keyCode } = event;
+
+		this.keyboard.keys[this.__formatKey(key)] = false;
+		this.keyboard.keyCodes[keyCode] = false;
+	}
+
+	/**
+	 * Calls when a mouse button is pushed.
+	 * @param {Event} event The listener's event.
+	 */
+	__onMouseDown(event) {
+		const { button } = event;
+
+		switch (button) {
+			case 0:
+				this.mouse.buttons.left = true;
+				break;
+			case 1:
+				this.mouse.buttons.middle = true;
+				break;
+			case 2:
+				this.mouse.buttons.right = true;
+				break;
+		}
+	}
+
+	/**
+	 * Calls when a mouse button is clicked.
+	 * @param {Event} event The listener's event.
+	 */
+	__onClick(event) {
+		const { button, type } = event;
+
+		switch (button) {
+			case 0:
+				this.mouse.buttons.left = true;
+				break;
+			case 1:
+				this.mouse.buttons.middle = true;
+				break;
+			case 2:
+				this.mouse.buttons.right = true;
+				break;
+		}
+
+		const { x, y } = this.mouse;
+
+		this.mouse.target = this.scene.layerManager.getAtPosition(x, y);
+
+		const targetIds = this.mouse.target.map(
+			({ gameObject }) => gameObject.id
+		);
+
+		for (const [id, eventListener] of this.__clickListeners)
+			if (targetIds.includes(id)) eventListener({ type, ...this.mouse });
+	}
+
+	/**
+	 * Calls when a mouse button is released.
+	 * @param {Event} event The listener's event.
+	 */
+	__onMouseUp(event) {
+		const { button } = event;
+
+		switch (button) {
+			case 0:
+				this.mouse.buttons.left = false;
+				break;
+			case 1:
+				this.mouse.buttons.middle = false;
+				break;
+			case 2:
+				this.mouse.buttons.right = false;
+				break;
+		}
+	}
+
+	/**
+	 * Calls when the mouse is moved on screen.
+	 * @param {Event} event The listener's event.
+	 */
+	__onMouseMove(event) {
+		const { clientX, clientY, movementX, movementY } = event;
+
+		const {
+			scene: {
+				camera: { x: cameraX, y: cameraY },
+				layerManager: { layers },
+				runtime: {
+					renderer: {
+						width: characterWidth,
+						height: characterHeight,
+						element,
+					},
+				},
+			},
+		} = this;
+
+		const {
+			x: canvasX,
+			y: canvasY,
+			width: canvasWidth,
+			height: canvasHeight,
+		} = element.getBoundingClientRect();
+
+		const [rX, rY] = [clientX - canvasX, clientY - canvasY];
+		const [relX, relY] = [rX / canvasWidth, rY / canvasHeight];
+
+		if (this.hasPointerLock) {
+			this.mouse.velocity = [movementX, movementY];
+		} else {
+			this.mouse.velocity = [movementX, movementY];
+			this.mouse.rawX = clientX;
+			this.mouse.rawY = clientY;
+			this.mouse.canvasX = rX;
+			this.mouse.canvasY = rY;
+			this.mouse.x = clamp(
+				Math.round(relX * characterWidth),
+				0,
+				characterWidth
+			);
+			this.mouse.y = clamp(
+				Math.round(relY * characterHeight),
+				0,
+				characterHeight
+			);
+
+			this.mouse.onLayer = {};
+
+			for (const layer of layers) {
+				const {
+					label,
+					parallax: [parallaxX, parallaxY],
+				} = layer;
+
+				this.mouse.onLayer[label] = [
+					this.mouse.x + cameraX * parallaxX,
+					this.mouse.y + cameraY * parallaxY,
+				];
+			}
+		}
+	}
+
+	/**
+	 * Manages different events firing, and maps them to the proper method.
+	 * @param {Event} event The listener's event.
+	 */
+	__onEvent(event) {
+		if (event instanceof MouseEvent) {
+			const { type } = event;
+
+			switch (type) {
+				case "mousedown":
+					this.__onMouseDown(event);
+					break;
+				case "mouseup":
+					this.__onMouseUp(event);
+					break;
+				case "mousemove":
+					this.__onMouseMove(event);
+					break;
+				case "click":
+					this.__onClick(event);
+					break;
+			}
+
+			for (const eventListener of this.__eventListeners)
+				eventListener({ type, ...this.mouse });
+
+			if (type === "click" && this.mouse.target) delete this.mouse.target; // Delete target items to clear for next event.
+		} else if (event instanceof KeyboardEvent) {
+			const { type } = event;
+
+			switch (type) {
+				case "keydown":
+					this.__onKeyDown(event);
+					break;
+				case "keyup":
+					this.__onKeyUp(event);
+					break;
+			}
+
+			for (const eventListener of this.__eventListeners)
+				eventListener({ type, ...this.keyboard });
+		}
+	}
+
+	/**
+	 * Add an event listener to the input manager.
+	 * @param {function} listener The event listener function.
+	 */
+	addEventListener(listener) {
+		this.__eventListeners.push(listener);
+	}
+
+	/**
+	 * Add an event listener to check when an element is clicked.
+	 * @param {GameObject} gameObject The game object that, when clicked, triggers the event.
+	 * @param {function} listener The event listener function.
+	 */
+	addOnClick(gameObject, listener) {
+		this.__clickListeners.push([gameObject.id, listener]);
+	}
+
+	/**
+	 * Remove an event listener from the input manager.
+	 * @param {function} listener The event listener function that was added to the event listener.
+	 */
+	removeEventListener(listener) {
+		this.__eventListeners = this.__eventListeners.filter(
+			(eventListener) => eventListener !== listener
+		);
+	}
+
+	/**
+	 * Remove a click event listener.
+	 * @param {GameObject} gameObject The game object that the event was created for.
+	 * @param {function} listener The event listener function that was added to the event listener.
+	 */
+	removeOnClick(gameObject, listener) {
+		this.__clickListeners = this.__clickListeners.filter(
+			(arr) => arr[0] !== gameObject.id && arr[1] !== listener
+		);
+	}
+
+	__onCreated() {
+		window.addEventListener("keydown", this.__eventHandler);
+		window.addEventListener("keyup", this.__eventHandler);
+		window.addEventListener("mousemove", this.__eventHandler);
+		window.addEventListener("mousedown", this.__eventHandler);
+		window.addEventListener("mouseup", this.__eventHandler);
+		window.addEventListener("click", this.__eventHandler);
+		window.addEventListener("contextmenu", this.__contextHandler);
+	}
+
+	/**
+	 * Unload the `InputManager` instance by removing all system event listeners.
+	 */
+	__unLoad() {
+		window.removeEventListener("keydown", this.__eventHandler);
+		window.removeEventListener("keyup", this.__eventHandler);
+		window.removeEventListener("mousemove", this.__eventHandler);
+		window.removeEventListener("mousedown", this.__eventHandler);
+		window.removeEventListener("mouseup", this.__eventHandler);
+		window.removeEventListener("click", this.__eventHandler);
+		window.removeEventListener("contextmenu", this.__contextHandler);
+	}
+}
+
+class Layer {
+	/**
+	 * A layer is a construct of other objects. The layer manages these objects and can optionally render them to the screen.
+	 * @param {LayerManager} layerManager The `LayerManager` parent object.
+	 * @param {Object} config The `Layer`'s config object.
+	 * @param {string} config.label This layer's label.
+	 * @param {Array<Number>} config.parallax This layer's parallax array. `[x, y]` Numbers 0-1 determine how much this layer moves with the camera. `[0, 0]` for layers that do not move.
+	 * @param {Array<function>} config.gameObjectConstructors An array of functions that return game objects.
+	 */
+	constructor(layerManager, config) {
+		const { label, parallax = [1, 1], gameObjectConstructors } = config;
+
+		this.layerManager = layerManager;
+		this.label = label;
+
+		this.layerManager.layers.push(this);
+
+		this.gameObjects = [];
+
+		if (gameObjectConstructors)
+			this.__populateGameObjects(gameObjectConstructors);
+
+		this.paused = false;
+
+		this.parallax = parallax;
+
+		this.__rawVisible = true;
+	}
+
+	/**
+	 * Converts the config array of gameObjects into active `GameObject`s.
+	 * @param {Array<Function|GameObject>} gameObjectConstructors The array of `GameObject` population functions to run. Each function is passed the current `Scene` instance.
+	 * @returns {Array<GameObject>} The new array of `GameObject`s.
+	 */
+	__populateGameObjects(gameObjectConstructors) {
+		for (const gameObjectConstructor of gameObjectConstructors)
+			if (typeof gameObjectConstructor !== "function")
+				throw new TypeError(
+					'Each value provided to a Layer\'s "configuration.gameObjects"'
+				);
+
+		this.gameObjects = gameObjectConstructors
+			.map((gameObjectConstructor) => {
+				const gameObject = gameObjectConstructor(
+					this.layerManager.scene
+				);
+
+				if (!(gameObject instanceof GameObject))
+					throw new TypeError(
+						'Each gameObjectConstructor function must return an object of type "GameObject".'
+					);
+
+				return gameObject;
+			})
+			.filter(
+				(gameObject) => gameObject && gameObject instanceof GameObject
+			);
+
+		for (const gameObject of this.gameObjects)
+			gameObject.layer = this.label; // Put game object on this layer.
+	}
+
+	/**
+	 * Get the `Layer`'s visibility status.
+	 */
+	get visible() {
+		return this.__rawVisible;
+	}
+
+	/**
+	 * Set the `Layer`'s visibility status.
+	 */
+	set visible(value) {
+		this.__rawVisible = Boolean(value);
+	}
+
+	/**
+	 * Returns a frame composed of a layer's objects.
+	 */
+	get frame() {
+		const {
+			layerManager: {
+				scene: {
+					camera,
+					runtime: { renderer },
+				},
+			},
+			parallax: [pX, pY],
+		} = this;
+
+		const [adjustedCameraX, adjustedCameraY] = [
+			Math.round(camera.x * pX),
+			Math.round(camera.y * pY),
+		];
+
+		const frameData = [];
+
+		for (const gameObject of this.gameObjects.filter(
+			({ visible }) => visible
+		)) {
+			const { renderable } = gameObject;
+			let { x, y } = gameObject;
+
+			if (!renderable) continue;
+			else {
+				if (renderable.origin) {
+					const [oX, oY] = renderable.origin;
+
+					x -= oX;
+					y -= oY;
+
+					x = Math.round(x);
+					y = Math.round(y);
+				}
+
+				if (renderable instanceof Pixel) {
+					if (!camera.isOnScreen(x, y, 1, 1, pX, pY)) continue;
+
+					const [xOS, yOS] = [
+						x - adjustedCameraX,
+						y - adjustedCameraY,
+					];
+					const index = renderer.coordinatesToIndex(xOS, yOS);
+
+					frameData[index] = renderable;
+				} else if (renderable instanceof PixelMesh) {
+					if (
+						!camera.isOnScreen(
+							x,
+							y,
+							renderable.width,
+							renderable.height,
+							pX,
+							pY
+						)
+					)
+						continue;
+
+					for (
+						let pixelY = 0;
+						pixelY < renderable.data.length;
+						pixelY++
+					) {
+						const row = renderable.data[pixelY];
+
+						if (!row || row.length === 0) continue;
+
+						for (let pixelX = 0; pixelX < row.length; pixelX++) {
+							const pixel = row[pixelX];
+							if (
+								!pixel ||
+								!(pixel instanceof Pixel) ||
+								!camera.isOnScreen(
+									x + pixelX,
+									y + pixelY,
+									1,
+									1,
+									pX,
+									pY
+								)
+							)
+								continue;
+
+							const [xOS, yOS] = [
+								x + pixelX - adjustedCameraX,
+								y + pixelY - adjustedCameraY,
+							];
+
+							const index = renderer.coordinatesToIndex(xOS, yOS);
+
+							frameData[index] = pixel;
+						}
+					}
+				}
+			}
+		}
+
+		return new Frame(frameData);
+	}
+
+	__onTick() {
+		const {
+			layerManager: {
+				scene: { runtime },
+			},
+			gameObjects,
+			paused,
+		} = this;
+
+		if (paused || runtime.paused) return; // Don't run this layer's code if it or the runtime is paused.
+
+		for (const gameObject of gameObjects) {
+			gameObject.__behave();
+			runtime.__runOnTick(gameObject);
+		}
+	}
+}
+
+class LayerManager {
+	/**
+	 * The layer manager contains variable layers and compiles them into one frame to render to the screen.
+	 * @param {Scene} scene The current loaded `Scene`.
+	 * @param {Array<Object>} layers The layer configuration objects.
+	 */
+	constructor(scene, layers) {
+		this.scene = scene;
+		this.layers = layers;
+	}
+
+	/**
+	 * Get all visible layers in this `LayerManager`.
+	 */
+	get visibleLayers() {
+		return this.layers.filter((layer) => layer.visible);
+	}
+
+	/**
+	 * Get a layer by its label.
+	 * @param {string} label The label of the layer to get.
+	 * @returns {Layer} A layer with the label provided. Or `undefined` if no layer was found.
+	 */
+	getLayerByLabel = (label) =>
+		this.layers.find((layer) => layer.label === label);
+
+	/**
+	 * Check for content at a location.
+	 * @param {number} x The x-coordinate to check.
+	 * @param {number} y The y-coordinate to check.
+	 * @param {string} layer An optional layer to check. If no layer is provided, all layer's are checked.
+	 */
+	getAtPosition(x, y, layer) {
+		const layerWithLabel = this.layers.find(({ label }) => label === layer);
+		if (layer && !layerWithLabel)
+			throw new Error(`No layer exists with label "${layer}".`);
+
+		const layersToCheck = layer ? [layerWithLabel] : this.layers;
+
+		const atPosition = [];
+
+		for (const layer of layersToCheck) {
+			const { gameObjects } = layer;
+
+			for (const gameObject of gameObjects) {
+				const { renderable, x: gX, y: gY } = gameObject;
+				if (renderable instanceof Pixel && gX === x && gY === y)
+					atPosition.push({ gameObject, pixel: renderable });
+				else if (
+					renderable instanceof PixelMesh &&
+					aabb(
+						x,
+						y,
+						1,
+						1,
+						gX,
+						gY,
+						renderable.width,
+						renderable.height
+					)
+				) {
+					const pixel =
+						renderable.data[y - gY] &&
+						renderable.data[y - gY][x - gX];
+
+					if (!pixel) continue;
+
+					atPosition.push({
+						gameObject,
+						pixel,
+					});
+				}
+			}
+		}
+
+		return atPosition;
+	}
+
+	/**
+	 * Check for a solid at a location.
+	 * @param {number} x The x-coordinate to check.
+	 * @param {number} y The y-coordinate to check.
+	 * @param {string} layer An optional layer to check. If no layer is provided, all layer's are checked.
+	 */
+	solidAtPosition(x, y, layer) {
+		const thingsAt = this.getAtPosition(x, y, layer);
+
+		for (const thing of thingsAt) if (thing.pixel.solid) return thing;
+		return false;
+	}
+
+	/**
+	 * Create layers from config.
+	 * @param {Array<*>} layers The layer creation array.
+	 */
+	__createLayers(layers) {
+		this.layers = [];
+
+		if (!layers.includes("system")) new Layer(this, { label: "system" });
+		for (const config of layers) new Layer(this, config);
+	}
+
+	__mergedRender() {
+		const {
+			runtime: { renderer },
+		} = this;
+
+		const frame = renderer.compileFrames(
+			...this.visibleLayers.map((layer) => layer.frame)
+		);
+
+		if (JSON.stringify(frame) === this.lastFrame && renderer.hasDrawn)
+			return;
+
+		this.lastFrame = JSON.stringify(frame);
+
+		renderer.clearDisplay();
+
+		renderer.drawFrame(frame);
+	}
+
+	__stackedRender() {
+		const {
+			scene: {
+				runtime: { renderer },
+			},
+		} = this;
+
+		const frames = this.visibleLayers.map((layer) => layer.frame);
+
+		renderer.clearDisplay();
+
+		for (const frame of frames) renderer.drawFrame(frame);
+	}
+
+	__onLoad() {
+		this.__createLayers(this.layers);
+	}
+
+	__onTick() {
+		const {
+			scene: {
+				runtime,
+				runtime: {
+					renderer: {
+						config: { renderMode },
+					},
+				},
+			},
+		} = this;
+
+		// Logic
+		if (!runtime.paused) {
+			for (const layer of this.layers) runtime.__runOnTick(layer);
+		}
+
+		// Render
+		if (renderMode === "stacked") this.__stackedRender();
+		else this.__mergedRender();
+	}
+}
+
+class Scene {
+	/**
+	 * A scene is a level, screen, or world that can be load in at any point during the runtime.
+	 * @param {Runtime} runtime The main runtime object.
+	 * @param {Object} config The `Scene` configuration object.
+	 * @param {string} config.label The `Scene`'s label.
+	 * @param {Array<Object>} config.layers The configuration objects for each layer in the `Scene`.
+	 * @param {string} config.layers[].label The layer's label.
+	 * @param {Array<number>} [config.layers[].parallax] Optional parallax data, where the format is [integer, integer]. (`[1, 1]` is 100% parallax, `[0, 0]` is 0% parallax)
+	 * @param {Array<function>} [config.layers[].gameObjectConstructors] Optional callback functions that return `GameObject`s for this layer.
+	 * @param {function} [config.layers[].gameObjectConstructors[]] A callback function, passed this `Scene` as an argument, that return an instance of `GameObject`.
+	 * @param {function} config.onLoad A callback (passed this `Scene` as an argument) that runs when the `Scene` has finished loading.
+	 * @param {function} config.onTick A callback (passed this `Scene` as an argument) that runs every frame that this `Scene` is loaded.
+	 */
+	constructor(runtime, config) {
+		this.runtime = runtime;
+
+		if (!runtime || !(runtime instanceof Runtime))
+			throw new TypeError(
+				"Scene constructor was not provided an instance of Runtime."
+			);
+
+		Scene.validateConfig(config);
+
+		const { label, layers, onLoad, onTick } = config;
+
+		this.label = label;
+
+		this.camera = new Camera(this);
+
+		this.layerManager = new LayerManager(this, layers);
+
+		this.inputManager = new InputManager(this);
+
+		if (onLoad) this.onLoadPassthrough = onLoad;
+		if (onTick) this.onTickPassthrough = onTick;
+
+		this.__onTick.bind(this);
+
+		this.__onLoad();
+	}
+
+	/**
+	 * Get the number of `GameObject`s in the current scene.
+	 */
+	get gameObjects() {
+		return this.layerManager.layers // Get all layers.
+			.map(({ gameObjects }) => gameObjects.length) // Get the number of game objects in each layer.
+			.reduce((a, b) => a + b); // Add up all the numbers.
+	}
+
+	/**
+	 * Validates a scene configuration file and throws an error if it is invalid.
+	 * @param {Object} config The config object to validate.
+	 */
+	static validateConfig(config) {
+		if (!config.label || typeof config.label !== "string")
+			throw new Error(
+				`Invalid label value provided to Scene configuration: "${config.label}". Must be a string.`
+			);
+
+		if (!config.layers || config.layers.length === 0)
+			throw new Error(
+				"No 'layers' configuration provided to LayerManager config."
+			);
+
+		for (const layer of config.layers) {
+			if (!layer)
+				throw new Error(
+					`Invalid layer provided to Scene layers config: ${layer}`
+				);
+
+			if (!layer.label)
+				throw new Error("No label provided to layer in Scene config.");
+
+			if (typeof layer.label !== "string")
+				throw new Error(
+					`Provided layer name <${layerName}> is not of type 'string'.`
+				);
+
+			if (layer.parallax) {
+				if (
+					!(layer.parallax instanceof Array) ||
+					typeof layer.parallax[0] !== "number" ||
+					typeof layer.parallax[1] !== "number"
+				)
+					throw new Error(
+						`Invalid parallax data provided to layer configuration. Required format: [<x>, <y>]`
+					);
+			}
+
+			if (layer.gameObjectConstructors) {
+				if (!(layer.gameObjectConstructors instanceof Array))
+					throw new Error(
+						`Invalid "gameObjectConstructors" data provided to layer configuration. Required format: [(scene) => { return <instance of GameObject> }]`
+					);
+
+				for (const gameObjectConstructor of layer.gameObjectConstructors)
+					if (typeof gameObjectConstructor !== "function")
+						throw new Error(
+							`gameObjectConstructors array must contain callback functions that return constructed GameObject instances.`
+						);
+			}
+		}
+
+		if (config.onLoad && typeof config.onLoad !== "function")
+			throw new Error(
+				`"onLoad" method provided to scene config is not of type "function".`
+			);
+
+		if (config.onTick && typeof config.onTick !== "function")
+			throw new Error(
+				`"onTick" method provided to scene config is not of type "function".`
+			);
+	}
+
+	/**
+	 * Unload the scene.
+	 */
+	__unLoad() {
+		this.inputManager.__unLoad(); // Unload input events.
+	}
+
+	__onLoad() {
+		this.runtime.__runOnLoad(this.layerManager);
+
+		if (this.onLoadPassthrough) this.onLoadPassthrough(this);
+	}
+
+	__onTick() {
+		this.runtime.__runOnTick(this.layerManager);
+
+		if (this.onTickPassthrough) this.onTickPassthrough(this);
+	}
+}
+
 class Runtime {
 	/**
 	 * The overall game state and management system.
@@ -1166,18 +2131,12 @@ class Runtime {
 		this.noise = new Noise(config.seed || Date.now());
 
 		this.audioManager = new AudioManager(this);
+		this.renderer = new Renderer(this);
 
 		this.running = false;
 		this.initialized = false;
 
 		this.paused = false;
-	}
-
-	/**
-	 * Get the renderer in the current scene.
-	 */
-	get renderer() {
-		return this.scene && this.scene.renderer;
 	}
 
 	get webGLSupported() {
@@ -1319,941 +2278,14 @@ class Runtime {
 	}
 }
 
-class Scene {
-	/**
-	 * A scene is a level, screen, or world that can be load in at any point during the runtime.
-	 * @param {Runtime} runtime The main runtime object.
-	 * @param {Object} config The `Scene` configuration object.
-	 * @param {string} config.label The `Scene`'s label.
-	 * @param {Array<Object>} config.layers The configuration objects for each layer in the `Scene`.
-	 * @param {string} config.layers[].label The layer's label.
-	 * @param {Array<number>} [config.layers[].parallax] Optional parallax data, where the format is [integer, integer]. (`[1, 1]` is 100% parallax, `[0, 0]` is 0% parallax)
-	 * @param {Array<function>} [config.layers[].gameObjectConstructors] Optional callback functions that return `GameObject`s for this layer.
-	 * @param {function} [config.layers[].gameObjectConstructors[]] A callback function, passed this `Scene` as an argument, that return an instance of `GameObject`.
-	 * @param {function} config.onLoad A callback (passed this `Scene` as an argument) that runs when the `Scene` has finished loading.
-	 * @param {function} config.onTick A callback (passed this `Scene` as an argument) that runs every frame that this `Scene` is loaded.
-	 */
-	constructor(runtime, config) {
-		this.runtime = runtime;
-
-		if (!runtime || !(runtime instanceof Runtime))
-			throw new TypeError(
-				"Scene constructor was not provided an instance of Runtime."
-			);
-
-		Scene.validateConfig(config);
-
-		const { label, layers, onLoad, onTick } = config;
-
-		this.label = label;
-		this.renderer = new Renderer(this, layers);
-
-		this.inputManager = new InputManager(this);
-
-		if (onLoad) this.onLoadPassthrough = onLoad;
-		if (onTick) this.onTickPassthrough = onTick;
-
-		this.__onTick.bind(this);
-
-		this.__onLoad();
-	}
-
-	get layerManager() {
-		return this.renderer.layerManager;
-	}
-
-	get camera() {
-		return this.renderer && this.renderer.camera;
-	}
-
-	/**
-	 * Validates a scene configuration file and throws an error if it is invalid.
-	 * @param {Object} config The config object to validate.
-	 */
-	static validateConfig(config) {
-		if (!config.label || typeof config.label !== "string")
-			throw new Error(
-				`Invalid label value provided to Scene configuration: "${config.label}". Must be a string.`
-			);
-
-		if (!config.layers || config.layers.length === 0)
-			throw new Error(
-				"No 'layers' configuration provided to LayerManager config."
-			);
-
-		for (const layer of config.layers) {
-			if (!layer)
-				throw new Error(
-					`Invalid layer provided to Scene layers config: ${layer}`
-				);
-
-			if (!layer.label)
-				throw new Error("No label provided to layer in Scene config.");
-
-			if (typeof layer.label !== "string")
-				throw new Error(
-					`Provided layer name <${layerName}> is not of type 'string'.`
-				);
-
-			if (layer.parallax) {
-				if (
-					!(layer.parallax instanceof Array) ||
-					typeof layer.parallax[0] !== "number" ||
-					typeof layer.parallax[1] !== "number"
-				)
-					throw new Error(
-						`Invalid parallax data provided to layer configuration. Required format: [<x>, <y>]`
-					);
-			}
-
-			if (layer.gameObjectConstructors) {
-				if (!(layer.gameObjectConstructors instanceof Array))
-					throw new Error(
-						`Invalid "gameObjectConstructors" data provided to layer configuration. Required format: [(scene) => { return <instance of GameObject> }]`
-					);
-
-				for (const gameObjectConstructor of layer.gameObjectConstructors)
-					if (typeof gameObjectConstructor !== "function")
-						throw new Error(
-							`gameObjectConstructors array must contain callback functions that return constructed GameObject instances.`
-						);
-			}
-		}
-
-		if (config.onLoad && typeof config.onLoad !== "function")
-			throw new Error(
-				`"onLoad" method provided to scene config is not of type "function".`
-			);
-
-		if (config.onTick && typeof config.onTick !== "function")
-			throw new Error(
-				`"onTick" method provided to scene config is not of type "function".`
-			);
-	}
-
-	/**
-	 * Unload the scene.
-	 */
-	__unLoad() {
-		this.inputManager.__unLoad(); // Unload input events.
-	}
-
-	__onLoad() {
-		// Run renderer startup.
-		this.runtime.__runOnLoad(this.renderer);
-
-		if (this.onLoadPassthrough) this.onLoadPassthrough(this);
-	}
-
-	__onTick() {
-		// Run renderer startup.
-		this.runtime.__runOnTick(this.renderer);
-
-		if (this.onTickPassthrough) this.onTickPassthrough(this);
-	}
-}
-
-class Core {
-	/**
-	 * The most core level object.
-	 * @param {Scene} scene The scene this Object is a part of.
-	 */
-	constructor(scene) {
-		if (!crypto || !crypto.randomUUID)
-			throw new Error(
-				'This environment does not support the JavaScript "crypto" library. Only secure contexts (HTTPS) support "crypto.randomUUID".'
-			);
-
-		if (!(scene instanceof Scene))
-			throw new TypeError(
-				'Invalid object provided to Core class constructor. Expected an instance of "Scene".'
-			);
-
-		this.scene = scene;
-
-		this.runtime = scene.runtime;
-
-		this.id = crypto.randomUUID();
-	}
-}
-
-class PixelMesh {
-	/**
-	 * A pixel mesh stores a 2-dimensional array of `Pixels`.
-	 * @param {Object} config The config for this `PixelMesh` instance.
-	 * @param {Array<Pixel>} config.data The frame's 2-dimensional (array of row arrays of `Pixels`) (left-to-right, top-to-bottom) data array.
-	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
-	 */
-	constructor(config) {
-		const { data, origin } = config;
-
-		if (origin && !(origin instanceof Array))
-			throw new Error(
-				'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
-			);
-
-		this.data = data;
-		this.origin = origin;
-	}
-
-	/**
-	 * Get the `Area`'s width.
-	 */
-	get width() {
-		let length = -1;
-
-		for (const row of this.data.filter((row) => row))
-			if (row.length > length) length = row.length;
-
-		return length === -1 ? undefined : length;
-	}
-
-	/**
-	 * Get the `Area`'s height.
-	 */
-	get height() {
-		return this.data.length;
-	}
-}
-
-class Pixel {
-	/**
-	 * Pixel data for a frame coordinate.
-	 * @param {Object} config The pixel config object.
-	 * @param {string} config.value The text-value of this spixel.
-	 * @param {string} config.color The CSS color value of this pixel.
-	 * @param {string|number} config.fontWeight The CSS font weight value of this pixel.
-	 * @param {string} config.backgroundColor An optional background color for the pixel.
-	 * @param {boolean} config.solid Whether or not this pixel is solid.
-	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
-	 */
-	constructor(config) {
-		const {
-			value,
-			color = "#ffffff",
-			fontWeight = "normal",
-			backgroundColor,
-			solid = false,
-			origin,
-		} = config;
-
-		if (typeof value !== "string" || value.length !== 1)
-			throw new Error(
-				"The value of this pixel can only be a 1-character long string."
-			);
-
-		if (origin && !(origin instanceof Array))
-			throw new Error(
-				'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
-			);
-
-		this.value = value;
-		this.color = color;
-		this.fontWeight = fontWeight;
-		this.backgroundColor = backgroundColor;
-		this.solid = solid;
-		this.origin = origin;
-	}
-
-	/**
-	 * Create a `Pixel` object from a string.
-	 * @param {string} string The string to convert to a `Pixel`.
-	 * @returns {Pixel} the newly created `Pixel` object.
-	 */
-	static fromString = (string) => new Pixel({ value: string });
-
-	/**
-	 * Get the `Pixel`'s width.
-	 */
-	get width() {
-		return 1;
-	}
-
-	/**
-	 * Get the `Pixel`'s height.
-	 */
-	get height() {
-		return 1;
-	}
-}
-
-class GameObject extends Core {
-	/**
-	 * A core object that can have its runtime methods managed by the runtime itself, or another object.
-	 *
-	 * `GameObject`s can have a `get renderable()` get method that returns a `Pixel` or `PixelMesh` object for rendering purposes.
-	 * `GameObject`s do not always need to be rendered, and a `get renderable()` method is not indicative of whether the `GameObject`'s logic will function.
-	 * `GameObject`s will not be rendered unless they are added to a layer.
-	 *
-	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {number} x This entity's x-coordinate.
-	 * @param {number} y This entity's y-coordinate.
-	 * @param {string} layer The label of the layer to start the `GameObject` on.
-	 */
-	constructor(scene, x = 0, y = 0, layer) {
-		super(scene);
-
-		if (typeof x !== "number")
-			throw new Error(
-				"Entity x-coordinate value must be of type 'number'."
-			);
-
-		if (typeof y !== "number")
-			throw new Error(
-				"Entity y-coordinate value must be of type 'number'."
-			);
-
-		this.__rawX = x;
-		this.__rawY = y;
-		this.__rawVisible = true;
-		this.__rawRenderable = new Pixel({ value: "#", color: "magenta" });
-
-		this.behaviors = [];
-	}
-
-	/**
-	 * Get whether the game object is on-screen.
-	 */
-	get isOnScreen() {
-		if (!this.scene || !this.layer) return false;
-
-		const {
-			scene: { camera },
-			x,
-			y,
-		} = this;
-
-		if (!this.renderable) return false;
-
-		const { width, height } = this.renderable;
-		const [pX, pY] = this.layer.parallax;
-
-		return camera.isOnScreen(x, y, width, height, pX, pY);
-	}
-
-	/**
-	 * Get the `GameObject`'s visibility status.
-	 * If the `GameObject` is not part of a layer,
-	 * or is in a `Layer` whose `visible` parameter is false,
-	 * it will also be false.
-	 */
-	get visible() {
-		return this.__rawVisible && this.layer && this.layer.visible;
-	}
-
-	/**
-	 * Set the `GameObject`'s visibility status.
-	 */
-	set visible(value) {
-		this.__rawVisible = Boolean(value);
-	}
-
-	/**
-	 * Get the game object's adjusted x-coordinate.
-	 */
-	get x() {
-		return Math.round(this.__rawX);
-	}
-
-	/**
-	 * Set the game object's x-coordinate.
-	 */
-	set x(n) {
-		if (typeof n !== "number")
-			throw new Error(
-				"Entity x-coordinate value must be of type 'number'."
-			);
-		this.__rawX = n;
-	}
-
-	/**
-	 * Get the game object's adjusted y-coordinate.
-	 */
-	get y() {
-		return Math.round(this.__rawY);
-	}
-
-	/**
-	 * Get the width of this `GameObject`'s renderable.
-	 */
-	get width() {
-		return (this.renderable && this.renderable.width) || 0;
-	}
-
-	/**
-	 * Get the height of this `GameObject`'s renderable.
-	 */
-	get height() {
-		return (this.renderable && this.renderable.height) || 0;
-	}
-
-	/**
-	 * Get the origin of this `GameObject`'s renderable.
-	 */
-	get origin() {
-		return (this.renderable && this.renderable.origin) || [0, 0];
-	}
-
-	/**
-	 * Set the game object's y-coordinate.
-	 */
-	set y(n) {
-		if (typeof n !== "number")
-			throw new Error(
-				"Entity y-coordinate value must be of type 'number'."
-			);
-		this.__rawY = n;
-	}
-
-	/**
-	 * Get the `GameObject`'s current layer.
-	 */
-	get layer() {
-		const {
-			scene: {
-				renderer: {
-					layerManager: { layers },
-				},
-			},
-		} = this;
-
-		return layers.find(({ gameObjects }) => gameObjects.includes(this));
-	}
-
-	/**
-	 * Get the label of the `GameObject`'s current layer.
-	 */
-	get layerLabel() {
-		return this.layer && this.layer.label;
-	}
-
-	/**
-	 * Change the `GameObject`'s layer. Set to a falsey value to remove from any active layers.
-	 * @param {string} layer The name of the layer to move to.
-	 */
-	set layer(label) {
-		// Remove from its current layer.
-		if (this.layer) {
-			// Filter this object from its layer.
-			this.layer.gameObjects = this.layer.gameObjects.filter(
-				(gameObject) => gameObject !== this
-			);
-		}
-
-		// If the label was undefined, we don't add to a new layer, if it was defined, we do.
-		if (label) {
-			if (typeof label !== "string")
-				throw new Error("Provided layer label is not a string.");
-
-			const {
-				scene: {
-					renderer: {
-						layerManager: { layers },
-					},
-				},
-			} = this;
-
-			const layer = layers.find((layer) => layer.label === label);
-
-			if (!layer)
-				throw new Error(`No layer exists with label "${label}"`);
-
-			layer.gameObjects.push(this);
-		}
-	}
-
-	/**
-	 * The object's renderable element.
-	 */
-	get renderable() {
-		return this.__rawRenderable;
-	}
-
-	/**
-	 * Set this `GameObject`'s renderable.
-	 */
-	set renderable(value) {
-		if (value && !(value instanceof Pixel) && !(value instanceof PixelMesh))
-			throw new TypeError(
-				"A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
-			);
-
-		this.__rawRenderable = value;
-	}
-
-	/**
-	 * Whether the object is on a paused layer or the runtime is paused.
-	 *
-	 * This should be checked when input and logic functions are called, to ensure they do not run when the `GameObject` is paused.
-	 *
-	 * This **does not** need to be checked in the `GameObject`s `__onTick()` method, as the `__onTick()` method is not called by its parent layer when that layer is paused.
-	 */
-	get paused() {
-		const { runtime, layer } = this;
-
-		if ((layer && layer.paused) || runtime.paused) return true;
-		else return false;
-	}
-
-	/**
-	 * Run the events of each object behavior.
-	 *
-	 * Runs before this `GameObject`'s `__onTick` method.
-	 */
-	__behave() {
-		if (!this.paused)
-			for (const behavior of this.behaviors)
-				behavior.enabled && behavior.__onTick && behavior.__onTick();
-	}
-
-	/**
-	 * Filter this `GameObject` out of an array.
-	 * @param {Array<GameObject>} array The array of game objects. The items in the array can either be `GameObject`s or an object with a `gameObject` key set to a `GameObject` instance.
-	 * @returns {Array<GameObject>} An array without this `GameObject`.
-	 */
-	filterThis = (array) =>
-		array.filter((item) =>
-			item instanceof GameObject
-				? item !== this
-				: item.gameObject !== this
-		);
-
-	/**
-	 * Delete this `GameObject`.
-	 *
-	 * **NOTE:** JavaScript has an automatic garbage collector, which means as long as an object is not referenced anywhere, it will be removed from memory.
-	 * This method will remove references to the object from engine-created runtime objects. Custom objects or variables that reference this object must stop referencing it before it is fully removed from memory.
-	 *
-	 *
-	 * At minimum, this functions behaviors and tick methods will stop when `GameObject.delete()` is executed. Unless they are called from somewhere other than its parent `Layer`.
-	 */
-	delete() {
-		if (this.layer) this.layer = undefined;
-		delete this;
-	}
-}
-
-class Frame {
-	/**
-	 * A display frame.
-	 * @param {Array<Pixel>} data The frame's 1-dimensional (left-to-right, top-to-bottom) data array.
-	 * Any index after `Screen Width * Screen Height` will not be displayed, no max size is enforced.
-	 */
-	constructor(data) {
-		this.data = data;
-	}
-
-	/**
-	 * Convert a string to a frame.
-	 * @param {string} string The string to convert.
-	 * @returns {Frame} the generated Frame.
-	 */
-	static fromString = (string) =>
-		new Frame(string.split("").map((item) => new Pixel({ value: item })));
-
-	/**
-	 * Convert a 2D array of `Pixel`s to a Frame.
-	 * @param {Array<Array<Pixel>} array The array to convert.
-	 */
-	static from2DArray = (array) => new Frame(array.flat());
-}
-
-class Layer {
-	/**
-	 * A layer is a construct of other objects. The layer manages these objects and can optionally render them to the screen.
-	 * @param {LayerManager} layerManager The `LayerManager` parent object.
-	 * @param {Object} config The `Layer`'s config object.
-	 * @param {string} config.label This layer's label.
-	 * @param {Array<Number>} config.parallax This layer's parallax array. `[x, y]` Numbers 0-1 determine how much this layer moves with the camera. `[0, 0]` for layers that do not move.
-	 * @param {Array<function>} config.gameObjectConstructors An array of functions that return game objects.
-	 */
-	constructor(layerManager, config) {
-		const { label, parallax = [1, 1], gameObjectConstructors } = config;
-
-		this.runtime = layerManager.runtime;
-		this.scene = layerManager.scene;
-		this.layerManager = layerManager;
-		this.label = label;
-
-		this.layerManager.layers.push(this);
-
-		this.gameObjects = [];
-
-		if (gameObjectConstructors)
-			this.__populateGameObjects(gameObjectConstructors);
-
-		this.paused = false;
-
-		this.parallax = parallax;
-
-		this.__rawVisible = true;
-	}
-
-	/**
-	 * Converts the config array of gameObjects into active `GameObject`s.
-	 * @param {Array<Function|GameObject>} gameObjectConstructors The array of `GameObject` population functions to run. Each function is passed the current `Scene` instance.
-	 * @returns {Array<GameObject>} The new array of `GameObject`s.
-	 */
-	__populateGameObjects(gameObjectConstructors) {
-		for (const gameObjectConstructor of gameObjectConstructors)
-			if (typeof gameObjectConstructor !== "function")
-				throw new TypeError(
-					'Each value provided to a Layer\'s "configuration.gameObjects"'
-				);
-
-		this.gameObjects = gameObjectConstructors
-			.map((gameObjectConstructor) => {
-				const gameObject = gameObjectConstructor(this.scene);
-
-				if (!(gameObject instanceof GameObject))
-					throw new TypeError(
-						'Each gameObjectConstructor function must return an object of type "GameObject".'
-					);
-
-				return gameObject;
-			})
-			.filter(
-				(gameObject) => gameObject && gameObject instanceof GameObject
-			);
-
-		for (const gameObject of this.gameObjects)
-			gameObject.layer = this.label; // Put game object on this layer.
-	}
-
-	/**
-	 * Get the `Layer`'s visibility status.
-	 */
-	get visible() {
-		return this.__rawVisible;
-	}
-
-	/**
-	 * Set the `Layer`'s visibility status.
-	 */
-	set visible(value) {
-		this.__rawVisible = Boolean(value);
-	}
-
-	/**
-	 * Returns a frame composed of a layer's objects.
-	 */
-	get frame() {
-		const {
-			scene: { renderer, camera },
-			parallax: [pX, pY],
-		} = this;
-
-		const [adjustedCameraX, adjustedCameraY] = [
-			Math.round(camera.x * pX),
-			Math.round(camera.y * pY),
-		];
-
-		const frameData = [];
-
-		for (const gameObject of this.gameObjects.filter(
-			({ visible }) => visible
-		)) {
-			const { renderable } = gameObject;
-			let { x, y } = gameObject;
-
-			if (!renderable) continue;
-			else {
-				if (renderable.origin) {
-					const [oX, oY] = renderable.origin;
-
-					x -= oX;
-					y -= oY;
-
-					x = Math.round(x);
-					y = Math.round(y);
-				}
-
-				if (renderable instanceof Pixel) {
-					if (!camera.isOnScreen(x, y, 1, 1, pX, pY)) continue;
-
-					const [xOS, yOS] = [
-						x - adjustedCameraX,
-						y - adjustedCameraY,
-					];
-					const index = renderer.coordinatesToIndex(xOS, yOS);
-
-					frameData[index] = renderable;
-				} else if (renderable instanceof PixelMesh) {
-					if (
-						!camera.isOnScreen(
-							x,
-							y,
-							renderable.width,
-							renderable.height,
-							pX,
-							pY
-						)
-					)
-						continue;
-
-					for (
-						let pixelY = 0;
-						pixelY < renderable.data.length;
-						pixelY++
-					) {
-						const row = renderable.data[pixelY];
-
-						if (!row || row.length === 0) continue;
-
-						for (let pixelX = 0; pixelX < row.length; pixelX++) {
-							const pixel = row[pixelX];
-							if (
-								!pixel ||
-								!(pixel instanceof Pixel) ||
-								!camera.isOnScreen(
-									x + pixelX,
-									y + pixelY,
-									1,
-									1,
-									pX,
-									pY
-								)
-							)
-								continue;
-
-							const [xOS, yOS] = [
-								x + pixelX - adjustedCameraX,
-								y + pixelY - adjustedCameraY,
-							];
-
-							const index = renderer.coordinatesToIndex(xOS, yOS);
-
-							frameData[index] = pixel;
-						}
-					}
-				}
-			}
-		}
-
-		return new Frame(frameData);
-	}
-
-	__onTick() {
-		const { runtime, gameObjects, paused } = this;
-
-		if (paused || runtime.paused) return; // Don't run this layer's code if it or the runtime is paused.
-
-		for (const gameObject of gameObjects) {
-			gameObject.__behave();
-			runtime.__runOnTick(gameObject);
-		}
-	}
-}
-
-class LayerManager {
-	/**
-	 * The layer manager contains variable layers and compiles them into one frame to render to the screen.
-	 * @param {Renderer} renderer The main runtime's renderer object.
-	 * @param {Array<Object>} layers The layer configuration objects.
-	 */
-	constructor(renderer, layers) {
-		this.renderer = renderer;
-		this.runtime = renderer.runtime;
-		this.scene = renderer.scene;
-		this.layers = layers;
-	}
-
-	/**
-	 * Get all visible layers in this `LayerManager`.
-	 */
-	get visibleLayers() {
-		return this.layers.filter((layer) => layer.visible);
-	}
-
-	/**
-	 * Get a layer by its label.
-	 * @param {string} label The label of the layer to get.
-	 * @returns {Layer} A layer with the label provided. Or `undefined` if no layer was found.
-	 */
-	getLayerByLabel = (label) =>
-		this.layers.find((layer) => layer.label === label);
-
-	/**
-	 * Check for content at a location.
-	 * @param {number} x The x-coordinate to check.
-	 * @param {number} y The y-coordinate to check.
-	 * @param {string} layer An optional layer to check. If no layer is provided, all layer's are checked.
-	 */
-	getAtPosition(x, y, layer) {
-		const layerWithLabel = this.layers.find(({ label }) => label === layer);
-		if (layer && !layerWithLabel)
-			throw new Error(`No layer exists with label "${layer}".`);
-
-		const layersToCheck = layer ? [layerWithLabel] : this.layers;
-
-		const atPosition = [];
-
-		for (const layer of layersToCheck) {
-			const { gameObjects } = layer;
-
-			for (const gameObject of gameObjects) {
-				const { renderable, x: gX, y: gY } = gameObject;
-				if (renderable instanceof Pixel && gX === x && gY === y)
-					atPosition.push({ gameObject, pixel: renderable });
-				else if (
-					renderable instanceof PixelMesh &&
-					aabb(
-						x,
-						y,
-						1,
-						1,
-						gX,
-						gY,
-						renderable.width,
-						renderable.height
-					)
-				) {
-					const pixel =
-						renderable.data[y - gY] &&
-						renderable.data[y - gY][x - gX];
-
-					if (!pixel) continue;
-
-					atPosition.push({
-						gameObject,
-						pixel,
-					});
-				}
-			}
-		}
-
-		return atPosition;
-	}
-
-	/**
-	 * Check for a solid at a location.
-	 * @param {number} x The x-coordinate to check.
-	 * @param {number} y The y-coordinate to check.
-	 * @param {string} layer An optional layer to check. If no layer is provided, all layer's are checked.
-	 */
-	solidAtPosition(x, y, layer) {
-		const thingsAt = this.getAtPosition(x, y, layer);
-
-		for (const thing of thingsAt) if (thing.pixel.solid) return thing;
-		return false;
-	}
-
-	/**
-	 * Load layers into the layer manager.
-	 * @param {Array<*>} layers The layer creation array.
-	 */
-	__loadLayers(layers) {
-		this.layers = [];
-
-		if (!layers.includes("system")) new Layer(this, { label: "system" });
-		for (const config of layers) new Layer(this, config);
-	}
-
-	__mergedRender() {
-		const {
-			scene: { renderer },
-		} = this;
-
-		const frame = renderer.compileFrames(
-			...this.visibleLayers.map((layer) => layer.frame)
-		);
-
-		if (JSON.stringify(frame) === this.lastFrame && renderer.hasDrawn)
-			return;
-
-		this.lastFrame = JSON.stringify(frame);
-
-		renderer.clearDisplay();
-
-		renderer.drawFrame(frame);
-	}
-
-	__stackedRender() {
-		const {
-			scene: { renderer },
-		} = this;
-
-		const frames = this.visibleLayers.map((layer) => layer.frame);
-
-		renderer.clearDisplay();
-
-		for (const frame of frames) renderer.drawFrame(frame);
-	}
-
-	__onLoad() {
-		this.__loadLayers(this.layers);
-	}
-
-	__onTick() {
-		const {
-			runtime,
-			renderer: {
-				config: { renderMode },
-			},
-		} = this;
-
-		// Logic
-		if (!runtime.paused) {
-			for (const layer of this.layers) runtime.__runOnTick(layer);
-		}
-
-		// Render
-		if (renderMode === "stacked") this.__stackedRender();
-		else this.__mergedRender();
-	}
-}
-
-class Camera extends GameObject {
-	/**
-	 * The scene contains variable layers and compiles them into one frame to render to the screen.
-	 * @param {Renderer} renderer The `Renderer` this `Camera` is a part of.
-	 */
-	constructor(renderer) {
-		super(renderer.scene, 0, 0);
-		this.renderer = renderer;
-
-		this.config = this.renderer.config && this.renderer.config.camera;
-	}
-
-	get renderable() {
-		return undefined;
-	}
-
-	set renderable(_) {
-		return;
-	}
-
-	/**
-	 * Check if a bounding box is on screen.
-	 * @param {number} x The x-coordinate to check.
-	 * @param {number} y The y-coordinate to check.
-	 * @param {number} width The width to check.
-	 * @param {number} height The height to check.
-	 * @param {number} parallaxX Optional parallax x-value. (0-1)
-	 * @param {number} parallaxY Optional parallax y-value. (0-1)
-	 */
-	isOnScreen = (x, y, width, height, parallaxX = 1, parallaxY = 1) =>
-		aabb(
-			x,
-			y,
-			width,
-			height,
-			this.x * parallaxX,
-			this.y * parallaxY,
-			this.renderer.width,
-			this.renderer.height
-		);
-}
-
 class Renderer {
 	/**
 	 * Handles rendering the game using **2D Context**.
-	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {Array<Object>} layers The layer configuration objects to pass to this `Renderer` instance's `LayerManager` instance.
+	 * @param {Runtime} runtime The current `Runtime` instance.
 	 */
-	constructor(scene, layers) {
-		this.scene = scene;
-		this.runtime = scene.runtime;
+	constructor(runtime) {
+		this.runtime = runtime;
+
 		this.config = this.runtime.config && this.runtime.config.renderer;
 
 		Renderer.validateConfig(this.config);
@@ -2261,8 +2293,7 @@ class Renderer {
 		if (!this.config)
 			throw new Error("No config object provided to renderer.");
 
-		this.layerManager = new LayerManager(this, layers);
-		this.camera = new Camera(this);
+		this.__onCreated();
 	}
 
 	/**
@@ -2582,22 +2613,11 @@ class Renderer {
 	/**
 	 * Code that runs when the project starts.
 	 */
-	__onLoad() {
+	__onCreated() {
 		this.__intializeDisplay();
 		this.__rescaleDisplay();
 
 		window.addEventListener("resize", () => this.__rescaleDisplay());
-
-		this.runtime.__runOnLoad(this.layerManager);
-	}
-
-	/**
-	 * Code that runs on every frame.
-	 */
-	__onTick() {
-		const { runtime } = this;
-
-		runtime.__runOnTick(this.layerManager);
 	}
 }
 
@@ -2625,9 +2645,10 @@ class Area extends GameObject {
 	 * @param {number} x This `Area`'s x-coordinate.
 	 * @param {number} y This `Area`'s y-coordinate.
 	 * @param {boolean} solid Whether the area's renderable is solid. Empty spaces in the renderable are not solid.
+	 * @param {string} layer The label of the layer to start the `Area` on.
 	 */
-	constructor(scene, x, y, solid = false) {
-		super(scene, x, y);
+	constructor(scene, x, y, solid = false, layer) {
+		super(scene, x, y, layer);
 
 		this.solid = solid;
 
@@ -2671,9 +2692,10 @@ class Entity extends GameObject {
 	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {number} x This `Entity`'s x-coordinate.
 	 * @param {number} y This `Entity`'s y-coordinate.
+	 * @param {string} layer The label of the layer to start the `Entity` on.
 	 */
-	constructor(scene, x, y) {
-		super(scene, x, y);
+	constructor(scene, x, y, layer) {
+		super(scene, x, y, layer);
 
 		this.__rawRenderable = new Pixel({ value: "E", color: "green" });
 	}
@@ -2709,6 +2731,7 @@ class Box extends GameObject {
 	 * @param {string} config.color Option Box color.
 	 * @param {string} config.backgroundColor Optional background color.
 	 * @param {string} config.style The box line style. `"line" || "double"`
+	 * @param {string} config.layer The label of the layer to start the `Box` on.
 	 */
 	constructor(scene, config) {
 		const {
@@ -2719,8 +2742,9 @@ class Box extends GameObject {
 			color = "#ffffff",
 			backgroundColor,
 			style = "double",
+			layer,
 		} = config;
-		super(scene, x, y);
+		super(scene, x, y, layer);
 
 		this.__rawWidth = width;
 		this.__rawHeight = height;
@@ -2811,6 +2835,7 @@ class Text extends GameObject {
 	 * @param {string} config.color Option text color.
 	 * @param {string} config.backgroundColor Optional background color.
 	 * @param {string} config.fontWeight Optional font weight.
+	 * @param {string} config.layer The label of the layer to start the `Text` on.
 	 */
 	constructor(scene, config) {
 		const {
@@ -2821,9 +2846,10 @@ class Text extends GameObject {
 			color = "#ffffff",
 			backgroundColor,
 			fontWeight = 400,
-			maxWidth = scene.renderer.width,
+			maxWidth = scene.runtime.renderer.width,
+			layer,
 		} = config;
-		super(scene, x, y);
+		super(scene, x, y, layer);
 
 		if (
 			maxWidth &&
@@ -2954,6 +2980,7 @@ class Menu extends GameObject {
 	 * @param {Object} config.options An object of key value pairs, the values representing option labels, and the keys being what is returned when an object is selected.
 	 * @param {function} config.callback A callback function that is called when a menu option is selected. Passed the key of the selected option.
 	 * @param {string} config.title Optional menu title.
+	 * @param {string} config.layer The label of the layer to start the `Menu` on.
 	 */
 	constructor(scene, config) {
 		const {
@@ -2962,8 +2989,9 @@ class Menu extends GameObject {
 			title,
 			options,
 			callback = (option) => console.log(option),
+			layer,
 		} = config;
-		super(scene, x, y);
+		super(scene, x, y, layer);
 
 		this.options = options;
 		this.callback = callback;
@@ -3032,7 +3060,7 @@ class Menu extends GameObject {
 
 	get width() {
 		const {
-			scene: {
+			runtime: {
 				renderer: { width },
 			},
 		} = this;
@@ -3045,7 +3073,7 @@ class Menu extends GameObject {
 
 	get height() {
 		const {
-			scene: {
+			runtime: {
 				renderer: { height },
 			},
 		} = this;
@@ -3074,7 +3102,7 @@ class Menu extends GameObject {
 		const {
 			options,
 			scene,
-			scene: {
+			runtime: {
 				renderer: { width, height },
 			},
 			title,
@@ -3197,6 +3225,7 @@ class TextInput extends Text {
 	 * @param {function} config.onChange Callback that runs when the input's value changes.
 	 * @param {function} config.onKeyDown Callback that runs when the input recieves a keypress.
 	 * @param {number} config.maxLength An optional maximum input length.
+	 * @param {string} config.layer The label of the layer to start the `TextInput` on.
 	 */
 	constructor(scene, config) {
 		config.wrap = false;
@@ -3424,7 +3453,9 @@ class ScrollTo extends Behavior {
 			},
 			scene: {
 				camera,
-				renderer: { width: screenWidth, height: screenHeight },
+				runtime: {
+					renderer: { width: screenWidth, height: screenHeight },
+				},
 			},
 		} = this;
 
@@ -3552,9 +3583,7 @@ class TopDownMovement extends Behavior {
 				height,
 				origin: [oX, oY],
 			},
-			scene: {
-				renderer: { layerManager },
-			},
+			scene: { layerManager },
 		} = this;
 
 		if (width <= 1 && height <= 1) {
