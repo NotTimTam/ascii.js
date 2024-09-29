@@ -1,6 +1,6 @@
 import GameObject from "../core/GameObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
-import { displayArray } from "../util/data.js";
+import { displayArray, isPlainObject } from "../util/data.js";
 
 // ┌─┬┐  ╔═╦╗  ╓─╥╖  ╒═╤╕
 // │ ││  ║ ║║  ║ ║║  │ ││

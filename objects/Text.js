@@ -1,5 +1,6 @@
 import GameObject from "../core/GameObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
+import { isPlainObject } from "../util/data.js";
 
 class Text extends GameObject {
 	/**

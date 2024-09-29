@@ -1,3 +1,4 @@
+import { isPlainObject } from "../util/data.js";
 import Camera from "./Camera.js";
 import InputManager from "./InputManager.js";
 import LayerManager from "./LayerManager.js";

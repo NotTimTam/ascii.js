@@ -1,3 +1,4 @@
+import { isPlainObject } from "../util/data.js";
 import AudioManager from "./AudioManager.js";
 import Noise from "./Noise.js";
 import Renderer from "./Renderer.js";

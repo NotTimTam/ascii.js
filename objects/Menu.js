@@ -1,6 +1,7 @@
 import GameObject from "../core/GameObject.js";
 import { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
+import { isPlainObject } from "../util/data.js";
 import Box from "./Box.js";
 import Text from "./Text.js";
 

@@ -1,5 +1,6 @@
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
+import { isPlainObject } from "../util/data.js";
 import Text from "./Text.js";
 
 class TextInput extends Text {
