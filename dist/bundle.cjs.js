@@ -44,7 +44,7 @@ class PixelMesh {
 	}
 
 	/**
-	 * Get the `Area`'s width.
+	 * Get the `PixelMesh`'s width.
 	 */
 	get width() {
 		let length = -1;
@@ -56,7 +56,7 @@ class PixelMesh {
 	}
 
 	/**
-	 * Get the `Area`'s height.
+	 * Get the `PixelMesh`'s height.
 	 */
 	get height() {
 		return this.data.length;
@@ -71,7 +71,7 @@ class Pixel {
 	 * @param {string} config.color The CSS color value of this pixel.
 	 * @param {string|number} config.fontWeight The CSS font weight value of this pixel.
 	 * @param {string} config.backgroundColor An optional background color for the pixel.
-	 * @param {boolean} config.solid Whether or not this pixel is solid.
+	 * @param {boolean} config.solid Whether or not this pixel is solid. This parameter is used for collision detection.
 	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
 	 */
 	constructor(config) {
@@ -108,20 +108,6 @@ class Pixel {
 	 * @returns {Pixel} the newly created `Pixel` object.
 	 */
 	static fromString = (string) => new Pixel({ value: string });
-
-	/**
-	 * Get the `Pixel`'s width.
-	 */
-	get width() {
-		return 1;
-	}
-
-	/**
-	 * Get the `Pixel`'s height.
-	 */
-	get height() {
-		return 1;
-	}
 }
 
 class Frame {
@@ -971,7 +957,7 @@ class Camera {
 	set x(n) {
 		if (typeof n !== "number")
 			throw new Error(
-				"Entity x-coordinate value must be of type 'number'."
+				"Camera x-coordinate value must be of type 'number'."
 			);
 		this.__rawX = n;
 	}
@@ -989,7 +975,7 @@ class Camera {
 	set y(n) {
 		if (typeof n !== "number")
 			throw new Error(
-				"Entity y-coordinate value must be of type 'number'."
+				"Camera y-coordinate value must be of type 'number'."
 			);
 		this.__rawY = n;
 	}
@@ -1029,22 +1015,22 @@ class GameObject extends Core {
 	 * `GameObject`s do not always need to be rendered, and a `get renderable()` method is not indicative of whether the `GameObject`'s logic will function.
 	 * `GameObject`s will not be rendered unless they are added to a layer.
 	 *
-	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {number} x This entity's x-coordinate.
-	 * @param {number} y This entity's y-coordinate.
-	 *@param {string} layer The label of the layer to start the `Area` on.
+	 * @param {Scene} scene The scene this `GameObject` is a part of.
+	 * @param {number} x This `GameObject`'s x-coordinate.
+	 * @param {number} y This  `GameObject`'s y-coordinate.
+	 *@param {string} layer The label of the layer to start the `GameObject` on.
 	 */
 	constructor(scene, x = 0, y = 0, layer) {
 		super(scene);
 
 		if (typeof x !== "number")
 			throw new Error(
-				"Entity x-coordinate value must be of type 'number'."
+				"GameObject x-coordinate value must be of type 'number'."
 			);
 
 		if (typeof y !== "number")
 			throw new Error(
-				"Entity y-coordinate value must be of type 'number'."
+				"GameObject y-coordinate value must be of type 'number'."
 			);
 
 		this.__rawX = x;
@@ -1107,7 +1093,7 @@ class GameObject extends Core {
 	set x(n) {
 		if (typeof n !== "number")
 			throw new Error(
-				"Entity x-coordinate value must be of type 'number'."
+				"GameObject x-coordinate value must be of type 'number'."
 			);
 		this.__rawX = n;
 	}
@@ -1125,7 +1111,7 @@ class GameObject extends Core {
 	set y(n) {
 		if (typeof n !== "number")
 			throw new Error(
-				"Entity y-coordinate value must be of type 'number'."
+				"GameObject y-coordinate value must be of type 'number'."
 			);
 		this.__rawY = n;
 	}
@@ -1224,7 +1210,7 @@ class GameObject extends Core {
 	 *
 	 * This should be checked when input and logic functions are called, to ensure they do not run when the `GameObject` is paused.
 	 *
-	 * This **does not** need to be checked in the `GameObject`s `__onTick()` method, as the `__onTick()` method is not called by its parent layer when that layer is paused.
+	 * This **does not** need to be checked in the `GameObject`s `onTick()` method, as the `onTick()` method is not called by its parent layer when that layer is paused.
 	 */
 	get paused() {
 		const { runtime, layer } = this;
@@ -1236,25 +1222,13 @@ class GameObject extends Core {
 	/**
 	 * Run the events of each object behavior.
 	 *
-	 * Runs before this `GameObject`'s `__onTick` method.
+	 * Runs before this `GameObject`'s `onTick` method.
 	 */
 	__behave() {
 		if (!this.paused)
 			for (const behavior of this.behaviors)
-				behavior.enabled && behavior.__onTick && behavior.__onTick();
+				behavior.enabled && behavior.onTick && behavior.onTick();
 	}
-
-	/**
-	 * Filter this `GameObject` out of an array.
-	 * @param {Array<GameObject>} array The array of game objects. The items in the array can either be `GameObject`s or an object with a `gameObject` key set to a `GameObject` instance.
-	 * @returns {Array<GameObject>} An array without this `GameObject`.
-	 */
-	filterThis = (array) =>
-		array.filter((item) =>
-			item instanceof GameObject
-				? item !== this
-				: item.gameObject !== this
-		);
 
 	/**
 	 * Delete this `GameObject`.
@@ -1279,13 +1253,41 @@ class InputManager {
 	constructor(scene) {
 		this.scene = scene;
 
-		this.keyboard = { keys: {}, keyCodes: {} };
+		this.keyboard = {
+			keys: {},
+			keyCodes: {},
+			keyCode: undefined,
+			key: undefined,
+		};
 		this.mouse = { buttons: {} };
 
-		this.__eventListeners = [];
-		this.__clickListeners = [];
+		this.__eventListeners = {
+			all: [],
+			click: [
+				(e) => {
+					// Handle clicks on specific game objects.
+					for (const [targetId, listener] of this
+						.__gameObjectClicks) {
+						if (e.targets.includes(targetId)) {
+							let passthrough = { ...e };
+							delete passthrough.targets;
+							passthrough.target = targetId;
+							listener(passthrough);
+						}
+					}
+				},
+			],
+		};
+		this.__gameObjectClicks = [];
 
 		this.__onCreated();
+	}
+
+	/**
+	 * Get permitted event types.
+	 */
+	get types() {
+		return Object.keys(this.__eventListeners);
 	}
 
 	__eventHandler = (e) => this.__onEvent(e);
@@ -1404,14 +1406,13 @@ class InputManager {
 
 		const { x, y } = this.mouse;
 
-		this.mouse.target = this.scene.layerManager.getAtPosition(x, y);
+		this.mouse.targets = this.scene.layerManager.getAtPosition(x, y);
 
-		const targetIds = this.mouse.target.map(
-			({ gameObject }) => gameObject.id
-		);
-
-		for (const [id, eventListener] of this.__clickListeners)
-			if (targetIds.includes(id)) eventListener({ type, ...this.mouse });
+		// Convert target objects into an array of IDs.
+		if (this.mouse.targets)
+			this.mouse.targets = this.mouse.targets.map(
+				({ gameObject }) => gameObject.id
+			);
 	}
 
 	/**
@@ -1500,6 +1501,12 @@ class InputManager {
 		}
 	}
 
+	__triggerEvents(type, data) {
+		if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
+		for (const eventListener of this.__eventListeners[type])
+			eventListener(data);
+	}
+
 	/**
 	 * Manages different events firing, and maps them to the proper method.
 	 * @param {Event} event The listener's event.
@@ -1523,8 +1530,8 @@ class InputManager {
 					break;
 			}
 
-			for (const eventListener of this.__eventListeners)
-				eventListener({ type, ...this.mouse });
+			this.__triggerEvents(type, { type, ...this.mouse }); // Trigger the specific event type that fired.
+			this.__triggerEvents("all", { type, ...this.mouse }); // Trigger the "all" event type.
 
 			if (type === "click" && this.mouse.target) delete this.mouse.target; // Delete target items to clear for next event.
 		} else if (event instanceof KeyboardEvent) {
@@ -1539,70 +1546,105 @@ class InputManager {
 					break;
 			}
 
-			for (const eventListener of this.__eventListeners)
-				eventListener({ type, ...this.keyboard });
+			this.__triggerEvents(type, { type, ...this.keyboard }); // Trigger the specific event type that fired.
+			this.__triggerEvents("all", { type, ...this.keyboard }); // Trigger the "all" event type.
 		}
 	}
 
 	/**
 	 * Add an event listener to the input manager.
+	 * @param {string} type The type of event to add.
 	 * @param {function} listener The event listener function.
 	 */
-	addEventListener(listener) {
-		this.__eventListeners.push(listener);
-	}
+	addEventListener(type, listener) {
+		if (!this.types.includes(type))
+			throw new Error(
+				`"${type}" is not a valid event type. Must be one of: ${displayArray(
+					this.types
+				)}`
+			);
 
-	/**
-	 * Add an event listener to check when an element is clicked.
-	 * @param {GameObject} gameObject The game object that, when clicked, triggers the event.
-	 * @param {function} listener The event listener function.
-	 */
-	addOnClick(gameObject, listener) {
-		this.__clickListeners.push([gameObject.id, listener]);
+		this.__eventListeners[type].push(listener);
 	}
 
 	/**
 	 * Remove an event listener from the input manager.
+	 * @param {string} type The type of event to remove.
 	 * @param {function} listener The event listener function that was added to the event listener.
 	 */
-	removeEventListener(listener) {
-		this.__eventListeners = this.__eventListeners.filter(
+	removeEventListener(type, listener) {
+		if (!this.types.includes(type))
+			throw new Error(
+				`"${type}" is not a valid event type. Must be one of: ${displayArray(
+					this.types
+				)}`
+			);
+
+		this.__eventListeners[type] = this.__eventListeners[type].filter(
 			(eventListener) => eventListener !== listener
 		);
 	}
 
 	/**
-	 * Remove a click event listener.
-	 * @param {GameObject} gameObject The game object that the event was created for.
+	 * Add a listener for clicks on a `GameObject`.
+	 * @param {string} gameObjectId The ID of the `GameObject` that, when clicked, triggers the event.
+	 */
+	watchObjectClick(gameObjectId, listener) {
+		this.__gameObjectClicks.push([gameObjectId, listener]);
+	}
+
+	/**
+	 * Remove a listener for clicks on a `GameObject`.
+	 * @param {string} gameObjectId The ID of the `GameObject`.
 	 * @param {function} listener The event listener function that was added to the event listener.
 	 */
-	removeOnClick(gameObject, listener) {
-		this.__clickListeners = this.__clickListeners.filter(
-			(arr) => arr[0] !== gameObject.id && arr[1] !== listener
+	unwatchObjectClick(gameObjectId, listener) {
+		this.__gameObjectClicks = this.__gameObjectClicks.filter(
+			(arr) => arr[0] !== gameObjectId && arr[1] !== listener
 		);
 	}
 
+	/**
+	 * Add an event listener to the window for the entire `InputManager`.
+	 * @param {string} type The type of event to add.
+	 * @param {function} handler The handler for that event.
+	 */
+	__addGlobalEventListener(type, handler) {
+		if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
+		window.addEventListener(type, handler);
+	}
+
+	/**
+	 * Remove an event listener from the window.
+	 * @param {string} type The type of event to remove.
+	 * @param {function} handler The handler that was set for that event.
+	 */
+	__removeGlobalEventListener(type, handler) {
+		delete this.__eventListeners[type];
+		window.removeEventListener(type, handler);
+	}
+
 	__onCreated() {
-		window.addEventListener("keydown", this.__eventHandler);
-		window.addEventListener("keyup", this.__eventHandler);
-		window.addEventListener("mousemove", this.__eventHandler);
-		window.addEventListener("mousedown", this.__eventHandler);
-		window.addEventListener("mouseup", this.__eventHandler);
-		window.addEventListener("click", this.__eventHandler);
-		window.addEventListener("contextmenu", this.__contextHandler);
+		this.__addGlobalEventListener("keydown", this.__eventHandler);
+		this.__addGlobalEventListener("keyup", this.__eventHandler);
+		this.__addGlobalEventListener("mousemove", this.__eventHandler);
+		this.__addGlobalEventListener("mousedown", this.__eventHandler);
+		this.__addGlobalEventListener("mouseup", this.__eventHandler);
+		this.__addGlobalEventListener("click", this.__eventHandler);
+		this.__addGlobalEventListener("contextmenu", this.__contextHandler);
 	}
 
 	/**
 	 * Unload the `InputManager` instance by removing all system event listeners.
 	 */
 	__unLoad() {
-		window.removeEventListener("keydown", this.__eventHandler);
-		window.removeEventListener("keyup", this.__eventHandler);
-		window.removeEventListener("mousemove", this.__eventHandler);
-		window.removeEventListener("mousedown", this.__eventHandler);
-		window.removeEventListener("mouseup", this.__eventHandler);
-		window.removeEventListener("click", this.__eventHandler);
-		window.removeEventListener("contextmenu", this.__contextHandler);
+		this.__removeGlobalEventListener("keydown", this.__eventHandler);
+		this.__removeGlobalEventListener("keyup", this.__eventHandler);
+		this.__removeGlobalEventListener("mousemove", this.__eventHandler);
+		this.__removeGlobalEventListener("mousedown", this.__eventHandler);
+		this.__removeGlobalEventListener("mouseup", this.__eventHandler);
+		this.__removeGlobalEventListener("click", this.__eventHandler);
+		this.__removeGlobalEventListener("contextmenu", this.__contextHandler);
 	}
 }
 
@@ -1899,7 +1941,7 @@ class LayerManager {
 	 * Create layers from config.
 	 * @param {Array<*>} layers The layer creation array.
 	 */
-	__createLayers(layers) {
+	__createLayers(layers = []) {
 		this.layers = [];
 
 		if (!layers.includes("system")) new Layer(this, { label: "system" });
@@ -1957,7 +1999,7 @@ class LayerManager {
 
 		// Logic
 		if (!runtime.paused) {
-			for (const layer of this.layers) runtime.__runOnTick(layer);
+			for (const layer of this.layers) layer.__onTick();
 		}
 
 		// Render
@@ -1972,7 +2014,7 @@ class Scene {
 	 * @param {Runtime} runtime The main runtime object.
 	 * @param {Object} config The `Scene` configuration object.
 	 * @param {string} config.label The `Scene`'s label.
-	 * @param {Array<Object>} config.layers The configuration objects for each layer in the `Scene`.
+	 * @param {Array<Object>} config.layers An optional array of configuration objects for each layer in the `Scene`.
 	 * @param {string} config.layers[].label The layer's label.
 	 * @param {Array<number>} [config.layers[].parallax] Optional parallax data, where the format is [integer, integer]. (`[1, 1]` is 100% parallax, `[0, 0]` is 0% parallax)
 	 * @param {Array<function>} [config.layers[].gameObjectConstructors] Optional callback functions that return `GameObject`s for this layer.
@@ -2027,47 +2069,51 @@ class Scene {
 				`Invalid label value provided to Scene configuration: "${config.label}". Must be a string.`
 			);
 
-		if (!config.layers || config.layers.length === 0)
-			throw new Error(
-				"No 'layers' configuration provided to LayerManager config."
-			);
-
-		for (const layer of config.layers) {
-			if (!layer)
-				throw new Error(
-					`Invalid layer provided to Scene layers config: ${layer}`
+		if (config.layers) {
+			if (!(config.layers instanceof Array))
+				throw new TypeError(
+					`Scene configuration "layers" property should be an array.`
 				);
 
-			if (!layer.label)
-				throw new Error("No label provided to layer in Scene config.");
-
-			if (typeof layer.label !== "string")
-				throw new Error(
-					`Provided layer name <${layerName}> is not of type 'string'.`
-				);
-
-			if (layer.parallax) {
-				if (
-					!(layer.parallax instanceof Array) ||
-					typeof layer.parallax[0] !== "number" ||
-					typeof layer.parallax[1] !== "number"
-				)
+			for (const layer of config.layers) {
+				if (!layer)
 					throw new Error(
-						`Invalid parallax data provided to layer configuration. Required format: [<x>, <y>]`
-					);
-			}
-
-			if (layer.gameObjectConstructors) {
-				if (!(layer.gameObjectConstructors instanceof Array))
-					throw new Error(
-						`Invalid "gameObjectConstructors" data provided to layer configuration. Required format: [(scene) => { return <instance of GameObject> }]`
+						`Invalid layer provided to Scene layers config: ${layer}`
 					);
 
-				for (const gameObjectConstructor of layer.gameObjectConstructors)
-					if (typeof gameObjectConstructor !== "function")
+				if (!layer.label)
+					throw new Error(
+						"No label provided to layer in Scene config."
+					);
+
+				if (typeof layer.label !== "string")
+					throw new Error(
+						`Provided layer name <${layerName}> is not of type 'string'.`
+					);
+
+				if (layer.parallax) {
+					if (
+						!(layer.parallax instanceof Array) ||
+						typeof layer.parallax[0] !== "number" ||
+						typeof layer.parallax[1] !== "number"
+					)
 						throw new Error(
-							`gameObjectConstructors array must contain callback functions that return constructed GameObject instances.`
+							`Invalid parallax data provided to layer configuration. Required format: [<x>, <y>]`
 						);
+				}
+
+				if (layer.gameObjectConstructors) {
+					if (!(layer.gameObjectConstructors instanceof Array))
+						throw new Error(
+							`Invalid "gameObjectConstructors" data provided to layer configuration. Required format: [(scene) => { return <instance of GameObject> }]`
+						);
+
+					for (const gameObjectConstructor of layer.gameObjectConstructors)
+						if (typeof gameObjectConstructor !== "function")
+							throw new Error(
+								`gameObjectConstructors array must contain callback functions that return constructed GameObject instances.`
+							);
+				}
 			}
 		}
 
@@ -2090,13 +2136,13 @@ class Scene {
 	}
 
 	__onLoad() {
-		this.runtime.__runOnLoad(this.layerManager);
+		this.layerManager.__onLoad();
 
 		if (this.onLoadPassthrough) this.onLoadPassthrough(this);
 	}
 
 	__onTick() {
-		this.runtime.__runOnTick(this.layerManager);
+		this.layerManager.__onTick();
 
 		if (this.onTickPassthrough) this.onTickPassthrough(this);
 	}
@@ -2194,28 +2240,28 @@ class Runtime {
 	}
 
 	/**
-	 * Run the __onStartup method of any object.
+	 * Run the onStartup method of any object.
 	 * @param {Object} object The object whose method should be run.
 	 * @param  {...any} passthrough The data to pass through to that method.
 	 */
 	__runOnStartup = (object, ...passthrough) =>
-		object.__onStartup && object.__onStartup(...passthrough);
+		object.onStartup && object.onStartup(...passthrough);
 
 	/**
-	 * Run the __onTick method of any object.
+	 * Run the onTick method of any object.
 	 * @param {Object} object The object whose method should be run.
 	 * @param  {...any} passthrough The data to pass through to that method.
 	 */
 	__runOnTick = (object, ...passthrough) =>
-		object.__onTick && object.__onTick(this, ...passthrough);
+		object.onTick && object.onTick(this, ...passthrough);
 
 	/**
-	 * Run the __onLoad method of any object.
+	 * Run the onLoad method of any object.
 	 * @param {Object} object The object whose method should be run.
 	 * @param  {...any} passthrough The data to pass through to that method.
 	 */
 	__runOnLoad = (object, ...passthrough) =>
-		object.__onLoad && object.__onLoad(...passthrough);
+		object.onLoad && object.onLoad(...passthrough);
 
 	/**
 	 * Code that runs when the project starts.
@@ -2236,7 +2282,7 @@ class Runtime {
 		this.__lastFrame = currentTime;
 
 		// Run scene logic.
-		if (this.scene) this.__runOnTick(this.scene);
+		if (this.scene) this.scene.__onTick();
 
 		// Trigger next loop.
 		requestAnimationFrame((currentTime) => this.__onTick(currentTime));
@@ -2615,7 +2661,7 @@ class Renderer {
 	}
 
 	/**
-	 * Code that runs when the project starts.
+	 * Code that runs when the render is created.
 	 */
 	__onCreated() {
 		this.__intializeDisplay();
@@ -2627,7 +2673,7 @@ class Renderer {
 
 class Behavior extends Core {
 	/**
-	 * A core object that modifies the behavior of a GameObject. Behaviors need an `__onTick` method that will run every frame right before their `GameObject`'s `__onTick`.
+	 * A core object that modifies the behavior of a GameObject. Behaviors need an `onTick` method that will run every frame right before their `GameObject`'s `onTick`.
 	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {GameObject} gameObject The game object to append this behavior to.
 	 * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
@@ -2639,69 +2685,6 @@ class Behavior extends Core {
 		gameObject.behaviors.push(this);
 
 		this.enabled = enabledByDefault;
-	}
-}
-
-class Area extends GameObject {
-	/**
-	 * An `Area` is generally a static `GameObject` that takes up more than one pixel of space.
-	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {number} x This `Area`'s x-coordinate.
-	 * @param {number} y This `Area`'s y-coordinate.
-	 * @param {boolean} solid Whether the area's renderable is solid. Empty spaces in the renderable are not solid.
-	 * @param {string} layer The label of the layer to start the `Area` on.
-	 */
-	constructor(scene, x, y, solid = false, layer) {
-		super(scene, x, y, layer);
-
-		this.solid = solid;
-
-		const p = new Pixel({ value: "#", solid: this.solid });
-
-		this.__rawRenderable = new PixelMesh({
-			data: [
-				[p, p, p, p, p],
-				[p, p, p, p, p],
-				[p, p, p, p, p],
-				[p, p, p, p, p],
-				[p, p, p, p, p],
-				[p, p, p, p, p],
-			],
-		});
-	}
-
-	/**
-	 * The `Area`'s renderable element.
-	 */
-	get renderable() {
-		return this.__rawRenderable;
-	}
-
-	/**
-	 * Set this `Area`'s renderable.
-	 */
-	set renderable(value) {
-		if (value && !(value instanceof PixelMesh))
-			throw new TypeError(
-				"A Area's renderable property must be an instance of PixelMesh, or falsey."
-			);
-
-		this.__rawRenderable = value;
-	}
-}
-
-class Entity extends GameObject {
-	/**
-	 * An `Entity` is generally a non-static `GameObject`, interactable in some way.
-	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {number} x This `Entity`'s x-coordinate.
-	 * @param {number} y This `Entity`'s y-coordinate.
-	 * @param {string} layer The label of the layer to start the `Entity` on.
-	 */
-	constructor(scene, x, y, layer) {
-		super(scene, x, y, layer);
-
-		this.__rawRenderable = new Pixel({ value: "E", color: "green" });
 	}
 }
 
@@ -3444,7 +3427,7 @@ class ScrollTo extends Behavior {
 		super(scene, gameObject, enabledByDefault);
 	}
 
-	__onTick() {
+	onTick() {
 		if (this.gameObject.paused) return;
 
 		const {
@@ -3645,7 +3628,7 @@ class TopDownMovement extends Behavior {
 		}
 	}
 
-	__onTick() {}
+	onTick() {}
 }
 
 class AnimationFrame {
@@ -3877,7 +3860,7 @@ class Animate extends Behavior {
 			);
 	}
 
-	__onTick() {
+	onTick() {
 		if (this.gameObject.paused || !this.playing) return;
 
 		const {
@@ -3940,11 +3923,9 @@ exports.AdvMath = math;
 exports.Animate = Animate;
 exports.Animation = Animation;
 exports.AnimationFrame = AnimationFrame;
-exports.Area = Area;
 exports.Behavior = Behavior;
 exports.Box = Box;
 exports.Core = Core;
-exports.Entity = Entity;
 exports.Frame = Frame;
 exports.GameObject = GameObject;
 exports.Layer = Layer;

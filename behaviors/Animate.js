@@ -230,7 +230,7 @@ class Animate extends Behavior {
 			);
 	}
 
-	__onTick() {
+	onTick() {
 		if (this.gameObject.paused || !this.playing) return;
 
 		const {

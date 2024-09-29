@@ -35,6 +35,11 @@ class Box extends GameObject {
 	 * @param {string} config.layer The label of the layer to start the `Box` on.
 	 */
 	constructor(scene, config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Box constructor config parameter."
+			);
+
 		const {
 			x,
 			y,

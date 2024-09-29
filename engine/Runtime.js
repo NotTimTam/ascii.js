@@ -63,6 +63,11 @@ class Runtime {
 	 * @param {Object} config The config object to validate.
 	 */
 	validateConfig(config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Runtime constructor config parameter."
+			);
+
 		if (
 			config.seed &&
 			typeof config.seed !== "number" &&
@@ -95,28 +100,28 @@ class Runtime {
 	}
 
 	/**
-	 * Run the __onStartup method of any object.
+	 * Run the onStartup method of any object.
 	 * @param {Object} object The object whose method should be run.
 	 * @param  {...any} passthrough The data to pass through to that method.
 	 */
 	__runOnStartup = (object, ...passthrough) =>
-		object.__onStartup && object.__onStartup(...passthrough);
+		object.onStartup && object.onStartup(...passthrough);
 
 	/**
-	 * Run the __onTick method of any object.
+	 * Run the onTick method of any object.
 	 * @param {Object} object The object whose method should be run.
 	 * @param  {...any} passthrough The data to pass through to that method.
 	 */
 	__runOnTick = (object, ...passthrough) =>
-		object.__onTick && object.__onTick(this, ...passthrough);
+		object.onTick && object.onTick(this, ...passthrough);
 
 	/**
-	 * Run the __onLoad method of any object.
+	 * Run the onLoad method of any object.
 	 * @param {Object} object The object whose method should be run.
 	 * @param  {...any} passthrough The data to pass through to that method.
 	 */
 	__runOnLoad = (object, ...passthrough) =>
-		object.__onLoad && object.__onLoad(...passthrough);
+		object.onLoad && object.onLoad(...passthrough);
 
 	/**
 	 * Code that runs when the project starts.
@@ -137,7 +142,7 @@ class Runtime {
 		this.__lastFrame = currentTime;
 
 		// Run scene logic.
-		if (this.scene) this.__runOnTick(this.scene);
+		if (this.scene) this.scene.__onTick();
 
 		// Trigger next loop.
 		requestAnimationFrame((currentTime) => this.__onTick(currentTime));

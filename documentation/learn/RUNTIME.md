@@ -52,7 +52,7 @@ Initializes the game state using the provided configuration object.
 
 ### `paused`
 
-A `boolean` that indicates whether or not this runtime is currently paused. If `true`, this `Runtime`'s `scene.layerManager.layers` do not run their object's `__onTick` methods.
+A `boolean` that indicates whether or not this runtime is currently paused. If `true`, this `Runtime`'s `scene.layerManager.layers` do not run their object's `onTick` methods.
 
 ### `renderer`
 

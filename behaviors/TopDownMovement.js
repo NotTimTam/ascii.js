@@ -176,7 +176,7 @@ class TopDownMovement extends Behavior {
 		}
 	}
 
-	__onTick() {}
+	onTick() {}
 }
 
 export default TopDownMovement;

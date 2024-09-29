@@ -11,7 +11,7 @@ class ScrollTo extends Behavior {
 		super(scene, gameObject, enabledByDefault);
 	}
 
-	__onTick() {
+	onTick() {
 		if (this.gameObject.paused) return;
 
 		const {

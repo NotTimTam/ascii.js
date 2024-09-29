@@ -3,6 +3,7 @@ import GameObject from "../core/GameObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Frame from "./Frame.js";
 import Scene from "./Scene.js";
+import { isPlainObject } from "../util/data.js";
 
 export class Layer {
 	/**
@@ -14,6 +15,11 @@ export class Layer {
 	 * @param {Array<function>} config.gameObjectConstructors An array of functions that return game objects.
 	 */
 	constructor(layerManager, config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Layer constructor config parameter."
+			);
+
 		const { label, parallax = [1, 1], gameObjectConstructors } = config;
 
 		this.layerManager = layerManager;
@@ -355,7 +361,7 @@ class LayerManager {
 
 		// Logic
 		if (!runtime.paused) {
-			for (const layer of this.layers) runtime.__runOnTick(layer);
+			for (const layer of this.layers) layer.__onTick();
 		}
 
 		// Render

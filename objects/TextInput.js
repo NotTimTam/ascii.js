@@ -23,6 +23,11 @@ class TextInput extends Text {
 	 * @param {string} config.layer The label of the layer to start the `TextInput` on.
 	 */
 	constructor(scene, config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for TextInput constructor config parameter."
+			);
+
 		config.wrap = false;
 		if (!config.maxWidth) config.maxWidth = 8;
 

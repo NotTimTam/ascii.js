@@ -1,3 +1,5 @@
+import { isPlainObject } from "../util/data.js";
+
 export class PixelMesh {
 	/**
 	 * A pixel mesh stores a 2-dimensional array of `Pixels`.
@@ -6,7 +8,17 @@ export class PixelMesh {
 	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
 	 */
 	constructor(config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for PixelMesh constructor config parameter."
+			);
+
 		const { data, origin } = config;
+
+		if (!data || !(data instanceof Array))
+			throw new TypeError(
+				`Expected an array for "PixelMesh" config.data property.`
+			);
 
 		if (origin && !(origin instanceof Array))
 			throw new Error(
@@ -49,6 +61,11 @@ class Pixel {
 	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
 	 */
 	constructor(config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Pixel constructor config parameter."
+			);
+
 		const {
 			value,
 			color = "#ffffff",
@@ -82,20 +99,6 @@ class Pixel {
 	 * @returns {Pixel} the newly created `Pixel` object.
 	 */
 	static fromString = (string) => new Pixel({ value: string });
-
-	/**
-	 * Get the `Pixel`'s width.
-	 */
-	get width() {
-		return 1;
-	}
-
-	/**
-	 * Get the `Pixel`'s height.
-	 */
-	get height() {
-		return 1;
-	}
 }
 
 export default Pixel;

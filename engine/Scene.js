@@ -59,6 +59,11 @@ class Scene {
 	 * @param {Object} config The config object to validate.
 	 */
 	static validateConfig(config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Scene constructor config parameter."
+			);
+
 		if (!config.label || typeof config.label !== "string")
 			throw new Error(
 				`Invalid label value provided to Scene configuration: "${config.label}". Must be a string.`
@@ -131,13 +136,13 @@ class Scene {
 	}
 
 	__onLoad() {
-		this.runtime.__runOnLoad(this.layerManager);
+		this.layerManager.__onLoad();
 
 		if (this.onLoadPassthrough) this.onLoadPassthrough(this);
 	}
 
 	__onTick() {
-		this.runtime.__runOnTick(this.layerManager);
+		this.layerManager.__onTick();
 
 		if (this.onTickPassthrough) this.onTickPassthrough(this);
 	}

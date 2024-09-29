@@ -204,7 +204,7 @@ class GameObject extends Core {
 	 *
 	 * This should be checked when input and logic functions are called, to ensure they do not run when the `GameObject` is paused.
 	 *
-	 * This **does not** need to be checked in the `GameObject`s `__onTick()` method, as the `__onTick()` method is not called by its parent layer when that layer is paused.
+	 * This **does not** need to be checked in the `GameObject`s `onTick()` method, as the `onTick()` method is not called by its parent layer when that layer is paused.
 	 */
 	get paused() {
 		const { runtime, layer } = this;
@@ -216,25 +216,13 @@ class GameObject extends Core {
 	/**
 	 * Run the events of each object behavior.
 	 *
-	 * Runs before this `GameObject`'s `__onTick` method.
+	 * Runs before this `GameObject`'s `onTick` method.
 	 */
 	__behave() {
 		if (!this.paused)
 			for (const behavior of this.behaviors)
-				behavior.enabled && behavior.__onTick && behavior.__onTick();
+				behavior.enabled && behavior.onTick && behavior.onTick();
 	}
-
-	/**
-	 * Filter this `GameObject` out of an array.
-	 * @param {Array<GameObject>} array The array of game objects. The items in the array can either be `GameObject`s or an object with a `gameObject` key set to a `GameObject` instance.
-	 * @returns {Array<GameObject>} An array without this `GameObject`.
-	 */
-	filterThis = (array) =>
-		array.filter((item) =>
-			item instanceof GameObject
-				? item !== this
-				: item.gameObject !== this
-		);
 
 	/**
 	 * Delete this `GameObject`.

@@ -14,3 +14,11 @@ export const displayArray = (array) =>
 			}
 		})
 		.join(", ")}]`;
+
+/**
+ * Check if a value is a plain JavaScript object. (A non-array, key-value structure)
+ * @param {*} x The value to check.
+ * @returns {boolean} Whether or not the value is a plain object.
+ */
+export const isPlainObject = (x) =>
+	x && typeof x === "object" && !(x instanceof Array);

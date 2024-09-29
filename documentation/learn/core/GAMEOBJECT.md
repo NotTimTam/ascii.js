@@ -20,7 +20,7 @@ Initializes the game object, associating it with a specific scene and setting it
 
 ---
 
-## Methods
+## Properties
 
 ### `get isOnScreen`
 
@@ -113,6 +113,10 @@ class MyObject extends GameObject() {
 
 Whether the object is on a paused layer or the runtime is paused.
 
-### `filterThis(array)`
+---
 
-Filter this `GameObject` out of an array.
+## Methods
+
+### `onTick()`
+
+If this `GameObject` has an `onTick` method, and is part of a layer. Every animation frame the `onTick` method will be executed.

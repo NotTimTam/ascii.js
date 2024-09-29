@@ -17,6 +17,11 @@ class Text extends GameObject {
 	 * @param {string} config.layer The label of the layer to start the `Text` on.
 	 */
 	constructor(scene, config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Text constructor config parameter."
+			);
+
 		const {
 			x,
 			y,

@@ -17,6 +17,11 @@ class Menu extends GameObject {
 	 * @param {string} config.layer The label of the layer to start the `Menu` on.
 	 */
 	constructor(scene, config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Menu constructor config parameter."
+			);
+
 		const {
 			x,
 			y,

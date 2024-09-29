@@ -337,7 +337,7 @@ class Renderer {
 	}
 
 	/**
-	 * Code that runs when the project starts.
+	 * Code that runs when the render is created.
 	 */
 	__onCreated() {
 		this.__intializeDisplay();
