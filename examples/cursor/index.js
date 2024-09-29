@@ -39,28 +39,33 @@ grid.renderable = new PixelMesh({
 				.fill("#")
 				.map((_, x) =>
 					(y % 2 === 0 ? x % 2 === 0 : x % 2 !== 0)
-						? new Pixel({ value: "█", color: "pink" })
-						: new Pixel({ value: "█", color: "white" })
+						? new Pixel({ value: "#", color: "pink" })
+						: new Pixel({ value: "#", color: "white" })
 				)
 		),
 });
 
 const pointerPosition = new GameObject(scene, 0, 0, "system");
-pointerPosition.renderable = new Pixel({ value: "█", color: "red" });
+pointerPosition.renderable = new Pixel({ value: "#", color: "red" });
 
 scene.inputManager.addEventListener("mousemove", ({ x, y }) => {
 	pointerPosition.x = x;
 	pointerPosition.y = y;
 
-	pointerPosition.renderable = new PixelMesh([
-		[
-			new Pixel({ value: "█", color: "red" }),
+	pointerPosition.renderable = new PixelMesh({
+		data: [
+			[
+				new Pixel({ value: "#", color: "red" }),
 
-			...`${x}, ${y}`.split("").map((value) => {
-				return new Pixel({ value, color: "red" });
-			}),
+				...` ${x}, ${y}`.split("").map((value) => {
+					return new Pixel({
+						value,
+						color: "red",
+					});
+				}),
+			],
 		],
-	]);
+	});
 });
 
 runtime.loadScene(scene);

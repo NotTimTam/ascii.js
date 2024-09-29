@@ -105,6 +105,31 @@ export class Layer {
 			Math.round(camera.y * pY),
 		];
 
+		const renderPixel = (pixel, x, y) => {
+			// Invalid passthoughs, and pixels that are not on screen are not added to the buffer.
+			if (
+				!pixel ||
+				!(pixel instanceof Pixel) ||
+				!camera.isOnScreen(x, y, 1, 1, pX, pY)
+			)
+				return;
+
+			// Pixel that would not be displayed are not added to the buffer.
+			if (
+				(!pixel.value || pixel.value.trim() === "") &&
+				(!pixel.backgroundColor ||
+					pixel.backgroundColor === "transparent")
+			)
+				return;
+
+			// Get position relative to the camera, and then index in the buffer from that position.
+			const [xOS, yOS] = [x - adjustedCameraX, y - adjustedCameraY];
+			const index = renderer.coordinatesToIndex(xOS, yOS);
+
+			// Add pixel at that position.
+			frameData[index] = pixel;
+		};
+
 		const frameData = [];
 
 		for (const gameObject of this.gameObjects.filter(
@@ -126,15 +151,7 @@ export class Layer {
 				}
 
 				if (renderable instanceof Pixel) {
-					if (!camera.isOnScreen(x, y, 1, 1, pX, pY)) continue;
-
-					const [xOS, yOS] = [
-						x - adjustedCameraX,
-						y - adjustedCameraY,
-					];
-					const index = renderer.coordinatesToIndex(xOS, yOS);
-
-					frameData[index] = renderable;
+					renderPixel(renderable, x, y);
 				} else if (renderable instanceof PixelMesh) {
 					if (
 						!camera.isOnScreen(
@@ -159,28 +176,8 @@ export class Layer {
 
 						for (let pixelX = 0; pixelX < row.length; pixelX++) {
 							const pixel = row[pixelX];
-							if (
-								!pixel ||
-								!(pixel instanceof Pixel) ||
-								!camera.isOnScreen(
-									x + pixelX,
-									y + pixelY,
-									1,
-									1,
-									pX,
-									pY
-								)
-							)
-								continue;
 
-							const [xOS, yOS] = [
-								x + pixelX - adjustedCameraX,
-								y + pixelY - adjustedCameraY,
-							];
-
-							const index = renderer.coordinatesToIndex(xOS, yOS);
-
-							frameData[index] = pixel;
+							renderPixel(pixel, x + pixelX, y + pixelY);
 						}
 					}
 				}
@@ -312,7 +309,9 @@ class LayerManager {
 
 	__mergedRender() {
 		const {
-			runtime: { renderer },
+			scene: {
+				runtime: { renderer },
+			},
 		} = this;
 
 		const frame = renderer.compileFrames(
