@@ -39,6 +39,8 @@ class InputManager {
 		this.__gameObjectClicks = [];
 
 		this.__onCreated();
+
+		this.mouseYCoordinateAdjustment = 0.5;
 	}
 
 	/**
@@ -238,7 +240,9 @@ class InputManager {
 				characterWidth
 			);
 			this.mouse.y = clamp(
-				Math.floor(relY * characterHeight + 0.25),
+				Math.floor(
+					relY * characterHeight + this.mouseYCoordinateAdjustment
+				),
 				0,
 				characterHeight
 			);
