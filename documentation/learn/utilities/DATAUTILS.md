@@ -15,3 +15,15 @@ Prettify an array when displaying it in a string.
 ### Returns
 
 Returns a string display of the array.
+
+## `dataUtils.isPlainObject()`
+
+Check if a value is a plain JavaScript object. (A non-array, key-value structure)
+
+### Arguments
+
+-   `x` &mdash; `*` The value to check.
+
+### Returns
+
+Returns a boolean indicating whether or not the value is a plain object.
