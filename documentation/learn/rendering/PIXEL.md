@@ -22,6 +22,14 @@ Initializes the pixel with the specified properties.
 
 ---
 
+## Properties
+
+### `origin`
+
+An array of display offsets to apply when rendering this pixel.
+
+---
+
 ## Methods
 
 ### `static fromString(string)`
@@ -31,10 +39,10 @@ Create a `Pixel` object from a string.
 -   `string` &mdash; `string` The string to convert to a `Pixel`.
 -   **Returns**: `Pixel` the newly created `Pixel` object.
 
-### `get width`
+### `width`
 
 Get the `Pixel`'s width.
 
-### `get height`
+### `height`
 
 Get the `Pixel`'s height.

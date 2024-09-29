@@ -24,14 +24,46 @@ const scene = new Scene(runtime, {
 	// onTick: (scene) => {},
 });
 
-// scene.inputManager.addEventListener("all", (e) => {
-// 	console.log(e);
-// });
-
 const { width, height } = runtime.renderer;
 
 const pointerPosition = new GameObject(scene, 0, 0, "system");
 pointerPosition.renderable = new Pixel({ value: "#", color: "red" });
+
+const mouseDisplay = new GameObject(scene, 0, 0, "system");
+mouseDisplay.renderable = new PixelMesh({
+	data: `Art by Joan G. Stark
+    ,d88b
+ ,8P'    \`8,
+ 8'       _.8._
+8       .'  |  '.
+       /    |    \\
+      |    [_]    |
+      |     |     |
+      |-----'-----|
+      |           |
+      |           |
+      |;         .|
+      ;\\         /;
+       \\\\       //
+        \\'._ _.'/
+         '-...-'
+`
+		.split("\n")
+		.map((line) =>
+			line.split("").map(
+				(value) =>
+					new Pixel({
+						value,
+					})
+			)
+		),
+});
+mouseDisplay.renderable.origin = [
+	Math.floor(mouseDisplay.renderable.width / 2),
+	Math.floor(mouseDisplay.renderable.height / 2),
+];
+
+console.log(mouseDisplay.renderable);
 
 scene.inputManager.addEventListener("mousemove", ({ x, y }) => {
 	pointerPosition.x = x;

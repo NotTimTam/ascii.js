@@ -18,6 +18,14 @@ Initializes the pixel mesh with the specified data and origin.
 
 ---
 
+## Properties
+
+### `origin`
+
+An array of display offsets to apply when rendering this pixel.
+
+---
+
 ## Methods
 
 ### `get width`

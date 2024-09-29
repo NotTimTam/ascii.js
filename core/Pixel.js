@@ -20,13 +20,28 @@ export class PixelMesh {
 				`Expected an array for "PixelMesh" config.data property.`
 			);
 
-		if (origin && !(origin instanceof Array))
-			throw new Error(
-				'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
-			);
-
 		this.data = data;
 		this.origin = origin;
+	}
+
+	get origin() {
+		return this.__rawOrigin;
+	}
+
+	set origin(arr) {
+		if (arr) {
+			if (!(arr instanceof Array))
+				throw new SyntaxError(
+					'Invalid origin provided to "PixelMesh". Expected: [<xOffset>, <yOffset>]'
+				);
+
+			if (!Number.isInteger(arr[0]) || !Number.isInteger(arr[0]))
+				throw new SyntaxError(
+					"PixelMesh origin must be an array of integers."
+				);
+		}
+
+		this.__rawOrigin = arr;
 	}
 
 	/**
@@ -91,6 +106,26 @@ class Pixel {
 		this.backgroundColor = backgroundColor;
 		this.solid = solid;
 		this.origin = origin;
+	}
+
+	get origin() {
+		return this.__rawOrigin;
+	}
+
+	set origin(arr) {
+		if (arr) {
+			if (!(arr instanceof Array))
+				throw new SyntaxError(
+					'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
+				);
+
+			if (!Number.isInteger(arr[0]) || !Number.isInteger(arr[0]))
+				throw new SyntaxError(
+					"Pixel origin must be an array of integers."
+				);
+		}
+
+		this.__rawOrigin = arr;
 	}
 
 	/**
