@@ -233,12 +233,12 @@ class InputManager {
 			this.mouse.canvasX = rX;
 			this.mouse.canvasY = rY;
 			this.mouse.x = clamp(
-				Math.round(relX * characterWidth),
+				Math.floor(relX * characterWidth),
 				0,
 				characterWidth
 			);
 			this.mouse.y = clamp(
-				Math.round(relY * characterHeight),
+				Math.floor(relY * characterHeight),
 				0,
 				characterHeight
 			);

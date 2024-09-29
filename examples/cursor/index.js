@@ -4,11 +4,11 @@ const runtime = new Runtime({
 	seed: 234556,
 
 	renderer: {
-		resolution: [96, 32],
+		resolution: [8, 8], // 96, 32
 
 		canvas: document.querySelector("canvas.display"),
 
-		fontSize: "32px",
+		fontSize: "32px", // "32px"
 		scaling: "letterbox",
 
 		renderMode: "stacked",
