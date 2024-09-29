@@ -238,7 +238,7 @@ class InputManager {
 				characterWidth
 			);
 			this.mouse.y = clamp(
-				Math.floor(relY * characterHeight),
+				Math.floor(relY * characterHeight + 0.25),
 				0,
 				characterHeight
 			);
