@@ -30,21 +30,6 @@ const scene = new Scene(runtime, {
 
 const { width, height } = runtime.renderer;
 
-const grid = new GameObject(scene, 0, 0, "system");
-grid.renderable = new PixelMesh({
-	data: new Array(height)
-		.fill("#")
-		.map((_, y) =>
-			new Array(width)
-				.fill("#")
-				.map((_, x) =>
-					(y % 2 === 0 ? x % 2 === 0 : x % 2 !== 0)
-						? new Pixel({ value: "#", color: "pink" })
-						: new Pixel({ value: "#", color: "white" })
-				)
-		),
-});
-
 const pointerPosition = new GameObject(scene, 0, 0, "system");
 pointerPosition.renderable = new Pixel({ value: "#", color: "red" });
 
