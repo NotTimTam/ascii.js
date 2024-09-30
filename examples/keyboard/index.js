@@ -21,16 +21,11 @@ const runtime = new Runtime({
 	},
 });
 
-runtime.start((runtime) => {});
+runtime.start();
 
 const scene = new Scene(runtime, {
 	label: "game",
-	layers: [],
-	// onLoad: (scene) => {},
-	// onTick: (scene) => {},
 });
-
-const { width, height } = runtime.renderer;
 
 const keyDisplay = (key) => {
 	switch (key) {
