@@ -1,4 +1,3 @@
-import GameObject from "../core/GameObject.js";
 import { displayArray } from "../util/data.js";
 import { clamp } from "../util/math.js";
 import Scene from "./Scene.js";
