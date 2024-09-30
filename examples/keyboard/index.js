@@ -1,4 +1,10 @@
-import Runtime, { Box, GameObject, Pixel, Scene } from "../../index.js";
+import Runtime, {
+	Box,
+	GameObject,
+	Pixel,
+	Scene,
+	ScrollTo,
+} from "../../index.js";
 
 const runtime = new Runtime({
 	seed: 234556,
@@ -118,12 +124,11 @@ Control!Alt! !Alt!Control!spc!spc!spc!spc!spc!spc!spc!spc!spc!ArrowLeft!ArrowDow
 	.trim()
 	.split("\n")
 	.filter((row) => row)
-	.map((row, indY) => {
+	.forEach((row, indY) => {
 		lastX = 0;
-		return row
-			.trim()
+		row.trim()
 			.split("!")
-			.map((key) => {
+			.forEach((key) => {
 				if (key === "spc") {
 					lastX += 1;
 					return;
@@ -131,7 +136,16 @@ Control!Alt! !Alt!Control!spc!spc!spc!spc!spc!spc!spc!spc!spc!ArrowLeft!ArrowDow
 				const keyDsp = keyDisplay(key);
 				let indX = lastX;
 				lastX += 2 + keyDsp.length;
-				return new Key(scene, "system", indX, indY * 3, key, keyDsp);
+				const keyObject = new Key(
+					scene,
+					"system",
+					indX,
+					indY * 3,
+					key,
+					keyDsp
+				);
+
+				if (key === "h") new ScrollTo(scene, keyObject, true);
 			});
 	});
 
