@@ -15,9 +15,18 @@ const displayArray = (array) =>
 		})
 		.join(", ")}]`;
 
+/**
+ * Check if a value is a plain JavaScript object. (A non-array, key-value structure)
+ * @param {*} x The value to check.
+ * @returns {boolean} Whether or not the value is a plain object.
+ */
+const isPlainObject = (x) =>
+	x && typeof x === "object" && !(x instanceof Array);
+
 var data = /*#__PURE__*/Object.freeze({
 	__proto__: null,
-	displayArray: displayArray
+	displayArray: displayArray,
+	isPlainObject: isPlainObject
 });
 
 class PixelMesh {
@@ -28,15 +37,40 @@ class PixelMesh {
 	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
 	 */
 	constructor(config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for PixelMesh constructor config parameter."
+			);
+
 		const { data, origin } = config;
 
-		if (origin && !(origin instanceof Array))
-			throw new Error(
-				'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
+		if (!data || !(data instanceof Array))
+			throw new TypeError(
+				`Expected an array for "PixelMesh" config.data property.`
 			);
 
 		this.data = data;
 		this.origin = origin;
+	}
+
+	get origin() {
+		return this.__rawOrigin;
+	}
+
+	set origin(arr) {
+		if (arr) {
+			if (!(arr instanceof Array))
+				throw new SyntaxError(
+					'Invalid origin provided to "PixelMesh". Expected: [<xOffset>, <yOffset>]'
+				);
+
+			if (!Number.isInteger(arr[0]) || !Number.isInteger(arr[0]))
+				throw new SyntaxError(
+					"PixelMesh origin must be an array of integers."
+				);
+		}
+
+		this.__rawOrigin = arr;
 	}
 
 	/**
@@ -57,6 +91,74 @@ class PixelMesh {
 	get height() {
 		return this.data.length;
 	}
+
+	/**
+	 * Get all the `Pixel`s in this `PixelMesh` in a 1D-array.
+	 */
+	get pixels() {
+		return this.data.flat().filter((pixel) => pixel);
+	}
+
+	/**
+	 * Set the color of all `Pixels` in this `PixelMesh`.
+	 * @param {string} color The color to set.
+	 */
+	setColor(color) {
+		for (const pixel of this.pixels) {
+			pixel.color = color;
+		}
+	}
+
+	/**
+	 * Set the fontWeight of all `Pixels` in this `PixelMesh`.
+	 * @param {string} fontWeight The fontWeight to set.
+	 */
+	setFontWeight(fontWeight) {
+		for (const pixel of this.pixels) {
+			pixel.fontWeight = fontWeight;
+		}
+	}
+
+	/**
+	 * Set the backgroundColor of all `Pixels` in this `PixelMesh`.
+	 * @param {string} backgroundColor The backgroundColor to set.
+	 */
+	setBackgroundColor(backgroundColor) {
+		for (const pixel of this.pixels) {
+			pixel.backgroundColor = backgroundColor;
+		}
+	}
+
+	/**
+	 * Set the solid status of all `Pixels` in this `PixelMesh`.
+	 * @param {string} solid Whether or not the pixels should be solid.
+	 */
+	setSolid(solid) {
+		for (const pixel of this.pixels) {
+			pixel.solid = solid;
+		}
+	}
+
+	/**
+	 * Create a `PixelMesh` object from a string. `\n` will create a new row.
+	 * @param {string} string The string to convert to a `PixelMesh`.
+	 * @returns {Pixel} the newly created `PixelMesh` object.
+	 */
+	static fromString = (string) =>
+		new PixelMesh({
+			data: string
+				.split("\n")
+				.map((line) =>
+					line
+						.split("")
+						.map(
+							(value) =>
+								value &&
+								value.trim() !== "" &&
+								Pixel.fromString(value)
+						)
+				),
+		});
 }
 
 class Pixel {
@@ -71,6 +173,11 @@ class Pixel {
 	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
 	 */
 	constructor(config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Pixel constructor config parameter."
+			);
+
 		const {
 			value,
 			color = "#ffffff",
@@ -96,6 +203,26 @@ class Pixel {
 		this.backgroundColor = backgroundColor;
 		this.solid = solid;
 		this.origin = origin;
+	}
+
+	get origin() {
+		return this.__rawOrigin;
+	}
+
+	set origin(arr) {
+		if (arr) {
+			if (!(arr instanceof Array))
+				throw new SyntaxError(
+					'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
+				);
+
+			if (!Number.isInteger(arr[0]) || !Number.isInteger(arr[0]))
+				throw new SyntaxError(
+					"Pixel origin must be an array of integers."
+				);
+		}
+
+		this.__rawOrigin = arr;
 	}
 
 	/**
@@ -977,6 +1104,434 @@ class Camera {
 	}
 }
 
+class InputManager {
+	/**
+	 * Handles user input.
+	 * @param {Scene} scene The current scene.
+	 */
+	constructor(scene) {
+		this.scene = scene;
+
+		this.keyboard = {
+			keys: {},
+			keyCodes: {},
+			keyCode: undefined,
+			key: undefined,
+		};
+		this.mouse = { buttons: {} };
+
+		this.__eventListeners = {
+			all: [],
+			click: [
+				(e) => {
+					// Handle clicks on specific game objects.
+					for (const [targetId, listener] of this
+						.__gameObjectClicks) {
+						if (e.targets.includes(targetId)) {
+							let passthrough = { ...e };
+							delete passthrough.targets;
+							passthrough.target = targetId;
+							listener(passthrough);
+						}
+					}
+				},
+			],
+		};
+		this.__gameObjectClicks = [];
+
+		this.__onCreated();
+	}
+
+	/**
+	 * Get permitted event types.
+	 */
+	get types() {
+		return Object.keys(this.__eventListeners);
+	}
+
+	__eventHandler = (e) => this.__onEvent(e);
+	__contextHandler = (e) => e.preventDefault();
+
+	/**
+	 * Get the pointer lock status.
+	 */
+	get hasPointerLock() {
+		const { element } = this.scene.runtime.renderer;
+		if (document.pointerLockElement === element) return true;
+		else return false;
+	}
+
+	/**
+	 * Initiate a pointer lock request. Pointer lock cannot be achieved unless the user clicks the screen after this method is called.
+	 */
+	async requestPointerLock() {
+		const { element } = this.scene.runtime.renderer;
+
+		const initiatePointerLock = () => {
+			if (!this.hasPointerLock) element.requestPointerLock();
+		};
+
+		const lockChangeAlert = () => {
+			if (document.pointerLockElement === element) {
+				this.mouse = { buttons: {} };
+			}
+		};
+
+		document.body.addEventListener("click", initiatePointerLock);
+
+		document.addEventListener(
+			"pointerlockerror",
+			(e) => {
+				console.error("Pointer lock request failed.", e);
+			},
+			false
+		);
+
+		document.addEventListener("pointerlockchange", lockChangeAlert, false);
+	}
+
+	__formatKey(key) {
+		if (key === " ") return "space";
+		else if (key === "ArrowUp") return "up";
+		else if (key === "ArrowDown") return "down";
+		else if (key === "ArrowLeft") return "left";
+		else if (key === "ArrowRight") return "right";
+
+		return key.toLowerCase();
+	}
+
+	/**
+	 * Calls when a key is pushed.
+	 * @param {Event} event The listener's event.
+	 */
+	__onKeyDown(event) {
+		const { key, keyCode, ctrlKey } = event;
+
+		if (!ctrlKey) event.preventDefault();
+
+		this.keyboard.keys[this.__formatKey(key)] = true;
+		this.keyboard.keyCodes[keyCode] = true;
+		this.keyboard.keyCode = keyCode;
+		this.keyboard.key = key;
+	}
+
+	/**
+	 * Calls when a key is released.
+	 * @param {Event} event The listener's event.
+	 */
+	__onKeyUp(event) {
+		const { key, keyCode } = event;
+
+		this.keyboard.keys[this.__formatKey(key)] = false;
+		this.keyboard.keyCodes[keyCode] = false;
+	}
+
+	/**
+	 * Calls when a mouse button is pushed.
+	 * @param {Event} event The listener's event.
+	 */
+	__onMouseDown(event) {
+		const { button } = event;
+
+		switch (button) {
+			case 0:
+				this.mouse.buttons.left = true;
+				break;
+			case 1:
+				this.mouse.buttons.middle = true;
+				break;
+			case 2:
+				this.mouse.buttons.right = true;
+				break;
+		}
+	}
+
+	/**
+	 * Calls when a mouse button is clicked.
+	 */
+	__onClick() {
+		const { x, y } = this.mouse;
+
+		this.mouse.targets = this.scene.layerManager.getAtPosition(x, y);
+
+		// Convert target objects into an array of IDs.
+		if (this.mouse.targets)
+			this.mouse.targets = this.mouse.targets.map(
+				({ gameObject }) => gameObject.id
+			);
+	}
+
+	/**
+	 * Calls when a mouse button is released.
+	 * @param {Event} event The listener's event.
+	 */
+	__onMouseUp(event) {
+		const { button } = event;
+
+		switch (button) {
+			case 0:
+				this.mouse.buttons.left = false;
+				break;
+			case 1:
+				this.mouse.buttons.middle = false;
+				break;
+			case 2:
+				this.mouse.buttons.right = false;
+				break;
+		}
+	}
+
+	/**
+	 * Calls when the mouse is moved on screen.
+	 * @param {Event} event The listener's event.
+	 */
+	__onMouseMove(event) {
+		const { clientX, clientY, movementX, movementY } = event;
+
+		const {
+			scene: {
+				camera: { x: cameraX, y: cameraY },
+				layerManager: { layers },
+				runtime: {
+					renderer: {
+						width: characterWidth,
+						height: characterHeight,
+						element,
+					},
+				},
+			},
+		} = this;
+
+		const {
+			x: canvasX,
+			y: canvasY,
+			width: canvasWidth,
+			height: canvasHeight,
+		} = element.getBoundingClientRect();
+
+		const [rX, rY] = [clientX - canvasX, clientY - canvasY];
+		const [relX, relY] = [rX / canvasWidth, rY / canvasHeight];
+
+		if (this.hasPointerLock) {
+			this.mouse.velocity = [movementX, movementY];
+		} else {
+			this.mouse.velocity = [movementX, movementY];
+			this.mouse.rawX = clientX;
+			this.mouse.rawY = clientY;
+			this.mouse.canvasX = rX;
+			this.mouse.canvasY = rY;
+			this.mouse.x = clamp(
+				Math.floor(relX * characterWidth),
+				0,
+				characterWidth
+			);
+			this.mouse.y = clamp(
+				Math.floor(relY * characterHeight),
+				0,
+				characterHeight
+			);
+
+			this.mouse.onLayer = {};
+
+			for (const layer of layers) {
+				const {
+					label,
+					parallax: [parallaxX, parallaxY],
+				} = layer;
+
+				this.mouse.onLayer[label] = [
+					this.mouse.x + cameraX * parallaxX,
+					this.mouse.y + cameraY * parallaxY,
+				];
+			}
+		}
+	}
+
+	/**
+	 * Calls when a mouse wheel is moved.
+	 * @param {Event} event The listener's event.
+	 */
+	__onMouseWheel(event) {
+		const { deltaX, deltaY, deltaZ } = event;
+
+		this.mouse.deltas = { x: deltaX, y: deltaY, z: deltaZ };
+		this.mouse.scroll = {
+			x: deltaX > 0 ? "down" : "up",
+			y: deltaY > 0 ? "down" : "up",
+			z: deltaZ > 0 ? "down" : "up",
+		};
+	}
+
+	/**
+	 * Reset mouse wheel return data.
+	 */
+	__resetMouseWheel() {
+		this.mouse.deltas = { x: 0, y: 0, z: 0 };
+		this.mouse.scroll = {
+			x: null,
+			y: null,
+			z: null,
+		};
+	}
+
+	/**
+	 * Trigger events for a specific event type.
+	 * @param {string} type The type of event to trigger for.
+	 * @param {*} data The data to send to that event.
+	 */
+	__triggerEvents(type, data) {
+		if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
+		for (const eventListener of this.__eventListeners[type])
+			eventListener(data);
+	}
+
+	/**
+	 * Manages different events firing, and maps them to the proper method.
+	 * @param {Event} event The listener's event.
+	 */
+	__onEvent(event) {
+		if (event instanceof MouseEvent || event instanceof WheelEvent) {
+			const { type } = event;
+
+			switch (type) {
+				case "mousedown":
+					this.__onMouseDown(event);
+					break;
+				case "mouseup":
+					this.__onMouseUp(event);
+					break;
+				case "mousemove":
+					this.__onMouseMove(event);
+					break;
+				case "wheel":
+					this.__onMouseWheel(event);
+					break;
+				case "click":
+					this.__onClick();
+					break;
+			}
+
+			this.__triggerEvents(type, { type, ...this.mouse }); // Trigger the specific event type that fired.
+			this.__triggerEvents("all", { type, ...this.mouse }); // Trigger the "all" event type.
+
+			if (type === "click" && this.mouse.target) delete this.mouse.target; // Delete target items to clear for next event.
+			this.__resetMouseWheel();
+		} else if (event instanceof KeyboardEvent) {
+			const { type } = event;
+
+			switch (type) {
+				case "keydown":
+					this.__onKeyDown(event);
+					break;
+				case "keyup":
+					this.__onKeyUp(event);
+					break;
+			}
+
+			this.__triggerEvents(type, { type, ...this.keyboard }); // Trigger the specific event type that fired.
+			this.__triggerEvents("all", { type, ...this.keyboard }); // Trigger the "all" event type.
+		}
+	}
+
+	/**
+	 * Add an event listener to the input manager.
+	 * @param {string} type The type of event to add.
+	 * @param {function} listener The event listener function.
+	 */
+	addEventListener(type, listener) {
+		if (!this.types.includes(type))
+			throw new Error(
+				`"${type}" is not a valid event type. Must be one of: ${displayArray(
+					this.types
+				)}`
+			);
+
+		this.__eventListeners[type].push(listener);
+	}
+
+	/**
+	 * Remove an event listener from the input manager.
+	 * @param {string} type The type of event to remove.
+	 * @param {function} listener The event listener function that was added to the event listener.
+	 */
+	removeEventListener(type, listener) {
+		if (!this.types.includes(type))
+			throw new Error(
+				`"${type}" is not a valid event type. Must be one of: ${displayArray(
+					this.types
+				)}`
+			);
+
+		this.__eventListeners[type] = this.__eventListeners[type].filter(
+			(eventListener) => eventListener !== listener
+		);
+	}
+
+	/**
+	 * Add a listener for clicks on a `GameObject`.
+	 * @param {string} gameObjectId The ID of the `GameObject` that, when clicked, triggers the event.
+	 */
+	watchObjectClick(gameObjectId, listener) {
+		this.__gameObjectClicks.push([gameObjectId, listener]);
+	}
+
+	/**
+	 * Remove a listener for clicks on a `GameObject`.
+	 * @param {string} gameObjectId The ID of the `GameObject`.
+	 * @param {function} listener The event listener function that was added to the event listener.
+	 */
+	unwatchObjectClick(gameObjectId, listener) {
+		this.__gameObjectClicks = this.__gameObjectClicks.filter(
+			(arr) => arr[0] !== gameObjectId && arr[1] !== listener
+		);
+	}
+
+	/**
+	 * Add an event listener to the window for the entire `InputManager`.
+	 * @param {string} type The type of event to add.
+	 * @param {function} handler The handler for that event.
+	 */
+	__addGlobalEventListener(type, handler) {
+		if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
+		window.addEventListener(type, handler);
+	}
+
+	/**
+	 * Remove an event listener from the window.
+	 * @param {string} type The type of event to remove.
+	 * @param {function} handler The handler that was set for that event.
+	 */
+	__removeGlobalEventListener(type, handler) {
+		delete this.__eventListeners[type];
+		window.removeEventListener(type, handler);
+	}
+
+	__onCreated() {
+		this.__addGlobalEventListener("keydown", this.__eventHandler);
+		this.__addGlobalEventListener("keyup", this.__eventHandler);
+		this.__addGlobalEventListener("mousemove", this.__eventHandler);
+		this.__addGlobalEventListener("mousedown", this.__eventHandler);
+		this.__addGlobalEventListener("mouseup", this.__eventHandler);
+		this.__addGlobalEventListener("click", this.__eventHandler);
+		this.__addGlobalEventListener("wheel", this.__eventHandler);
+		this.__addGlobalEventListener("contextmenu", this.__contextHandler);
+	}
+
+	/**
+	 * Unload the `InputManager` instance by removing all system event listeners.
+	 */
+	__unLoad() {
+		this.__removeGlobalEventListener("keydown", this.__eventHandler);
+		this.__removeGlobalEventListener("keyup", this.__eventHandler);
+		this.__removeGlobalEventListener("mousemove", this.__eventHandler);
+		this.__removeGlobalEventListener("mousedown", this.__eventHandler);
+		this.__removeGlobalEventListener("mouseup", this.__eventHandler);
+		this.__removeGlobalEventListener("click", this.__eventHandler);
+		this.__removeGlobalEventListener("wheel", this.__eventHandler);
+		this.__removeGlobalEventListener("contextmenu", this.__contextHandler);
+	}
+}
+
 class Core {
 	/**
 	 * The most core level object.
@@ -1241,409 +1796,6 @@ class GameObject extends Core {
 	}
 }
 
-class InputManager {
-	/**
-	 * Handles user input.
-	 * @param {Scene} scene The current scene.
-	 */
-	constructor(scene) {
-		this.scene = scene;
-
-		this.keyboard = {
-			keys: {},
-			keyCodes: {},
-			keyCode: undefined,
-			key: undefined,
-		};
-		this.mouse = { buttons: {} };
-
-		this.__eventListeners = {
-			all: [],
-			click: [
-				(e) => {
-					// Handle clicks on specific game objects.
-					for (const [targetId, listener] of this
-						.__gameObjectClicks) {
-						if (e.targets.includes(targetId)) {
-							let passthrough = { ...e };
-							delete passthrough.targets;
-							passthrough.target = targetId;
-							listener(passthrough);
-						}
-					}
-				},
-			],
-		};
-		this.__gameObjectClicks = [];
-
-		this.__onCreated();
-	}
-
-	/**
-	 * Get permitted event types.
-	 */
-	get types() {
-		return Object.keys(this.__eventListeners);
-	}
-
-	__eventHandler = (e) => this.__onEvent(e);
-	__contextHandler = (e) => e.preventDefault();
-
-	/**
-	 * Get the pointer lock status.
-	 */
-	get hasPointerLock() {
-		const { element } = this.scene.runtime.renderer;
-		if (document.pointerLockElement === element) return true;
-		else return false;
-	}
-
-	/**
-	 * Initiate a pointer lock request. Pointer lock cannot be achieved unless the user clicks the screen after this method is called.
-	 */
-	async requestPointerLock() {
-		const { element } = this.scene.runtime.renderer;
-
-		const initiatePointerLock = () => {
-			if (!this.hasPointerLock) element.requestPointerLock();
-		};
-
-		const lockChangeAlert = () => {
-			if (document.pointerLockElement === element) {
-				this.mouse = { buttons: {} };
-			}
-		};
-
-		document.body.addEventListener("click", initiatePointerLock);
-
-		document.addEventListener(
-			"pointerlockerror",
-			(e) => {
-				console.error("Pointer lock request failed.", e);
-			},
-			false
-		);
-
-		document.addEventListener("pointerlockchange", lockChangeAlert, false);
-	}
-
-	__formatKey(key) {
-		if (key === " ") return "space";
-		else if (key === "ArrowUp") return "up";
-		else if (key === "ArrowDown") return "down";
-		else if (key === "ArrowLeft") return "left";
-		else if (key === "ArrowRight") return "right";
-
-		return key.toLowerCase();
-	}
-
-	/**
-	 * Calls when a key is pushed.
-	 * @param {Event} event The listener's event.
-	 */
-	__onKeyDown(event) {
-		const { key, keyCode } = event;
-
-		this.keyboard.keys[this.__formatKey(key)] = true;
-		this.keyboard.keyCodes[keyCode] = true;
-		this.keyboard.keyCode = keyCode;
-		this.keyboard.key = key;
-	}
-
-	/**
-	 * Calls when a key is released.
-	 * @param {Event} event The listener's event.
-	 */
-	__onKeyUp(event) {
-		const { key, keyCode } = event;
-
-		this.keyboard.keys[this.__formatKey(key)] = false;
-		this.keyboard.keyCodes[keyCode] = false;
-	}
-
-	/**
-	 * Calls when a mouse button is pushed.
-	 * @param {Event} event The listener's event.
-	 */
-	__onMouseDown(event) {
-		const { button } = event;
-
-		switch (button) {
-			case 0:
-				this.mouse.buttons.left = true;
-				break;
-			case 1:
-				this.mouse.buttons.middle = true;
-				break;
-			case 2:
-				this.mouse.buttons.right = true;
-				break;
-		}
-	}
-
-	/**
-	 * Calls when a mouse button is clicked.
-	 * @param {Event} event The listener's event.
-	 */
-	__onClick(event) {
-		const { button, type } = event;
-
-		switch (button) {
-			case 0:
-				this.mouse.buttons.left = true;
-				break;
-			case 1:
-				this.mouse.buttons.middle = true;
-				break;
-			case 2:
-				this.mouse.buttons.right = true;
-				break;
-		}
-
-		const { x, y } = this.mouse;
-
-		this.mouse.targets = this.scene.layerManager.getAtPosition(x, y);
-
-		// Convert target objects into an array of IDs.
-		if (this.mouse.targets)
-			this.mouse.targets = this.mouse.targets.map(
-				({ gameObject }) => gameObject.id
-			);
-	}
-
-	/**
-	 * Calls when a mouse button is released.
-	 * @param {Event} event The listener's event.
-	 */
-	__onMouseUp(event) {
-		const { button } = event;
-
-		switch (button) {
-			case 0:
-				this.mouse.buttons.left = false;
-				break;
-			case 1:
-				this.mouse.buttons.middle = false;
-				break;
-			case 2:
-				this.mouse.buttons.right = false;
-				break;
-		}
-	}
-
-	/**
-	 * Calls when the mouse is moved on screen.
-	 * @param {Event} event The listener's event.
-	 */
-	__onMouseMove(event) {
-		const { clientX, clientY, movementX, movementY } = event;
-
-		const {
-			scene: {
-				camera: { x: cameraX, y: cameraY },
-				layerManager: { layers },
-				runtime: {
-					renderer: {
-						width: characterWidth,
-						height: characterHeight,
-						element,
-					},
-				},
-			},
-		} = this;
-
-		const {
-			x: canvasX,
-			y: canvasY,
-			width: canvasWidth,
-			height: canvasHeight,
-		} = element.getBoundingClientRect();
-
-		const [rX, rY] = [clientX - canvasX, clientY - canvasY];
-		const [relX, relY] = [rX / canvasWidth, rY / canvasHeight];
-
-		if (this.hasPointerLock) {
-			this.mouse.velocity = [movementX, movementY];
-		} else {
-			this.mouse.velocity = [movementX, movementY];
-			this.mouse.rawX = clientX;
-			this.mouse.rawY = clientY;
-			this.mouse.canvasX = rX;
-			this.mouse.canvasY = rY;
-			this.mouse.x = clamp(
-				Math.round(relX * characterWidth),
-				0,
-				characterWidth
-			);
-			this.mouse.y = clamp(
-				Math.round(relY * characterHeight),
-				0,
-				characterHeight
-			);
-
-			this.mouse.onLayer = {};
-
-			for (const layer of layers) {
-				const {
-					label,
-					parallax: [parallaxX, parallaxY],
-				} = layer;
-
-				this.mouse.onLayer[label] = [
-					this.mouse.x + cameraX * parallaxX,
-					this.mouse.y + cameraY * parallaxY,
-				];
-			}
-		}
-	}
-
-	__triggerEvents(type, data) {
-		if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
-		for (const eventListener of this.__eventListeners[type])
-			eventListener(data);
-	}
-
-	/**
-	 * Manages different events firing, and maps them to the proper method.
-	 * @param {Event} event The listener's event.
-	 */
-	__onEvent(event) {
-		if (event instanceof MouseEvent) {
-			const { type } = event;
-
-			switch (type) {
-				case "mousedown":
-					this.__onMouseDown(event);
-					break;
-				case "mouseup":
-					this.__onMouseUp(event);
-					break;
-				case "mousemove":
-					this.__onMouseMove(event);
-					break;
-				case "click":
-					this.__onClick(event);
-					break;
-			}
-
-			this.__triggerEvents(type, { type, ...this.mouse }); // Trigger the specific event type that fired.
-			this.__triggerEvents("all", { type, ...this.mouse }); // Trigger the "all" event type.
-
-			if (type === "click" && this.mouse.target) delete this.mouse.target; // Delete target items to clear for next event.
-		} else if (event instanceof KeyboardEvent) {
-			const { type } = event;
-
-			switch (type) {
-				case "keydown":
-					this.__onKeyDown(event);
-					break;
-				case "keyup":
-					this.__onKeyUp(event);
-					break;
-			}
-
-			this.__triggerEvents(type, { type, ...this.keyboard }); // Trigger the specific event type that fired.
-			this.__triggerEvents("all", { type, ...this.keyboard }); // Trigger the "all" event type.
-		}
-	}
-
-	/**
-	 * Add an event listener to the input manager.
-	 * @param {string} type The type of event to add.
-	 * @param {function} listener The event listener function.
-	 */
-	addEventListener(type, listener) {
-		if (!this.types.includes(type))
-			throw new Error(
-				`"${type}" is not a valid event type. Must be one of: ${displayArray(
-					this.types
-				)}`
-			);
-
-		this.__eventListeners[type].push(listener);
-	}
-
-	/**
-	 * Remove an event listener from the input manager.
-	 * @param {string} type The type of event to remove.
-	 * @param {function} listener The event listener function that was added to the event listener.
-	 */
-	removeEventListener(type, listener) {
-		if (!this.types.includes(type))
-			throw new Error(
-				`"${type}" is not a valid event type. Must be one of: ${displayArray(
-					this.types
-				)}`
-			);
-
-		this.__eventListeners[type] = this.__eventListeners[type].filter(
-			(eventListener) => eventListener !== listener
-		);
-	}
-
-	/**
-	 * Add a listener for clicks on a `GameObject`.
-	 * @param {string} gameObjectId The ID of the `GameObject` that, when clicked, triggers the event.
-	 */
-	watchObjectClick(gameObjectId, listener) {
-		this.__gameObjectClicks.push([gameObjectId, listener]);
-	}
-
-	/**
-	 * Remove a listener for clicks on a `GameObject`.
-	 * @param {string} gameObjectId The ID of the `GameObject`.
-	 * @param {function} listener The event listener function that was added to the event listener.
-	 */
-	unwatchObjectClick(gameObjectId, listener) {
-		this.__gameObjectClicks = this.__gameObjectClicks.filter(
-			(arr) => arr[0] !== gameObjectId && arr[1] !== listener
-		);
-	}
-
-	/**
-	 * Add an event listener to the window for the entire `InputManager`.
-	 * @param {string} type The type of event to add.
-	 * @param {function} handler The handler for that event.
-	 */
-	__addGlobalEventListener(type, handler) {
-		if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
-		window.addEventListener(type, handler);
-	}
-
-	/**
-	 * Remove an event listener from the window.
-	 * @param {string} type The type of event to remove.
-	 * @param {function} handler The handler that was set for that event.
-	 */
-	__removeGlobalEventListener(type, handler) {
-		delete this.__eventListeners[type];
-		window.removeEventListener(type, handler);
-	}
-
-	__onCreated() {
-		this.__addGlobalEventListener("keydown", this.__eventHandler);
-		this.__addGlobalEventListener("keyup", this.__eventHandler);
-		this.__addGlobalEventListener("mousemove", this.__eventHandler);
-		this.__addGlobalEventListener("mousedown", this.__eventHandler);
-		this.__addGlobalEventListener("mouseup", this.__eventHandler);
-		this.__addGlobalEventListener("click", this.__eventHandler);
-		this.__addGlobalEventListener("contextmenu", this.__contextHandler);
-	}
-
-	/**
-	 * Unload the `InputManager` instance by removing all system event listeners.
-	 */
-	__unLoad() {
-		this.__removeGlobalEventListener("keydown", this.__eventHandler);
-		this.__removeGlobalEventListener("keyup", this.__eventHandler);
-		this.__removeGlobalEventListener("mousemove", this.__eventHandler);
-		this.__removeGlobalEventListener("mousedown", this.__eventHandler);
-		this.__removeGlobalEventListener("mouseup", this.__eventHandler);
-		this.__removeGlobalEventListener("click", this.__eventHandler);
-		this.__removeGlobalEventListener("contextmenu", this.__contextHandler);
-	}
-}
-
 class Layer {
 	/**
 	 * A layer is a construct of other objects. The layer manages these objects and can optionally render them to the screen.
@@ -1654,6 +1806,11 @@ class Layer {
 	 * @param {Array<function>} config.gameObjectConstructors An array of functions that return game objects.
 	 */
 	constructor(layerManager, config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Layer constructor config parameter."
+			);
+
 		const { label, parallax = [1, 1], gameObjectConstructors } = config;
 
 		this.layerManager = layerManager;
@@ -1739,6 +1896,31 @@ class Layer {
 			Math.round(camera.y * pY),
 		];
 
+		const renderPixel = (pixel, x, y) => {
+			// Invalid passthoughs, and pixels that are not on screen are not added to the buffer.
+			if (
+				!pixel ||
+				!(pixel instanceof Pixel) ||
+				!camera.isOnScreen(x, y, 1, 1, pX, pY)
+			)
+				return;
+
+			// Pixel that would not be displayed are not added to the buffer.
+			if (
+				(!pixel.value || pixel.value.trim() === "") &&
+				(!pixel.backgroundColor ||
+					pixel.backgroundColor === "transparent")
+			)
+				return;
+
+			// Get position relative to the camera, and then index in the buffer from that position.
+			const [xOS, yOS] = [x - adjustedCameraX, y - adjustedCameraY];
+			const index = renderer.coordinatesToIndex(xOS, yOS);
+
+			// Add pixel at that position.
+			frameData[index] = pixel;
+		};
+
 		const frameData = [];
 
 		for (const gameObject of this.gameObjects.filter(
@@ -1760,15 +1942,7 @@ class Layer {
 				}
 
 				if (renderable instanceof Pixel) {
-					if (!camera.isOnScreen(x, y, 1, 1, pX, pY)) continue;
-
-					const [xOS, yOS] = [
-						x - adjustedCameraX,
-						y - adjustedCameraY,
-					];
-					const index = renderer.coordinatesToIndex(xOS, yOS);
-
-					frameData[index] = renderable;
+					renderPixel(renderable, x, y);
 				} else if (renderable instanceof PixelMesh) {
 					if (
 						!camera.isOnScreen(
@@ -1793,28 +1967,8 @@ class Layer {
 
 						for (let pixelX = 0; pixelX < row.length; pixelX++) {
 							const pixel = row[pixelX];
-							if (
-								!pixel ||
-								!(pixel instanceof Pixel) ||
-								!camera.isOnScreen(
-									x + pixelX,
-									y + pixelY,
-									1,
-									1,
-									pX,
-									pY
-								)
-							)
-								continue;
 
-							const [xOS, yOS] = [
-								x + pixelX - adjustedCameraX,
-								y + pixelY - adjustedCameraY,
-							];
-
-							const index = renderer.coordinatesToIndex(xOS, yOS);
-
-							frameData[index] = pixel;
+							renderPixel(pixel, x + pixelX, y + pixelY);
 						}
 					}
 				}
@@ -1946,7 +2100,9 @@ class LayerManager {
 
 	__mergedRender() {
 		const {
-			runtime: { renderer },
+			scene: {
+				runtime: { renderer },
+			},
 		} = this;
 
 		const frame = renderer.compileFrames(
@@ -2060,6 +2216,11 @@ class Scene {
 	 * @param {Object} config The config object to validate.
 	 */
 	static validateConfig(config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Scene constructor config parameter."
+			);
+
 		if (!config.label || typeof config.label !== "string")
 			throw new Error(
 				`Invalid label value provided to Scene configuration: "${config.label}". Must be a string.`
@@ -2204,6 +2365,11 @@ class Runtime {
 	 * @param {Object} config The config object to validate.
 	 */
 	validateConfig(config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Runtime constructor config parameter."
+			);
+
 		if (
 			config.seed &&
 			typeof config.seed !== "number" &&
@@ -2717,6 +2883,11 @@ class Box extends GameObject {
 	 * @param {string} config.layer The label of the layer to start the `Box` on.
 	 */
 	constructor(scene, config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Box constructor config parameter."
+			);
+
 		const {
 			x,
 			y,
@@ -2765,6 +2936,23 @@ class Box extends GameObject {
 
 	get renderable() {
 		const { width, height, color, backgroundColor, style } = this;
+		return Box.asPixelMesh(width, height, color, backgroundColor, style);
+	}
+
+	set renderable(_) {
+		return;
+	}
+
+	/**
+	 * Get just the renderable `PixelMesh` portion of a `Box` instance.
+	 * @param {number} width This `Box` object's width.
+	 * @param {number} height This `Box` object's height.
+	 * @param {string} color Option Box color.
+	 * @param {string} backgroundColor Optional background color.
+	 * @param {string} style The box line style. `"line" || "double"`
+	 * @returns {PixelMesh} The generated `PixelMesh`.
+	 */
+	static asPixelMesh(width, height, color, backgroundColor, style) {
 		const styleSet = lineSource[style];
 
 		const data = [];
@@ -2799,10 +2987,6 @@ class Box extends GameObject {
 
 		return new PixelMesh({ data });
 	}
-
-	set renderable(_) {
-		return;
-	}
 }
 
 class Text extends GameObject {
@@ -2821,6 +3005,11 @@ class Text extends GameObject {
 	 * @param {string} config.layer The label of the layer to start the `Text` on.
 	 */
 	constructor(scene, config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Text constructor config parameter."
+			);
+
 		const {
 			x,
 			y,
@@ -2966,6 +3155,11 @@ class Menu extends GameObject {
 	 * @param {string} config.layer The label of the layer to start the `Menu` on.
 	 */
 	constructor(scene, config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for Menu constructor config parameter."
+			);
+
 		const {
 			x,
 			y,
@@ -3211,6 +3405,11 @@ class TextInput extends Text {
 	 * @param {string} config.layer The label of the layer to start the `TextInput` on.
 	 */
 	constructor(scene, config) {
+		if (!isPlainObject(config))
+			throw new TypeError(
+				"Expected a plain object for TextInput constructor config parameter."
+			);
+
 		config.wrap = false;
 		if (!config.maxWidth) config.maxWidth = 8;
 
