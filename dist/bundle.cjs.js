@@ -1144,6 +1144,8 @@ class InputManager {
 		this.__gameObjectClicks = [];
 
 		this.__onCreated();
+
+		this.__windowBlurHandler = this.__windowBlurHandler.bind(this);
 	}
 
 	/**
@@ -1438,6 +1440,16 @@ class InputManager {
 	}
 
 	/**
+	 * Handles when the user leaves this tab.
+	 */
+	__windowBlurHandler = () => {
+		this.keyboard.keys = {};
+		this.mouse.buttons = {};
+		delete this.mouse.deltas;
+		delete this.mouse.scroll;
+	};
+
+	/**
 	 * Add an event listener to the input manager.
 	 * @param {string} type The type of event to add.
 	 * @param {function} listener The event listener function.
@@ -1519,6 +1531,7 @@ class InputManager {
 		this.__addGlobalEventListener("click", this.__eventHandler);
 		this.__addGlobalEventListener("wheel", this.__eventHandler);
 		this.__addGlobalEventListener("contextmenu", this.__contextHandler);
+		window.addEventListener("blur", this.__windowBlurHandler);
 	}
 
 	/**
@@ -1533,6 +1546,7 @@ class InputManager {
 		this.__removeGlobalEventListener("click", this.__eventHandler);
 		this.__removeGlobalEventListener("wheel", this.__eventHandler);
 		this.__removeGlobalEventListener("contextmenu", this.__contextHandler);
+		window.removeEventListener("blur", this.__windowBlurHandler);
 	}
 }
 
