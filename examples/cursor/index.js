@@ -97,14 +97,66 @@ const leftClickIndicator = new GameObject(
 	"system"
 );
 leftClickIndicator.renderable = PixelMesh.fromString(
-	`        _.8._
-      .'  |  '.
-     /    |    \\
-    |    [_]    |
-    |     |     |
-    |-----'-----|`
+	`    _.8
+  .'  |
+ /    |
+|    [
+|     |
+|-----'`
 );
-leftClickIndicator.renderable.setColor("red");
+leftClickIndicator.renderable.setBackgroundColor("red");
+leftClickIndicator.visible = false;
+
+const rightClickIndicator = new GameObject(
+	scene,
+	mouseDisplay.x - 3,
+	mouseDisplay.y - 6,
+	"system"
+);
+rightClickIndicator.renderable = PixelMesh.fromString(
+	`    _.8._
+  .'  |  '.
+ /    |    \\
+|    [_]    |
+|     |     |
+|-----'-----|`
+);
+rightClickIndicator.renderable.setBackgroundColor("red");
+rightClickIndicator.visible = false;
+
+const middleClickIndicator = new GameObject(
+	scene,
+	mouseDisplay.x - 3,
+	mouseDisplay.y - 6,
+	"system"
+);
+middleClickIndicator.renderable = PixelMesh.fromString(
+	`    _.8._
+  .'  |  '.
+ /    |    \\
+|    [_]    |
+|     |     |
+|-----'-----|`
+);
+middleClickIndicator.renderable.setBackgroundColor("red");
+middleClickIndicator.visible = false;
+
+scene.onTickPassthrough = () => {
+	const {
+		mouse: {
+			buttons: { left, right, middle },
+		},
+	} = scene.inputManager;
+
+	if (left) leftClickIndicator.visible = true;
+	else leftClickIndicator.visible = false;
+
+	if (right) rightClickIndicator.visible = true;
+	else rightClickIndicator.visible = false;
+
+	if (middle) middleClickIndicator.visible = true;
+	else middleClickIndicator.visible = false;
+};
 
 // Scroll indicators.
 

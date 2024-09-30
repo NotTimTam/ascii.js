@@ -120,7 +120,14 @@ export class PixelMesh {
 			data: string
 				.split("\n")
 				.map((line) =>
-					line.split("").map((value) => Pixel.fromString(value))
+					line
+						.split("")
+						.map(
+							(value) =>
+								value &&
+								value.trim() !== "" &&
+								Pixel.fromString(value)
+						)
 				),
 		});
 }

@@ -145,23 +145,8 @@ class InputManager {
 
 	/**
 	 * Calls when a mouse button is clicked.
-	 * @param {Event} event The listener's event.
 	 */
-	__onClick(event) {
-		const { button, type } = event;
-
-		switch (button) {
-			case 0:
-				this.mouse.buttons.left = true;
-				break;
-			case 1:
-				this.mouse.buttons.middle = true;
-				break;
-			case 2:
-				this.mouse.buttons.right = true;
-				break;
-		}
-
+	__onClick() {
 		const { x, y } = this.mouse;
 
 		this.mouse.targets = this.scene.layerManager.getAtPosition(x, y);
@@ -284,7 +269,7 @@ class InputManager {
 					this.__onMouseMove(event);
 					break;
 				case "click":
-					this.__onClick(event);
+					this.__onClick();
 					break;
 			}
 
