@@ -146,7 +146,7 @@ class GamepadInterface {
 		if (!this.raw) return undefined;
 
 		const {
-			raw: { axes, buttons, mapping },
+			raw: { axes, buttons },
 		} = this;
 
 		return {
@@ -180,7 +180,7 @@ class GamepadInterface {
 		if (!this.raw) return undefined;
 
 		const {
-			raw: { axes, buttons, mapping },
+			raw: { axes, buttons },
 		} = this;
 
 		return {
@@ -214,7 +214,7 @@ class GamepadInterface {
 		if (!this.raw) return undefined;
 
 		const {
-			raw: { axes, buttons, mapping },
+			raw: { axes, buttons },
 		} = this;
 
 		return {
