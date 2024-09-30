@@ -134,12 +134,24 @@ middleClickIndicator.renderable = PixelMesh.fromString(`[_]`);
 middleClickIndicator.renderable.setBackgroundColor("red");
 middleClickIndicator.visible = false;
 
+// Scroll indicators.
+const scrollIndicator = new GameObject(
+	scene,
+	mouseDisplay.x + 3,
+	mouseDisplay.y - 3,
+	"system"
+);
+scrollIndicator.renderable = Pixel.fromString(` `);
+
+scene.inputManager.addEventListener("wheel", ({ scroll: { y } }) => {
+	if (y === "up") scrollIndicator.renderable.value = "↑";
+	else scrollIndicator.renderable.value = "↓";
+});
+
 scene.onTickPassthrough = () => {
 	const {
 		mouse: {
 			buttons: { left, right, middle },
-			deltas,
-			scroll,
 		},
 	} = scene.inputManager;
 
@@ -153,8 +165,8 @@ scene.onTickPassthrough = () => {
 
 	if (middle) middleClickIndicator.visible = true;
 	else middleClickIndicator.visible = false;
-};
 
-// Scroll indicators.
+	scrollIndicator.renderable = Pixel.fromString(` `);
+};
 
 runtime.loadScene(scene);
