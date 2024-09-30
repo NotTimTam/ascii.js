@@ -78,7 +78,7 @@ mouseDisplay.y = height / 2;
 // Pointer position indicator.
 const pointerPosition = new Text(scene, {
 	x: mouseDisplay.x,
-	y: mouseDisplay.y,
+	y: mouseDisplay.y + 1,
 	layer: "system",
 	value: "",
 	color: "red",
@@ -100,7 +100,7 @@ leftClickIndicator.renderable = PixelMesh.fromString(
 	`    _.8
   .'  |
  /    |
-|    [
+|     
 |     |
 |-----'`
 );
@@ -109,35 +109,28 @@ leftClickIndicator.visible = false;
 
 const rightClickIndicator = new GameObject(
 	scene,
-	mouseDisplay.x - 3,
+	mouseDisplay.x + 3,
 	mouseDisplay.y - 6,
 	"system"
 );
 rightClickIndicator.renderable = PixelMesh.fromString(
-	`    _.8._
-  .'  |  '.
- /    |    \\
-|    [_]    |
-|     |     |
-|-----'-----|`
+	`8._
+|  '.
+|    \\
+      |
+|     |
+'-----|`
 );
 rightClickIndicator.renderable.setBackgroundColor("red");
 rightClickIndicator.visible = false;
 
 const middleClickIndicator = new GameObject(
 	scene,
-	mouseDisplay.x - 3,
-	mouseDisplay.y - 6,
+	mouseDisplay.x + 2,
+	mouseDisplay.y - 3,
 	"system"
 );
-middleClickIndicator.renderable = PixelMesh.fromString(
-	`    _.8._
-  .'  |  '.
- /    |    \\
-|    [_]    |
-|     |     |
-|-----'-----|`
-);
+middleClickIndicator.renderable = PixelMesh.fromString(`[_]`);
 middleClickIndicator.renderable.setBackgroundColor("red");
 middleClickIndicator.visible = false;
 
@@ -145,6 +138,7 @@ scene.onTickPassthrough = () => {
 	const {
 		mouse: {
 			buttons: { left, right, middle },
+			velocity,
 		},
 	} = scene.inputManager;
 
