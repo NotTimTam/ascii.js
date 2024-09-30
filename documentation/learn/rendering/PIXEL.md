@@ -36,8 +36,13 @@ An array of display offsets to apply when rendering this pixel.
 
 Create a `Pixel` object from a string.
 
+#### Arguments
+
 -   `string` &mdash; `string` The string to convert to a `Pixel`.
--   **Returns**: `Pixel` the newly created `Pixel` object.
+
+#### Returns
+
+The newly created `Pixel` object.
 
 ### `width`
 

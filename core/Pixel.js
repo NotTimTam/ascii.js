@@ -64,6 +64,53 @@ export class PixelMesh {
 	}
 
 	/**
+	 * Get all the `Pixel`s in this `PixelMesh` in a 1D-array.
+	 */
+	get pixels() {
+		return this.data.flat().filter((pixel) => pixel);
+	}
+
+	/**
+	 * Set the color of all `Pixels` in this `PixelMesh`.
+	 * @param {string} color The color to set.
+	 */
+	setColor(color) {
+		for (const pixel of this.pixels) {
+			pixel.color = color;
+		}
+	}
+
+	/**
+	 * Set the fontWeight of all `Pixels` in this `PixelMesh`.
+	 * @param {string} fontWeight The fontWeight to set.
+	 */
+	setFontWeight(fontWeight) {
+		for (const pixel of this.pixels) {
+			pixel.fontWeight = fontWeight;
+		}
+	}
+
+	/**
+	 * Set the backgroundColor of all `Pixels` in this `PixelMesh`.
+	 * @param {string} backgroundColor The backgroundColor to set.
+	 */
+	setBackgroundColor(backgroundColor) {
+		for (const pixel of this.pixels) {
+			pixel.backgroundColor = backgroundColor;
+		}
+	}
+
+	/**
+	 * Set the solid status of all `Pixels` in this `PixelMesh`.
+	 * @param {string} solid Whether or not the pixels should be solid.
+	 */
+	setSolid(solid) {
+		for (const pixel of this.pixels) {
+			pixel.solid = solid;
+		}
+	}
+
+	/**
 	 * Create a `PixelMesh` object from a string. `\n` will create a new row.
 	 * @param {string} string The string to convert to a `PixelMesh`.
 	 * @returns {Pixel} the newly created `PixelMesh` object.

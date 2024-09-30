@@ -26,6 +26,14 @@ new Layer(layerManager, config);
 
 A `boolean` that indicates whether or not this layer is currently paused. A paused frame, or a frame in a paused runtime does not run its object's `onTick` methods.
 
+### `frame`
+
+Returns a frame composed of a layer's objects.
+
+---
+
+## Methods
+
 ### `get visible`
 
 Get the `Layer`'s visibility status.
@@ -33,11 +41,3 @@ Get the `Layer`'s visibility status.
 ### `set visible(value)`
 
 Set the `Layer`'s visibility status.
-
----
-
-## Methods
-
-### `get frame`
-
-Returns a frame composed of a layer's objects.

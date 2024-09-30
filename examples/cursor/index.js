@@ -96,12 +96,15 @@ const leftClickIndicator = new GameObject(
 	mouseDisplay.y - 6,
 	"system"
 );
-leftClickIndicator.renderable = PixelMesh.fromString(` 8'       _.8._
-8       .'  |  '.
-       /    |    \\
-      |    [_]    |
-      |     |     |
-      |-----'-----|`);
+leftClickIndicator.renderable = PixelMesh.fromString(
+	`        _.8._
+      .'  |  '.
+     /    |    \\
+    |    [_]    |
+    |     |     |
+    |-----'-----|`
+);
+leftClickIndicator.renderable.setColor("red");
 
 // Scroll indicators.
 
