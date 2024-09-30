@@ -1,4 +1,10 @@
-import Runtime, { GameObject, Pixel, PixelMesh, Scene } from "../../index.js";
+import Runtime, {
+	GameObject,
+	Pixel,
+	PixelMesh,
+	Scene,
+	Text,
+} from "../../index.js";
 
 const runtime = new Runtime({
 	seed: 234556,
@@ -26,13 +32,16 @@ const scene = new Scene(runtime, {
 
 const { width, height } = runtime.renderer;
 
-const pointerPosition = new GameObject(scene, 0, 0, "system");
-pointerPosition.renderable = new Pixel({ value: "#", color: "red" });
+new Text(scene, {
+	x: 0,
+	y: height - 1,
+	value: "Mouse by Joan G. Stark",
+	layer: "system",
+});
 
 const mouseDisplay = new GameObject(scene, 0, 0, "system");
 mouseDisplay.renderable = new PixelMesh({
-	data: `Art by Joan G. Stark
-    ,d88b
+	data: `    ,d88b
  ,8P'    \`8,
  8'       _.8._
 8       .'  |  '.
@@ -63,26 +72,37 @@ mouseDisplay.renderable.origin = [
 	Math.floor(mouseDisplay.renderable.height / 2),
 ];
 
-console.log(mouseDisplay.renderable);
+mouseDisplay.x = width / 2;
+mouseDisplay.y = height / 2;
+
+// Pointer position indicator.
+const pointerPosition = new Text(scene, {
+	x: mouseDisplay.x,
+	y: mouseDisplay.y,
+	layer: "system",
+	value: "",
+	color: "red",
+});
+pointerPosition.renderable = undefined;
 
 scene.inputManager.addEventListener("mousemove", ({ x, y }) => {
-	pointerPosition.x = x;
-	pointerPosition.y = y;
-
-	pointerPosition.renderable = new PixelMesh({
-		data: [
-			[
-				new Pixel({ value: "#", color: "red" }),
-
-				...` ${x}, ${y}`.split("").map((value) => {
-					return new Pixel({
-						value,
-						color: "red",
-					});
-				}),
-			],
-		],
-	});
+	pointerPosition.value = ` ${x}, ${y}`;
 });
+
+// Click indicators.
+const leftClickIndicator = new GameObject(
+	scene,
+	mouseDisplay.x - 3,
+	mouseDisplay.y - 6,
+	"system"
+);
+leftClickIndicator.renderable = PixelMesh.fromString(` 8'       _.8._
+8       .'  |  '.
+       /    |    \\
+      |    [_]    |
+      |     |     |
+      |-----'-----|`);
+
+// Scroll indicators.
 
 runtime.loadScene(scene);

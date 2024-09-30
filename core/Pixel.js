@@ -62,6 +62,20 @@ export class PixelMesh {
 	get height() {
 		return this.data.length;
 	}
+
+	/**
+	 * Create a `PixelMesh` object from a string. `\n` will create a new row.
+	 * @param {string} string The string to convert to a `PixelMesh`.
+	 * @returns {Pixel} the newly created `PixelMesh` object.
+	 */
+	static fromString = (string) =>
+		new PixelMesh({
+			data: string
+				.split("\n")
+				.map((line) =>
+					line.split("").map((value) => Pixel.fromString(value))
+				),
+		});
 }
 
 class Pixel {
