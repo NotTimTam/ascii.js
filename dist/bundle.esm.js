@@ -1104,6 +1104,78 @@ class Camera {
 	}
 }
 
+class GamepadInterface {
+	static buttonMap = [
+		"a",
+		"b",
+		"x",
+		"y",
+		"l1",
+		"r1",
+		"l2",
+		"r2",
+		"select",
+		"start",
+		"l3",
+		"r3",
+		"up",
+		"down",
+		"left",
+		"right",
+	];
+
+	/**
+	 * Create a simple interface for collecting gamepad inputs.
+	 * @param {InputManager} inputManager The `InputManager` instance this Gamepad is associated with.
+	 * @param {number} index The index of the gamepad.
+	 */
+	constructor(inputManager, index) {
+		this.index = index;
+
+		this.inputManager = inputManager;
+	}
+
+	get axes() {
+		return this.raw && this.raw.axes;
+	}
+
+	get buttons() {
+		return (
+			this.raw &&
+			Object.fromEntries(
+				this.raw.buttons.map((button, index) => [
+					GamepadInterface.buttonMap[index],
+					button,
+				])
+			)
+		);
+	}
+
+	get raw() {
+		return this.inputManager.rawGamepads[this.index];
+	}
+
+	get mapping() {
+		return this.raw && this.raw.mapping;
+	}
+
+	get id() {
+		return this.raw && this.raw.id;
+	}
+
+	get vibrationActuator() {
+		return this.raw && this.raw.vibrationActuator;
+	}
+
+	get hapticActuators() {
+		return this.raw && this.raw.hapticActuators;
+	}
+
+	get hand() {
+		return this.raw && this.raw.hand;
+	}
+}
+
 class InputManager {
 	/**
 	 * Handles user input.
@@ -1142,6 +1214,26 @@ class InputManager {
 		this.__onCreated();
 
 		this.__windowBlurHandler = this.__windowBlurHandler.bind(this);
+	}
+
+	/**
+	 * Get the raw `navigator.getGamepads()` data.
+	 */
+	get rawGamepads() {
+		return navigator.getGamepads();
+	}
+
+	/**
+	 * Get easy-to-use gamepad data.
+	 */
+	get gamepads() {
+		return this.rawGamepads.map((gamepad) => {
+			if (!gamepad) return null;
+
+			const { index } = gamepad;
+
+			return new GamepadInterface(this, index);
+		});
 	}
 
 	/**
@@ -1377,6 +1469,28 @@ class InputManager {
 	}
 
 	/**
+	 * Calls when a gamepad is connected.
+	 * @param {Event} event The listener's event.
+	 */
+	__onGamepadConnected(event) {
+		const { gamepad } = event;
+
+		this.gamepads[gamepad.index] = gamepad;
+
+		console.log(this);
+	}
+
+	/**
+	 * Calls when a gamepad is disconnected.
+	 * @param {Event} event The listener's event.
+	 */
+	__onGamepadDisconnected(event) {
+		const { gamepad } = event;
+
+		this.gamepads[gamepad.index] = null;
+	}
+
+	/**
 	 * Trigger events for a specific event type.
 	 * @param {string} type The type of event to trigger for.
 	 * @param {*} data The data to send to that event.
@@ -1432,6 +1546,17 @@ class InputManager {
 
 			this.__triggerEvents(type, { type, ...this.keyboard }); // Trigger the specific event type that fired.
 			this.__triggerEvents("all", { type, ...this.keyboard }); // Trigger the "all" event type.
+		} else if (event instanceof GamepadEvent) {
+			const { type } = event;
+
+			switch (type) {
+				case "gamepadconnected":
+					this.__onGamepadConnected(event);
+					break;
+				case "gamepaddisconnected":
+					this.__onGamepadDisconnected(event);
+					break;
+			}
 		}
 	}
 
@@ -1526,6 +1651,11 @@ class InputManager {
 		this.__addGlobalEventListener("mouseup", this.__eventHandler);
 		this.__addGlobalEventListener("click", this.__eventHandler);
 		this.__addGlobalEventListener("wheel", this.__eventHandler);
+		this.__addGlobalEventListener("gamepadconnected", this.__eventHandler);
+		this.__addGlobalEventListener(
+			"gamepaddisconnected",
+			this.__eventHandler
+		);
 		this.__addGlobalEventListener("contextmenu", this.__contextHandler);
 		window.addEventListener("blur", this.__windowBlurHandler);
 	}
@@ -1541,6 +1671,14 @@ class InputManager {
 		this.__removeGlobalEventListener("mouseup", this.__eventHandler);
 		this.__removeGlobalEventListener("click", this.__eventHandler);
 		this.__removeGlobalEventListener("wheel", this.__eventHandler);
+		this.__removeGlobalEventListener(
+			"gamepadconnected",
+			this.__eventHandler
+		);
+		this.__removeGlobalEventListener(
+			"gamepaddisconnected",
+			this.__eventHandler
+		);
 		this.__removeGlobalEventListener("contextmenu", this.__contextHandler);
 		window.removeEventListener("blur", this.__windowBlurHandler);
 	}

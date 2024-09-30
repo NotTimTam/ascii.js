@@ -2,6 +2,88 @@ import { displayArray } from "../util/data.js";
 import { clamp } from "../util/math.js";
 import Scene from "./Scene.js";
 
+class GamepadInterface {
+	static buttonMap = [
+		"a",
+		"b",
+		"x",
+		"y",
+		"l1",
+		"r1",
+		"l2",
+		"r2",
+		"select",
+		"start",
+		"l3",
+		"r3",
+		"up",
+		"down",
+		"left",
+		"right",
+	];
+
+	static axesMap = ["lh", "lv", "rh", "rv"];
+
+	/**
+	 * Create a simple interface for collecting gamepad inputs.
+	 * @param {InputManager} inputManager The `InputManager` instance this Gamepad is associated with.
+	 * @param {number} index The index of the gamepad.
+	 */
+	constructor(inputManager, index) {
+		this.index = index;
+
+		this.inputManager = inputManager;
+	}
+
+	get axes() {
+		return (
+			this.raw &&
+			Object.fromEntries(
+				this.raw.axes.map((axis, index) => [
+					GamepadInterface.axesMap[index],
+					axis,
+				])
+			)
+		);
+	}
+
+	get buttons() {
+		return (
+			this.raw &&
+			Object.fromEntries(
+				this.raw.buttons.map((button, index) => [
+					GamepadInterface.buttonMap[index],
+					button,
+				])
+			)
+		);
+	}
+
+	get raw() {
+		return this.inputManager.rawGamepads[this.index];
+	}
+
+	get mapping() {
+		return this.raw && this.raw.mapping;
+	}
+
+	get id() {
+		return this.raw && this.raw.id;
+	}
+
+	get vibrationActuator() {
+		return this.raw && this.raw.vibrationActuator;
+	}
+
+	get hapticActuators() {
+		return this.raw && this.raw.hapticActuators;
+	}
+
+	get hand() {
+		return this.raw && this.raw.hand;
+	}
+}
+
 class InputManager {
 	/**
 	 * Handles user input.
@@ -40,6 +122,26 @@ class InputManager {
 		this.__onCreated();
 
 		this.__windowBlurHandler = this.__windowBlurHandler.bind(this);
+	}
+
+	/**
+	 * Get the raw `navigator.getGamepads()` data.
+	 */
+	get rawGamepads() {
+		return navigator.getGamepads();
+	}
+
+	/**
+	 * Get easy-to-use gamepad data.
+	 */
+	get gamepads() {
+		return this.rawGamepads.map((gamepad) => {
+			if (!gamepad) return null;
+
+			const { index } = gamepad;
+
+			return new GamepadInterface(this, index);
+		});
 	}
 
 	/**
@@ -150,9 +252,19 @@ class InputManager {
 	 * Calls when a mouse button is clicked.
 	 */
 	__onClick() {
-		const { x, y } = this.mouse;
+		const { onLayer } = this.mouse;
 
-		this.mouse.targets = this.scene.layerManager.getAtPosition(x, y);
+		this.mouse.targets = [];
+
+		for (const [label, [x, y]] of Object.entries(onLayer)) {
+			const targetsOnLayer = this.scene.layerManager.getAtPosition(
+				x,
+				y,
+				label
+			);
+
+			this.mouse.targets = [...this.mouse.targets, ...targetsOnLayer];
+		}
 
 		// Convert target objects into an array of IDs.
 		if (this.mouse.targets)
@@ -275,6 +387,26 @@ class InputManager {
 	}
 
 	/**
+	 * Calls when a gamepad is connected.
+	 * @param {Event} event The listener's event.
+	 */
+	__onGamepadConnected(event) {
+		const { gamepad } = event;
+
+		this.gamepads[gamepad.index] = gamepad;
+	}
+
+	/**
+	 * Calls when a gamepad is disconnected.
+	 * @param {Event} event The listener's event.
+	 */
+	__onGamepadDisconnected(event) {
+		const { gamepad } = event;
+
+		this.gamepads[gamepad.index] = null;
+	}
+
+	/**
 	 * Trigger events for a specific event type.
 	 * @param {string} type The type of event to trigger for.
 	 * @param {*} data The data to send to that event.
@@ -330,6 +462,20 @@ class InputManager {
 
 			this.__triggerEvents(type, { type, ...this.keyboard }); // Trigger the specific event type that fired.
 			this.__triggerEvents("all", { type, ...this.keyboard }); // Trigger the "all" event type.
+		} else if (event instanceof GamepadEvent) {
+			const { type } = event;
+
+			switch (type) {
+				case "gamepadconnected":
+					this.__onGamepadConnected(event);
+					break;
+				case "gamepaddisconnected":
+					this.__onGamepadDisconnected(event);
+					break;
+			}
+
+			this.__triggerEvents(type, { type, gamepads: this.gamepads }); // Trigger the specific event type that fired.
+			this.__triggerEvents("all", { type, gamepads: this.gamepads }); // Trigger the "all" event type.
 		}
 	}
 
@@ -424,6 +570,11 @@ class InputManager {
 		this.__addGlobalEventListener("mouseup", this.__eventHandler);
 		this.__addGlobalEventListener("click", this.__eventHandler);
 		this.__addGlobalEventListener("wheel", this.__eventHandler);
+		this.__addGlobalEventListener("gamepadconnected", this.__eventHandler);
+		this.__addGlobalEventListener(
+			"gamepaddisconnected",
+			this.__eventHandler
+		);
 		this.__addGlobalEventListener("contextmenu", this.__contextHandler);
 		window.addEventListener("blur", this.__windowBlurHandler);
 	}
@@ -439,6 +590,14 @@ class InputManager {
 		this.__removeGlobalEventListener("mouseup", this.__eventHandler);
 		this.__removeGlobalEventListener("click", this.__eventHandler);
 		this.__removeGlobalEventListener("wheel", this.__eventHandler);
+		this.__removeGlobalEventListener(
+			"gamepadconnected",
+			this.__eventHandler
+		);
+		this.__removeGlobalEventListener(
+			"gamepaddisconnected",
+			this.__eventHandler
+		);
 		this.__removeGlobalEventListener("contextmenu", this.__contextHandler);
 		window.removeEventListener("blur", this.__windowBlurHandler);
 	}
