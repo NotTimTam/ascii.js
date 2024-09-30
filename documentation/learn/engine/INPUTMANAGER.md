@@ -20,6 +20,10 @@ Handles user input.
 
 Get the pointer lock status.
 
+### `types`
+
+An array of valid event listener types.
+
 ---
 
 ## Methods
@@ -28,36 +32,29 @@ Get the pointer lock status.
 
 Initiate a pointer lock request. Pointer lock cannot be achieved unless the user clicks the screen after this method is called.
 
-### `addEventListener(listener)`
+### `addEventListener(type, listener)`
 
 Add an event listener to the input manager.
 
-#### Arguments
-
+-   `type` &mdash; `string` The type of event to add.
 -   `listener` &mdash; `function` The event listener function.
 
-### `removeEventListener(listener)`
+### `removeEventListener(type, listener)`
 
 Remove an event listener from the input manager.
 
-#### Arguments
+-   `type` &mdash; `string` The type of event to remove.
+-   `listener` &mdash; `function` The event listener function that was added to the event listener.
 
--   `listener` &mdash; `function` The event listener function.
+### `watchObjectClick(gameObjectId, listener)`
 
-### `addOnClick(gameObject, listener)`
+Add a listener for clicks on a `GameObject`.
 
-Add an event listener to check when an element is clicked.
+-   `gameObjectId` &mdash; `string` The ID of the `GameObject` that, when clicked, triggers the event.
 
-#### Arguments
+### `unwatchObjectClick(gameObjectId, listener)`
 
--   `gameObject` &mdash; `GameObject` The game object that, when clicked, triggers the event.
--   `listener` &mdash; `function` The event listener function.
+Remove a listener for clicks on a `GameObject`.
 
-### `removeOnClick(gameObject, listener)`
-
-Remove a click event listener.
-
-#### Arguments
-
--   `gameObject` &mdash; `GameObject` The game object that the event was created for.
--   `listener` &mdash; `function` The event listener function.
+-   `gameObjectId` &mdash; `string` The ID of the `GameObject`.
+-   `listener` &mdash; `function` The event listener function that was added to the event listener.

@@ -138,9 +138,12 @@ scene.onTickPassthrough = () => {
 	const {
 		mouse: {
 			buttons: { left, right, middle },
-			velocity,
+			deltas,
+			scroll,
 		},
 	} = scene.inputManager;
+
+	// console.log(deltas, scroll);
 
 	if (left) leftClickIndicator.visible = true;
 	else leftClickIndicator.visible = false;

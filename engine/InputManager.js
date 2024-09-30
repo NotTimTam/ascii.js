@@ -244,6 +244,38 @@ class InputManager {
 		}
 	}
 
+	/**
+	 * Calls when a mouse wheel is moved.
+	 * @param {Event} event The listener's event.
+	 */
+	__onMouseWheel(event) {
+		const { deltaX, deltaY, deltaZ } = event;
+
+		this.mouse.deltas = { x: deltaX, y: deltaY, z: deltaZ };
+		this.mouse.scroll = {
+			x: deltaX > 0 ? "down" : "up",
+			y: deltaY > 0 ? "down" : "up",
+			z: deltaZ > 0 ? "down" : "up",
+		};
+	}
+
+	/**
+	 * Reset mouse wheel return data.
+	 */
+	__resetMouseWheel() {
+		this.mouse.deltas = { x: 0, y: 0, z: 0 };
+		this.mouse.scroll = {
+			x: null,
+			y: null,
+			z: null,
+		};
+	}
+
+	/**
+	 * Trigger events for a specific event type.
+	 * @param {string} type The type of event to trigger for.
+	 * @param {*} data The data to send to that event.
+	 */
 	__triggerEvents(type, data) {
 		if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
 		for (const eventListener of this.__eventListeners[type])
@@ -255,7 +287,7 @@ class InputManager {
 	 * @param {Event} event The listener's event.
 	 */
 	__onEvent(event) {
-		if (event instanceof MouseEvent) {
+		if (event instanceof MouseEvent || event instanceof WheelEvent) {
 			const { type } = event;
 
 			switch (type) {
@@ -268,6 +300,9 @@ class InputManager {
 				case "mousemove":
 					this.__onMouseMove(event);
 					break;
+				case "wheel":
+					this.__onMouseWheel(event);
+					break;
 				case "click":
 					this.__onClick();
 					break;
@@ -277,6 +312,7 @@ class InputManager {
 			this.__triggerEvents("all", { type, ...this.mouse }); // Trigger the "all" event type.
 
 			if (type === "click" && this.mouse.target) delete this.mouse.target; // Delete target items to clear for next event.
+			this.__resetMouseWheel();
 		} else if (event instanceof KeyboardEvent) {
 			const { type } = event;
 
@@ -374,6 +410,7 @@ class InputManager {
 		this.__addGlobalEventListener("mousedown", this.__eventHandler);
 		this.__addGlobalEventListener("mouseup", this.__eventHandler);
 		this.__addGlobalEventListener("click", this.__eventHandler);
+		this.__addGlobalEventListener("wheel", this.__eventHandler);
 		this.__addGlobalEventListener("contextmenu", this.__contextHandler);
 	}
 
@@ -387,6 +424,7 @@ class InputManager {
 		this.__removeGlobalEventListener("mousedown", this.__eventHandler);
 		this.__removeGlobalEventListener("mouseup", this.__eventHandler);
 		this.__removeGlobalEventListener("click", this.__eventHandler);
+		this.__removeGlobalEventListener("wheel", this.__eventHandler);
 		this.__removeGlobalEventListener("contextmenu", this.__contextHandler);
 	}
 }
