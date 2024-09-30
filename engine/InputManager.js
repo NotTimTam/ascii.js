@@ -3,7 +3,64 @@ import { clamp } from "../util/math.js";
 import Scene from "./Scene.js";
 
 class GamepadInterface {
-	static buttonMap = [
+	static xbButtonMap = [
+		"a",
+		"b",
+		"x",
+		"y",
+		"leftBumper",
+		"rightBumper",
+		"leftTrigger",
+		"rightTrigger",
+		"select",
+		"start",
+		"leftStickPress",
+		"rightStickPress",
+		"up",
+		"down",
+		"left",
+		"right",
+	];
+
+	static psButtonMap = [
+		"x",
+		"o",
+		"square",
+		"triangle",
+		"l1",
+		"r1",
+		"l2",
+		"r2",
+		"share",
+		"options",
+		"l3",
+		"r3",
+		"up",
+		"down",
+		"left",
+		"right",
+	];
+
+	static nsButtonMap = [
+		"b",
+		"a",
+		"y",
+		"x",
+		"leftBumper",
+		"rightBumper",
+		"leftTrigger",
+		"rightTrigger",
+		"-",
+		"+",
+		"leftStickPress",
+		"rightStickPress",
+		"up",
+		"down",
+		"left",
+		"right",
+	];
+
+	static standardButtonMap = [
 		"a",
 		"b",
 		"x",
@@ -22,10 +79,19 @@ class GamepadInterface {
 		"right",
 	];
 
-	static axesMap = ["lh", "lv", "rh", "rv"];
+	static standardAxesMap = ["lh", "lv", "rh", "rv"];
 
 	/**
 	 * Create a simple interface for collecting gamepad inputs.
+	 *
+	 * This interface attempts to normalize inputs for these controllers to make it easier to interact with them.
+	 * Unsupported controllers can still be interacted with through the interfaces `raw` property.
+	 *
+	 * ### Tested Controllers
+	 * - XB (One) Wireless Controller
+	 * - PS4
+	 * - NS Pro
+	 *
 	 * @param {InputManager} inputManager The `InputManager` instance this Gamepad is associated with.
 	 * @param {number} index The index of the gamepad.
 	 */
@@ -35,28 +101,158 @@ class GamepadInterface {
 		this.inputManager = inputManager;
 	}
 
-	get axes() {
-		return (
-			this.raw &&
-			Object.fromEntries(
-				this.raw.axes.map((axis, index) => [
-					GamepadInterface.axesMap[index],
-					axis,
-				])
-			)
-		);
+	/**
+	 * Get the inputs in a normalized format. To allow identical input layouts even with differing input names.
+	 */
+	get normalized() {
+		if (!this.raw) return undefined;
+
+		const {
+			raw: { axes, buttons, mapping },
+		} = this;
+
+		if (mapping === "standard")
+			return {
+				axes: Object.fromEntries(
+					axes
+						.filter(
+							(axis, index) =>
+								GamepadInterface.standardAxesMap[index]
+						)
+						.map((axis, index) => [
+							GamepadInterface.standardAxesMap[index],
+							axis,
+						])
+				),
+				buttons: Object.fromEntries(
+					buttons
+						.filter(
+							(axis, index) =>
+								GamepadInterface.standardButtonMap[index]
+						)
+						.map((axis, index) => [
+							GamepadInterface.standardButtonMap[index],
+							axis,
+						])
+				),
+			};
+		else return this.asXB || this.asPS || this.asNS;
 	}
 
+	/**
+	 * Get the inputs from a xb controller.
+	 */
+	get asXB() {
+		if (!this.raw) return undefined;
+
+		const {
+			raw: { axes, buttons, mapping },
+		} = this;
+
+		return {
+			axes: Object.fromEntries(
+				axes
+					.filter(
+						(axis, index) => GamepadInterface.standardAxesMap[index]
+					)
+					.map((axis, index) => [
+						GamepadInterface.standardAxesMap[index],
+						axis,
+					])
+			),
+			buttons: Object.fromEntries(
+				buttons
+					.filter(
+						(axis, index) => GamepadInterface.xbButtonMap[index]
+					)
+					.map((axis, index) => [
+						GamepadInterface.xbButtonMap[index],
+						axis,
+					])
+			),
+		};
+	}
+
+	/**
+	 * Get inputs from a ps controller.
+	 */
+	get asPS() {
+		if (!this.raw) return undefined;
+
+		const {
+			raw: { axes, buttons, mapping },
+		} = this;
+
+		return {
+			axes: Object.fromEntries(
+				axes
+					.filter(
+						(axis, index) => GamepadInterface.standardAxesMap[index]
+					)
+					.map((axis, index) => [
+						GamepadInterface.standardAxesMap[index],
+						axis,
+					])
+			),
+			buttons: Object.fromEntries(
+				buttons
+					.filter(
+						(axis, index) => GamepadInterface.psButtonMap[index]
+					)
+					.map((axis, index) => [
+						GamepadInterface.psButtonMap[index],
+						axis,
+					])
+			),
+		};
+	}
+
+	/**
+	 * Get inputs from a ns pro controller.
+	 */
+	get asNS() {
+		if (!this.raw) return undefined;
+
+		const {
+			raw: { axes, buttons, mapping },
+		} = this;
+
+		return {
+			axes: Object.fromEntries(
+				axes
+					.filter(
+						(axis, index) => GamepadInterface.standardAxesMap[index]
+					)
+					.map((axis, index) => [
+						GamepadInterface.standardAxesMap[index],
+						axis,
+					])
+			),
+			buttons: Object.fromEntries(
+				buttons
+					.filter(
+						(axis, index) => GamepadInterface.nsButtonMap[index]
+					)
+					.map((axis, index) => [
+						GamepadInterface.nsButtonMap[index],
+						axis,
+					])
+			),
+		};
+	}
+
+	/**
+	 * Get the controller axes. (normalizes inputs to two analogue sticks)
+	 */
+	get axes() {
+		return this.normalized && this.normalized.axes;
+	}
+
+	/**
+	 * Get the controller buttons. (normalizes inputs to a standard "xb" layout: [a/b/x/y, dpad, triggers/bumpers])
+	 */
 	get buttons() {
-		return (
-			this.raw &&
-			Object.fromEntries(
-				this.raw.buttons.map((button, index) => [
-					GamepadInterface.buttonMap[index],
-					button,
-				])
-			)
-		);
+		return this.normalized && this.normalized.buttons;
 	}
 
 	get raw() {
@@ -64,7 +260,10 @@ class GamepadInterface {
 	}
 
 	get mapping() {
-		return this.raw && this.raw.mapping;
+		if (!this.raw) return undefined;
+
+		if (this.raw.mapping === "standard") return "standard";
+		else return "unknown";
 	}
 
 	get id() {
@@ -392,6 +591,11 @@ class InputManager {
 	 */
 	__onGamepadConnected(event) {
 		const { gamepad } = event;
+
+		if (gamepad.mapping !== "standard")
+			console.warn(
+				`Controller connected to slot ${gamepad.index} with non-standard mapping: "${gamepad.mapping}"`
+			);
 
 		this.gamepads[gamepad.index] = gamepad;
 	}
