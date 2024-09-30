@@ -1124,6 +1124,8 @@ class GamepadInterface {
 		"right",
 	];
 
+	static axesMap = ["lh", "lv", "rh", "rv"];
+
 	/**
 	 * Create a simple interface for collecting gamepad inputs.
 	 * @param {InputManager} inputManager The `InputManager` instance this Gamepad is associated with.
@@ -1136,7 +1138,15 @@ class GamepadInterface {
 	}
 
 	get axes() {
-		return this.raw && this.raw.axes;
+		return (
+			this.raw &&
+			Object.fromEntries(
+				this.raw.axes.map((axis, index) => [
+					GamepadInterface.axesMap[index],
+					axis,
+				])
+			)
+		);
 	}
 
 	get buttons() {
@@ -1344,9 +1354,19 @@ class InputManager {
 	 * Calls when a mouse button is clicked.
 	 */
 	__onClick() {
-		const { x, y } = this.mouse;
+		const { onLayer } = this.mouse;
 
-		this.mouse.targets = this.scene.layerManager.getAtPosition(x, y);
+		this.mouse.targets = [];
+
+		for (const [label, [x, y]] of Object.entries(onLayer)) {
+			const targetsOnLayer = this.scene.layerManager.getAtPosition(
+				x,
+				y,
+				label
+			);
+
+			this.mouse.targets = [...this.mouse.targets, ...targetsOnLayer];
+		}
 
 		// Convert target objects into an array of IDs.
 		if (this.mouse.targets)
@@ -1476,8 +1496,6 @@ class InputManager {
 		const { gamepad } = event;
 
 		this.gamepads[gamepad.index] = gamepad;
-
-		console.log(this);
 	}
 
 	/**
@@ -1557,6 +1575,9 @@ class InputManager {
 					this.__onGamepadDisconnected(event);
 					break;
 			}
+
+			this.__triggerEvents(type, { type, gamepads: this.gamepads }); // Trigger the specific event type that fired.
+			this.__triggerEvents("all", { type, gamepads: this.gamepads }); // Trigger the "all" event type.
 		}
 	}
 
