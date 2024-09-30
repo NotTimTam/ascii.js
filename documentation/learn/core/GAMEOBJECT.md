@@ -78,7 +78,7 @@ Change the `GameObject`'s layer. Set to a falsey value to remove from any active
 
 The object's renderable element. `GameObject`s and all classes that extend them have a `renderable` property, which the `Renderer` uses to display them on the screen. By default, there is both a getter and a setter for this property, to retrieve/update the object's renderable at runtime.
 
-Example:
+#### Example
 
 ```js
 const instance = new GameObject(myLevel, 0, 0);

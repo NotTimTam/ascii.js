@@ -63,3 +63,37 @@ Generate the renderable representation of the box.
 #### Returns
 
 -   `PixelMesh` The PixelMesh representation of the box based on its dimensions, color, and style.
+
+---
+
+## Static Methods
+
+### `asPixelMesh(width, height, color, backgroundColor, style)`
+
+Get just the renderable `PixelMesh` portion of a `Box` instance.
+
+#### Parameters
+
+-   `width` &mdash; `number` This `Box` object's width.
+-   `height` &mdash; `number` This `Box` object's height.
+-   `color` &mdash; `string` Option Box color.
+-   `backgroundColor` &mdash; `string` Optional background color.
+-   `style` &mdash; `string` The box line style. `"line" || "double"`
+
+#### Returns
+
+The generated `PixelMesh`.
+
+#### Example
+
+```javascript
+const myGameObject = new GameObject(scene, 0, 0, "system");
+
+myGameObject.renderable = Box.asPixelMesh(
+	width,
+	height,
+	color,
+	backgroundColor,
+	style
+);
+```

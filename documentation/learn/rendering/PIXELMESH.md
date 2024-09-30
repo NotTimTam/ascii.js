@@ -80,7 +80,7 @@ Set the solid status of all `Pixels` in this `PixelMesh`.
 
 Create a `PixelMesh` object from a string. `\n` will create a new row.
 
-Example:
+#### Example
 
 ```javascript
 PixelMesh.fromString("This is my string.\nThis is the next line.");

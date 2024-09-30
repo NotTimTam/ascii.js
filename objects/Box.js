@@ -88,6 +88,23 @@ class Box extends GameObject {
 
 	get renderable() {
 		const { width, height, color, backgroundColor, style } = this;
+		return Box.asPixelMesh(width, height, color, backgroundColor, style);
+	}
+
+	set renderable(_) {
+		return;
+	}
+
+	/**
+	 * Get just the renderable `PixelMesh` portion of a `Box` instance.
+	 * @param {number} width This `Box` object's width.
+	 * @param {number} height This `Box` object's height.
+	 * @param {string} color Option Box color.
+	 * @param {string} backgroundColor Optional background color.
+	 * @param {string} style The box line style. `"line" || "double"`
+	 * @returns {PixelMesh} The generated `PixelMesh`.
+	 */
+	static asPixelMesh(width, height, color, backgroundColor, style) {
 		const styleSet = lineSource[style];
 
 		const data = [];
@@ -121,10 +138,6 @@ class Box extends GameObject {
 		}
 
 		return new PixelMesh({ data });
-	}
-
-	set renderable(_) {
-		return;
 	}
 }
 
