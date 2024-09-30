@@ -88,6 +88,9 @@ const keyDisplay = (key) => {
 		case "-":
 			key = "-_";
 			break;
+		case "`":
+			key = "`~";
+			break;
 	}
 
 	return key;
@@ -125,7 +128,7 @@ class Key extends GameObject {
 }
 
 let lastX = 0;
-`escape!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!scrolllock!pause\n
+`escape!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!scrolllock!pause\n
 \`!1!2!3!4!5!6!7!8!9!0!-!=!backspace\n
 tab!q!w!e!r!t!y!u!i!o!p![!]!\\!delete\n
 spc!spc!spc!spc!spc!spc!a!s!d!f!g!h!j!k!l!;!'!enter\n
@@ -155,37 +158,8 @@ spc!control!alt!space!alt!control!left!down!right`
 					keyDsp
 				);
 
-				if (key === "h") new ScrollTo(scene, keyObject, true);
+				if (key === "j") new ScrollTo(scene, keyObject, true);
 			});
 	});
-
-// const scrollIndicator = new GameObject(
-// 	scene,
-// 	mouseDisplay.x + 3,
-// 	mouseDisplay.y - 3,
-// 	"system"
-// );
-// scrollIndicator.renderable = Pixel.fromString(` `);
-
-// scene.onTickPassthrough = () => {
-// 	const {
-// 		mouse: {
-// 			buttons: { left, right, middle },
-// 		},
-// 	} = scene.inputManager;
-
-// 	// console.log(deltas, scroll);
-
-// 	if (left) leftClickIndicator.visible = true;
-// 	else leftClickIndicator.visible = false;
-
-// 	if (right) rightClickIndicator.visible = true;
-// 	else rightClickIndicator.visible = false;
-
-// 	if (middle) middleClickIndicator.visible = true;
-// 	else middleClickIndicator.visible = false;
-
-// 	scrollIndicator.renderable = Pixel.fromString(` `);
-// };
 
 runtime.loadScene(scene);
