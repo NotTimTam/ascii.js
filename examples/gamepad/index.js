@@ -61,46 +61,96 @@ const backdrop = new Text(scene, {
 
 new ScrollTo(scene, backdrop, true);
 
-const selection = new Text(scene, {
-	x: -20,
-	y: -7,
-	value: "1: No gamepad connected.\n2: No gamepad connected.\n3: No gamepad connected.\n4: No gamepad connected.",
-	wrap: true,
-	color: "grey",
-	layer: "system",
-});
-selection.activeGamepad = 0;
+let activeGamepad = 0;
 
-const showGamepad = () => {
-	const exists = scene.inputManager.gamepads[selection.activeGamepad];
+class ControllerSelector extends Text {
+	constructor(scene, config) {
+		super(scene, config);
 
-	selection.value = scene.inputManager.gamepads
-		.map(
-			(gamepad, index) =>
-				`${index + 1}: ${
-					gamepad ? gamepad.id : "No gamepad connected."
-				}`
-		)
-		.join("\n");
+		this.index = config.index;
+
+		scene.inputManager.watchObjectClick(this.id, ({ onLayer }) => {
+			activeGamepad = this.index;
+
+			showGamepad();
+		});
+
+		this.updateDisplay();
+	}
+
+	get connected() {
+		return scene.inputManager.gamepads[this.index];
+	}
+
+	updateDisplay() {
+		this.value = `${this.index + 1}: ${
+			this.connected ? this.connected.id : "No gamepad connected."
+		}`;
+		this.color =
+			activeGamepad === this.index
+				? this.connected
+					? "green"
+					: "red"
+				: "grey";
+	}
+}
+
+const selections = [
+	new ControllerSelector(scene, {
+		x: -20,
+		y: -7,
+		value: "",
+		wrap: true,
+		color: "grey",
+		layer: "system",
+		index: 0,
+	}),
+	new ControllerSelector(scene, {
+		x: -20,
+		y: -6,
+		value: "",
+		wrap: true,
+		color: "grey",
+		layer: "system",
+		index: 1,
+	}),
+	new ControllerSelector(scene, {
+		x: -20,
+		y: -5,
+		value: "",
+		wrap: true,
+		color: "grey",
+		layer: "system",
+		index: 2,
+	}),
+	new ControllerSelector(scene, {
+		x: -20,
+		y: -4,
+		value: "",
+		wrap: true,
+		color: "grey",
+		layer: "system",
+		index: 3,
+	}),
+];
+
+function showGamepad() {
+	const exists = scene.inputManager.gamepads[activeGamepad];
 
 	if (!exists) {
 		backdrop.value = `           NO CONTROLLER IN SLOT ${
-			selection.activeGamepad + 1
+			activeGamepad + 1
 		}.\nConnect a controller and then select it above.`;
 	} else {
 		backdrop.value = controllerText;
 	}
-};
+
+	for (const selection of selections) {
+		selection.updateDisplay();
+	}
+}
 
 showGamepad();
-
-scene.inputManager.watchObjectClick(selection.id, ({ onLayer }) => {
-	const index = onLayer[selection.layerLabel][1] - selection.y;
-
-	selection.activeGamepad = index;
-
-	showGamepad();
-});
 
 scene.inputManager.addEventListener("gamepadconnected", showGamepad);
 scene.inputManager.addEventListener("gamepaddisconnected", showGamepad);
@@ -118,31 +168,31 @@ class Button extends GameObject {
 }
 
 new Button(scene, 46, 8, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.a.pressed
 		? new Pixel({ value: "A", color: "lime", fontWeight: 800 })
 		: null;
 });
 new Button(scene, 51, 6, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.b.pressed
 		? new Pixel({ value: "B", color: "red", fontWeight: 800 })
 		: null;
 });
 new Button(scene, 41, 6, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.x.pressed
 		? new Pixel({ value: "X", color: "dodgerblue", fontWeight: 800 })
 		: null;
 });
 new Button(scene, 46, 4, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.y.pressed
 		? new Pixel({ value: "Y", color: "yellow", fontWeight: 800 })
 		: null;
 });
 new Button(scene, 8, 4, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.up.pressed
 		? new PixelMesh({
 				data: "/|\\\n |"
@@ -154,7 +204,7 @@ new Button(scene, 8, 4, "system", (scene) => {
 		: null;
 });
 new Button(scene, 8, 7, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.down.pressed
 		? new PixelMesh({
 				data: " |\n\\|/"
@@ -166,7 +216,7 @@ new Button(scene, 8, 7, "system", (scene) => {
 		: null;
 });
 new Button(scene, 4, 6, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.left.pressed
 		? new PixelMesh({
 				data: [
@@ -176,7 +226,7 @@ new Button(scene, 4, 6, "system", (scene) => {
 		: null;
 });
 new Button(scene, 11, 6, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.right.pressed
 		? new PixelMesh({
 				data: [
@@ -186,7 +236,7 @@ new Button(scene, 11, 6, "system", (scene) => {
 		: null;
 });
 new Button(scene, 20, 5, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.select.pressed
 		? new PixelMesh({
 				data: " __\n|__|"
@@ -198,7 +248,7 @@ new Button(scene, 20, 5, "system", (scene) => {
 		: null;
 });
 new Button(scene, 32, 5, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.start.pressed
 		? new PixelMesh({
 				data: " __\n|__|"
@@ -210,7 +260,7 @@ new Button(scene, 32, 5, "system", (scene) => {
 		: null;
 });
 new Button(scene, 5, 1, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.l1.pressed
 		? new PixelMesh({
 				data: "  _____\n-'     '-"
@@ -222,7 +272,7 @@ new Button(scene, 5, 1, "system", (scene) => {
 		: null;
 });
 new Button(scene, 42, 1, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.r1.pressed
 		? new PixelMesh({
 				data: "  _____\n-'     '-"
@@ -234,7 +284,7 @@ new Button(scene, 42, 1, "system", (scene) => {
 		: null;
 });
 new Button(scene, 5, 0, "shoulders", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.l2.pressed
 		? new PixelMesh({
 				data: ` _=====_\n/ ${gamepad.buttons.l2.value
@@ -249,7 +299,7 @@ new Button(scene, 5, 0, "shoulders", (scene) => {
 		: null;
 });
 new Button(scene, 42, 0, "shoulders", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.r2.pressed
 		? new PixelMesh({
 				data: ` _=====_\n/ ${gamepad.buttons.r2.value
@@ -264,7 +314,7 @@ new Button(scene, 42, 0, "shoulders", (scene) => {
 		: null;
 });
 new Button(scene, 16, 8, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.l3.pressed
 		? new PixelMesh({
 				data: `    _
@@ -282,7 +332,7 @@ new Button(scene, 16, 8, "system", (scene) => {
 });
 
 new Button(scene, 31, 8, "system", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad && gamepad.buttons.r3.pressed
 		? new PixelMesh({
 				data: `    _
@@ -300,7 +350,7 @@ new Button(scene, 31, 8, "system", (scene) => {
 });
 
 new Button(scene, 17, 10, "shoulders", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad
 		? new PixelMesh({
 				data: `H ${gamepad.axes.lh.toFixed(
@@ -314,7 +364,7 @@ new Button(scene, 17, 10, "shoulders", (scene) => {
 		: null;
 });
 new Button(scene, 32, 10, "shoulders", (scene) => {
-	const gamepad = scene.inputManager.gamepads[selection.activeGamepad];
+	const gamepad = selections[activeGamepad].connected;
 	return gamepad
 		? new PixelMesh({
 				data: `H ${gamepad.axes.rh.toFixed(
