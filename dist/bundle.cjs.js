@@ -1211,9 +1211,9 @@ class InputManager {
 	 * @param {Event} event The listener's event.
 	 */
 	__onKeyDown(event) {
-		const { key, keyCode, ctrlKey } = event;
+		const { key, keyCode, ctrlKey, shiftKey } = event;
 
-		if (!ctrlKey) event.preventDefault();
+		if (!ctrlKey && !shiftKey) event.preventDefault();
 
 		this.keyboard.keys[this.__formatKey(key)] = true;
 		this.keyboard.keyCodes[keyCode] = true;

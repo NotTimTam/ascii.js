@@ -34,41 +34,59 @@ const { width, height } = runtime.renderer;
 
 const keyDisplay = (key) => {
 	switch (key) {
-		case "Escape":
+		case "escape":
 			key = "Esc";
 			break;
-		case "ScrollLock":
+		case "scrolllock":
 			key = "ScrLk";
 			break;
-		case "Delete":
+		case "delete":
 			key = "Del";
 			break;
-		case "PageDown":
+		case "tab":
+			key = "Tab";
+			break;
+		case "pause":
+			key = "Pause";
+			break;
+		case "pagedown":
 			key = "PgDn";
 			break;
-		case "PageUp":
+		case "shift":
+			key = "Shift";
+			break;
+		case "alt":
+			key = "Alt";
+			break;
+		case "pageup":
 			key = "PgUp";
 			break;
-		case "Insert":
+		case "insert":
 			key = "Ins";
 			break;
-		case " ":
-			key = "   [_]   ";
+		case "space":
+			key = "       [_]       ";
 			break;
-		case "ArrowLeft":
+		case "left":
 			key = "←";
 			break;
-		case "ArrowRight":
+		case "right":
 			key = "→";
 			break;
-		case "ArrowUp":
+		case "up":
 			key = "↑";
 			break;
-		case "ArrowDown":
+		case "down":
 			key = "↓";
 			break;
-		case "Control":
+		case "control":
 			key = "Ctrl";
+			break;
+		case "=":
+			key = "=+";
+			break;
+		case "-":
+			key = "-_";
 			break;
 	}
 
@@ -81,22 +99,14 @@ class Key extends GameObject {
 
 		this.key = key;
 		this.keyDisplay = keyDisplay;
-
-		this.pressed = false;
-
-		scene.inputManager.addEventListener("keydown", ({ keys, key }) => {
-			if (keys[this.key] || key === this.key) this.pressed = true;
-		});
-		scene.inputManager.addEventListener("keyup", ({ keys, key }) => {
-			if (!keys[this.key] || key === this.key) this.pressed = false;
-		});
 	}
 
 	get renderable() {
+		const pressed = this.scene.inputManager.keyboard.keys[this.key];
 		const box = Box.asPixelMesh(
 			2 + this.keyDisplay.length,
 			3,
-			this.pressed ? "red" : "white",
+			pressed ? "red" : "white",
 			undefined,
 			"line"
 		);
@@ -106,7 +116,7 @@ class Key extends GameObject {
 
 			box.data[1][1 + i] = new Pixel({
 				value,
-				color: this.pressed ? "red" : "white",
+				color: pressed ? "red" : "white",
 			});
 		}
 
@@ -115,12 +125,12 @@ class Key extends GameObject {
 }
 
 let lastX = 0;
-`Escape!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!ScrollLock!Pause\n
-\`!1!2!3!4!5!6!7!8!9!0!-!=!Backspace\n
-Tab!q!w!e!r!t!y!u!i!o!p![!]!\\\n
-spc!spc!spc!spc!spc!spc!a!s!d!f!g!h!j!k!l!;!'!Enter\n
-spc!Shift!z!x!c!v!b!n!m!,!.!/!Shift!ArrowUp\n
-Control!Alt! !Alt!Control!spc!spc!spc!spc!spc!spc!spc!spc!spc!ArrowLeft!ArrowDown!ArrowRight`
+`escape!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!spc!scrolllock!pause\n
+\`!1!2!3!4!5!6!7!8!9!0!-!=!backspace\n
+tab!q!w!e!r!t!y!u!i!o!p![!]!\\!delete\n
+spc!spc!spc!spc!spc!spc!a!s!d!f!g!h!j!k!l!;!'!enter\n
+spc!shift!z!x!c!v!b!n!m!,!.!/!shift!up\n
+spc!control!alt!space!alt!control!left!down!right`
 	.trim()
 	.split("\n")
 	.filter((row) => row)
