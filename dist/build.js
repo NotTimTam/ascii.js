@@ -1,7 +1,6 @@
-
 // UNUSED EXPORTS: AdvMath, Animate, Animation, AnimationFrame, Behavior, Box, Core, Frame, GameObject, Layer, Menu, Pixel, PixelMesh, Scene, ScrollTo, Text, TextInput, TopDownMovement, __AudioManager, __Camera, __InputManager, __LayerManager, __Noise, __Renderer, __Sound, dataUtils, default
 
-;// ./util/data.js
+// ./util/data.js
 /**
  * Prettify an array when displaying it in a string.
  * @param {Array<*>} array The array to display.
@@ -25,10 +24,7 @@ const displayArray = (array) =>
  * @returns {boolean} Whether or not the value is a plain object.
  */
 const isPlainObject = (x) =>
-	x && typeof x === "object" && !(x instanceof Array);
-
-;// ./core/Pixel.js
-
+	x && typeof x === "object" && !(x instanceof Array); // ./core/Pixel.js
 
 class Pixel_PixelMesh {
 	/**
@@ -234,10 +230,7 @@ class Pixel_Pixel {
 	static fromString = (string) => new Pixel_Pixel({ value: string });
 }
 
-/* harmony default export */ const core_Pixel = (Pixel_Pixel);
-
-;// ./engine/Frame.js
-
+/* harmony default export */ const core_Pixel = Pixel_Pixel; // ./engine/Frame.js
 
 class Frame {
 	/**
@@ -255,7 +248,9 @@ class Frame {
 	 * @returns {Frame} the generated Frame.
 	 */
 	static fromString = (string) =>
-		new Frame(string.split("").map((item) => new core_Pixel({ value: item })));
+		new Frame(
+			string.split("").map((item) => new core_Pixel({ value: item }))
+		);
 
 	/**
 	 * Convert a 2D array of `Pixel`s to a Frame.
@@ -264,9 +259,8 @@ class Frame {
 	static from2DArray = (array) => new Frame(array.flat());
 }
 
-/* harmony default export */ const engine_Frame = (Frame);
+/* harmony default export */ const engine_Frame = Frame; // ./util/math.js
 
-;// ./util/math.js
 /**
  * Check if two Axis-Aligned Bounding Boxes (AABBs) overlap.
  * @param {number} x1 The x-coordinate of the top-left corner of box 1.
@@ -314,8 +308,7 @@ const degreeToRadian = (degree) => degree * (Math.PI / 180);
  * @param {number} max The maximum value.
  * @returns {number} A random integer between two values.
  */
-const range = (min, max) =>
-	Math.floor(Math.random() * (max - min + 1)) + min;
+const range = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
 /**
  * Returns the factorial of a number.
@@ -375,10 +368,7 @@ const angleBetweenPoints = (x1, y1, x2, y2) => {
  * @returns {number} The distance between the two points.
  */
 const distanceBetweenPoints = (x1, y1, x2, y2) =>
-	Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
-
-;// ./engine/AudioManager.js
-
+	Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2); // ./engine/AudioManager.js
 
 class Sound {
 	/**
@@ -597,9 +587,8 @@ class AudioManager {
 	}
 }
 
-/* harmony default export */ const engine_AudioManager = (AudioManager);
+/* harmony default export */ const engine_AudioManager = AudioManager; // ./engine/Noise.js
 
-;// ./engine/Noise.js
 /*
  * MIT License
  *
@@ -1035,11 +1024,7 @@ class Noise {
 	}
 }
 
-/* harmony default export */ const engine_Noise = (Noise);
-
-;// ./engine/Camera.js
-
-
+/* harmony default export */ const engine_Noise = Noise; // ./engine/Camera.js
 
 class Camera {
 	/**
@@ -1111,12 +1096,7 @@ class Camera {
 	}
 }
 
-/* harmony default export */ const engine_Camera = (Camera);
-
-;// ./engine/InputManager.js
-
-
-
+/* harmony default export */ const engine_Camera = Camera; // ./engine/InputManager.js
 
 class GamepadInterface {
 	static xbButtonMap = [
@@ -1923,10 +1903,7 @@ class InputManager {
 	}
 }
 
-/* harmony default export */ const engine_InputManager = (InputManager);
-
-;// ./core/Core.js
-
+/* harmony default export */ const engine_InputManager = InputManager; // ./core/Core.js
 
 class Core {
 	/**
@@ -1954,11 +1931,7 @@ class Core {
 	}
 }
 
-/* harmony default export */ const core_Core = (Core);
-
-;// ./core/GameObject.js
-
-
+/* harmony default export */ const core_Core = Core; // ./core/GameObject.js
 
 class GameObject extends core_Core {
 	/**
@@ -2150,7 +2123,11 @@ class GameObject extends core_Core {
 	 * Set this `GameObject`'s renderable.
 	 */
 	set renderable(value) {
-		if (value && !(value instanceof core_Pixel) && !(value instanceof Pixel_PixelMesh))
+		if (
+			value &&
+			!(value instanceof core_Pixel) &&
+			!(value instanceof Pixel_PixelMesh)
+		)
 			throw new TypeError(
 				"A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
 			);
@@ -2198,15 +2175,7 @@ class GameObject extends core_Core {
 	}
 }
 
-/* harmony default export */ const core_GameObject = (GameObject);
-
-;// ./engine/LayerManager.js
-
-
-
-
-
-
+/* harmony default export */ const core_GameObject = GameObject; // ./engine/LayerManager.js
 
 class Layer {
 	/**
@@ -2268,7 +2237,8 @@ class Layer {
 				return gameObject;
 			})
 			.filter(
-				(gameObject) => gameObject && gameObject instanceof core_GameObject
+				(gameObject) =>
+					gameObject && gameObject instanceof core_GameObject
 			);
 
 		for (const gameObject of this.gameObjects)
@@ -2572,14 +2542,7 @@ class LayerManager {
 	}
 }
 
-/* harmony default export */ const engine_LayerManager = (LayerManager);
-
-;// ./engine/Scene.js
-
-
-
-
-
+/* harmony default export */ const engine_LayerManager = LayerManager; // ./engine/Scene.js
 
 class Scene {
 	/**
@@ -2726,14 +2689,7 @@ class Scene {
 	}
 }
 
-/* harmony default export */ const engine_Scene = (Scene);
-
-;// ./engine/Runtime.js
-
-
-
-
-
+/* harmony default export */ const engine_Scene = Scene; // ./engine/Runtime.js
 
 class Runtime_Runtime {
 	/**
@@ -2923,14 +2879,7 @@ class Runtime_Runtime {
 	}
 }
 
-/* harmony default export */ const engine_Runtime = (Runtime_Runtime);
-
-;// ./engine/Renderer.js
-
-
-
-
-
+/* harmony default export */ const engine_Runtime = Runtime_Runtime; // ./engine/Renderer.js
 
 class Renderer {
 	/**
@@ -3275,10 +3224,7 @@ class Renderer {
 	}
 }
 
-/* harmony default export */ const engine_Renderer = (Renderer);
-
-;// ./core/Behavior.js
-
+/* harmony default export */ const engine_Renderer = Renderer; // ./core/Behavior.js
 
 class Behavior extends core_Core {
 	/**
@@ -3297,12 +3243,7 @@ class Behavior extends core_Core {
 	}
 }
 
-/* harmony default export */ const core_Behavior = (Behavior);
-
-;// ./objects/Box.js
-
-
-
+/* harmony default export */ const core_Behavior = Behavior; // ./objects/Box.js
 
 // ┌─┬┐  ╔═╦╗  ╓─╥╖  ╒═╤╕
 // │ ││  ║ ║║  ║ ║║  │ ││
@@ -3443,12 +3384,7 @@ class Box extends core_GameObject {
 	}
 }
 
-/* harmony default export */ const objects_Box = (Box);
-
-;// ./objects/Text.js
-
-
-
+/* harmony default export */ const objects_Box = Box; // ./objects/Text.js
 
 class Text extends core_GameObject {
 	/**
@@ -3603,15 +3539,7 @@ class Text extends core_GameObject {
 	}
 }
 
-/* harmony default export */ const objects_Text = (Text);
-
-;// ./objects/Menu.js
-
-
-
-
-
-
+/* harmony default export */ const objects_Text = Text; // ./objects/Menu.js
 
 class Menu extends core_GameObject {
 	/**
@@ -3855,13 +3783,8 @@ class Menu extends core_GameObject {
 	}
 }
 
-/* harmony default export */ const objects_Menu = ((/* unused pure expression or super */ null && (Menu)));
-
-;// ./objects/TextInput.js
-
-
-
-
+/* harmony default export */ const objects_Menu =
+	/* unused pure expression or super */ null && Menu; // ./objects/TextInput.js
 
 class TextInput extends objects_Text {
 	/**
@@ -4090,10 +4013,8 @@ class TextInput extends objects_Text {
 	}
 }
 
-/* harmony default export */ const objects_TextInput = ((/* unused pure expression or super */ null && (TextInput)));
-
-;// ./behaviors/ScrollTo.js
-
+/* harmony default export */ const objects_TextInput =
+	/* unused pure expression or super */ null && TextInput; // ./behaviors/ScrollTo.js
 
 class ScrollTo extends core_Behavior {
 	/**
@@ -4131,10 +4052,8 @@ class ScrollTo extends core_Behavior {
 	}
 }
 
-/* harmony default export */ const behaviors_ScrollTo = ((/* unused pure expression or super */ null && (ScrollTo)));
-
-;// ./behaviors/TopDownMovement.js
-
+/* harmony default export */ const behaviors_ScrollTo =
+	/* unused pure expression or super */ null && ScrollTo; // ./behaviors/TopDownMovement.js
 
 class TopDownMovement extends core_Behavior {
 	/**
@@ -4315,11 +4234,8 @@ class TopDownMovement extends core_Behavior {
 	onTick() {}
 }
 
-/* harmony default export */ const behaviors_TopDownMovement = ((/* unused pure expression or super */ null && (TopDownMovement)));
-
-;// ./behaviors/Animate.js
-
-
+/* harmony default export */ const behaviors_TopDownMovement =
+	/* unused pure expression or super */ null && TopDownMovement; // ./behaviors/Animate.js
 
 class AnimationFrame {
 	/**
@@ -4609,36 +4525,8 @@ class Animate extends core_Behavior {
 	}
 }
 
-/* harmony default export */ const behaviors_Animate = ((/* unused pure expression or super */ null && (Animate)));
+/* harmony default export */ const behaviors_Animate =
+	/* unused pure expression or super */ null && Animate; // ./index.js
 
-;// ./index.js
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* harmony default export */ const index = ((/* unused pure expression or super */ null && (Runtime)));
-
+/* harmony default export */ const index =
+	/* unused pure expression or super */ null && Runtime;
