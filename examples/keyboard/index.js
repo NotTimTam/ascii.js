@@ -4,7 +4,7 @@ import Runtime, {
 	Pixel,
 	Scene,
 	ScrollTo,
-} from "../../dist/build.js";
+} from "../../index.js";
 
 const runtime = new Runtime({
 	seed: 234556,
