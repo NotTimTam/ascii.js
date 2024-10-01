@@ -4,7 +4,7 @@ import { dirname, resolve } from "path";
 export default {
 	entry: "./index.js", // Your entry point
 	output: {
-		filename: "bundle.js", // Output file name
+		filename: "build.js", // Output file name
 		path: resolve(dirname(fileURLToPath(import.meta.url)), "dist"), // Output directory
 		module: true, // Enable ES6 module output
 	},

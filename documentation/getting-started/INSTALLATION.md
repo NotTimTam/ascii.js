@@ -13,7 +13,7 @@ If you don't want to maintain source code versions, you can import ascii.js dire
 You can directly import the code in your HTML file using:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/bundle.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/build.js"></script>
 ```
 
 You can also import it through JavaScript
@@ -21,7 +21,7 @@ You can also import it through JavaScript
 **CJS**:
 
 ```js
-const Runtime = require("https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/bundle.js");
+const Runtime = require("https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/build.js");
 ```
 
-**Note:** As of version `1.0.28`, ascii.js no longer supports CommonJS. Thus only a single `bundle.js` file is generated per build, instead of the previous `bundle.esm.js` and `bundle.cjs.js` files.
+**Note:** As of version `1.0.28`, ascii.js no longer supports CommonJS. Thus only a single `build.js` file is generated per build, instead of the previous `bundle.esm.js` and `bundle.cjs.js` files.
