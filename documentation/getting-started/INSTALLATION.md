@@ -4,7 +4,7 @@ To start a new project from scratch, follow the instructions below.
 
 ## Direct Source Code Integration
 
-If you want to include the ascii.js source code directly in your project, you can download the [latest release](https://github.com/NotTimTam/ascii.js/releases/) from GitHub. Both CJS and ESM compilations of the source code are provided.
+If you want to include the ascii.js source code directly in your project, you can download the [latest release](https://github.com/NotTimTam/ascii.js/releases/) from GitHub.
 
 ## Browser CDN Integration
 
