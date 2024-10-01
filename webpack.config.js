@@ -1,32 +1,22 @@
-import { fileURLToPath } from "url";
-import { dirname, resolve } from "path";
+import path from "path";
 
 export default {
 	entry: "./index.js", // Your entry point
 	output: {
 		filename: "build.js", // Output file name
-		path: resolve(dirname(fileURLToPath(import.meta.url)), "dist"), // Output directory
+		path: path.join(process.cwd(), "dist"), // Output directory
 		module: true, // Enable ES6 module output
+		chunkFormat: "module",
 	},
 	experiments: {
 		outputModule: true, // Enable experimental support for outputting ES6 modules
 	},
+	optimization: {
+		minimize: false,
+	},
 	resolve: {
 		extensions: [".js"], // Resolve JS files
 	},
-	module: {
-		rules: [
-			{
-				test: /\.js$/, // Transpile JavaScript files
-				exclude: /node_modules/,
-				use: {
-					loader: "babel-loader", // Use Babel for transpilation
-					options: {
-						presets: ["@babel/preset-env"], // Preset for ES6
-					},
-				},
-			},
-		],
-	},
+	target: "es6",
 	mode: "production",
 };
