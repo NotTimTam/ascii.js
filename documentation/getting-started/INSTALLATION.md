@@ -13,19 +13,15 @@ If you don't want to maintain source code versions, you can import ascii.js dire
 You can directly import the code in your HTML file using:
 
 ```html
-<script src="https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/bundle.cjs.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/bundle.js"></script>
 ```
 
-You can also
-
-**ESM**:
-```js
-import Runtime from "https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/bundle.esm.js";
-```
+You can also import it through JavaScript
 
 **CJS**:
+
 ```js
-const Runtime = require("https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/bundle.cjs.js");
+const Runtime = require("https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/bundle.js");
 ```
 
-The `.esm.js` and `.cjs.js` extensions determine whether you are using an EcmaScript module, or CommonJS require version of the source code.
+**Note:** As of version `1.0.28`, ascii.js no longer supports CommonJS. Thus only a single `bundle.js` file is generated per build, instead of the previous `bundle.esm.js` and `bundle.cjs.js` files.
