@@ -30,6 +30,9 @@ class Runtime {
 	 * -   **Performance:** Faster rendering compared to stacked mode due to the compilation of all frames. Additionally, identifies and skips rendering frames that are identical to the currently drawn frame, saving processing time when the screen is static. Due to the nature of this rendering mode, some graphical issues can occur, and it should only be used on lower-end devices.
 	 */
 	constructor(config) {
+		if (!window.Worker)
+			throw new Error("This environment does not support webworkers.");
+
 		this.config = config;
 
 		this.validateConfig(config);
