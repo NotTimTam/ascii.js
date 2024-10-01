@@ -35,8 +35,6 @@ jobs:
                   GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
               with:
                   token: ${{ secrets.REPO_TOKEN }}
-                  upload_url: ${{ steps.create_release.outputs.upload_url }}
-
                   files: dist/build.js
                   tag_name: v${{ env.VERSION }} # Tag with 'v' followed by version
                   name: Version ${{ env.VERSION }} # Title of the release
