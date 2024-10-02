@@ -1,43 +1,43 @@
-var be = Object.defineProperty;
-var he = Object.getOwnPropertySymbols;
-var _e = Object.prototype.hasOwnProperty, ye = Object.prototype.propertyIsEnumerable;
-var G = Math.pow, J = (d, e, t) => e in d ? be(d, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : d[e] = t, A = (d, e) => {
+var re = Object.defineProperty;
+var N = Object.getOwnPropertySymbols;
+var ne = Object.prototype.hasOwnProperty, ie = Object.prototype.propertyIsEnumerable;
+var L = Math.pow, W = (c, e, t) => e in c ? re(c, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : c[e] = t, E = (c, e) => {
   for (var t in e || (e = {}))
-    _e.call(e, t) && J(d, t, e[t]);
-  if (he)
-    for (var t of he(e))
-      ye.call(e, t) && J(d, t, e[t]);
-  return d;
+    ne.call(e, t) && W(c, t, e[t]);
+  if (N)
+    for (var t of N(e))
+      ie.call(e, t) && W(c, t, e[t]);
+  return c;
 };
-var g = (d, e, t) => J(d, typeof e != "symbol" ? e + "" : e, t);
-var le = (d, e, t) => new Promise((r, i) => {
-  var n = (l) => {
+var m = (c, e, t) => W(c, typeof e != "symbol" ? e + "" : e, t);
+var U = (c, e, t) => new Promise((r, n) => {
+  var i = (l) => {
     try {
       s(t.next(l));
     } catch (o) {
-      i(o);
+      n(o);
     }
-  }, a = (l) => {
+  }, h = (l) => {
     try {
       s(t.throw(l));
     } catch (o) {
-      i(o);
+      n(o);
     }
-  }, s = (l) => l.done ? r(l.value) : Promise.resolve(l.value).then(n, a);
-  s((t = t.apply(d, e)).next());
+  }, s = (l) => l.done ? r(l.value) : Promise.resolve(l.value).then(i, h);
+  s((t = t.apply(c, e)).next());
 });
-const T = (d) => `[${d.map((e) => {
+const C = (c) => `[${c.map((e) => {
   switch (typeof e) {
     case "string":
       return `"${e}"`;
     default:
       return e;
   }
-}).join(", ")}]`, j = (d) => d && typeof d == "object" && !(d instanceof Array), We = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}).join(", ")}]`, x = (c) => c && typeof c == "object" && !(c instanceof Array), ye = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  displayArray: T,
-  isPlainObject: j
-}, Symbol.toStringTag, { value: "Module" })), B = class B {
+  displayArray: C,
+  isPlainObject: x
+}, Symbol.toStringTag, { value: "Module" })), P = class P {
   /**
    * A pixel mesh stores a 2-dimensional array of `Pixels`.
    * @param {Object} config The config for this `PixelMesh` instance.
@@ -45,7 +45,7 @@ const T = (d) => `[${d.map((e) => {
    * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
    */
   constructor(e) {
-    if (!j(e))
+    if (!x(e))
       throw new TypeError(
         "Expected a plain object for PixelMesh constructor config parameter."
       );
@@ -131,16 +131,16 @@ const T = (d) => `[${d.map((e) => {
  * @param {string} string The string to convert to a `PixelMesh`.
  * @returns {Pixel} the newly created `PixelMesh` object.
  */
-g(B, "fromString", (e) => new B({
+m(P, "fromString", (e) => new P({
   data: e.split(`
 `).map(
     (t) => t.split("").map(
-      (r) => r && r.trim() !== "" && v.fromString(r)
+      (r) => r && r.trim() !== "" && b.fromString(r)
     )
   )
 }));
-let L = B;
-const R = class R {
+let _ = P;
+const S = class S {
   /**
    * Pixel data for a frame coordinate.
    * @param {Object} config The pixel config object.
@@ -152,16 +152,16 @@ const R = class R {
    * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
    */
   constructor(e) {
-    if (!j(e))
+    if (!x(e))
       throw new TypeError(
         "Expected a plain object for Pixel constructor config parameter."
       );
     const {
       value: t,
       color: r = "#ffffff",
-      fontWeight: i = "normal",
-      backgroundColor: n,
-      solid: a = !1,
+      fontWeight: n = "normal",
+      backgroundColor: i,
+      solid: h = !1,
       origin: s
     } = e;
     if (typeof t != "string" || t.length !== 1)
@@ -172,7 +172,7 @@ const R = class R {
       throw new Error(
         'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
       );
-    this.value = t, this.color = r, this.fontWeight = i, this.backgroundColor = n, this.solid = a, this.origin = s;
+    this.value = t, this.color = r, this.fontWeight = n, this.backgroundColor = i, this.solid = h, this.origin = s;
   }
   get origin() {
     return this.__rawOrigin;
@@ -196,9 +196,9 @@ const R = class R {
  * @param {string} string The string to convert to a `Pixel`.
  * @returns {Pixel} the newly created `Pixel` object.
  */
-g(R, "fromString", (e) => new R({ value: e }));
-let v = R;
-const P = class P {
+m(S, "fromString", (e) => new S({ value: e }));
+let b = S;
+const M = class M {
   /**
    * A display frame.
    * @param {Array<Pixel>} data The frame's 1-dimensional (left-to-right, top-to-bottom) data array.
@@ -213,37 +213,37 @@ const P = class P {
  * @param {string} string The string to convert.
  * @returns {Frame} the generated Frame.
  */
-g(P, "fromString", (e) => new P(e.split("").map((t) => new v({ value: t })))), /**
+m(M, "fromString", (e) => new M(e.split("").map((t) => new b({ value: t })))), /**
  * Convert a 2D array of `Pixel`s to a Frame.
  * @param {Array<Array<Pixel>} array The array to convert.
  */
-g(P, "from2DArray", (e) => new P(e.flat()));
-let $ = P;
-const re = (d, e, t, r, i, n, a, s) => d < i + a && d + t > i && e < n + s && e + r > n, H = (d, e, t) => Math.max(e, Math.min(d, t)), ie = (d) => d * (180 / Math.PI), Q = (d) => d * (Math.PI / 180), ve = (d, e) => Math.floor(Math.random() * (e - d + 1)) + d, xe = (d) => {
-  if (d === 0 || d === 1) return 1;
-  for (let e = d - 1; e >= 1; e--)
-    d *= e;
-  return d;
-}, ke = (d, e) => [
-  e * Math.cos(Q(d)),
-  e * Math.sin(Q(d))
-], Ee = (d, e) => [
-  ie(Math.atan2(e, d)),
-  Math.sqrt(G(d, 2) + G(e, 2))
-], Me = (d, e, t, r) => ie(Math.atan2(r - e, t - d)), Ce = (d, e, t, r) => Math.sqrt(G(t - d, 2) + G(r - e, 2)), Ge = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+m(M, "from2DArray", (e) => new M(e.flat()));
+let j = M;
+const B = (c, e, t, r, n, i, h, s) => c < n + h && c + t > n && e < i + s && e + r > i, T = (c, e, t) => Math.max(e, Math.min(c, t)), R = (c) => c * (180 / Math.PI), H = (c) => c * (Math.PI / 180), se = (c, e) => Math.floor(Math.random() * (e - c + 1)) + c, oe = (c) => {
+  if (c === 0 || c === 1) return 1;
+  for (let e = c - 1; e >= 1; e--)
+    c *= e;
+  return c;
+}, ae = (c, e) => [
+  e * Math.cos(H(c)),
+  e * Math.sin(H(c))
+], he = (c, e) => [
+  R(Math.atan2(e, c)),
+  Math.sqrt(L(c, 2) + L(e, 2))
+], le = (c, e, t, r) => R(Math.atan2(r - e, t - c)), ce = (c, e, t, r) => Math.sqrt(L(t - c, 2) + L(r - e, 2)), _e = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  aabb: re,
-  angleBetweenPoints: Me,
-  cartesianToVector: Ee,
-  clamp: H,
-  degreeToRadian: Q,
-  distanceBetweenPoints: Ce,
-  fact: xe,
-  radianToDegree: ie,
-  range: ve,
-  vectorToCartesian: ke
+  aabb: B,
+  angleBetweenPoints: le,
+  cartesianToVector: he,
+  clamp: T,
+  degreeToRadian: H,
+  distanceBetweenPoints: ce,
+  fact: oe,
+  radianToDegree: R,
+  range: se,
+  vectorToCartesian: ae
 }, Symbol.toStringTag, { value: "Module" }));
-class Oe {
+class de {
   /**
    * Manages loading and playback of an audio file.
    * @param {AudioManager} audioManager The audio manager that will parent this Sound.
@@ -251,7 +251,7 @@ class Oe {
    * @param {string} label The unique label to identify this sound.
    * @param {function} onReady An optional method to call when the audio file is ready to play. Passed the sound object.
    */
-  constructor(e, t, r, i) {
+  constructor(e, t, r, n) {
     if (typeof r != "string")
       throw new Error(
         `Invalid label "${r}" provided. Must be of type "string".`
@@ -262,11 +262,11 @@ class Oe {
       );
     if (e.sounds.hasOwnProperty(r))
       throw new Error(`Audio label "${r}" is already in use.`);
-    if (i && typeof i != "function")
+    if (n && typeof n != "function")
       throw new Error(
         '"onReady" value provided to "Sound" is not of type "function".'
       );
-    e.sounds[r] = this, this.label = r, this.audioManager = e, this.onReady = i, this.src = t, this.ready = !1, this.element = new Audio(t), this.element.addEventListener("canplaythrough", () => {
+    e.sounds[r] = this, this.label = r, this.audioManager = e, this.onReady = n, this.src = t, this.ready = !1, this.element = new Audio(t), this.element.addEventListener("canplaythrough", () => {
       this.ready = !0;
     });
   }
@@ -296,7 +296,7 @@ class Oe {
       throw new Error(
         `Invalid volume value provided to "Sound" instance: ${e}. Must be of type "number".`
       );
-    this.element.volume = H(e, 0, 1);
+    this.element.volume = T(e, 0, 1);
   }
   /**
    * Get whether the audio is playing.
@@ -353,7 +353,7 @@ class Oe {
     this.element.paused || this.element.pause();
   }
 }
-class Le {
+class ue {
   /**
    * Controls audio playback.
    * @param {Runtime} runtime The game's runtime object.
@@ -374,7 +374,7 @@ class Le {
    * @param {function} onReady An optional method to call when the audio file is ready to play. Passed the sound object.
    */
   preload(e, t, r) {
-    new Oe(this, e, t, r);
+    new de(this, e, t, r);
   }
   /**
    * Unload a preloaded audio file.
@@ -407,411 +407,7 @@ class Le {
     });
   }
 }
-class M {
-  constructor(e, t, r) {
-    g(this, "x");
-    g(this, "y");
-    g(this, "z");
-    this.x = e, this.y = t, this.z = r;
-  }
-  dot2(e, t) {
-    return this.x * e + this.y * t;
-  }
-  dot3(e, t, r) {
-    return this.x * e + this.y * t + this.z * r;
-  }
-}
-class je {
-  /**
-   * Create a new `Noise` instance.
-   * @param {number} seed The seed for noise generation.
-   */
-  constructor(e = 0) {
-    this.permutationTable = [
-      151,
-      160,
-      137,
-      91,
-      90,
-      15,
-      131,
-      13,
-      201,
-      95,
-      96,
-      53,
-      194,
-      233,
-      7,
-      225,
-      140,
-      36,
-      103,
-      30,
-      69,
-      142,
-      8,
-      99,
-      37,
-      240,
-      21,
-      10,
-      23,
-      190,
-      6,
-      148,
-      247,
-      120,
-      234,
-      75,
-      0,
-      26,
-      197,
-      62,
-      94,
-      252,
-      219,
-      203,
-      117,
-      35,
-      11,
-      32,
-      57,
-      177,
-      33,
-      88,
-      237,
-      149,
-      56,
-      87,
-      174,
-      20,
-      125,
-      136,
-      171,
-      168,
-      68,
-      175,
-      74,
-      165,
-      71,
-      134,
-      139,
-      48,
-      27,
-      166,
-      77,
-      146,
-      158,
-      231,
-      83,
-      111,
-      229,
-      122,
-      60,
-      211,
-      133,
-      230,
-      220,
-      105,
-      92,
-      41,
-      55,
-      46,
-      245,
-      40,
-      244,
-      102,
-      143,
-      54,
-      65,
-      25,
-      63,
-      161,
-      1,
-      216,
-      80,
-      73,
-      209,
-      76,
-      132,
-      187,
-      208,
-      89,
-      18,
-      169,
-      200,
-      196,
-      135,
-      130,
-      116,
-      188,
-      159,
-      86,
-      164,
-      100,
-      109,
-      198,
-      173,
-      186,
-      3,
-      64,
-      52,
-      217,
-      226,
-      250,
-      124,
-      123,
-      5,
-      202,
-      38,
-      147,
-      118,
-      126,
-      255,
-      82,
-      85,
-      212,
-      207,
-      206,
-      59,
-      227,
-      47,
-      16,
-      58,
-      17,
-      182,
-      189,
-      28,
-      42,
-      223,
-      183,
-      170,
-      213,
-      119,
-      248,
-      152,
-      2,
-      44,
-      154,
-      163,
-      70,
-      221,
-      153,
-      101,
-      155,
-      167,
-      43,
-      172,
-      9,
-      129,
-      22,
-      39,
-      253,
-      19,
-      98,
-      108,
-      110,
-      79,
-      113,
-      224,
-      232,
-      178,
-      185,
-      112,
-      104,
-      218,
-      246,
-      97,
-      228,
-      251,
-      34,
-      242,
-      193,
-      238,
-      210,
-      144,
-      12,
-      191,
-      179,
-      162,
-      241,
-      81,
-      51,
-      145,
-      235,
-      249,
-      14,
-      239,
-      107,
-      49,
-      192,
-      214,
-      31,
-      181,
-      199,
-      106,
-      157,
-      184,
-      84,
-      204,
-      176,
-      115,
-      121,
-      50,
-      45,
-      127,
-      4,
-      150,
-      254,
-      138,
-      236,
-      205,
-      93,
-      222,
-      114,
-      67,
-      29,
-      24,
-      72,
-      243,
-      141,
-      128,
-      195,
-      78,
-      66,
-      215,
-      61,
-      156,
-      180
-    ], this.grad3 = [
-      new M(1, 1, 0),
-      new M(-1, 1, 0),
-      new M(1, -1, 0),
-      new M(-1, -1, 0),
-      new M(1, 0, 1),
-      new M(-1, 0, 1),
-      new M(1, 0, -1),
-      new M(-1, 0, -1),
-      new M(0, 1, 1),
-      new M(0, -1, 1),
-      new M(0, 1, -1),
-      new M(0, -1, -1)
-    ], this.perm = new Array(512), this.gradP = new Array(512), this.F2 = 0.5 * (Math.sqrt(3) - 1), this.G2 = (3 - Math.sqrt(3)) / 6, this.F3 = 1 / 3, this.G3 = 1 / 6, e > 0 && e < 1 && (e *= 65536), e = Math.floor(e), e < 256 && (e |= e << 8);
-    for (let t = 0; t < 256; t++) {
-      let r;
-      t & 1 ? r = this.permutationTable[t] ^ e & 255 : r = this.permutationTable[t] ^ e >> 8 & 255, this.perm[t] = this.perm[t + 256] = r, this.gradP[t] = this.gradP[t + 256] = this.grad3[r % 12];
-    }
-  }
-  /**
-   * Generate a 2D simplex noise value.
-   * @param {number} xin x-coordinate.
-   * @param {number} yin y-coordinate.
-   * @returns {number} The random noise for those coordinates.
-   */
-  simplex2(e, t) {
-    let r, i, n, a = (e + t) * this.F2, s = Math.floor(e + a), l = Math.floor(t + a), o = (s + l) * this.G2, h = e - s + o, c = t - l + o, u, f;
-    h > c ? (u = 1, f = 0) : (u = 0, f = 1);
-    let p = h - u + this.G2, m = c - f + this.G2, w = h - 1 + 2 * this.G2, b = c - 1 + 2 * this.G2;
-    s &= 255, l &= 255;
-    let x = this.gradP[s + this.perm[l]], y = this.gradP[s + u + this.perm[l + f]], E = this.gradP[s + 1 + this.perm[l + 1]], k = 0.5 - h * h - c * c;
-    k < 0 ? r = 0 : (k *= k, r = k * k * x.dot2(h, c));
-    let C = 0.5 - p * p - m * m;
-    C < 0 ? i = 0 : (C *= C, i = C * C * y.dot2(p, m));
-    let O = 0.5 - w * w - b * b;
-    return O < 0 ? n = 0 : (O *= O, n = O * O * E.dot2(w, b)), 70 * (r + i + n);
-  }
-  /**
-   * Generate a 3D simplex noise value.
-   * @param {number} xin x-coordinate.
-   * @param {number} yin y-coordinate.
-   * @param {number} zin z-coordinate.
-   * @returns {number} The random noise for those coordinates.
-   */
-  simplex3(e, t, r) {
-    let i, n, a, s, l = (e + t + r) * this.F3, o = Math.floor(e + l), h = Math.floor(t + l), c = Math.floor(r + l), u = (o + h + c) * this.G3, f = e - o + u, p = t - h + u, m = r - c + u, w, b, x, y, E, k;
-    f >= p ? p >= m ? (w = 1, b = 0, x = 0, y = 1, E = 1, k = 0) : f >= m ? (w = 1, b = 0, x = 0, y = 1, E = 0, k = 1) : (w = 0, b = 0, x = 1, y = 1, E = 0, k = 1) : p < m ? (w = 0, b = 0, x = 1, y = 0, E = 1, k = 1) : f < m ? (w = 0, b = 1, x = 0, y = 0, E = 1, k = 1) : (w = 0, b = 1, x = 0, y = 1, E = 1, k = 0);
-    let C = f - w + this.G3, O = p - b + this.G3, Y = m - x + this.G3, N = f - y + 2 * this.G3, z = p - E + 2 * this.G3, q = m - k + 2 * this.G3, U = f - 1 + 3 * this.G3, K = p - 1 + 3 * this.G3, V = m - 1 + 3 * this.G3;
-    o &= 255, h &= 255, c &= 255;
-    let pe = this.gradP[o + this.perm[h + this.perm[c]]], me = this.gradP[o + w + this.perm[h + b + this.perm[c + x]]], ge = this.gradP[o + y + this.perm[h + E + this.perm[c + k]]], we = this.gradP[o + 1 + this.perm[h + 1 + this.perm[c + 1]]], S = 0.6 - f * f - p * p - m * m;
-    S < 0 ? i = 0 : (S *= S, i = S * S * pe.dot3(f, p, m));
-    let F = 0.6 - C * C - O * O - Y * Y;
-    F < 0 ? n = 0 : (F *= F, n = F * F * me.dot3(C, O, Y));
-    let I = 0.6 - N * N - z * z - q * q;
-    I < 0 ? a = 0 : (I *= I, a = I * I * ge.dot3(N, z, q));
-    let W = 0.6 - U * U - K * K - V * V;
-    return W < 0 ? s = 0 : (W *= W, s = W * W * we.dot3(U, K, V)), 32 * (i + n + a + s);
-  }
-  // ##### Perlin noise stuff
-  fade(e) {
-    return e * e * e * (e * (e * 6 - 15) + 10);
-  }
-  lerp(e, t, r) {
-    return (1 - r) * e + r * t;
-  }
-  /**
-   * Generate a 2D perlin noise value.
-   * @param {number} x x-coordinate.
-   * @param {number} y y-coordinate.
-   * @returns {number} The random noise for those coordinates.
-   */
-  perlin2(e, t) {
-    let r = Math.floor(e), i = Math.floor(t);
-    e = e - r, t = t - i, r = r & 255, i = i & 255;
-    let n = this.gradP[r + this.perm[i]].dot2(e, t), a = this.gradP[r + this.perm[i + 1]].dot2(e, t - 1), s = this.gradP[r + 1 + this.perm[i]].dot2(e - 1, t), l = this.gradP[r + 1 + this.perm[i + 1]].dot2(e - 1, t - 1), o = this.fade(e);
-    return this.lerp(
-      this.lerp(n, s, o),
-      this.lerp(a, l, o),
-      this.fade(t)
-    );
-  }
-  /**
-   * Generate a 3D perlin noise value.
-   * @param {number} x x-coordinate.
-   * @param {number} y y-coordinate.
-   * @param {number} z z-coordinate.
-   * @returns {number} The random noise for those coordinates.
-   */
-  perlin3(e, t, r) {
-    let i = Math.floor(e), n = Math.floor(t), a = Math.floor(r);
-    e = e - i, t = t - n, r = r - a, i = i & 255, n = n & 255, a = a & 255;
-    let s = this.gradP[i + this.perm[n + this.perm[a]]].dot3(e, t, r), l = this.gradP[i + this.perm[n + this.perm[a + 1]]].dot3(
-      e,
-      t,
-      r - 1
-    ), o = this.gradP[i + this.perm[n + 1 + this.perm[a]]].dot3(
-      e,
-      t - 1,
-      r
-    ), h = this.gradP[i + this.perm[n + 1 + this.perm[a + 1]]].dot3(
-      e,
-      t - 1,
-      r - 1
-    ), c = this.gradP[i + 1 + this.perm[n + this.perm[a]]].dot3(
-      e - 1,
-      t,
-      r
-    ), u = this.gradP[i + 1 + this.perm[n + this.perm[a + 1]]].dot3(
-      e - 1,
-      t,
-      r - 1
-    ), f = this.gradP[i + 1 + this.perm[n + 1 + this.perm[a]]].dot3(
-      e - 1,
-      t - 1,
-      r
-    ), p = this.gradP[i + 1 + this.perm[n + 1 + this.perm[a + 1]]].dot3(
-      e - 1,
-      t - 1,
-      r - 1
-    ), m = this.fade(e), w = this.fade(t), b = this.fade(r);
-    return this.lerp(
-      this.lerp(this.lerp(s, c, m), this.lerp(l, u, m), b),
-      this.lerp(this.lerp(o, f, m), this.lerp(h, p, m), b),
-      w
-    );
-  }
-}
-class Ae {
+class fe {
   /**
    * The scene contains variable layers and compiles them into one frame to render to the screen.
    * @param {Scene} scene The `Scene` this `Camera` is a part of.
@@ -826,13 +422,13 @@ class Ae {
      * @param {number} parallaxX Optional parallax x-value.
      * @param {number} parallaxY Optional parallax y-value.
      */
-    g(this, "isOnScreen", (e, t, r, i, n = 1, a = 1) => re(
+    m(this, "isOnScreen", (e, t, r, n, i = 1, h = 1) => B(
       e,
       t,
       r,
-      i,
-      this.x * n,
-      this.y * a,
+      n,
+      this.x * i,
+      this.y * h,
       this.scene.runtime.renderer.width,
       this.scene.runtime.renderer.height
     ));
@@ -871,7 +467,7 @@ class Ae {
     this.__rawY = e;
   }
 }
-const _ = class _ {
+const g = class g {
   /**
    * Create a simple interface for collecting gamepad inputs.
    *
@@ -900,18 +496,18 @@ const _ = class _ {
     return r === "standard" ? {
       axes: Object.fromEntries(
         e.filter(
-          (i, n) => _.standardAxesMap[n]
-        ).map((i, n) => [
-          _.standardAxesMap[n],
-          i
+          (n, i) => g.standardAxesMap[i]
+        ).map((n, i) => [
+          g.standardAxesMap[i],
+          n
         ])
       ),
       buttons: Object.fromEntries(
         t.filter(
-          (i, n) => _.standardButtonMap[n]
-        ).map((i, n) => [
-          _.standardButtonMap[n],
-          i
+          (n, i) => g.standardButtonMap[i]
+        ).map((n, i) => [
+          g.standardButtonMap[i],
+          n
         ])
       )
     } : this.asXB || this.asPS || this.asNS;
@@ -927,17 +523,17 @@ const _ = class _ {
     return {
       axes: Object.fromEntries(
         e.filter(
-          (r, i) => _.standardAxesMap[i]
-        ).map((r, i) => [
-          _.standardAxesMap[i],
+          (r, n) => g.standardAxesMap[n]
+        ).map((r, n) => [
+          g.standardAxesMap[n],
           r
         ])
       ),
       buttons: Object.fromEntries(
         t.filter(
-          (r, i) => _.xbButtonMap[i]
-        ).map((r, i) => [
-          _.xbButtonMap[i],
+          (r, n) => g.xbButtonMap[n]
+        ).map((r, n) => [
+          g.xbButtonMap[n],
           r
         ])
       )
@@ -954,17 +550,17 @@ const _ = class _ {
     return {
       axes: Object.fromEntries(
         e.filter(
-          (r, i) => _.standardAxesMap[i]
-        ).map((r, i) => [
-          _.standardAxesMap[i],
+          (r, n) => g.standardAxesMap[n]
+        ).map((r, n) => [
+          g.standardAxesMap[n],
           r
         ])
       ),
       buttons: Object.fromEntries(
         t.filter(
-          (r, i) => _.psButtonMap[i]
-        ).map((r, i) => [
-          _.psButtonMap[i],
+          (r, n) => g.psButtonMap[n]
+        ).map((r, n) => [
+          g.psButtonMap[n],
           r
         ])
       )
@@ -981,17 +577,17 @@ const _ = class _ {
     return {
       axes: Object.fromEntries(
         e.filter(
-          (r, i) => _.standardAxesMap[i]
-        ).map((r, i) => [
-          _.standardAxesMap[i],
+          (r, n) => g.standardAxesMap[n]
+        ).map((r, n) => [
+          g.standardAxesMap[n],
           r
         ])
       ),
       buttons: Object.fromEntries(
         t.filter(
-          (r, i) => _.nsButtonMap[i]
-        ).map((r, i) => [
-          _.nsButtonMap[i],
+          (r, n) => g.nsButtonMap[n]
+        ).map((r, n) => [
+          g.nsButtonMap[n],
           r
         ])
       )
@@ -1029,7 +625,7 @@ const _ = class _ {
     return this.raw && this.raw.hand;
   }
 };
-g(_, "xbButtonMap", [
+m(g, "xbButtonMap", [
   "a",
   "b",
   "x",
@@ -1046,7 +642,7 @@ g(_, "xbButtonMap", [
   "down",
   "left",
   "right"
-]), g(_, "psButtonMap", [
+]), m(g, "psButtonMap", [
   "x",
   "o",
   "square",
@@ -1063,7 +659,7 @@ g(_, "xbButtonMap", [
   "down",
   "left",
   "right"
-]), g(_, "nsButtonMap", [
+]), m(g, "nsButtonMap", [
   "b",
   "a",
   "y",
@@ -1080,7 +676,7 @@ g(_, "xbButtonMap", [
   "down",
   "left",
   "right"
-]), g(_, "standardButtonMap", [
+]), m(g, "standardButtonMap", [
   "a",
   "b",
   "x",
@@ -1097,20 +693,20 @@ g(_, "xbButtonMap", [
   "down",
   "left",
   "right"
-]), g(_, "standardAxesMap", ["lh", "lv", "rh", "rv"]);
-let ee = _;
-class Pe {
+]), m(g, "standardAxesMap", ["lh", "lv", "rh", "rv"]);
+let $ = g;
+class me {
   /**
    * Handles user input.
    * @param {Scene} scene The current scene.
    */
   constructor(e) {
-    g(this, "__eventHandler", (e) => this.__onEvent(e));
-    g(this, "__contextHandler", (e) => e.preventDefault());
+    m(this, "__eventHandler", (e) => this.__onEvent(e));
+    m(this, "__contextHandler", (e) => e.preventDefault());
     /**
      * Handles when the user leaves this tab.
      */
-    g(this, "__windowBlurHandler", () => {
+    m(this, "__windowBlurHandler", () => {
       this.keyboard.keys = {}, this.mouse.buttons = {}, delete this.mouse.deltas, delete this.mouse.scroll;
     });
     this.scene = e, this.keyboard = {
@@ -1122,10 +718,10 @@ class Pe {
       all: [],
       click: [
         (t) => {
-          for (const [r, i] of this.__gameObjectClicks)
+          for (const [r, n] of this.__gameObjectClicks)
             if (t.targets.includes(r)) {
-              let n = A({}, t);
-              delete n.targets, n.target = r, i(n);
+              let i = E({}, t);
+              delete i.targets, i.target = r, n(i);
             }
         }
       ]
@@ -1144,7 +740,7 @@ class Pe {
     return this.rawGamepads.map((e) => {
       if (!e) return null;
       const { index: t } = e;
-      return new ee(this, t);
+      return new $(this, t);
     });
   }
   /**
@@ -1164,7 +760,7 @@ class Pe {
    * Initiate a pointer lock request. Pointer lock cannot be achieved unless the user clicks the screen after this method is called.
    */
   requestPointerLock() {
-    return le(this, null, function* () {
+    return U(this, null, function* () {
       const { element: e } = this.scene.runtime.renderer, t = () => {
         this.hasPointerLock || e.requestPointerLock();
       }, r = () => {
@@ -1172,8 +768,8 @@ class Pe {
       };
       document.body.addEventListener("click", t), document.addEventListener(
         "pointerlockerror",
-        (i) => {
-          console.error("Pointer lock request failed.", i);
+        (n) => {
+          console.error("Pointer lock request failed.", n);
         },
         !1
       ), document.addEventListener("pointerlockchange", r, !1);
@@ -1223,13 +819,13 @@ class Pe {
   __onClick() {
     const { onLayer: e } = this.mouse;
     this.mouse.targets = [];
-    for (const [t, [r, i]] of Object.entries(e)) {
-      const n = this.scene.layerManager.getAtPosition(
+    for (const [t, [r, n]] of Object.entries(e)) {
+      const i = this.scene.layerManager.getAtPosition(
         r,
-        i,
+        n,
         t
       );
-      this.mouse.targets = [...this.mouse.targets, ...n];
+      this.mouse.targets = [...this.mouse.targets, ...i];
     }
     this.mouse.targets && (this.mouse.targets = this.mouse.targets.map(
       ({ gameObject: t }) => t.id
@@ -1258,15 +854,15 @@ class Pe {
    * @param {Event} event The listener's event.
    */
   __onMouseMove(e) {
-    const { clientX: t, clientY: r, movementX: i, movementY: n } = e, {
+    const { clientX: t, clientY: r, movementX: n, movementY: i } = e, {
       scene: {
-        camera: { x: a, y: s },
+        camera: { x: h, y: s },
         layerManager: { layers: l },
         runtime: {
           renderer: {
             width: o,
-            height: h,
-            element: c
+            height: a,
+            element: d
           }
         }
       }
@@ -1274,28 +870,28 @@ class Pe {
       x: u,
       y: f,
       width: p,
-      height: m
-    } = c.getBoundingClientRect(), [w, b] = [t - u, r - f], [x, y] = [w / p, b / m];
+      height: w
+    } = d.getBoundingClientRect(), [y, v] = [t - u, r - f], [O, k] = [y / p, v / w];
     if (this.hasPointerLock)
-      this.mouse.velocity = [i, n];
+      this.mouse.velocity = [n, i];
     else {
-      this.mouse.velocity = [i, n], this.mouse.rawX = t, this.mouse.rawY = r, this.mouse.canvasX = w, this.mouse.canvasY = b, this.mouse.x = H(
-        Math.floor(x * o),
+      this.mouse.velocity = [n, i], this.mouse.rawX = t, this.mouse.rawY = r, this.mouse.canvasX = y, this.mouse.canvasY = v, this.mouse.x = T(
+        Math.floor(O * o),
         0,
         o
-      ), this.mouse.y = H(
-        Math.floor(y * h),
+      ), this.mouse.y = T(
+        Math.floor(k * a),
         0,
-        h
+        a
       ), this.mouse.onLayer = {};
-      for (const E of l) {
+      for (const Z of l) {
         const {
-          label: k,
-          parallax: [C, O]
-        } = E;
-        this.mouse.onLayer[k] = [
-          this.mouse.x + a * C,
-          this.mouse.y + s * O
+          label: Q,
+          parallax: [ee, te]
+        } = Z;
+        this.mouse.onLayer[Q] = [
+          this.mouse.x + h * ee,
+          this.mouse.y + s * te
         ];
       }
     }
@@ -1305,11 +901,11 @@ class Pe {
    * @param {Event} event The listener's event.
    */
   __onMouseWheel(e) {
-    const { deltaX: t, deltaY: r, deltaZ: i } = e;
-    this.mouse.deltas = { x: t, y: r, z: i }, this.mouse.scroll = {
+    const { deltaX: t, deltaY: r, deltaZ: n } = e;
+    this.mouse.deltas = { x: t, y: r, z: n }, this.mouse.scroll = {
       x: t > 0 ? "down" : "up",
       y: r > 0 ? "down" : "up",
-      z: i > 0 ? "down" : "up"
+      z: n > 0 ? "down" : "up"
     };
   }
   /**
@@ -1374,7 +970,7 @@ class Pe {
           this.__onClick();
           break;
       }
-      this.__triggerEvents(t, A({ type: t }, this.mouse)), this.__triggerEvents("all", A({ type: t }, this.mouse)), t === "click" && this.mouse.target && delete this.mouse.target, this.__resetMouseWheel();
+      this.__triggerEvents(t, E({ type: t }, this.mouse)), this.__triggerEvents("all", E({ type: t }, this.mouse)), t === "click" && this.mouse.target && delete this.mouse.target, this.__resetMouseWheel();
     } else if (e instanceof KeyboardEvent) {
       const { type: t } = e;
       switch (t) {
@@ -1385,7 +981,7 @@ class Pe {
           this.__onKeyUp(e);
           break;
       }
-      this.__triggerEvents(t, A({ type: t }, this.keyboard)), this.__triggerEvents("all", A({ type: t }, this.keyboard));
+      this.__triggerEvents(t, E({ type: t }, this.keyboard)), this.__triggerEvents("all", E({ type: t }, this.keyboard));
     } else if (e instanceof GamepadEvent) {
       const { type: t } = e;
       switch (t) {
@@ -1407,7 +1003,7 @@ class Pe {
   addEventListener(e, t) {
     if (!this.types.includes(e))
       throw new Error(
-        `"${e}" is not a valid event type. Must be one of: ${T(
+        `"${e}" is not a valid event type. Must be one of: ${C(
           this.types
         )}`
       );
@@ -1421,7 +1017,7 @@ class Pe {
   removeEventListener(e, t) {
     if (!this.types.includes(e))
       throw new Error(
-        `"${e}" is not a valid event type. Must be one of: ${T(
+        `"${e}" is not a valid event type. Must be one of: ${C(
           this.types
         )}`
       );
@@ -1481,7 +1077,7 @@ class Pe {
     ), this.__removeGlobalEventListener("contextmenu", this.__contextHandler), window.removeEventListener("blur", this.__windowBlurHandler);
   }
 }
-class de {
+class K {
   /**
    * The most core level object.
    * @param {Scene} scene The scene this Object is a part of.
@@ -1491,7 +1087,7 @@ class de {
       throw new Error(
         'This environment does not support the JavaScript "crypto" library. Only secure contexts (HTTPS) support "crypto.randomUUID".'
       );
-    if (!(e instanceof X))
+    if (!(e instanceof I))
       throw new TypeError(
         'Invalid object provided to Core class constructor. Expected an instance of "Scene".'
       );
@@ -1501,7 +1097,7 @@ class de {
     return this.scene.runtime;
   }
 }
-class D extends de {
+class A extends K {
   /**
    * A core object that can have its runtime methods managed by the runtime itself, or another object.
    *
@@ -1514,7 +1110,7 @@ class D extends de {
    * @param {number} y This  `GameObject`'s y-coordinate.
    *@param {string} layer The label of the layer to start the `GameObject` on.
    */
-  constructor(e, t = 0, r = 0, i) {
+  constructor(e, t = 0, r = 0, n) {
     if (super(e), typeof t != "number")
       throw new Error(
         "GameObject x-coordinate value must be of type 'number'."
@@ -1523,7 +1119,7 @@ class D extends de {
       throw new Error(
         "GameObject y-coordinate value must be of type 'number'."
       );
-    this.__rawX = t, this.__rawY = r, this.__rawVisible = !0, this.__rawRenderable = new v({ value: "#", color: "magenta" }), this.behaviors = [], i && (this.layer = i);
+    this.__rawX = t, this.__rawY = r, this.__rawVisible = !0, this.__rawRenderable = new b({ value: "#", color: "magenta" }), this.behaviors = [], n && (this.layer = n);
   }
   /**
    * Get whether the game object is on-screen.
@@ -1536,8 +1132,8 @@ class D extends de {
       y: r
     } = this;
     if (!this.renderable) return !1;
-    const { width: i, height: n } = this.renderable, [a, s] = this.layer.parallax;
-    return e.isOnScreen(t, r, i, n, a, s);
+    const { width: n, height: i } = this.renderable, [h, s] = this.layer.parallax;
+    return e.isOnScreen(t, r, n, i, h, s);
   }
   /**
    * Get the `GameObject`'s visibility status.
@@ -1632,7 +1228,7 @@ class D extends de {
         scene: {
           layerManager: { layers: t }
         }
-      } = this, r = t.find((i) => i.label === e);
+      } = this, r = t.find((n) => n.label === e);
       if (!r)
         throw new Error(`No layer exists with label "${e}"`);
       r.gameObjects.push(this);
@@ -1648,7 +1244,7 @@ class D extends de {
    * Set this `GameObject`'s renderable.
    */
   set renderable(e) {
-    if (e && !(e instanceof v) && !(e instanceof L))
+    if (e && !(e instanceof b) && !(e instanceof _))
       throw new TypeError(
         "A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
       );
@@ -1663,7 +1259,7 @@ class D extends de {
         return this.__rawRenderable;
       },
       set(e) {
-        if (e && !(e instanceof v) && !(e instanceof L))
+        if (e && !(e instanceof b) && !(e instanceof _))
           throw new TypeError(
             "A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
           );
@@ -1707,7 +1303,7 @@ class D extends de {
     this.layer && (this.layer = void 0), delete this;
   }
 }
-class ce {
+class q {
   /**
    * A layer is a construct of other objects. The layer manages these objects and can optionally render them to the screen.
    * @param {LayerManager} layerManager The `LayerManager` parent object.
@@ -1717,12 +1313,12 @@ class ce {
    * @param {Array<function>} config.gameObjectConstructors An array of functions that return game objects.
    */
   constructor(e, t) {
-    if (!j(t))
+    if (!x(t))
       throw new TypeError(
         "Expected a plain object for Layer constructor config parameter."
       );
-    const { label: r, parallax: i = [1, 1], gameObjectConstructors: n } = t;
-    this.layerManager = e, this.label = r, this.layerManager.layers.push(this), this.gameObjects = [], n && this.__populateGameObjects(n), this.paused = !1, this.parallax = i, this.__rawVisible = !0;
+    const { label: r, parallax: n = [1, 1], gameObjectConstructors: i } = t;
+    this.layerManager = e, this.label = r, this.layerManager.layers.push(this), this.gameObjects = [], i && this.__populateGameObjects(i), this.paused = !1, this.parallax = n, this.__rawVisible = !0;
   }
   /**
    * Converts the config array of gameObjects into active `GameObject`s.
@@ -1739,13 +1335,13 @@ class ce {
       const r = t(
         this.layerManager.scene
       );
-      if (!(r instanceof D))
+      if (!(r instanceof A))
         throw new TypeError(
           'Each gameObjectConstructor function must return an object of type "GameObject".'
         );
       return r;
     }).filter(
-      (t) => t && t instanceof D
+      (t) => t && t instanceof A
     );
     for (const t of this.gameObjects)
       t.layer = this.label;
@@ -1773,51 +1369,51 @@ class ce {
           runtime: { renderer: t }
         }
       },
-      parallax: [r, i]
-    } = this, [n, a] = [
+      parallax: [r, n]
+    } = this, [i, h] = [
       Math.round(e.x * r),
-      Math.round(e.y * i)
-    ], s = (o, h, c) => {
-      if (!o || !(o instanceof v) || !e.isOnScreen(h, c, 1, 1, r, i) || (!o.value || o.value.trim() === "") && (!o.backgroundColor || o.backgroundColor === "transparent"))
+      Math.round(e.y * n)
+    ], s = (o, a, d) => {
+      if (!o || !(o instanceof b) || !e.isOnScreen(a, d, 1, 1, r, n) || (!o.value || o.value.trim() === "") && (!o.backgroundColor || o.backgroundColor === "transparent"))
         return;
-      const [u, f] = [h - n, c - a], p = t.coordinatesToIndex(u, f);
+      const [u, f] = [a - i, d - h], p = t.coordinatesToIndex(u, f);
       l[p] = o;
     }, l = [];
     for (const o of this.gameObjects.filter(
-      ({ visible: h }) => h
+      ({ visible: a }) => a
     )) {
-      const { renderable: h } = o;
-      let { x: c, y: u } = o;
-      if (h) {
-        if (h.origin) {
-          const [f, p] = h.origin;
-          c -= f, u -= p, c = Math.round(c), u = Math.round(u);
+      const { renderable: a } = o;
+      let { x: d, y: u } = o;
+      if (a) {
+        if (a.origin) {
+          const [f, p] = a.origin;
+          d -= f, u -= p, d = Math.round(d), u = Math.round(u);
         }
-        if (h instanceof v)
-          s(h, c, u);
-        else if (h instanceof L) {
+        if (a instanceof b)
+          s(a, d, u);
+        else if (a instanceof _) {
           if (!e.isOnScreen(
-            c,
+            d,
             u,
-            h.width,
-            h.height,
+            a.width,
+            a.height,
             r,
-            i
+            n
           ))
             continue;
-          for (let f = 0; f < h.data.length; f++) {
-            const p = h.data[f];
+          for (let f = 0; f < a.data.length; f++) {
+            const p = a.data[f];
             if (!(!p || p.length === 0))
-              for (let m = 0; m < p.length; m++) {
-                const w = p[m];
-                s(w, c + m, u + f);
+              for (let w = 0; w < p.length; w++) {
+                const y = p[w];
+                s(y, d + w, u + f);
               }
           }
         }
       } else
         continue;
     }
-    return new $(l);
+    return new j(l);
   }
   __onTick() {
     const {
@@ -1828,11 +1424,11 @@ class ce {
       paused: r
     } = this;
     if (!(r || e.paused))
-      for (const i of t)
-        i.__behave(), e.__runOnTick(i);
+      for (const n of t)
+        n.__behave(), e.__runOnTick(n);
   }
 }
-class Te {
+class pe {
   /**
    * The layer manager contains variable layers and compiles them into one frame to render to the screen.
    * @param {Scene} scene The current loaded `Scene`.
@@ -1844,7 +1440,7 @@ class Te {
      * @param {string} label The label of the layer to get.
      * @returns {Layer} A layer with the label provided. Or `undefined` if no layer was found.
      */
-    g(this, "getLayerByLabel", (e) => this.layers.find((t) => t.label === e));
+    m(this, "getLayerByLabel", (e) => this.layers.find((t) => t.label === e));
     this.scene = e, this.layers = t;
   }
   /**
@@ -1860,36 +1456,36 @@ class Te {
    * @param {string} layer An optional layer to check. If no layer is provided, all layer's are checked.
    */
   getAtPosition(e, t, r) {
-    const i = this.layers.find(({ label: s }) => s === r);
-    if (r && !i)
+    const n = this.layers.find(({ label: s }) => s === r);
+    if (r && !n)
       throw new Error(`No layer exists with label "${r}".`);
-    const n = r ? [i] : this.layers, a = [];
-    for (const s of n) {
+    const i = r ? [n] : this.layers, h = [];
+    for (const s of i) {
       const { gameObjects: l } = s;
       for (const o of l) {
-        const { renderable: h, x: c, y: u } = o;
-        if (h instanceof v && c === e && u === t)
-          a.push({ gameObject: o, pixel: h });
-        else if (h instanceof L && re(
+        const { renderable: a, x: d, y: u } = o;
+        if (a instanceof b && d === e && u === t)
+          h.push({ gameObject: o, pixel: a });
+        else if (a instanceof _ && B(
           e,
           t,
           1,
           1,
-          c,
+          d,
           u,
-          h.width,
-          h.height
+          a.width,
+          a.height
         )) {
-          const f = h.data[t - u] && h.data[t - u][e - c];
+          const f = a.data[t - u] && a.data[t - u][e - d];
           if (!f) continue;
-          a.push({
+          h.push({
             gameObject: o,
             pixel: f
           });
         }
       }
     }
-    return a;
+    return h;
   }
   /**
    * Check for a solid at a location.
@@ -1898,8 +1494,8 @@ class Te {
    * @param {string} layer An optional layer to check. If no layer is provided, all layer's are checked.
    */
   solidAtPosition(e, t, r) {
-    const i = this.getAtPosition(e, t, r);
-    for (const n of i) if (n.pixel.solid) return n;
+    const n = this.getAtPosition(e, t, r);
+    for (const i of n) if (i.pixel.solid) return i;
     return !1;
   }
   /**
@@ -1907,8 +1503,8 @@ class Te {
    * @param {Array<*>} layers The layer creation array.
    */
   __createLayers(e = []) {
-    this.layers = [], e.includes("system") || new ce(this, { label: "system" });
-    for (const t of e) new ce(this, t);
+    this.layers = [], e.includes("system") || new q(this, { label: "system" });
+    for (const t of e) new q(this, t);
   }
   __mergedRender() {
     const {
@@ -1947,7 +1543,7 @@ class Te {
     t === "stacked" ? this.__stackedRender() : this.__mergedRender();
   }
 }
-class X {
+class I {
   /**
    * A scene is a level, screen, or world that can be load in at any point during the runtime.
    * @param {Runtime} runtime The main runtime object.
@@ -1962,13 +1558,13 @@ class X {
    * @param {function} config.onTick A callback (passed this `Scene` as an argument) that runs every frame that this `Scene` is loaded.
    */
   constructor(e, t) {
-    if (this.runtime = e, !e || !(e instanceof Se))
+    if (this.runtime = e, !e || !(e instanceof ge))
       throw new TypeError(
         "Scene constructor was not provided an instance of Runtime."
       );
-    X.validateConfig(t);
-    const { label: r, layers: i, onLoad: n, onTick: a } = t;
-    this.label = r, this.camera = new Ae(this), this.layerManager = new Te(this, i), this.inputManager = new Pe(this), n && (this.onLoadPassthrough = n), a && (this.onTickPassthrough = a), this.__onTick.bind(this), this.__onLoad();
+    I.validateConfig(t);
+    const { label: r, layers: n, onLoad: i, onTick: h } = t;
+    this.label = r, this.camera = new fe(this), this.layerManager = new pe(this, n), this.inputManager = new me(this), i && (this.onLoadPassthrough = i), h && (this.onTickPassthrough = h), this.__onTick.bind(this), this.__onLoad();
   }
   /**
    * Get the number of `GameObject`s in the current scene.
@@ -1981,7 +1577,7 @@ class X {
    * @param {Object} config The config object to validate.
    */
   static validateConfig(e) {
-    if (!j(e))
+    if (!x(e))
       throw new TypeError(
         "Expected a plain object for Scene constructor config parameter."
       );
@@ -2046,7 +1642,7 @@ class X {
     this.layerManager.__onTick(), this.onTickPassthrough && this.onTickPassthrough(this);
   }
 }
-class Se {
+class ge {
   /**
    * The overall game state and management system.
    * @param {Object} config The game's config object.
@@ -2078,20 +1674,20 @@ class Se {
      * @param {Object} object The object whose method should be run.
      * @param  {...any} passthrough The data to pass through to that method.
      */
-    g(this, "__runOnStartup", (e, ...t) => e.onStartup && e.onStartup(...t));
+    m(this, "__runOnStartup", (e, ...t) => e.onStartup && e.onStartup(...t));
     /**
      * Run the onTick method of any object.
      * @param {Object} object The object whose method should be run.
      * @param  {...any} passthrough The data to pass through to that method.
      */
-    g(this, "__runOnTick", (e, ...t) => e.onTick && e.onTick(this, ...t));
+    m(this, "__runOnTick", (e, ...t) => e.onTick && e.onTick(this, ...t));
     /**
      * Run the onLoad method of any object.
      * @param {Object} object The object whose method should be run.
      * @param  {...any} passthrough The data to pass through to that method.
      */
-    g(this, "__runOnLoad", (e, ...t) => e.onLoad && e.onLoad(...t));
-    this.config = e, this.validateConfig(e), this.noise = new je(e.seed || Date.now()), this.audioManager = new Le(this), this.renderer = new ne(this), this.running = !1, this.initialized = !1, this.paused = !1;
+    m(this, "__runOnLoad", (e, ...t) => e.onLoad && e.onLoad(...t));
+    this.config = e, this.validateConfig(e), this.audioManager = new ue(this), this.renderer = new G(this), this.running = !1, this.initialized = !1, this.paused = !1;
   }
   get webGLSupported() {
     try {
@@ -2106,13 +1702,9 @@ class Se {
    * @param {Object} config The config object to validate.
    */
   validateConfig(e) {
-    if (!j(e))
+    if (!x(e))
       throw new TypeError(
         "Expected a plain object for Runtime constructor config parameter."
-      );
-    if (e.seed && typeof e.seed != "number" && typeof e.seed != "string")
-      throw new Error(
-        `Invalid random noise "seed" value provided to Runtime: "${e.seed}". String or number value required.`
       );
     if (!e.renderer)
       throw new Error("No 'renderer' config provided to config object.");
@@ -2153,7 +1745,7 @@ class Se {
       throw new Error(
         `A scene loading attempt was made, but the Runtime's "start" method has not yet been called.`
       );
-    if (!(e instanceof X))
+    if (!(e instanceof I))
       throw new Error('Provided scene is not a "Scene" object');
     this.scene && this.scene.__unLoad(), this.scene = e;
   }
@@ -2165,7 +1757,7 @@ class Se {
     this.running = !0, this.initialized || (this.__onStartup(), this.initialized = !0, e && typeof e == "function" && e(this)), requestAnimationFrame((t) => this.__onTick(t));
   }
 }
-const Fe = `
+const we = `
 self.onmessage = function ({ data: { data: frame, characterSize: [cW, cH], width, height, fontSize } }) {
 	const canvas = new OffscreenCanvas(cW * width, cH * height);
 	const ctx = canvas.getContext('2d');
@@ -2215,7 +1807,7 @@ self.onmessage = function ({ data: { data: frame, characterSize: [cW, cH], width
 	self.postMessage(imageData);
 };
 `;
-class ne {
+class G {
   /**
    * Handles rendering the game using **2D Context**.
    * @param {Runtime} runtime The current `Runtime` instance.
@@ -2227,17 +1819,17 @@ class ne {
      * @param {number} y The y-value of the coordinate.
      * @returns {number} The index of that coordinate in a frame.
      */
-    g(this, "coordinatesToIndex", (e, t) => t * this.width + e);
+    m(this, "coordinatesToIndex", (e, t) => t * this.width + e);
     /**
      * Convert a frame index into x and y coordinates.
      * @param {number} index The frame index.
      * @returns {Array<Number>} A coordinate array.
      */
-    g(this, "indexToCoordinates", (e) => [
+    m(this, "indexToCoordinates", (e) => [
       e % this.width,
       Math.floor(e / this.width)
     ]);
-    if (this.runtime = e, this.config = this.runtime.config && this.runtime.config.renderer, ne.validateConfig(this.config), !this.config)
+    if (this.runtime = e, this.config = this.runtime.config && this.runtime.config.renderer, G.validateConfig(this.config), !this.config)
       throw new Error("No config object provided to renderer.");
     if (this.__onCreated(), this.useWebWorkers = this.config.hasOwnProperty("useWebWorkers") ? !!this.config.useWebWorkers : !0, !window.Worker && this.useWebWorkers)
       throw new Error("This environment does not support webworkers.");
@@ -2250,7 +1842,7 @@ class ne {
     this.webWorkers = {
       drawFrame: new Worker(
         URL.createObjectURL(
-          new Blob([Fe], {
+          new Blob([we], {
             type: "application/javascript"
           })
         ),
@@ -2297,7 +1889,7 @@ class ne {
       const t = ["off", "letterbox"];
       if (!t.includes(e.scaling))
         throw new Error(
-          `Invalid scaling value provided, must be one of: ${T(
+          `Invalid scaling value provided, must be one of: ${C(
             t
           )}`
         );
@@ -2306,7 +1898,7 @@ class ne {
       const t = ["stacked", "merged"];
       if (!t.includes(e.renderMode))
         throw new Error(
-          `Provided render mode is invalid. Must be of type: ${T(
+          `Provided render mode is invalid. Must be of type: ${C(
             t
           )}`
         );
@@ -2360,13 +1952,13 @@ class ne {
     const { ctx: r } = this;
     r.canvas.width = window.innerWidth, r.canvas.height = window.innerHeight, r.canvas.style.width = `${window.innerWidth}px`, r.canvas.style.height = `${window.innerHeight}px`, r.font = `${e} monospace`;
     const {
-      width: i,
-      fontBoundingBoxAscent: n,
-      fontBoundingBoxDescent: a
-    } = this.ctx.measureText("█"), s = n + a;
-    this.characterSize = [i, s];
+      width: n,
+      fontBoundingBoxAscent: i,
+      fontBoundingBoxDescent: h
+    } = this.ctx.measureText("█"), s = i + h;
+    this.characterSize = [n, s];
     const [l, o] = [
-      i * this.width,
+      n * this.width,
       s * this.height
     ];
     r.canvas.width = l, r.canvas.height = o, r.canvas.style.width = `${l}px`, r.canvas.style.height = `${o}px`;
@@ -2383,11 +1975,11 @@ class ne {
       e.style.transform = "translateX(-50%) translateY(-50%)";
       return;
     }
-    const { innerWidth: r, innerHeight: i } = window;
+    const { innerWidth: r, innerHeight: n } = window;
     e.style.transform = "translateX(-50%) translateY(-50%) scale(1)";
-    const { width: n, height: a } = e.getBoundingClientRect(), [s, l] = [
-      r / n,
-      i / a
+    const { width: i, height: h } = e.getBoundingClientRect(), [s, l] = [
+      r / i,
+      n / h
     ], o = Math.min(s, l);
     e.style.transform = `translateX(-50%) translateY(-50%) scale(${o})`;
   }
@@ -2409,7 +2001,7 @@ class ne {
    */
   drawFrame(e) {
     if (!this.drawing) {
-      if (!(e instanceof $))
+      if (!(e instanceof j))
         throw new Error(
           "Provided frame object is not an instance of the Frame constructor."
         );
@@ -2418,36 +2010,36 @@ class ne {
         const {
           characterSize: t,
           width: r,
-          height: i,
-          config: { fontSize: n }
+          height: n,
+          config: { fontSize: i }
         } = this;
         this.webWorkers.drawFrame.postMessage({
           data: e.data,
           characterSize: t,
           width: r,
-          height: i,
-          fontSize: n
+          height: n,
+          fontSize: i
         });
       } else {
         this.drawing = !0, this.clearDisplay();
         const {
           config: { fontSize: t },
-          characterSize: [r, i],
-          ctx: n,
-          width: a
+          characterSize: [r, n],
+          ctx: i,
+          width: h
         } = this;
-        n.textAlign = "left", n.textBaseline = "top";
+        i.textAlign = "left", i.textBaseline = "top";
         for (let s = 0; s < this.width; s++)
           for (let l = 0; l < this.height; l++) {
-            const o = l * this.width + s, h = e.data[o];
-            if (!h || !(h instanceof v)) continue;
-            const { value: c, color: u, fontWeight: f, backgroundColor: p } = h;
-            p && (n.beginPath(), n.fillStyle = p, n.fillRect(
+            const o = l * this.width + s, a = e.data[o];
+            if (!a || !(a instanceof b)) continue;
+            const { value: d, color: u, fontWeight: f, backgroundColor: p } = a;
+            p && (i.beginPath(), i.fillStyle = p, i.fillRect(
               s * r,
-              l * i,
-              r + Math.max(1 / a, 1),
-              i
-            ), n.closePath()), n.beginPath(), n.font = `${f || "normal"} ${t} monospace`, n.fillStyle = u || "#FFFFFF", n.fillText(c, s * r, l * i), n.closePath(), this.drawing = !1;
+              l * n,
+              r + Math.max(1 / h, 1),
+              n
+            ), i.closePath()), i.beginPath(), i.font = `${f || "normal"} ${t} monospace`, i.fillStyle = u || "#FFFFFF", i.fillText(d, s * r, l * n), i.closePath(), this.drawing = !1;
           }
         e.state = "current";
       }
@@ -2461,12 +2053,12 @@ class ne {
   compileFrames(...e) {
     let t = [];
     for (const r of e) {
-      const { data: i } = r;
-      i.forEach((n, a) => {
-        n && (t[a] = n);
+      const { data: n } = r;
+      n.forEach((i, h) => {
+        i && (t[h] = i);
       });
     }
-    return new $(t);
+    return new j(t);
   }
   /**
    * Code that runs when the render is created.
@@ -2475,7 +2067,7 @@ class ne {
     this.__intializeDisplay(), this.__rescaleDisplay(), window.addEventListener("resize", () => this.__rescaleDisplay());
   }
 }
-class se extends de {
+class X extends K {
   /**
    * A core object that modifies the behavior of a GameObject. Behaviors need an `onTick` method that will run every frame right before their `GameObject`'s `onTick`.
    * @param {GameObject} gameObject The game object to append this behavior to.
@@ -2485,7 +2077,7 @@ class se extends de {
     super(e.scene), this.gameObject = e, e.behaviors.push(this), this.enabled = t;
   }
 }
-const Z = {
+const F = {
   line: [
     ["┌", "─", "┐"],
     ["│", " ", "│"],
@@ -2497,7 +2089,7 @@ const Z = {
     ["╚", "═", "╝"]
   ]
 };
-class oe extends D {
+class Y extends A {
   /**
    * A box that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -2512,24 +2104,24 @@ class oe extends D {
    * @param {string} config.layer The label of the layer to start the `Box` on.
    */
   constructor(e, t) {
-    if (!j(t))
+    if (!x(t))
       throw new TypeError(
         "Expected a plain object for Box constructor config parameter."
       );
     const {
       x: r,
-      y: i,
-      width: n,
-      height: a,
+      y: n,
+      width: i,
+      height: h,
       color: s = "#ffffff",
       backgroundColor: l,
       style: o = "double",
-      layer: h
+      layer: a
     } = t;
-    if (super(e, r, i, h), this.__rawWidth = n, this.__rawHeight = a, this.color = s, this.backgroundColor = l, !Object.keys(Z).includes(o))
+    if (super(e, r, n, a), this.__rawWidth = i, this.__rawHeight = h, this.color = s, this.backgroundColor = l, !Object.keys(F).includes(o))
       throw new Error(
-        `Invalid box style "${o}" provided. Must be one of: ${T(
-          Object.keys(Z)
+        `Invalid box style "${o}" provided. Must be one of: ${C(
+          Object.keys(F)
         )}`
       );
     this.style = o;
@@ -2551,8 +2143,8 @@ class oe extends D {
     this.__rawHeight = e;
   }
   get renderable() {
-    const { width: e, height: t, color: r, backgroundColor: i, style: n } = this;
-    return oe.asPixelMesh(e, t, r, i, n);
+    const { width: e, height: t, color: r, backgroundColor: n, style: i } = this;
+    return Y.asPixelMesh(e, t, r, n, i);
   }
   set renderable(e) {
   }
@@ -2565,29 +2157,29 @@ class oe extends D {
    * @param {string} style The box line style. `"line" || "double"`
    * @returns {PixelMesh} The generated `PixelMesh`.
    */
-  static asPixelMesh(e, t, r, i, n) {
-    const a = Z[n], s = [];
+  static asPixelMesh(e, t, r, n, i) {
+    const h = F[i], s = [];
     for (let l = 0; l < t; l++) {
       const o = [];
-      for (let h = 0; h < e; h++) {
-        let c = 0, u = 0;
-        h === e - 1 ? c = 2 : h > 0 && (c = 1), l === t - 1 ? u = 2 : l > 0 && (u = 1);
-        let f = a[u][c];
+      for (let a = 0; a < e; a++) {
+        let d = 0, u = 0;
+        a === e - 1 ? d = 2 : a > 0 && (d = 1), l === t - 1 ? u = 2 : l > 0 && (u = 1);
+        let f = h[u][d];
         o.push(
-          new v({
+          new b({
             value: f,
             color: r,
-            backgroundColor: i,
+            backgroundColor: n,
             solid: !1
           })
         );
       }
       s.push(o);
     }
-    return new L({ data: s });
+    return new _({ data: s });
   }
 }
-class te extends D {
+class D extends A {
   /**
    * A string of text that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -2603,30 +2195,30 @@ class te extends D {
    * @param {string} config.layer The label of the layer to start the `Text` on.
    */
   constructor(e, t) {
-    if (!j(t))
+    if (!x(t))
       throw new TypeError(
         "Expected a plain object for Text constructor config parameter."
       );
     const {
       x: r,
-      y: i,
-      value: n = "Hello, world!",
-      wrap: a = !0,
+      y: n,
+      value: i = "Hello, world!",
+      wrap: h = !0,
       color: s = "#ffffff",
       backgroundColor: l,
       fontWeight: o = 400,
-      maxWidth: h = e.runtime.renderer.width,
-      layer: c
+      maxWidth: a = e.runtime.renderer.width,
+      layer: d
     } = t;
-    if (super(e, r, i, c), h && (typeof h != "number" || !Number.isInteger(h) || h < 1))
+    if (super(e, r, n, d), a && (typeof a != "number" || !Number.isInteger(a) || a < 1))
       throw new TypeError(
         "Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
       );
-    if (typeof n != "string")
+    if (typeof i != "string")
       throw new Error(
-        `Provided text value "${n}" is not of type "string".`
+        `Provided text value "${i}" is not of type "string".`
       );
-    this.__rawValue = n, this.wrap = a, this.color = s, this.backgroundColor = l, this.fontWeight = o, this.maxWidth = h;
+    this.__rawValue = i, this.wrap = h, this.color = s, this.backgroundColor = l, this.fontWeight = o, this.maxWidth = a;
   }
   /**
    * Get the value of the text object.
@@ -2641,56 +2233,56 @@ class te extends D {
     this.__rawValue = e;
   }
   get renderable() {
-    const { wrap: e, value: t, maxWidth: r, color: i, backgroundColor: n, fontWeight: a } = this, s = t.split(`
+    const { wrap: e, value: t, maxWidth: r, color: n, backgroundColor: i, fontWeight: h } = this, s = t.split(`
 `), l = [];
     for (const o of s)
       if (!e && o.length > r)
         l.push(
           o.substring(0, r).split("").map(
-            (h) => new v({
-              value: h,
-              color: i,
-              backgroundColor: n,
-              fontWeight: a
+            (a) => new b({
+              value: a,
+              color: n,
+              backgroundColor: i,
+              fontWeight: h
             })
           )
         );
       else {
-        let h = [], c = 0;
+        let a = [], d = 0;
         for (const u of o) {
-          if (c >= r)
+          if (d >= r)
             if (e)
               l.push(
-                h.map(
-                  (f) => new v({
+                a.map(
+                  (f) => new b({
                     value: f,
-                    color: i,
-                    backgroundColor: n,
-                    fontWeight: a
+                    color: n,
+                    backgroundColor: i,
+                    fontWeight: h
                   })
                 )
-              ), h = [], c = 0;
+              ), a = [], d = 0;
             else
               break;
-          h.push(u), c++;
+          a.push(u), d++;
         }
-        h.length > 0 && l.push(
-          h.map(
-            (u) => new v({
+        a.length > 0 && l.push(
+          a.map(
+            (u) => new b({
               value: u,
-              color: i,
-              backgroundColor: n,
-              fontWeight: a
+              color: n,
+              backgroundColor: i,
+              fontWeight: h
             })
           )
         );
       }
-    return new L({ data: l });
+    return new _({ data: l });
   }
   set renderable(e) {
   }
 }
-class $e extends D {
+class ve extends A {
   /**
    * A list of user input options that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -2703,37 +2295,37 @@ class $e extends D {
    * @param {string} config.layer The label of the layer to start the `Menu` on.
    */
   constructor(e, t) {
-    if (!j(t))
+    if (!x(t))
       throw new TypeError(
         "Expected a plain object for Menu constructor config parameter."
       );
     const {
       x: r,
-      y: i,
-      title: n,
-      options: a,
+      y: n,
+      title: i,
+      options: h,
       callback: s = (o) => console.log(o),
       layer: l
     } = t;
-    if (super(e, r, i, l), this.options = a, this.callback = s, this.index = 0, this.longestOption = this.determineLongestOption(), n && typeof n != "string")
+    if (super(e, r, n, l), this.options = h, this.callback = s, this.index = 0, this.longestOption = this.determineLongestOption(), i && typeof i != "string")
       throw new Error(
-        `Provided menu title "${n}" is not of type "string".`
+        `Provided menu title "${i}" is not of type "string".`
       );
-    this.title = n, e.inputManager.addEventListener(this.handleInput.bind(this)), this.__inputMode = "keyboard";
+    this.title = i, e.inputManager.addEventListener(this.handleInput.bind(this)), this.__inputMode = "keyboard";
   }
   handleInput(e) {
     if (!(!this.isOnScreen || !this.visible))
       if (e.type === "keydown") {
         this.__inputMode = "keyboard";
         const {
-          keys: { up: t, down: r, enter: i }
+          keys: { up: t, down: r, enter: n }
         } = e;
-        r && this.index++, t && this.index--, i && this.callback(Object.keys(this.options)[this.index]);
-        const n = Object.keys(this.options).length - 1;
-        this.index < 0 && (this.index = n), this.index > n && (this.index = 0);
+        r && this.index++, t && this.index--, n && this.callback(Object.keys(this.options)[this.index]);
+        const i = Object.keys(this.options).length - 1;
+        this.index < 0 && (this.index = i), this.index > i && (this.index = 0);
       } else if (e.type === "mousemove") {
-        const { onLayer: t } = e, [r, i] = t[this.layer.label], [n, a] = [r - this.x, i - this.y], s = Math.floor(a - 1.5);
-        s >= 0 && s < Object.keys(this.options).length && n >= 0 && n <= this.width && (this.__inputMode = "mouse", this.index = s);
+        const { onLayer: t } = e, [r, n] = t[this.layer.label], [i, h] = [r - this.x, n - this.y], s = Math.floor(h - 1.5);
+        s >= 0 && s < Object.keys(this.options).length && i >= 0 && i <= this.width && (this.__inputMode = "mouse", this.index = s);
       } else e.type === "mousedown" && this.__inputMode === "mouse" && this.index >= 0 && this.index < Object.keys(this.options).length && this.callback(Object.keys(this.options)[this.index]);
   }
   get width() {
@@ -2759,8 +2351,8 @@ class $e extends D {
     const { options: e } = this;
     let t = 0;
     return Object.values(e).forEach((r) => {
-      const i = r;
-      i.length > t && (t = i.length);
+      const n = r;
+      n.length > t && (t = n.length);
     }), t;
   }
   get renderable() {
@@ -2768,25 +2360,25 @@ class $e extends D {
       options: e,
       scene: t,
       runtime: {
-        renderer: { width: r, height: i }
+        renderer: { width: r, height: n }
       },
-      title: n
-    } = this, a = r - 2, s = [];
+      title: i
+    } = this, h = r - 2, s = [];
     if (e) {
       const o = Object.values(e);
-      let h = o;
-      if (o.length + 4 > i) {
-        const c = Math.min(o.length, i - 4);
-        this.index < Math.floor(c / 2) ? h = o.slice(0, c) : this.index > o.length - Math.ceil(c / 2) ? h = o.slice(
-          o.length - c
-        ) : this.index >= Math.floor(c / 2) && (h = o.slice(
-          this.index - Math.floor(c / 2),
-          this.index + Math.ceil(c / 2)
+      let a = o;
+      if (o.length + 4 > n) {
+        const d = Math.min(o.length, n - 4);
+        this.index < Math.floor(d / 2) ? a = o.slice(0, d) : this.index > o.length - Math.ceil(d / 2) ? a = o.slice(
+          o.length - d
+        ) : this.index >= Math.floor(d / 2) && (a = o.slice(
+          this.index - Math.floor(d / 2),
+          this.index + Math.ceil(d / 2)
         ));
       }
-      h.forEach((c) => {
-        if (!c || typeof c != "string") return;
-        const u = c.slice(0, a), f = this.width - 1 - u.length, p = o.indexOf(c), m = new te(t, {
+      a.forEach((d) => {
+        if (!d || typeof d != "string") return;
+        const u = d.slice(0, h), f = this.width - 1 - u.length, p = o.indexOf(d), w = new D(t, {
           x: 0,
           y: 0,
           value: `${" ".repeat(
@@ -2801,10 +2393,10 @@ class $e extends D {
           fontWeight: p === this.index ? "800" : "100",
           backgroundColor: "#000000"
         }).renderable.data[0];
-        s.push(m);
+        s.push(w);
       });
     }
-    const l = new oe(t, {
+    const l = new Y(t, {
       x: 0,
       y: 0,
       width: this.width,
@@ -2814,24 +2406,24 @@ class $e extends D {
     s.unshift(l[1]), s.unshift(l[0]), s.push(l[1]), s.push(l[l.length - 1]);
     for (let o = 2; o < s.length - 2; o++)
       s[o].unshift(l[o][0]), s[o][this.width - 1] = l[o][l[o].length - 1];
-    if (n) {
-      const o = new te(t, {
+    if (i) {
+      const o = new D(t, {
         x: 0,
         y: 0,
-        value: n.slice(0, a - 2),
+        value: i.slice(0, h - 2),
         wrap: !1,
         color: "#ffffff",
         backgroundColor: "#000000"
-      }).renderable.data[0], h = Math.floor((this.width - o.length) / 2);
-      for (let c = 0; c < o.length; c++)
-        s[0][c + h] = o[c];
+      }).renderable.data[0], a = Math.floor((this.width - o.length) / 2);
+      for (let d = 0; d < o.length; d++)
+        s[0][d + a] = o[d];
     }
-    return new L({ data: s });
+    return new _({ data: s });
   }
   set renderable(e) {
   }
 }
-class De extends te {
+class xe extends D {
   /**
    * A text input that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -2852,16 +2444,16 @@ class De extends te {
    * @param {string} config.layer The label of the layer to start the `TextInput` on.
    */
   constructor(e, t) {
-    if (!j(t))
+    if (!x(t))
       throw new TypeError(
         "Expected a plain object for TextInput constructor config parameter."
       );
     t.wrap = !1, t.maxWidth || (t.maxWidth = 8), super(e, t);
     const {
       activeColor: r = "black",
-      backgroundColor: i = "transparent",
-      backgroundColorActive: n = "white",
-      onChange: a,
+      backgroundColor: n = "transparent",
+      backgroundColorActive: i = "white",
+      onChange: h,
       onKeyDown: s,
       maxLength: l
     } = t;
@@ -2872,26 +2464,26 @@ class De extends te {
         );
       this.activeColor = r;
     }
-    if (i) {
-      if (typeof i != "string")
-        return new TypeError(
-          "Expected a string for Text config.backgroundColor value."
-        );
-      this.backgroundColor = i;
-    }
     if (n) {
       if (typeof n != "string")
         return new TypeError(
+          "Expected a string for Text config.backgroundColor value."
+        );
+      this.backgroundColor = n;
+    }
+    if (i) {
+      if (typeof i != "string")
+        return new TypeError(
           "Expected a string for Text config.backgroundColorActive value."
         );
-      this.backgroundColorActive = n;
+      this.backgroundColorActive = i;
     }
-    if (a) {
-      if (typeof a != "function")
+    if (h) {
+      if (typeof h != "function")
         throw new TypeError(
           "Expected a function for TextInput config.onChange value."
         );
-      this.onChange = a;
+      this.onChange = h;
     }
     if (s) {
       if (typeof s != "function")
@@ -2942,30 +2534,30 @@ class De extends te {
       value: e,
       fontWeight: t,
       maxWidth: r,
-      caret: i,
-      color: n,
-      activeColor: a,
+      caret: n,
+      color: i,
+      activeColor: h,
       backgroundColor: s,
       backgroundColorActive: l,
       focused: o
-    } = this, h = [], c = e.length - r + 1;
-    this.scroll > c && (this.scroll = c), this.scroll < 0 && (this.scroll = 0);
+    } = this, a = [], d = e.length - r + 1;
+    this.scroll > d && (this.scroll = d), this.scroll < 0 && (this.scroll = 0);
     const { scroll: u } = this, f = e.substring(u, u + r).padEnd(r, " ").split("");
     for (let p = 0; p < f.length; p++) {
-      const m = f[p], w = p + u === i && o;
-      h.push(
-        new v({
-          value: m,
-          color: w ? a : n,
-          backgroundColor: w ? l : s,
+      const w = f[p], y = p + u === n && o;
+      a.push(
+        new b({
+          value: w,
+          color: y ? h : i,
+          backgroundColor: y ? l : s,
           fontWeight: t
         })
       );
     }
-    return new L({ data: [h] });
+    return new _({ data: [a] });
   }
 }
-class He extends se {
+class ke extends X {
   /**
    * Scroll the camera to a `GameObject`.
    * @param {GameObject} gameObject The game object to append this behavior to.
@@ -2981,8 +2573,8 @@ class He extends se {
         x: e,
         y: t,
         width: r,
-        height: i,
-        origin: [n, a]
+        height: n,
+        origin: [i, h]
       },
       scene: {
         camera: s,
@@ -2991,10 +2583,10 @@ class He extends se {
         }
       }
     } = this;
-    s.x = e - n + r / 2 - l / 2, s.y = t - a + i / 2 - o / 2;
+    s.x = e - i + r / 2 - l / 2, s.y = t - h + n / 2 - o / 2;
   }
 }
-class ue extends se {
+class V extends X {
   /**
    * Move a `GameObject` from a top-down perspective.
    * @param {GameObject} gameObject The game object to append this behavior to.
@@ -3002,12 +2594,12 @@ class ue extends se {
    * @param {Object} config The configuration for this `TopDownMovement`.
    * @param {boolean} config.defaultControls Whether to automatically handle input using the arrow keys. Default: `true`.
    */
-  constructor(t, r = !0, i = { defaultControls: !0 }) {
+  constructor(t, r = !0, n = { defaultControls: !0 }) {
     super(t, r);
     /**
      * Attempt to move `GameObject` up.
      */
-    g(this, "simulateControlUp", () => {
+    m(this, "simulateControlUp", () => {
       if (this.gameObject.paused) return;
       const {
         gameObject: { x: t, y: r }
@@ -3017,7 +2609,7 @@ class ue extends se {
     /**
      * Attempt to move `GameObject` down.
      */
-    g(this, "simulateControlDown", () => {
+    m(this, "simulateControlDown", () => {
       if (this.gameObject.paused) return;
       const {
         gameObject: { x: t, y: r }
@@ -3027,7 +2619,7 @@ class ue extends se {
     /**
      * Attempt to move `GameObject` left.
      */
-    g(this, "simulateControlLeft", () => {
+    m(this, "simulateControlLeft", () => {
       if (this.gameObject.paused) return;
       const {
         gameObject: { x: t, y: r }
@@ -3037,16 +2629,16 @@ class ue extends se {
     /**
      * Attempt to move `GameObject` right.
      */
-    g(this, "simulateControlRight", () => {
+    m(this, "simulateControlRight", () => {
       if (this.gameObject.paused) return;
       const {
         gameObject: { x: t, y: r }
       } = this;
       this.__tryToMoveToPosition(t + 1, r);
     });
-    ue.validateConfig(i);
-    const { defaultControls: n = !0 } = i;
-    n && scene.inputManager.addEventListener(this.handleInput.bind(this));
+    V.validateConfig(n);
+    const { defaultControls: i = !0 } = n;
+    i && scene.inputManager.addEventListener(this.handleInput.bind(this));
   }
   /**
    * Validates a TopDownMovement configuration object and throws an error if it is invalid.
@@ -3061,9 +2653,9 @@ class ue extends se {
   handleInput(t) {
     if (!this.gameObject.paused && t.type === "keydown") {
       const {
-        keys: { up: r, down: i, left: n, right: a }
+        keys: { up: r, down: n, left: i, right: h }
       } = t;
-      r && this.simulateControlUp(), i && this.simulateControlDown(), n && this.simulateControlLeft(), a && this.simulateControlRight();
+      r && this.simulateControlUp(), n && this.simulateControlDown(), i && this.simulateControlLeft(), h && this.simulateControlRight();
     }
   }
   /**
@@ -3074,53 +2666,53 @@ class ue extends se {
   __tryToMoveToPosition(t, r) {
     if (this.gameObject.paused) return;
     const {
-      gameObject: i,
+      gameObject: n,
       gameObject: {
-        width: n,
-        height: a,
+        width: i,
+        height: h,
         origin: [s, l]
       },
       scene: { layerManager: o }
     } = this;
-    if (n <= 1 && a <= 1) {
-      const m = o.solidAtPosition(t, r);
-      (!m || m.gameObject === i) && (i.x = t, i.y = r);
+    if (i <= 1 && h <= 1) {
+      const w = o.solidAtPosition(t, r);
+      (!w || w.gameObject === n) && (n.x = t, n.y = r);
       return;
     }
-    let h = !0;
-    const c = t > i.x, u = t < i.x, f = r > i.y, p = r < i.y;
-    if (c || u) {
-      const m = i.y - l, w = m + a - 1;
-      for (let b = m; b <= w; b++) {
-        const x = c ? t + n - 1 - s : t - s, y = o.solidAtPosition(x, b);
-        if (y && y.gameObject !== i) {
-          h = !1;
+    let a = !0;
+    const d = t > n.x, u = t < n.x, f = r > n.y, p = r < n.y;
+    if (d || u) {
+      const w = n.y - l, y = w + h - 1;
+      for (let v = w; v <= y; v++) {
+        const O = d ? t + i - 1 - s : t - s, k = o.solidAtPosition(O, v);
+        if (k && k.gameObject !== n) {
+          a = !1;
           break;
         }
       }
     } else if (f || p) {
-      const m = i.x - s, w = m + n - 1;
-      for (let b = m; b <= w; b++) {
-        const x = f ? r + a - 1 - l : r - l, y = o.solidAtPosition(b, x);
-        if (y && y.gameObject !== i) {
-          h = !1;
+      const w = n.x - s, y = w + i - 1;
+      for (let v = w; v <= y; v++) {
+        const O = f ? r + h - 1 - l : r - l, k = o.solidAtPosition(v, O);
+        if (k && k.gameObject !== n) {
+          a = !1;
           break;
         }
       }
     }
-    h && (i.x = t, i.y = r);
+    a && (n.x = t, n.y = r);
   }
   onTick() {
   }
 }
-class Be {
+class Ee {
   /**
    * An animation frame. The `renderable` value of this Frame should return a `Pixel` or `PixelMesh` that will determine what is displayed on this frame.
    * @param {Pixel|PixelMesh} renderable The renderable item to display for this frame.
    * @param {number} duration The duration (in frames) of this frame. Example: a value of `2` will make this frame last twice as long as the rest.
    */
-  constructor(e = v.fromString("#"), t) {
-    if (!e || !(e instanceof v) && !(e instanceof L))
+  constructor(e = b.fromString("#"), t) {
+    if (!e || !(e instanceof b) && !(e instanceof _))
       throw new Error(
         `Invalid renderable provided to "AnimationFrame": ${e}. Must be of type "Pixel" or "PixelMesh".`
       );
@@ -3131,7 +2723,7 @@ class Be {
     this.duration = t, this.renderable = e;
   }
 }
-class ae {
+class z {
   /**
    * An animation. The `Animate` behavior operates on the data in this object.
    * @param {Object} config The configuration for this `Animation`.
@@ -3150,16 +2742,16 @@ class ae {
     repeatCount: 1,
     pingPong: !1
   }) {
-    ae.validateConfig(e);
+    z.validateConfig(e);
     const {
       label: t = "Unnamed Animation",
       animationFrames: r,
-      speed: i = 12,
-      loop: n = !1,
-      repeatCount: a = 1,
+      speed: n = 12,
+      loop: i = !1,
+      repeatCount: h = 1,
       pingPong: s = !1
     } = e;
-    this.label = t, this.animationFrames = r, this.speed = i, this.loop = n, this.repeatCount = a, this.pingPong = s;
+    this.label = t, this.animationFrames = r, this.speed = n, this.loop = i, this.repeatCount = h, this.pingPong = s;
   }
   /**
    * Validates a TopDownMovement configuration object and throws an error if it is invalid.
@@ -3186,7 +2778,7 @@ class ae {
       );
   }
 }
-class fe extends se {
+class J extends X {
   /**
    * Animate a `GameObject`.
    * @param {GameObject} gameObject The game object to append this behavior to.
@@ -3198,14 +2790,14 @@ class fe extends se {
    * @param {boolean} config.overwriteObjectRenderable Whether or not to force the GameObject's `renderable` property to return this `Animate` instance's `renderable` property. Default `false`.
    */
   constructor(e, t = !0, r) {
-    super(e, t), fe.validateConfig(r);
+    super(e, t), J.validateConfig(r);
     const {
-      animations: i,
-      initialFrame: n = 0,
-      initialAnimation: a,
+      animations: n,
+      initialFrame: i = 0,
+      initialAnimation: h,
       overwriteObjectRenderable: s = !1
     } = r;
-    this.animations = i, this.currentAnimationLabel = void 0, this.__rawCurrentAnimationFrameIndex = n, this.playing = !1, this.repeats = 0, this.speed = 0, s && this.__overwriteObjectRenderable(), a && (this.currentAnimation = a), this.currentAnimation && (this.playing = !0);
+    this.animations = n, this.currentAnimationLabel = void 0, this.__rawCurrentAnimationFrameIndex = i, this.playing = !1, this.repeats = 0, this.speed = 0, s && this.__overwriteObjectRenderable(), h && (this.currentAnimation = h), this.currentAnimation && (this.playing = !0);
   }
   /**
    * Overwrite a `GameObject`'s `renderable` property with this `Animate` instance's `renderable` property.
@@ -3285,7 +2877,7 @@ class fe extends se {
     if (!e.animations || !(e.animations instanceof Array))
       throw new Error("No animations configured for Animate behavior.");
     for (const t of e.animations)
-      if (!(t instanceof ae))
+      if (!(t instanceof z))
         throw new Error(
           'Item in "animations" array is not an instance of "Animation".'
         );
@@ -3304,36 +2896,35 @@ class fe extends se {
       currentAnimation: e,
       animationFrameCount: t,
       runtime: { dt: r }
-    } = this, i = this.currentAnimationFrame, n = i.duration && typeof i.duration == "number" ? i.duration : 1;
-    this.__rawCurrentAnimationFrameIndex += e.speed * r / n, this.__rawCurrentAnimationFrameIndex >= t ? e.pingPong ? (e.speed *= -1, this.__rawCurrentAnimationFrameIndex = t - 1) : (this.repeats++, e.loop || this.repeats < e.repeatCount ? this.__rawCurrentAnimationFrameIndex = 0 : (this.playing = !1, this.__rawCurrentAnimationFrameIndex = t - 1)) : this.__rawCurrentAnimationFrameIndex < 0 && (e.pingPong && this.repeats++, e.loop || this.repeats < e.repeatCount ? (e.speed *= -1, this.__rawCurrentAnimationFrameIndex = 1) : (this.playing = !1, this.__rawCurrentAnimationFrameIndex = 0));
+    } = this, n = this.currentAnimationFrame, i = n.duration && typeof n.duration == "number" ? n.duration : 1;
+    this.__rawCurrentAnimationFrameIndex += e.speed * r / i, this.__rawCurrentAnimationFrameIndex >= t ? e.pingPong ? (e.speed *= -1, this.__rawCurrentAnimationFrameIndex = t - 1) : (this.repeats++, e.loop || this.repeats < e.repeatCount ? this.__rawCurrentAnimationFrameIndex = 0 : (this.playing = !1, this.__rawCurrentAnimationFrameIndex = t - 1)) : this.__rawCurrentAnimationFrameIndex < 0 && (e.pingPong && this.repeats++, e.loop || this.repeats < e.repeatCount ? (e.speed *= -1, this.__rawCurrentAnimationFrameIndex = 1) : (this.playing = !1, this.__rawCurrentAnimationFrameIndex = 0));
   }
 }
 export {
-  Ge as AdvMath,
-  fe as Animate,
-  ae as Animation,
-  Be as AnimationFrame,
-  se as Behavior,
-  oe as Box,
-  de as Core,
-  $ as Frame,
-  D as GameObject,
-  ce as Layer,
-  $e as Menu,
-  v as Pixel,
-  L as PixelMesh,
-  X as Scene,
-  He as ScrollTo,
-  te as Text,
-  De as TextInput,
-  ue as TopDownMovement,
-  Le as __AudioManager,
-  Ae as __Camera,
-  Pe as __InputManager,
-  Te as __LayerManager,
-  je as __Noise,
-  ne as __Renderer,
-  Oe as __Sound,
-  We as dataUtils,
-  Se as default
+  _e as AdvMath,
+  J as Animate,
+  z as Animation,
+  Ee as AnimationFrame,
+  X as Behavior,
+  Y as Box,
+  K as Core,
+  j as Frame,
+  A as GameObject,
+  q as Layer,
+  ve as Menu,
+  b as Pixel,
+  _ as PixelMesh,
+  I as Scene,
+  ke as ScrollTo,
+  D as Text,
+  xe as TextInput,
+  V as TopDownMovement,
+  ue as __AudioManager,
+  fe as __Camera,
+  me as __InputManager,
+  pe as __LayerManager,
+  G as __Renderer,
+  de as __Sound,
+  ye as dataUtils,
+  ge as default
 };

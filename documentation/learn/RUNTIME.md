@@ -14,8 +14,6 @@ Initializes the game state using the provided configuration object.
 
 -   `config` &mdash; `Object` The game's config object.
 
-    -   `seed` &mdash; `number | string` _(optional)_ A seed for random noise generation. If not provided, defaults to the current timestamp (`Date.now()`).
-
     -   `renderer` &mdash; `Object` _(required)_ The renderer object used for rendering the game's visual output. This is mandatory for the runtime to function.
 
         -   `resolution` &mdash; `Array<number>` Determines the resolution (in characters) of the renderer. Format: `[integer width, integer height]`.

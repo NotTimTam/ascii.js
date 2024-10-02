@@ -1,6 +1,5 @@
 import { isPlainObject } from "../util/data.js";
 import AudioManager from "./AudioManager.js";
-import Noise from "./Noise.js";
 import Renderer from "./Renderer.js";
 import Scene from "./Scene.js";
 
@@ -35,8 +34,6 @@ class Runtime {
 
 		this.validateConfig(config);
 
-		this.noise = new Noise(config.seed || Date.now());
-
 		this.audioManager = new AudioManager(this);
 		this.renderer = new Renderer(this);
 
@@ -68,15 +65,6 @@ class Runtime {
 		if (!isPlainObject(config))
 			throw new TypeError(
 				"Expected a plain object for Runtime constructor config parameter."
-			);
-
-		if (
-			config.seed &&
-			typeof config.seed !== "number" &&
-			typeof config.seed !== "string"
-		)
-			throw new Error(
-				`Invalid random noise "seed" value provided to Runtime: "${config.seed}". String or number value required.`
 			);
 
 		if (!config.renderer)

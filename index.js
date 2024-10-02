@@ -19,8 +19,6 @@ export { default as Menu } from "./objects/Menu.js";
 export { default as Text } from "./objects/Text.js";
 export { default as TextInput } from "./objects/TextInput.js";
 
-export { default as __Noise } from "./engine/Noise.js";
-
 export { default as ScrollTo } from "./behaviors/ScrollTo.js";
 export { default as TopDownMovement } from "./behaviors/TopDownMovement.js";
 export {

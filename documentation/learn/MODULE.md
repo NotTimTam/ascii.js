@@ -73,4 +73,3 @@ Just like all variables, methods, and arguments that start with double-underscor
 -   [\_\_AudioManager](./engine/AUDIOMANAGER.md) &mdash; Creates, manages, and plays `Sound`s.
 -   [\_\_Sound](./engine/SOUND.md) &mdash; A controller for playing an individual sound.
 -   [\_\_Camera](./engine/CAMERA.md) &mdash; Camera for controlling what is displayed in a frame.
--   [\_\_Noise](./engine/NOISE.md) &mdash; Perlin/Simplex noise generator.
