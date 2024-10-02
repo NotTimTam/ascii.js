@@ -42,10 +42,15 @@ new Text(scene, {
 	layer: "warning",
 	x: 0,
 	y: 0,
-	value: "WARNING FLASHING CHARACTERS!!!",
+	value: "WARNING FLASHING CHARACTERS!!! (WARNING WILL DISAPPEAR IN 3 SECONDS)",
 });
 
 scene.layerManager.getLayerByLabel("system").visible = false;
+
+setTimeout(() => {
+	scene.layerManager.getLayerByLabel("system").visible = true;
+	scene.layerManager.getLayerByLabel("warning").visible = false;
+}, 3000);
 
 const { width, height } = runtime.renderer;
 
