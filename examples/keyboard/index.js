@@ -27,6 +27,8 @@ const scene = new Scene(runtime, {
 	label: "game",
 });
 
+const animatable = new GameObject(scene, 0, 0, "system");
+
 const keyDisplay = (key) => {
 	switch (key) {
 		case "escape":
@@ -153,7 +155,7 @@ spc!control!alt!space!alt!control!left!down!right`
 					keyDsp
 				);
 
-				if (key === "j") new ScrollTo(scene, keyObject, true);
+				if (key === "j") new ScrollTo(keyObject, true);
 			});
 	});
 

@@ -6,13 +6,12 @@ Move a `GameObject` from a top-down perspective.
 
 ## Constructor
 
-`new TopDownMovement(scene, gameObject, enabledByDefault = true, config)`
+`new TopDownMovement(gameObject, enabledByDefault = true, config)`
 
 Initializes the movement behavior for a specified game object.
 
 ### Arguments
 
--   `scene` &mdash; `Scene` The scene this object is a part of.
 -   `gameObject` &mdash; `GameObject` The game object to append this behavior to.
 -   `enabledByDefault` &mdash; `boolean` Whether the Behavior starts out enabled. Default: `true`.
 -   `config` &mdash; `Object` The configuration for this `TopDownMovement`.

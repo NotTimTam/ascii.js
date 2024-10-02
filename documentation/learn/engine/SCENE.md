@@ -2,6 +2,8 @@
 
 A scene is a level, screen, or world that can be loaded at any point during runtime.
 
+You can provide the `Scene` constructor's config object with a `layers` array, containing data for generating layers in the scene. Each scene will automatically populate a layer with label `"system"` if none of the layer configurations in the `config.layers` array use that label.
+
 ---
 
 ## Constructor

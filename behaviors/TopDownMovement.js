@@ -3,19 +3,17 @@ import Behavior from "../core/Behavior.js";
 class TopDownMovement extends Behavior {
 	/**
 	 * Move a `GameObject` from a top-down perspective.
-	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {GameObject} gameObject The game object to append this behavior to.
 	 * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
 	 * @param {Object} config The configuration for this `TopDownMovement`.
 	 * @param {boolean} config.defaultControls Whether to automatically handle input using the arrow keys. Default: `true`.
 	 */
 	constructor(
-		scene,
 		gameObject,
 		enabledByDefault = true,
 		config = { defaultControls: true }
 	) {
-		super(scene, gameObject, enabledByDefault);
+		super(gameObject, enabledByDefault);
 
 		TopDownMovement.validateConfig(config);
 
