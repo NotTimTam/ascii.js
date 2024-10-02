@@ -1,12 +1,4 @@
-import Runtime, {
-	GameObject,
-	Menu,
-	Pixel,
-	PixelMesh,
-	Scene,
-	Text,
-	TopDownMovement,
-} from "../../index.js";
+import Runtime, { Scene, TextInput } from "../../index.js";
 
 const runtime = new Runtime({
 	renderer: {
@@ -29,16 +21,16 @@ const scene = new Scene(runtime, {
 
 const { width, height } = runtime.renderer;
 
-const menu = new Menu(scene, {
-	x: 0,
-	y: 0,
-	options: [],
-	callback: (e) => {
-		console.log(e);
-	},
-	layer: "system",
-});
+// const menu = new Menu(scene, {
+// 	x: 0,
+// 	y: 0,
+// 	options: [],
+// 	callback: (e) => {
+// 		console.log(e);
+// 	},
+// 	layer: "system",
+// });
 
-new TopDownMovement(menu, true, { defaultControls: true });
+new TextInput(scene, { x: 6, y: 8, layer: "system" });
 
 runtime.loadScene(scene);

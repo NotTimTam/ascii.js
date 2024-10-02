@@ -1,6 +1,7 @@
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 import { isPlainObject } from "../util/data.js";
+import { clamp } from "../util/math.js";
 import Text from "./Text.js";
 
 class TextInput extends Text {
@@ -103,9 +104,13 @@ class TextInput extends Text {
 		this.focused = Boolean(config.autoFocus);
 		this.caret = config.value ? config.value.length : 0;
 
-		scene.inputManager.addOnClick(this, this.onClick.bind(this));
+		scene.inputManager.watchObjectClick(this.id, this.onClick.bind(this));
 		scene.inputManager.addEventListener(
-			"all",
+			"click",
+			this.onAnyClick.bind(this)
+		);
+		scene.inputManager.addEventListener(
+			"keydown",
 			this.eventListener.bind(this)
 		);
 	}
@@ -114,7 +119,20 @@ class TextInput extends Text {
 	 * Listens to click events.
 	 */
 	onClick() {
-		this.focused = true;
+		if (!this.focused) {
+			this.focused = true;
+			this.caret = this.value.length;
+
+			this.__updateScrollPosition();
+		}
+	}
+
+	/**
+	 * Trigger when anything is clicked.
+	 */
+	onAnyClick(event) {
+		// Defocus when not clicking on this input.
+		if (!event.targets.includes(this.id)) this.focused = false;
 	}
 
 	/**
@@ -123,49 +141,45 @@ class TextInput extends Text {
 	eventListener(event) {
 		const { caret } = this;
 
+		if (!this.focused) return;
+
+		const { key } = event;
+
+		// Only allow ASCII range typeable keys.
 		if (
-			event.type === "click" &&
-			!event.target
-				.map(({ gameObject }) => gameObject.id)
-				.includes(this.id)
+			/^[\x20-\x7E]$/.test(key) &&
+			(typeof this.maxLength !== "number" ||
+				this.value.length < this.maxLength)
 		) {
-			// Defocus when not clicking on this input.
-			this.focused = false;
-		} else if (event.type === "keydown" && this.focused) {
-			const { key } = event;
+			this.value =
+				this.value.slice(0, this.caret) +
+				key +
+				this.value.slice(this.caret);
+			this.caret++;
+		} else if (key === "Backspace") {
+			this.value =
+				this.value.slice(0, caret - 1) + this.value.slice(caret);
 
-			// Only allow ASCII range typeable keys.
-			if (
-				/^[\x20-\x7E]$/.test(key) &&
-				(typeof this.maxLength !== "number" ||
-					this.value.length < this.maxLength)
-			) {
-				this.value =
-					this.value.slice(0, this.caret) +
-					key +
-					this.value.slice(this.caret);
-				this.caret++;
-			} else if (key === "Backspace") {
-				this.value =
-					this.value.slice(0, caret - 1) + this.value.slice(caret);
+			if (this.caret !== this.value.length) this.caret--;
+		} else if (key === "Delete") {
+			this.value =
+				this.value.slice(0, caret) + this.value.slice(caret + 1);
+		} else if (key === "Tab") {
+			this.value += "    ";
+			this.caret += 4;
+		} else if (key === "Escape") this.focused = false;
+		else if (key === "ArrowLeft") this.caret--;
+		else if (key === "ArrowRight") this.caret++;
 
-				if (this.caret !== this.value.length) this.caret--;
-			} else if (key === "Delete") {
-				this.value =
-					this.value.slice(0, caret) + this.value.slice(caret + 1);
-			} else if (key === "Tab") {
-				this.value += "    ";
-				this.caret += 4;
-			} else if (key === "Escape") this.focused = false;
-			else if (key === "ArrowLeft") this.caret--;
-			else if (key === "ArrowRight") this.caret++;
+		this.__updateScrollPosition();
 
-			while (this.caret < this.scroll) this.scroll--;
-			while (this.caret > this.scroll + this.maxWidth - 2) this.scroll++;
+		this.onChange && this.onChange({ target: this });
+		this.onKeyDown && this.onKeyDown({ target: this, key });
+	}
 
-			this.onChange && this.onChange({ target: this });
-			this.onKeyDown && this.onKeyDown({ target: this, key });
-		}
+	__updateScrollPosition() {
+		while (this.caret < this.scroll) this.scroll--;
+		while (this.caret > this.scroll + this.maxWidth - 2) this.scroll++;
 	}
 
 	get caret() {
