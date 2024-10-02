@@ -23,32 +23,12 @@ A string of text that can be rendered on screen.
 
 ---
 
-## Methods
+## Properties
 
-### `get value()`
+### `value`
 
-Get the value of the text object.
+The `string` value of the text object.
 
-#### Returns
+### `renderable`
 
--   `string` The current text value.
-
----
-
-### `set value(value)`
-
-Set the value of the text object.
-
-#### Arguments
-
--   `value` &mdash; `string` The new text value.
-
----
-
-### `get renderable()`
-
-Generate the renderable representation of the text.
-
-#### Returns
-
--   `PixelMesh` The PixelMesh representation of the text, including color, background color, and font weight.
+Get the `PixelMesh` renderable representation of the text.
