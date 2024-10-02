@@ -337,8 +337,6 @@ class LayerManager {
 
 		const frames = this.visibleLayers.map((layer) => layer.frame);
 
-		renderer.clearDisplay();
-
 		for (const frame of frames) renderer.drawFrame(frame);
 	}
 

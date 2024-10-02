@@ -1,29 +1,49 @@
-const DrawFrameWorker = new Worker(new URL("./worker.js", import.meta.url));
+export default `
+self.onmessage = function ({ data: { data: frame, characterSize: [cW, cH], width, height, fontSize } }) {
+	const canvas = new OffscreenCanvas(cW * width, cH * height);
+	const ctx = canvas.getContext('2d');
 
-// renderer-worker.js
-self.addEventListener(
-	"message",
-	(e) => {
-		// Receive data from main thread
-		const data = e.data;
+	ctx.textAlign = "left";
+	ctx.textBaseline = "top";
 
-		console.log(e.data);
+	for (let x = 0; x < width; x++)
+		for (let y = 0; y < height; y++) {
+			const index = y * width + x;
 
-		return "test";
+			const data = frame[index];
 
-		// Perform rendering process
-		const renderedData = render(data);
+			const { value, color, fontWeight, backgroundColor } = data;
 
-		// Send back rendered result to main thread
-		self.postMessage(renderedData);
-	},
-	false
-);
+			if (backgroundColor) {
+				ctx.beginPath();
 
-function render(data) {
-	// Your heavy rendering logic here
-	// Example: rendering to canvas, DOM updates, etc.
-	// Ensure it's designed to work asynchronously and within a web worker context
-	// Return the rendered result
-	return "egg";
-}
+				ctx.fillStyle = backgroundColor;
+
+				ctx.fillRect(
+					x * cW,
+					y * cH,
+					cW + Math.max(1 / width, 1),
+					cH
+				);
+
+				ctx.closePath();
+			}
+
+			ctx.beginPath();
+
+			ctx.font = \`\${
+				fontWeight || "normal"
+			} \${fontSize} monospace\`;
+
+			ctx.fillStyle = color || "#FFFFFF";
+
+			ctx.fillText(value, x * cW, y * cH);
+
+			ctx.closePath();
+		}
+
+	const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+	self.postMessage(imageData);
+};
+`;

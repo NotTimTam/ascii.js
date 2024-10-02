@@ -1,8 +1,12 @@
 import Runtime, {
+	Animate,
+	Animation,
+	AnimationFrame,
 	GameObject,
 	Pixel,
 	PixelMesh,
 	Scene,
+	ScrollTo,
 	Text,
 } from "../../index.js";
 
@@ -18,6 +22,8 @@ const runtime = new Runtime({
 		scaling: "letterbox",
 
 		renderMode: "stacked",
+
+		useWebWorkers: true,
 	},
 });
 
@@ -26,147 +32,115 @@ runtime.start((runtime) => {});
 const scene = new Scene(runtime, {
 	label: "game",
 	layers: [],
-	// onLoad: (scene) => {},
-	// onTick: (scene) => {},
 });
 
 const { width, height } = runtime.renderer;
 
-new Text(scene, {
-	x: 0,
-	y: height - 1,
-	value: "Mouse by Joan G. Stark",
-	layer: "system",
-});
+const pixelMeshGenerator = (offset = 0) =>
+	new PixelMesh({
+		data: new Array(height).fill(null).map((_, y) =>
+			new Array(width).fill(null).map((_, x) => {
+				const localized = (x + offset + (y % 2 === 0 ? 0 : 4)) % 7;
 
-const mouseDisplay = new GameObject(scene, 0, 0, "system");
-mouseDisplay.renderable = new PixelMesh({
-	data: `    ,d88b
- ,8P'    \`8,
- 8'       _.8._
-8       .'  |  '.
-       /    |    \\
-      |    [_]    |
-      |     |     |
-      |-----'-----|
-      |           |
-      |           |
-      |;         .|
-      ;\\         /;
-       \\\\       //
-        \\'._ _.'/
-         '-...-'
-`
-		.split("\n")
-		.map((line) =>
-			line.split("").map(
-				(value) =>
-					new Pixel({
-						value,
-					})
-			)
+				switch (localized) {
+					case 0:
+						return new Pixel({
+							value: ")",
+							color: "red",
+						});
+					case 1:
+						return new Pixel({
+							value: ")",
+							color: "orange",
+						});
+					case 2:
+						return new Pixel({
+							value: ")",
+							color: "yellow",
+						});
+					case 3:
+						return new Pixel({
+							value: ")",
+							color: "green",
+						});
+					case 4:
+						return new Pixel({
+							value: ")",
+							color: "blue",
+						});
+					case 5:
+						return new Pixel({
+							value: ")",
+							color: "indigo",
+						});
+					case 6:
+						return new Pixel({
+							value: ")",
+							color: "purple",
+						});
+				}
+			})
 		),
+	});
+
+const animatable = new GameObject(scene, 0, 0, "system");
+new ScrollTo(animatable, true);
+const animate = new Animate(animatable, true, {
+	animations: [
+		new Animation({
+			label: "anim1",
+			animationFrames: [
+				new AnimationFrame(pixelMeshGenerator(6)),
+				new AnimationFrame(pixelMeshGenerator(5)),
+				new AnimationFrame(pixelMeshGenerator(4)),
+				new AnimationFrame(pixelMeshGenerator(3)),
+				new AnimationFrame(pixelMeshGenerator(2)),
+				new AnimationFrame(pixelMeshGenerator(1)),
+				new AnimationFrame(pixelMeshGenerator(0)),
+			],
+			speed: 24,
+			loop: true,
+		}),
+	],
+	initialAnimation: "anim1",
+	initialFrame: 0,
+	overwriteObjectRenderable: true,
 });
-mouseDisplay.renderable.origin = [
-	Math.floor(mouseDisplay.renderable.width / 2),
-	Math.floor(mouseDisplay.renderable.height / 2),
-];
 
-mouseDisplay.x = width / 2;
-mouseDisplay.y = height / 2;
-
-// Pointer position indicator.
-const pointerPosition = new Text(scene, {
-	x: mouseDisplay.x,
-	y: mouseDisplay.y + 1,
+const frameRate = new Text(scene, {
+	x: width / 2,
+	y: height / 2,
+	value: "0FPS",
+	color: "white",
+	fontWeight: 800,
 	layer: "system",
-	value: "",
-	color: "red",
-});
-pointerPosition.renderable = undefined;
-
-scene.inputManager.addEventListener("mousemove", ({ x, y }) => {
-	pointerPosition.value = ` ${x}, ${y}`;
 });
 
-// Click indicators.
-const leftClickIndicator = new GameObject(
-	scene,
-	mouseDisplay.x - 3,
-	mouseDisplay.y - 6,
-	"system"
-);
-leftClickIndicator.renderable = PixelMesh.fromString(
-	`    _.8
-  .'  |
- /    |
-|     
-|     |
-|-----'`
-);
-leftClickIndicator.renderable.setBackgroundColor("red");
-leftClickIndicator.visible = false;
-
-const rightClickIndicator = new GameObject(
-	scene,
-	mouseDisplay.x + 3,
-	mouseDisplay.y - 6,
-	"system"
-);
-rightClickIndicator.renderable = PixelMesh.fromString(
-	`8._
-|  '.
-|    \\
-      |
-|     |
-'-----|`
-);
-rightClickIndicator.renderable.setBackgroundColor("red");
-rightClickIndicator.visible = false;
-
-const middleClickIndicator = new GameObject(
-	scene,
-	mouseDisplay.x + 2,
-	mouseDisplay.y - 3,
-	"system"
-);
-middleClickIndicator.renderable = PixelMesh.fromString(`[_]`);
-middleClickIndicator.renderable.setBackgroundColor("red");
-middleClickIndicator.visible = false;
-
-// Scroll indicators.
-const scrollIndicator = new GameObject(
-	scene,
-	mouseDisplay.x + 3,
-	mouseDisplay.y - 3,
-	"system"
-);
-scrollIndicator.renderable = Pixel.fromString(` `);
-
-scene.inputManager.addEventListener("wheel", ({ scroll: { y } }) => {
-	if (y === "up") scrollIndicator.renderable.value = "↑";
-	else scrollIndicator.renderable.value = "↓";
-});
-
-scene.onTickPassthrough = () => {
-	const {
-		mouse: {
-			buttons: { left, right, middle },
-		},
-	} = scene.inputManager;
-
-	// console.log(deltas, scroll);
-
-	if (left) leftClickIndicator.visible = true;
-	else leftClickIndicator.visible = false;
-
-	if (right) rightClickIndicator.visible = true;
-	else rightClickIndicator.visible = false;
-
-	if (middle) middleClickIndicator.visible = true;
-	else middleClickIndicator.visible = false;
-
-	scrollIndicator.renderable = Pixel.fromString(` `);
+frameRate.onTick = () => {
+	frameRate.value = `${Math.round(runtime.fps)}FPS - DELTA TIME: ${Math.round(
+		runtime.dt * 1000
+	)}ms`;
+	frameRate.x = width / 2 - frameRate.value.length / 2;
 };
+
+const webWorkerToggle = new Text(scene, {
+	x: width / 2,
+	y: height / 2 + 1,
+	value: `Webworkers ${runtime.renderer.useWebWorkers ? "On" : "Off"}`,
+	color: runtime.renderer.useWebWorkers ? "green" : "red",
+	fontWeight: 800,
+	layer: "system",
+});
+webWorkerToggle.x = width / 2 - webWorkerToggle.value.length / 2;
+
+scene.inputManager.watchObjectClick(webWorkerToggle.id, () => {
+	runtime.renderer.useWebWorkers = !runtime.renderer.useWebWorkers;
+
+	webWorkerToggle.value = `Webworkers ${
+		runtime.renderer.useWebWorkers ? "On" : "Off"
+	}`;
+	webWorkerToggle.color = runtime.renderer.useWebWorkers ? "green" : "red";
+	webWorkerToggle.x = width / 2 - webWorkerToggle.value.length / 2;
+});
 
 runtime.loadScene(scene);

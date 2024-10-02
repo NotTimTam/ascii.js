@@ -27,8 +27,6 @@ const scene = new Scene(runtime, {
 	label: "game",
 });
 
-const animatable = new GameObject(scene, 0, 0, "system");
-
 const keyDisplay = (key) => {
 	switch (key) {
 		case "escape":

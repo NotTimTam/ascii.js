@@ -30,6 +30,7 @@ Initializes the game state using the provided configuration object.
 
             -   **off** &mdash; Does not modify the scale of the canvas element.
 
+        -   `useWebWorkers` &mdash; `boolean` Whether or not to use web workers for rendering. Default `true`.
         -   `renderMode` &mdash; `"stacked"|"merged"` The rendering mode for the canvas. Should be one of: `"stacked"`, `"merged"`.
 
 #### Rendering Modes Explained

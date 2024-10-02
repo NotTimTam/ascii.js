@@ -18,6 +18,7 @@ Initializes the animation behavior for a specified game object.
     -   `animations` &mdash; `Array<Animation>` The animations for this behavior.
     -   `initialAnimation` &mdash; `string` The label of the animation to start on.
     -   `initialFrame` &mdash; `number` The frame of the animation to start on.
+    -   `overwriteObjectRenderable` &mdash; `boolean` Whether or not to force the GameObject's `renderable` property to return this `Animate` instance's `renderable` property. Default `false`.
 
 ---
 
@@ -26,6 +27,8 @@ Initializes the animation behavior for a specified game object.
 ### `renderable`
 
 Returns the current animation frame's renderable object.
+
+**Note:** Simply adding an `Animate` behavior instance to a `GameObject` will not overwrite that object's renderable. To do this you'll need to either extend the `GameObject` class and overwrite its `renderable` getter to return the value of `Animate.renderable`, or you'll need to set `Animate.config.overwriteObjectRenderable` to `true`.
 
 ### `currentAnimationFrameIndex`
 

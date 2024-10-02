@@ -3,6 +3,9 @@ import { displayArray } from "../util/data.js";
 import Pixel from "../core/Pixel.js";
 import Frame from "./Frame.js";
 import Runtime from "./Runtime.js";
+import DrawFrameWorker from "../workers/DrawFrameWorker.js";
+
+// import DrawFrameWorker from "../workers/DrawFrameWorker.js?worker";
 
 class Renderer {
 	/**
@@ -20,6 +23,41 @@ class Renderer {
 			throw new Error("No config object provided to renderer.");
 
 		this.__onCreated();
+
+		this.useWebWorkers = this.config.hasOwnProperty("useWebWorkers")
+			? Boolean(this.config.useWebWorkers)
+			: true;
+
+		if (!window.Worker && this.useWebWorkers)
+			throw new Error("This environment does not support webworkers.");
+
+		this.__createWorkerInterface();
+	}
+
+	/**
+	 * Create interfaces for each web worker.
+	 */
+	__createWorkerInterface() {
+		this.webWorkers = {
+			drawFrame: new Worker(
+				URL.createObjectURL(
+					new Blob([DrawFrameWorker], {
+						type: "application/javascript",
+					})
+				),
+				{
+					type: "module",
+				}
+			),
+		};
+
+		this.webWorkers.drawFrame.onmessage = (event) => {
+			this.clearDisplay();
+
+			this.ctx.putImageData(event.data, 0, 0);
+
+			this.drawing = false;
+		};
 	}
 
 	/**
@@ -243,60 +281,84 @@ class Renderer {
 			);
 
 		if (!this.hasDrawn) this.hasDrawn = true;
-		this.drawing = true;
 
-		const {
-			config: { fontSize },
+		if (this.useWebWorkers) {
+			this.drawing = true;
 
-			characterSize: [cW, cH],
+			const {
+				characterSize,
+				width,
+				height,
+				config: { fontSize },
+			} = this;
 
-			ctx,
+			this.webWorkers.drawFrame.postMessage({
+				data: frame.data,
+				characterSize,
+				width,
+				height,
+				fontSize,
+			});
+		} else {
+			this.drawing = true;
 
-			width,
-		} = this;
+			this.clearDisplay();
 
-		ctx.textAlign = "left";
-		ctx.textBaseline = "top";
+			const {
+				config: { fontSize },
 
-		for (let x = 0; x < this.width; x++)
-			for (let y = 0; y < this.height; y++) {
-				const index = y * this.width + x;
+				characterSize: [cW, cH],
 
-				const data = frame.data[index];
+				ctx,
 
-				if (!data || !(data instanceof Pixel)) continue;
+				width,
+			} = this;
 
-				const { value, color, fontWeight, backgroundColor } = data;
+			ctx.textAlign = "left";
+			ctx.textBaseline = "top";
 
-				if (backgroundColor) {
+			for (let x = 0; x < this.width; x++)
+				for (let y = 0; y < this.height; y++) {
+					const index = y * this.width + x;
+
+					const data = frame.data[index];
+
+					if (!data || !(data instanceof Pixel)) continue;
+
+					const { value, color, fontWeight, backgroundColor } = data;
+
+					if (backgroundColor) {
+						ctx.beginPath();
+
+						ctx.fillStyle = backgroundColor;
+
+						ctx.fillRect(
+							x * cW,
+							y * cH,
+							cW + Math.max(1 / width, 1),
+							cH
+						);
+
+						ctx.closePath();
+					}
+
 					ctx.beginPath();
 
-					ctx.fillStyle = backgroundColor;
+					ctx.font = `${
+						fontWeight || "normal"
+					} ${fontSize} monospace`;
 
-					ctx.fillRect(
-						x * cW,
-						y * cH,
-						cW + Math.max(1 / width, 1),
-						cH
-					);
+					ctx.fillStyle = color || "#FFFFFF";
+
+					ctx.fillText(value, x * cW, y * cH);
 
 					ctx.closePath();
+
+					this.drawing = false;
 				}
 
-				ctx.beginPath();
-
-				ctx.font = `${fontWeight || "normal"} ${fontSize} monospace`;
-
-				ctx.fillStyle = color || "#FFFFFF";
-
-				ctx.fillText(value, x * cW, y * cH);
-
-				ctx.closePath();
-			}
-
-		frame.state = "current";
-
-		this.drawing = false;
+			frame.state = "current";
+		}
 	}
 
 	/**

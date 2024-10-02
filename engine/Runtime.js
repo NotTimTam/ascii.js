@@ -16,6 +16,7 @@ class Runtime {
 	 * @param {"off"|"letterbox"} config.renderer.scaling The scaling mode for the canvas. Should be one of: `"off"`, `"letterbox"`.
 	 * - "letterbox" &mdash; Scales the canvas element to fit the viewport without changing its aspect ratio.
 	 * - "off" &mdash; Does not modify the scale of the canvas element.
+	 * @param {boolean} config.renderer.useWebWorkers Whether or not to use web workers for rendering. Default `true`.
 	 * @param {"stacked"|"merged"} config.renderer.renderMode Should be one of: `"stacked"`, `"merged"`.
 	 * #### Stacked Mode
 	 *
@@ -30,9 +31,6 @@ class Runtime {
 	 * -   **Performance:** Faster rendering compared to stacked mode due to the compilation of all frames. Additionally, identifies and skips rendering frames that are identical to the currently drawn frame, saving processing time when the screen is static. Due to the nature of this rendering mode, some graphical issues can occur, and it should only be used on lower-end devices.
 	 */
 	constructor(config) {
-		if (!window.Worker)
-			throw new Error("This environment does not support webworkers.");
-
 		this.config = config;
 
 		this.validateConfig(config);

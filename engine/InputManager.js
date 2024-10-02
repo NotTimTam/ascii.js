@@ -297,7 +297,7 @@ class InputManager {
 			keyCode: undefined,
 			key: undefined,
 		};
-		this.mouse = { buttons: {} };
+		this.mouse = { buttons: {}, onLayer: {} };
 
 		this.__eventListeners = {
 			all: [],

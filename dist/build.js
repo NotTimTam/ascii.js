@@ -1,7 +1,7 @@
 var be = Object.defineProperty;
 var he = Object.getOwnPropertySymbols;
 var _e = Object.prototype.hasOwnProperty, ye = Object.prototype.propertyIsEnumerable;
-var $ = Math.pow, J = (d, e, t) => e in d ? be(d, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : d[e] = t, j = (d, e) => {
+var G = Math.pow, J = (d, e, t) => e in d ? be(d, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : d[e] = t, A = (d, e) => {
   for (var t in e || (e = {}))
     _e.call(e, t) && J(d, t, e[t]);
   if (he)
@@ -26,18 +26,18 @@ var le = (d, e, t) => new Promise((r, i) => {
   }, s = (l) => l.done ? r(l.value) : Promise.resolve(l.value).then(n, a);
   s((t = t.apply(d, e)).next());
 });
-const P = (d) => `[${d.map((e) => {
+const T = (d) => `[${d.map((e) => {
   switch (typeof e) {
     case "string":
       return `"${e}"`;
     default:
       return e;
   }
-}).join(", ")}]`, A = (d) => d && typeof d == "object" && !(d instanceof Array), Fe = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}).join(", ")}]`, j = (d) => d && typeof d == "object" && !(d instanceof Array), We = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  displayArray: P,
-  isPlainObject: A
-}, Symbol.toStringTag, { value: "Module" })), W = class W {
+  displayArray: T,
+  isPlainObject: j
+}, Symbol.toStringTag, { value: "Module" })), B = class B {
   /**
    * A pixel mesh stores a 2-dimensional array of `Pixels`.
    * @param {Object} config The config for this `PixelMesh` instance.
@@ -45,7 +45,7 @@ const P = (d) => `[${d.map((e) => {
    * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
    */
   constructor(e) {
-    if (!A(e))
+    if (!j(e))
       throw new TypeError(
         "Expected a plain object for PixelMesh constructor config parameter."
       );
@@ -131,7 +131,7 @@ const P = (d) => `[${d.map((e) => {
  * @param {string} string The string to convert to a `PixelMesh`.
  * @returns {Pixel} the newly created `PixelMesh` object.
  */
-g(W, "fromString", (e) => new W({
+g(B, "fromString", (e) => new B({
   data: e.split(`
 `).map(
     (t) => t.split("").map(
@@ -139,8 +139,8 @@ g(W, "fromString", (e) => new W({
     )
   )
 }));
-let L = W;
-const X = class X {
+let L = B;
+const R = class R {
   /**
    * Pixel data for a frame coordinate.
    * @param {Object} config The pixel config object.
@@ -152,7 +152,7 @@ const X = class X {
    * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
    */
   constructor(e) {
-    if (!A(e))
+    if (!j(e))
       throw new TypeError(
         "Expected a plain object for Pixel constructor config parameter."
       );
@@ -196,9 +196,9 @@ const X = class X {
  * @param {string} string The string to convert to a `Pixel`.
  * @returns {Pixel} the newly created `Pixel` object.
  */
-g(X, "fromString", (e) => new X({ value: e }));
-let v = X;
-const T = class T {
+g(R, "fromString", (e) => new R({ value: e }));
+let v = R;
+const P = class P {
   /**
    * A display frame.
    * @param {Array<Pixel>} data The frame's 1-dimensional (left-to-right, top-to-bottom) data array.
@@ -213,35 +213,35 @@ const T = class T {
  * @param {string} string The string to convert.
  * @returns {Frame} the generated Frame.
  */
-g(T, "fromString", (e) => new T(e.split("").map((t) => new v({ value: t })))), /**
+g(P, "fromString", (e) => new P(e.split("").map((t) => new v({ value: t })))), /**
  * Convert a 2D array of `Pixel`s to a Frame.
  * @param {Array<Array<Pixel>} array The array to convert.
  */
-g(T, "from2DArray", (e) => new T(e.flat()));
-let H = T;
-const re = (d, e, t, r, i, n, a, s) => d < i + a && d + t > i && e < n + s && e + r > n, D = (d, e, t) => Math.max(e, Math.min(d, t)), ie = (d) => d * (180 / Math.PI), Q = (d) => d * (Math.PI / 180), ve = (d, e) => Math.floor(Math.random() * (e - d + 1)) + d, xe = (d) => {
+g(P, "from2DArray", (e) => new P(e.flat()));
+let $ = P;
+const re = (d, e, t, r, i, n, a, s) => d < i + a && d + t > i && e < n + s && e + r > n, H = (d, e, t) => Math.max(e, Math.min(d, t)), ie = (d) => d * (180 / Math.PI), Q = (d) => d * (Math.PI / 180), ve = (d, e) => Math.floor(Math.random() * (e - d + 1)) + d, xe = (d) => {
   if (d === 0 || d === 1) return 1;
   for (let e = d - 1; e >= 1; e--)
     d *= e;
   return d;
-}, Ee = (d, e) => [
+}, ke = (d, e) => [
   e * Math.cos(Q(d)),
   e * Math.sin(Q(d))
-], ke = (d, e) => [
+], Ee = (d, e) => [
   ie(Math.atan2(e, d)),
-  Math.sqrt($(d, 2) + $(e, 2))
-], Me = (d, e, t, r) => ie(Math.atan2(r - e, t - d)), Ce = (d, e, t, r) => Math.sqrt($(t - d, 2) + $(r - e, 2)), Ge = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  Math.sqrt(G(d, 2) + G(e, 2))
+], Me = (d, e, t, r) => ie(Math.atan2(r - e, t - d)), Ce = (d, e, t, r) => Math.sqrt(G(t - d, 2) + G(r - e, 2)), Ge = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   aabb: re,
   angleBetweenPoints: Me,
-  cartesianToVector: ke,
-  clamp: D,
+  cartesianToVector: Ee,
+  clamp: H,
   degreeToRadian: Q,
   distanceBetweenPoints: Ce,
   fact: xe,
   radianToDegree: ie,
   range: ve,
-  vectorToCartesian: Ee
+  vectorToCartesian: ke
 }, Symbol.toStringTag, { value: "Module" }));
 class Oe {
   /**
@@ -296,7 +296,7 @@ class Oe {
       throw new Error(
         `Invalid volume value provided to "Sound" instance: ${e}. Must be of type "number".`
       );
-    this.element.volume = D(e, 0, 1);
+    this.element.volume = H(e, 0, 1);
   }
   /**
    * Get whether the audio is playing.
@@ -421,7 +421,7 @@ class M {
     return this.x * e + this.y * t + this.z * r;
   }
 }
-class Ae {
+class je {
   /**
    * Create a new `Noise` instance.
    * @param {number} seed The seed for noise generation.
@@ -714,12 +714,12 @@ class Ae {
     h > c ? (u = 1, f = 0) : (u = 0, f = 1);
     let p = h - u + this.G2, m = c - f + this.G2, w = h - 1 + 2 * this.G2, b = c - 1 + 2 * this.G2;
     s &= 255, l &= 255;
-    let x = this.gradP[s + this.perm[l]], y = this.gradP[s + u + this.perm[l + f]], k = this.gradP[s + 1 + this.perm[l + 1]], E = 0.5 - h * h - c * c;
-    E < 0 ? r = 0 : (E *= E, r = E * E * x.dot2(h, c));
+    let x = this.gradP[s + this.perm[l]], y = this.gradP[s + u + this.perm[l + f]], E = this.gradP[s + 1 + this.perm[l + 1]], k = 0.5 - h * h - c * c;
+    k < 0 ? r = 0 : (k *= k, r = k * k * x.dot2(h, c));
     let C = 0.5 - p * p - m * m;
     C < 0 ? i = 0 : (C *= C, i = C * C * y.dot2(p, m));
     let O = 0.5 - w * w - b * b;
-    return O < 0 ? n = 0 : (O *= O, n = O * O * k.dot2(w, b)), 70 * (r + i + n);
+    return O < 0 ? n = 0 : (O *= O, n = O * O * E.dot2(w, b)), 70 * (r + i + n);
   }
   /**
    * Generate a 3D simplex noise value.
@@ -729,18 +729,18 @@ class Ae {
    * @returns {number} The random noise for those coordinates.
    */
   simplex3(e, t, r) {
-    let i, n, a, s, l = (e + t + r) * this.F3, o = Math.floor(e + l), h = Math.floor(t + l), c = Math.floor(r + l), u = (o + h + c) * this.G3, f = e - o + u, p = t - h + u, m = r - c + u, w, b, x, y, k, E;
-    f >= p ? p >= m ? (w = 1, b = 0, x = 0, y = 1, k = 1, E = 0) : f >= m ? (w = 1, b = 0, x = 0, y = 1, k = 0, E = 1) : (w = 0, b = 0, x = 1, y = 1, k = 0, E = 1) : p < m ? (w = 0, b = 0, x = 1, y = 0, k = 1, E = 1) : f < m ? (w = 0, b = 1, x = 0, y = 0, k = 1, E = 1) : (w = 0, b = 1, x = 0, y = 1, k = 1, E = 0);
-    let C = f - w + this.G3, O = p - b + this.G3, R = m - x + this.G3, N = f - y + 2 * this.G3, z = p - k + 2 * this.G3, q = m - E + 2 * this.G3, U = f - 1 + 3 * this.G3, K = p - 1 + 3 * this.G3, V = m - 1 + 3 * this.G3;
+    let i, n, a, s, l = (e + t + r) * this.F3, o = Math.floor(e + l), h = Math.floor(t + l), c = Math.floor(r + l), u = (o + h + c) * this.G3, f = e - o + u, p = t - h + u, m = r - c + u, w, b, x, y, E, k;
+    f >= p ? p >= m ? (w = 1, b = 0, x = 0, y = 1, E = 1, k = 0) : f >= m ? (w = 1, b = 0, x = 0, y = 1, E = 0, k = 1) : (w = 0, b = 0, x = 1, y = 1, E = 0, k = 1) : p < m ? (w = 0, b = 0, x = 1, y = 0, E = 1, k = 1) : f < m ? (w = 0, b = 1, x = 0, y = 0, E = 1, k = 1) : (w = 0, b = 1, x = 0, y = 1, E = 1, k = 0);
+    let C = f - w + this.G3, O = p - b + this.G3, Y = m - x + this.G3, N = f - y + 2 * this.G3, z = p - E + 2 * this.G3, q = m - k + 2 * this.G3, U = f - 1 + 3 * this.G3, K = p - 1 + 3 * this.G3, V = m - 1 + 3 * this.G3;
     o &= 255, h &= 255, c &= 255;
-    let pe = this.gradP[o + this.perm[h + this.perm[c]]], me = this.gradP[o + w + this.perm[h + b + this.perm[c + x]]], ge = this.gradP[o + y + this.perm[h + k + this.perm[c + E]]], we = this.gradP[o + 1 + this.perm[h + 1 + this.perm[c + 1]]], S = 0.6 - f * f - p * p - m * m;
+    let pe = this.gradP[o + this.perm[h + this.perm[c]]], me = this.gradP[o + w + this.perm[h + b + this.perm[c + x]]], ge = this.gradP[o + y + this.perm[h + E + this.perm[c + k]]], we = this.gradP[o + 1 + this.perm[h + 1 + this.perm[c + 1]]], S = 0.6 - f * f - p * p - m * m;
     S < 0 ? i = 0 : (S *= S, i = S * S * pe.dot3(f, p, m));
-    let I = 0.6 - C * C - O * O - R * R;
-    I < 0 ? n = 0 : (I *= I, n = I * I * me.dot3(C, O, R));
-    let F = 0.6 - N * N - z * z - q * q;
-    F < 0 ? a = 0 : (F *= F, a = F * F * ge.dot3(N, z, q));
-    let G = 0.6 - U * U - K * K - V * V;
-    return G < 0 ? s = 0 : (G *= G, s = G * G * we.dot3(U, K, V)), 32 * (i + n + a + s);
+    let F = 0.6 - C * C - O * O - Y * Y;
+    F < 0 ? n = 0 : (F *= F, n = F * F * me.dot3(C, O, Y));
+    let I = 0.6 - N * N - z * z - q * q;
+    I < 0 ? a = 0 : (I *= I, a = I * I * ge.dot3(N, z, q));
+    let W = 0.6 - U * U - K * K - V * V;
+    return W < 0 ? s = 0 : (W *= W, s = W * W * we.dot3(U, K, V)), 32 * (i + n + a + s);
   }
   // ##### Perlin noise stuff
   fade(e) {
@@ -811,7 +811,7 @@ class Ae {
     );
   }
 }
-class je {
+class Ae {
   /**
    * The scene contains variable layers and compiles them into one frame to render to the screen.
    * @param {Scene} scene The `Scene` this `Camera` is a part of.
@@ -1099,7 +1099,7 @@ g(_, "xbButtonMap", [
   "right"
 ]), g(_, "standardAxesMap", ["lh", "lv", "rh", "rv"]);
 let ee = _;
-class Te {
+class Pe {
   /**
    * Handles user input.
    * @param {Scene} scene The current scene.
@@ -1118,13 +1118,13 @@ class Te {
       keyCodes: {},
       keyCode: void 0,
       key: void 0
-    }, this.mouse = { buttons: {} }, this.__eventListeners = {
+    }, this.mouse = { buttons: {}, onLayer: {} }, this.__eventListeners = {
       all: [],
       click: [
         (t) => {
           for (const [r, i] of this.__gameObjectClicks)
             if (t.targets.includes(r)) {
-              let n = j({}, t);
+              let n = A({}, t);
               delete n.targets, n.target = r, i(n);
             }
         }
@@ -1279,21 +1279,21 @@ class Te {
     if (this.hasPointerLock)
       this.mouse.velocity = [i, n];
     else {
-      this.mouse.velocity = [i, n], this.mouse.rawX = t, this.mouse.rawY = r, this.mouse.canvasX = w, this.mouse.canvasY = b, this.mouse.x = D(
+      this.mouse.velocity = [i, n], this.mouse.rawX = t, this.mouse.rawY = r, this.mouse.canvasX = w, this.mouse.canvasY = b, this.mouse.x = H(
         Math.floor(x * o),
         0,
         o
-      ), this.mouse.y = D(
+      ), this.mouse.y = H(
         Math.floor(y * h),
         0,
         h
       ), this.mouse.onLayer = {};
-      for (const k of l) {
+      for (const E of l) {
         const {
-          label: E,
+          label: k,
           parallax: [C, O]
-        } = k;
-        this.mouse.onLayer[E] = [
+        } = E;
+        this.mouse.onLayer[k] = [
           this.mouse.x + a * C,
           this.mouse.y + s * O
         ];
@@ -1374,7 +1374,7 @@ class Te {
           this.__onClick();
           break;
       }
-      this.__triggerEvents(t, j({ type: t }, this.mouse)), this.__triggerEvents("all", j({ type: t }, this.mouse)), t === "click" && this.mouse.target && delete this.mouse.target, this.__resetMouseWheel();
+      this.__triggerEvents(t, A({ type: t }, this.mouse)), this.__triggerEvents("all", A({ type: t }, this.mouse)), t === "click" && this.mouse.target && delete this.mouse.target, this.__resetMouseWheel();
     } else if (e instanceof KeyboardEvent) {
       const { type: t } = e;
       switch (t) {
@@ -1385,7 +1385,7 @@ class Te {
           this.__onKeyUp(e);
           break;
       }
-      this.__triggerEvents(t, j({ type: t }, this.keyboard)), this.__triggerEvents("all", j({ type: t }, this.keyboard));
+      this.__triggerEvents(t, A({ type: t }, this.keyboard)), this.__triggerEvents("all", A({ type: t }, this.keyboard));
     } else if (e instanceof GamepadEvent) {
       const { type: t } = e;
       switch (t) {
@@ -1407,7 +1407,7 @@ class Te {
   addEventListener(e, t) {
     if (!this.types.includes(e))
       throw new Error(
-        `"${e}" is not a valid event type. Must be one of: ${P(
+        `"${e}" is not a valid event type. Must be one of: ${T(
           this.types
         )}`
       );
@@ -1421,7 +1421,7 @@ class Te {
   removeEventListener(e, t) {
     if (!this.types.includes(e))
       throw new Error(
-        `"${e}" is not a valid event type. Must be one of: ${P(
+        `"${e}" is not a valid event type. Must be one of: ${T(
           this.types
         )}`
       );
@@ -1491,7 +1491,7 @@ class de {
       throw new Error(
         'This environment does not support the JavaScript "crypto" library. Only secure contexts (HTTPS) support "crypto.randomUUID".'
       );
-    if (!(e instanceof Y))
+    if (!(e instanceof X))
       throw new TypeError(
         'Invalid object provided to Core class constructor. Expected an instance of "Scene".'
       );
@@ -1501,7 +1501,7 @@ class de {
     return this.scene.runtime;
   }
 }
-class B extends de {
+class D extends de {
   /**
    * A core object that can have its runtime methods managed by the runtime itself, or another object.
    *
@@ -1655,6 +1655,25 @@ class B extends de {
     this.__rawRenderable = e;
   }
   /**
+   * Restore the initial getter/setter functionality for this `GameObject` instance's `renderable` property.
+   */
+  __resetRenderable() {
+    Object.defineProperty(this, "renderable", {
+      get() {
+        return this.__rawRenderable;
+      },
+      set(e) {
+        if (e && !(e instanceof v) && !(e instanceof L))
+          throw new TypeError(
+            "A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
+          );
+        this.__rawRenderable = e;
+      },
+      configurable: !0,
+      enumerable: !0
+    });
+  }
+  /**
    * Whether the object is on a paused layer or the runtime is paused.
    *
    * This should be checked when input and logic functions are called, to ensure they do not run when the `GameObject` is paused.
@@ -1698,7 +1717,7 @@ class ce {
    * @param {Array<function>} config.gameObjectConstructors An array of functions that return game objects.
    */
   constructor(e, t) {
-    if (!A(t))
+    if (!j(t))
       throw new TypeError(
         "Expected a plain object for Layer constructor config parameter."
       );
@@ -1720,13 +1739,13 @@ class ce {
       const r = t(
         this.layerManager.scene
       );
-      if (!(r instanceof B))
+      if (!(r instanceof D))
         throw new TypeError(
           'Each gameObjectConstructor function must return an object of type "GameObject".'
         );
       return r;
     }).filter(
-      (t) => t && t instanceof B
+      (t) => t && t instanceof D
     );
     for (const t of this.gameObjects)
       t.layer = this.label;
@@ -1798,7 +1817,7 @@ class ce {
       } else
         continue;
     }
-    return new H(l);
+    return new $(l);
   }
   __onTick() {
     const {
@@ -1813,7 +1832,7 @@ class ce {
         i.__behave(), e.__runOnTick(i);
   }
 }
-class Pe {
+class Te {
   /**
    * The layer manager contains variable layers and compiles them into one frame to render to the screen.
    * @param {Scene} scene The current loaded `Scene`.
@@ -1907,7 +1926,6 @@ class Pe {
         runtime: { renderer: e }
       }
     } = this, t = this.visibleLayers.map((r) => r.frame);
-    e.clearDisplay();
     for (const r of t) e.drawFrame(r);
   }
   __onLoad() {
@@ -1929,7 +1947,7 @@ class Pe {
     t === "stacked" ? this.__stackedRender() : this.__mergedRender();
   }
 }
-class Y {
+class X {
   /**
    * A scene is a level, screen, or world that can be load in at any point during the runtime.
    * @param {Runtime} runtime The main runtime object.
@@ -1948,9 +1966,9 @@ class Y {
       throw new TypeError(
         "Scene constructor was not provided an instance of Runtime."
       );
-    Y.validateConfig(t);
+    X.validateConfig(t);
     const { label: r, layers: i, onLoad: n, onTick: a } = t;
-    this.label = r, this.camera = new je(this), this.layerManager = new Pe(this, i), this.inputManager = new Te(this), n && (this.onLoadPassthrough = n), a && (this.onTickPassthrough = a), this.__onTick.bind(this), this.__onLoad();
+    this.label = r, this.camera = new Ae(this), this.layerManager = new Te(this, i), this.inputManager = new Pe(this), n && (this.onLoadPassthrough = n), a && (this.onTickPassthrough = a), this.__onTick.bind(this), this.__onLoad();
   }
   /**
    * Get the number of `GameObject`s in the current scene.
@@ -1963,7 +1981,7 @@ class Y {
    * @param {Object} config The config object to validate.
    */
   static validateConfig(e) {
-    if (!A(e))
+    if (!j(e))
       throw new TypeError(
         "Expected a plain object for Scene constructor config parameter."
       );
@@ -2040,6 +2058,7 @@ class Se {
    * @param {"off"|"letterbox"} config.renderer.scaling The scaling mode for the canvas. Should be one of: `"off"`, `"letterbox"`.
    * - "letterbox" &mdash; Scales the canvas element to fit the viewport without changing its aspect ratio.
    * - "off" &mdash; Does not modify the scale of the canvas element.
+   * @param {boolean} config.renderer.useWebWorkers Whether or not to use web workers for rendering. Default `true`.
    * @param {"stacked"|"merged"} config.renderer.renderMode Should be one of: `"stacked"`, `"merged"`.
    * #### Stacked Mode
    *
@@ -2072,9 +2091,7 @@ class Se {
      * @param  {...any} passthrough The data to pass through to that method.
      */
     g(this, "__runOnLoad", (e, ...t) => e.onLoad && e.onLoad(...t));
-    if (!window.Worker)
-      throw new Error("This environment does not support webworkers.");
-    this.config = e, this.validateConfig(e), this.noise = new Ae(e.seed || Date.now()), this.audioManager = new Le(this), this.renderer = new ne(this), this.running = !1, this.initialized = !1, this.paused = !1;
+    this.config = e, this.validateConfig(e), this.noise = new je(e.seed || Date.now()), this.audioManager = new Le(this), this.renderer = new ne(this), this.running = !1, this.initialized = !1, this.paused = !1;
   }
   get webGLSupported() {
     try {
@@ -2089,7 +2106,7 @@ class Se {
    * @param {Object} config The config object to validate.
    */
   validateConfig(e) {
-    if (!A(e))
+    if (!j(e))
       throw new TypeError(
         "Expected a plain object for Runtime constructor config parameter."
       );
@@ -2136,7 +2153,7 @@ class Se {
       throw new Error(
         `A scene loading attempt was made, but the Runtime's "start" method has not yet been called.`
       );
-    if (!(e instanceof Y))
+    if (!(e instanceof X))
       throw new Error('Provided scene is not a "Scene" object');
     this.scene && this.scene.__unLoad(), this.scene = e;
   }
@@ -2148,6 +2165,55 @@ class Se {
     this.running = !0, this.initialized || (this.__onStartup(), this.initialized = !0, e && typeof e == "function" && e(this)), requestAnimationFrame((t) => this.__onTick(t));
   }
 }
+const Fe = `
+self.onmessage = function ({ data: { data: frame, characterSize: [cW, cH], width, height, fontSize } }) {
+	const canvas = new OffscreenCanvas(cW * width, cH * height);
+	const ctx = canvas.getContext('2d');
+
+	ctx.textAlign = "left";
+	ctx.textBaseline = "top";
+
+	for (let x = 0; x < width; x++)
+		for (let y = 0; y < height; y++) {
+			const index = y * width + x;
+
+			const data = frame[index];
+
+			const { value, color, fontWeight, backgroundColor } = data;
+
+			if (backgroundColor) {
+				ctx.beginPath();
+
+				ctx.fillStyle = backgroundColor;
+
+				ctx.fillRect(
+					x * cW,
+					y * cH,
+					cW + Math.max(1 / width, 1),
+					cH
+				);
+
+				ctx.closePath();
+			}
+
+			ctx.beginPath();
+
+			ctx.font = \`\${
+				fontWeight || "normal"
+			} \${fontSize} monospace\`;
+
+			ctx.fillStyle = color || "#FFFFFF";
+
+			ctx.fillText(value, x * cW, y * cH);
+
+			ctx.closePath();
+		}
+
+	const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+
+	self.postMessage(imageData);
+};
+`;
 class ne {
   /**
    * Handles rendering the game using **2D Context**.
@@ -2172,7 +2238,28 @@ class ne {
     ]);
     if (this.runtime = e, this.config = this.runtime.config && this.runtime.config.renderer, ne.validateConfig(this.config), !this.config)
       throw new Error("No config object provided to renderer.");
-    this.__onCreated();
+    if (this.__onCreated(), this.useWebWorkers = this.config.hasOwnProperty("useWebWorkers") ? !!this.config.useWebWorkers : !0, !window.Worker && this.useWebWorkers)
+      throw new Error("This environment does not support webworkers.");
+    this.__createWorkerInterface();
+  }
+  /**
+   * Create interfaces for each web worker.
+   */
+  __createWorkerInterface() {
+    this.webWorkers = {
+      drawFrame: new Worker(
+        URL.createObjectURL(
+          new Blob([Fe], {
+            type: "application/javascript"
+          })
+        ),
+        {
+          type: "module"
+        }
+      )
+    }, this.webWorkers.drawFrame.onmessage = (e) => {
+      this.clearDisplay(), this.ctx.putImageData(e.data, 0, 0), this.drawing = !1;
+    };
   }
   /**
    * Get the display's character width.
@@ -2209,7 +2296,7 @@ class ne {
       const t = ["off", "letterbox"];
       if (!t.includes(e.scaling))
         throw new Error(
-          `Invalid scaling value provided, must be one of: ${P(
+          `Invalid scaling value provided, must be one of: ${T(
             t
           )}`
         );
@@ -2218,7 +2305,7 @@ class ne {
       const t = ["stacked", "merged"];
       if (!t.includes(e.renderMode))
         throw new Error(
-          `Provided render mode is invalid. Must be of type: ${P(
+          `Provided render mode is invalid. Must be of type: ${T(
             t
           )}`
         );
@@ -2320,32 +2407,50 @@ class ne {
    * @param {Frame} frame The frame to draw.
    */
   drawFrame(e) {
-    if (this.drawing) return;
-    if (!(e instanceof H))
-      throw new Error(
-        "Provided frame object is not an instance of the Frame constructor."
-      );
-    this.hasDrawn || (this.hasDrawn = !0), this.drawing = !0;
-    const {
-      config: { fontSize: t },
-      characterSize: [r, i],
-      ctx: n,
-      width: a
-    } = this;
-    n.textAlign = "left", n.textBaseline = "top";
-    for (let s = 0; s < this.width; s++)
-      for (let l = 0; l < this.height; l++) {
-        const o = l * this.width + s, h = e.data[o];
-        if (!h || !(h instanceof v)) continue;
-        const { value: c, color: u, fontWeight: f, backgroundColor: p } = h;
-        p && (n.beginPath(), n.fillStyle = p, n.fillRect(
-          s * r,
-          l * i,
-          r + Math.max(1 / a, 1),
-          i
-        ), n.closePath()), n.beginPath(), n.font = `${f || "normal"} ${t} monospace`, n.fillStyle = u || "#FFFFFF", n.fillText(c, s * r, l * i), n.closePath();
+    if (!this.drawing) {
+      if (!(e instanceof $))
+        throw new Error(
+          "Provided frame object is not an instance of the Frame constructor."
+        );
+      if (this.hasDrawn || (this.hasDrawn = !0), this.useWebWorkers) {
+        this.drawing = !0;
+        const {
+          characterSize: t,
+          width: r,
+          height: i,
+          config: { fontSize: n }
+        } = this;
+        this.webWorkers.drawFrame.postMessage({
+          data: e.data,
+          characterSize: t,
+          width: r,
+          height: i,
+          fontSize: n
+        });
+      } else {
+        this.drawing = !0, this.clearDisplay();
+        const {
+          config: { fontSize: t },
+          characterSize: [r, i],
+          ctx: n,
+          width: a
+        } = this;
+        n.textAlign = "left", n.textBaseline = "top";
+        for (let s = 0; s < this.width; s++)
+          for (let l = 0; l < this.height; l++) {
+            const o = l * this.width + s, h = e.data[o];
+            if (!h || !(h instanceof v)) continue;
+            const { value: c, color: u, fontWeight: f, backgroundColor: p } = h;
+            p && (n.beginPath(), n.fillStyle = p, n.fillRect(
+              s * r,
+              l * i,
+              r + Math.max(1 / a, 1),
+              i
+            ), n.closePath()), n.beginPath(), n.font = `${f || "normal"} ${t} monospace`, n.fillStyle = u || "#FFFFFF", n.fillText(c, s * r, l * i), n.closePath(), this.drawing = !1;
+          }
+        e.state = "current";
       }
-    e.state = "current", this.drawing = !1;
+    }
   }
   /**
    * Compile several frames. Last frame provided on top.
@@ -2360,7 +2465,7 @@ class ne {
         n && (t[a] = n);
       });
     }
-    return new H(t);
+    return new $(t);
   }
   /**
    * Code that runs when the render is created.
@@ -2372,12 +2477,11 @@ class ne {
 class se extends de {
   /**
    * A core object that modifies the behavior of a GameObject. Behaviors need an `onTick` method that will run every frame right before their `GameObject`'s `onTick`.
-   * @param {Scene} scene The scene this Object is a part of.
    * @param {GameObject} gameObject The game object to append this behavior to.
    * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
    */
-  constructor(e, t, r = !0) {
-    super(e), this.gameObject = t, t.behaviors.push(this), this.enabled = r;
+  constructor(e, t = !0) {
+    super(e.scene), this.gameObject = e, e.behaviors.push(this), this.enabled = t;
   }
 }
 const Z = {
@@ -2392,7 +2496,7 @@ const Z = {
     ["╚", "═", "╝"]
   ]
 };
-class oe extends B {
+class oe extends D {
   /**
    * A box that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -2407,7 +2511,7 @@ class oe extends B {
    * @param {string} config.layer The label of the layer to start the `Box` on.
    */
   constructor(e, t) {
-    if (!A(t))
+    if (!j(t))
       throw new TypeError(
         "Expected a plain object for Box constructor config parameter."
       );
@@ -2423,7 +2527,7 @@ class oe extends B {
     } = t;
     if (super(e, r, i, h), this.__rawWidth = n, this.__rawHeight = a, this.color = s, this.backgroundColor = l, !Object.keys(Z).includes(o))
       throw new Error(
-        `Invalid box style "${o}" provided. Must be one of: ${P(
+        `Invalid box style "${o}" provided. Must be one of: ${T(
           Object.keys(Z)
         )}`
       );
@@ -2482,7 +2586,7 @@ class oe extends B {
     return new L({ data: s });
   }
 }
-class te extends B {
+class te extends D {
   /**
    * A string of text that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -2498,7 +2602,7 @@ class te extends B {
    * @param {string} config.layer The label of the layer to start the `Text` on.
    */
   constructor(e, t) {
-    if (!A(t))
+    if (!j(t))
       throw new TypeError(
         "Expected a plain object for Text constructor config parameter."
       );
@@ -2585,7 +2689,7 @@ class te extends B {
   set renderable(e) {
   }
 }
-class $e extends B {
+class $e extends D {
   /**
    * A list of user input options that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -2598,7 +2702,7 @@ class $e extends B {
    * @param {string} config.layer The label of the layer to start the `Menu` on.
    */
   constructor(e, t) {
-    if (!A(t))
+    if (!j(t))
       throw new TypeError(
         "Expected a plain object for Menu constructor config parameter."
       );
@@ -2726,7 +2830,7 @@ class $e extends B {
   set renderable(e) {
   }
 }
-class He extends te {
+class De extends te {
   /**
    * A text input that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -2747,7 +2851,7 @@ class He extends te {
    * @param {string} config.layer The label of the layer to start the `TextInput` on.
    */
   constructor(e, t) {
-    if (!A(t))
+    if (!j(t))
       throw new TypeError(
         "Expected a plain object for TextInput constructor config parameter."
       );
@@ -2860,15 +2964,14 @@ class He extends te {
     return new L({ data: [h] });
   }
 }
-class Be extends se {
+class He extends se {
   /**
    * Scroll the camera to a `GameObject`.
-   * @param {Scene} scene The scene this Object is a part of.
    * @param {GameObject} gameObject The game object to append this behavior to.
    * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
    */
-  constructor(e, t, r = !0) {
-    super(e, t, r);
+  constructor(e, t = !0) {
+    super(e, t);
   }
   onTick() {
     if (this.gameObject.paused) return;
@@ -2893,14 +2996,13 @@ class Be extends se {
 class ue extends se {
   /**
    * Move a `GameObject` from a top-down perspective.
-   * @param {Scene} scene The scene this Object is a part of.
    * @param {GameObject} gameObject The game object to append this behavior to.
    * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
    * @param {Object} config The configuration for this `TopDownMovement`.
    * @param {boolean} config.defaultControls Whether to automatically handle input using the arrow keys. Default: `true`.
    */
-  constructor(t, r, i = !0, n = { defaultControls: !0 }) {
-    super(t, r, i);
+  constructor(t, r = !0, i = { defaultControls: !0 }) {
+    super(t, r);
     /**
      * Attempt to move `GameObject` up.
      */
@@ -2941,9 +3043,9 @@ class ue extends se {
       } = this;
       this.__tryToMoveToPosition(t + 1, r);
     });
-    ue.validateConfig(n);
-    const { defaultControls: a = !0 } = n;
-    a && t.inputManager.addEventListener(this.handleInput.bind(this));
+    ue.validateConfig(i);
+    const { defaultControls: n = !0 } = i;
+    n && scene.inputManager.addEventListener(this.handleInput.bind(this));
   }
   /**
    * Validates a TopDownMovement configuration object and throws an error if it is invalid.
@@ -3010,7 +3112,7 @@ class ue extends se {
   onTick() {
   }
 }
-class De {
+class Be {
   /**
    * An animation frame. The `renderable` value of this Frame should return a `Pixel` or `PixelMesh` that will determine what is displayed on this frame.
    * @param {Pixel|PixelMesh} renderable The renderable item to display for this frame.
@@ -3086,18 +3188,45 @@ class ae {
 class fe extends se {
   /**
    * Animate a `GameObject`.
-   * @param {Scene} scene The scene this Object is a part of.
    * @param {GameObject} gameObject The game object to append this behavior to.
    * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
    * @param {Object} config The configuration for this `Animate`.
    * @param {Array<Animation>} config.animations The animations for this behavior.
    * @param {string} config.initialAnimation The label of the animation to start on.
    * @param {number} config.initialFrame The frame of the animation to start on.
+   * @param {boolean} config.overwriteObjectRenderable Whether or not to force the GameObject's `renderable` property to return this `Animate` instance's `renderable` property. Default `false`.
    */
-  constructor(e, t, r = !0, i) {
-    super(e, t, r), fe.validateConfig(i);
-    const { animations: n, initialFrame: a = 0, initialAnimation: s } = i;
-    this.animations = n, this.currentAnimationLabel = void 0, this.__rawCurrentAnimationFrameIndex = a, this.playing = !1, this.repeats = 0, this.speed = 0, s && (this.currentAnimation = s), this.currentAnimation && (this.playing = !0);
+  constructor(e, t = !0, r) {
+    super(e, t), fe.validateConfig(r);
+    const {
+      animations: i,
+      initialFrame: n = 0,
+      initialAnimation: a,
+      overwriteObjectRenderable: s = !1
+    } = r;
+    this.animations = i, this.currentAnimationLabel = void 0, this.__rawCurrentAnimationFrameIndex = n, this.playing = !1, this.repeats = 0, this.speed = 0, s && this.__overwriteObjectRenderable(), a && (this.currentAnimation = a), this.currentAnimation && (this.playing = !0);
+  }
+  /**
+   * Overwrite a `GameObject`'s `renderable` property with this `Animate` instance's `renderable` property.
+   */
+  __overwriteObjectRenderable() {
+    const e = this;
+    Object.defineProperty(this.gameObject, "renderable", {
+      get() {
+        return e.renderable;
+      },
+      // Remove the ability to change the renderable.
+      set(t) {
+      },
+      configurable: !0,
+      enumerable: !0
+    });
+  }
+  /**
+   * After overwriting a `GameObject`'s `renderable` property, this method will return to back to its original functionality.
+   */
+  resetObjectRenderable() {
+    this.gameObject.__resetRenderable();
   }
   get renderable() {
     return this.currentAnimationFrame && this.currentAnimationFrame.renderable;
@@ -3182,28 +3311,28 @@ export {
   Ge as AdvMath,
   fe as Animate,
   ae as Animation,
-  De as AnimationFrame,
+  Be as AnimationFrame,
   se as Behavior,
   oe as Box,
   de as Core,
-  H as Frame,
-  B as GameObject,
+  $ as Frame,
+  D as GameObject,
   ce as Layer,
   $e as Menu,
   v as Pixel,
   L as PixelMesh,
-  Y as Scene,
-  Be as ScrollTo,
+  X as Scene,
+  He as ScrollTo,
   te as Text,
-  He as TextInput,
+  De as TextInput,
   ue as TopDownMovement,
   Le as __AudioManager,
-  je as __Camera,
-  Te as __InputManager,
-  Pe as __LayerManager,
-  Ae as __Noise,
+  Ae as __Camera,
+  Pe as __InputManager,
+  Te as __LayerManager,
+  je as __Noise,
   ne as __Renderer,
   Oe as __Sound,
-  Fe as dataUtils,
+  We as dataUtils,
   Se as default
 };

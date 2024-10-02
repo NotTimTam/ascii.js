@@ -106,13 +106,19 @@ class Animate extends Behavior {
 	 * @param {Array<Animation>} config.animations The animations for this behavior.
 	 * @param {string} config.initialAnimation The label of the animation to start on.
 	 * @param {number} config.initialFrame The frame of the animation to start on.
+	 * @param {boolean} config.overwriteObjectRenderable Whether or not to force the GameObject's `renderable` property to return this `Animate` instance's `renderable` property. Default `false`.
 	 */
 	constructor(gameObject, enabledByDefault = true, config) {
 		super(gameObject, enabledByDefault);
 
 		Animate.validateConfig(config);
 
-		const { animations, initialFrame = 0, initialAnimation } = config;
+		const {
+			animations,
+			initialFrame = 0,
+			initialAnimation,
+			overwriteObjectRenderable = false,
+		} = config;
 
 		this.animations = animations;
 
@@ -122,9 +128,39 @@ class Animate extends Behavior {
 		this.repeats = 0;
 		this.speed = 0;
 
+		if (overwriteObjectRenderable) this.__overwriteObjectRenderable();
+
 		if (initialAnimation) this.currentAnimation = initialAnimation;
 
 		if (this.currentAnimation) this.playing = true;
+	}
+
+	/**
+	 * Overwrite a `GameObject`'s `renderable` property with this `Animate` instance's `renderable` property.
+	 */
+	__overwriteObjectRenderable() {
+		const animate = this;
+
+		Object.defineProperty(this.gameObject, "renderable", {
+			get() {
+				return animate.renderable;
+			},
+
+			// Remove the ability to change the renderable.
+			set(_) {
+				return undefined;
+			},
+
+			configurable: true,
+			enumerable: true,
+		});
+	}
+
+	/**
+	 * After overwriting a `GameObject`'s `renderable` property, this method will return to back to its original functionality.
+	 */
+	resetObjectRenderable() {
+		this.gameObject.__resetRenderable();
 	}
 
 	get renderable() {

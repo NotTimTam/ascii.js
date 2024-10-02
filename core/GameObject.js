@@ -200,6 +200,33 @@ class GameObject extends Core {
 	}
 
 	/**
+	 * Restore the initial getter/setter functionality for this `GameObject` instance's `renderable` property.
+	 */
+	__resetRenderable() {
+		Object.defineProperty(this, "renderable", {
+			get() {
+				return this.__rawRenderable;
+			},
+
+			set(value) {
+				if (
+					value &&
+					!(value instanceof Pixel) &&
+					!(value instanceof PixelMesh)
+				)
+					throw new TypeError(
+						"A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
+					);
+
+				this.__rawRenderable = value;
+			},
+
+			configurable: true,
+			enumerable: true,
+		});
+	}
+
+	/**
 	 * Whether the object is on a paused layer or the runtime is paused.
 	 *
 	 * This should be checked when input and logic functions are called, to ensure they do not run when the `GameObject` is paused.
