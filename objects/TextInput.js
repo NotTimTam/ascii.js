@@ -177,6 +177,9 @@ class TextInput extends Text {
 		this.onKeyDown && this.onKeyDown({ target: this, key });
 	}
 
+	/**
+	 * Update the position of this `TextInput`'s `scroll` property to properly scroll to the caret in the input.
+	 */
 	__updateScrollPosition() {
 		while (this.caret < this.scroll) this.scroll--;
 		while (this.caret > this.scroll + this.maxWidth - 2) this.scroll++;
