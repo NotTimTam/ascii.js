@@ -2169,7 +2169,6 @@ const Fe = `
 self.onmessage = function ({ data: { data: frame, characterSize: [cW, cH], width, height, fontSize } }) {
 	const canvas = new OffscreenCanvas(cW * width, cH * height);
 	const ctx = canvas.getContext('2d');
-
 	ctx.textAlign = "left";
 	ctx.textBaseline = "top";
 
@@ -2178,6 +2177,8 @@ self.onmessage = function ({ data: { data: frame, characterSize: [cW, cH], width
 			const index = y * width + x;
 
 			const data = frame[index];
+
+			if (!data) continue;
 
 			const { value, color, fontWeight, backgroundColor } = data;
 
