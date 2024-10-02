@@ -104,21 +104,21 @@ class TextInput extends Text {
 		this.focused = Boolean(config.autoFocus);
 		this.caret = config.value ? config.value.length : 0;
 
-		scene.inputManager.watchObjectClick(this.id, this.onClick.bind(this));
+		scene.inputManager.watchObjectClick(this.id, this.__onClick.bind(this));
 		scene.inputManager.addEventListener(
 			"click",
-			this.onAnyClick.bind(this)
+			this.__onAnyClick.bind(this)
 		);
 		scene.inputManager.addEventListener(
 			"keydown",
-			this.eventListener.bind(this)
+			this.__onKeyDown.bind(this)
 		);
 	}
 
 	/**
 	 * Listens to click events.
 	 */
-	onClick() {
+	__onClick() {
 		if (!this.focused) {
 			this.focused = true;
 			this.caret = this.value.length;
@@ -130,7 +130,7 @@ class TextInput extends Text {
 	/**
 	 * Trigger when anything is clicked.
 	 */
-	onAnyClick(event) {
+	__onAnyClick(event) {
 		// Defocus when not clicking on this input.
 		if (!event.targets.includes(this.id)) this.focused = false;
 	}
@@ -138,7 +138,7 @@ class TextInput extends Text {
 	/**
 	 * Listen to other input events.
 	 */
-	eventListener(event) {
+	__onKeyDown(event) {
 		const { caret } = this;
 
 		if (!this.focused) return;

@@ -28,48 +28,12 @@ A text input that can be rendered on screen.
 
 ---
 
-## Methods
+## Properties
 
-### `onClick()`
+### `caret`
 
-Listens to click events and focuses the input.
+The current position of the caret.
 
----
+### `renderable`
 
-### `eventListener(event)`
-
-Listens to other input events, like key presses, and updates the `TextInput` value and caret position accordingly.
-
-#### Arguments
-
--   `event` &mdash; `Object` The input event object.
-
----
-
-### `get caret()`
-
-Get the current position of the caret.
-
-#### Returns
-
--   `number` The current caret position.
-
----
-
-### `set caret(n)`
-
-Set the position of the caret.
-
-#### Arguments
-
--   `n` &mdash; `number` The new caret position.
-
----
-
-### `get renderable()`
-
-Generate the renderable representation of the `TextInput`, including text color, background color, and caret behavior.
-
-#### Returns
-
--   `PixelMesh` The PixelMesh representation of the `TextInput`.
+The renderable `PixelMesh` representation of the `TextInput`, including text color, background color, and caret behavior.
