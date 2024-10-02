@@ -31,8 +31,21 @@ runtime.start((runtime) => {});
 
 const scene = new Scene(runtime, {
 	label: "game",
-	layers: [],
+	layers: [
+		{
+			label: "warning",
+		},
+	],
 });
+
+new Text(scene, {
+	layer: "warning",
+	x: 0,
+	y: 0,
+	value: "WARNING FLASHING CHARACTERS!!!",
+});
+
+scene.layerManager.getLayerByLabel("system").visible = false;
 
 const { width, height } = runtime.renderer;
 
@@ -56,7 +69,7 @@ const pixelMeshGenerator = (offset = 0) =>
 					case 2:
 						return new Pixel({
 							value: ")",
-							color: "yellow",
+							color: "tomato",
 						});
 					case 3:
 						return new Pixel({
