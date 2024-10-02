@@ -7,7 +7,6 @@ class Runtime {
 	/**
 	 * The overall game state and management system.
 	 * @param {Object} config The game's config object.
-	 * @param {number} config.seed A seed for random value generation.
 	 * @param {Object} config.renderer Configuration for the `Renderer` class.
 	 * @param {Array<Number>} config.renderer.resolution Determines the resolution (in characters) of the renderer. Format: `[integer width, integer height]`
 	 * @param {Element|string} config.renderer.canvas A DOM `<canvas/>` element, or a CSS selector string that targets one. This element will be used for rendering.

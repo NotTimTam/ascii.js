@@ -47,7 +47,7 @@ class Menu extends GameObject {
 
 		this.title = title;
 
-		scene.inputManager.addEventListener(this.handleInput.bind(this));
+		scene.inputManager.addEventListener("all", this.handleInput.bind(this));
 
 		this.__inputMode = "keyboard";
 	}

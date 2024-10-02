@@ -11,8 +11,6 @@ import Runtime, {
 } from "../../index.js";
 
 const runtime = new Runtime({
-	seed: 234556,
-
 	renderer: {
 		resolution: [96, 32],
 

@@ -104,7 +104,10 @@ class TextInput extends Text {
 		this.caret = config.value ? config.value.length : 0;
 
 		scene.inputManager.addOnClick(this, this.onClick.bind(this));
-		scene.inputManager.addEventListener(this.eventListener.bind(this));
+		scene.inputManager.addEventListener(
+			"all",
+			this.eventListener.bind(this)
+		);
 	}
 
 	/**

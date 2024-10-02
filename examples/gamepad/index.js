@@ -9,8 +9,6 @@ import Runtime, {
 let showingRaw = false;
 
 const runtime = new Runtime({
-	seed: 234556,
-
 	renderer: {
 		resolution: [96, 32],
 

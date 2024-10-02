@@ -71,9 +71,6 @@ Check if the browser supports WebGL.
 
 Validates a renderer configuration file and throws an error if it is invalid.
 
--   `config.seed` &mdash; The seed must be a `number` or `string`.
--   Throws an error if `renderer` is not provided.
-
 ### `get walltime()`
 
 Get the time since the game was initialized, in milliseconds.

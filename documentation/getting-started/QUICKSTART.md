@@ -18,8 +18,6 @@ ascii.js uses a `Runtime` object to manage your project's `Scene`s, `GameObject`
 import Runtime from "https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/bundle.esm.js";
 
 const runtime = new Runtime({
-	seed: 234556, // Seed for random number generation.
-
 	renderer: {
 		resolution: [96, 32], // Character-based display resolution.
 

@@ -20,7 +20,10 @@ class TopDownMovement extends Behavior {
 		const { defaultControls = true } = config;
 
 		if (defaultControls)
-			scene.inputManager.addEventListener(this.handleInput.bind(this));
+			this.scene.inputManager.addEventListener(
+				"keydown",
+				this.handleInput.bind(this)
+			);
 	}
 
 	/**
@@ -89,16 +92,14 @@ class TopDownMovement extends Behavior {
 	handleInput(event) {
 		if (this.gameObject.paused) return;
 
-		if (event.type === "keydown") {
-			const {
-				keys: { up, down, left, right },
-			} = event;
+		const {
+			keys: { up, down, left, right },
+		} = event;
 
-			if (up) this.simulateControlUp();
-			if (down) this.simulateControlDown();
-			if (left) this.simulateControlLeft();
-			if (right) this.simulateControlRight();
-		}
+		if (up) this.simulateControlUp();
+		if (down) this.simulateControlDown();
+		if (left) this.simulateControlLeft();
+		if (right) this.simulateControlRight();
 	}
 
 	/**
