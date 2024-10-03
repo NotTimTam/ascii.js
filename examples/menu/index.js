@@ -1,4 +1,4 @@
-import Runtime, { Menu, Scene, ScrollTo } from "../../index.js";
+import Runtime, { Menu, Scene, ScrollTo, Text } from "../../index.js";
 
 const runtime = new Runtime({
 	renderer: {
@@ -25,14 +25,14 @@ const menu = new Menu(scene, {
 	x: 0,
 	y: 0,
 	items: [
-		// new Menu.Button({
-		// 	label: "Button 1",
-		// 	callback: () => console.log("OPTION 1 SELECTED"),
-		// }),
-		// new Menu.Button({
-		// 	label: "Button 2",
-		// 	callback: () => console.log("OPTION 2 SELECTED"),
-		// }),
+		new Menu.Button({
+			label: "Button 1",
+			callback: () => console.log("OPTION 1 SELECTED"),
+		}),
+		new Menu.Button({
+			label: "Button 2",
+			callback: () => console.log("OPTION 2 SELECTED"),
+		}),
 		new Menu.Slider({
 			value: 8,
 			min: 0,
@@ -44,16 +44,16 @@ const menu = new Menu(scene, {
 			onChange: (v) => {
 				console.log("CHANGED", v);
 			},
-			callback: () => console.log("ENTER ON SLIDER"),
+			callback: (v) => console.log("ENTER ON SLIDER", v),
 		}),
-		// new Menu.Button({
-		// 	label: "Button 3",
-		// 	callback: () => console.log("OPTION 3 SELECTED"),
-		// }),
-		// new Menu.Button({
-		// 	label: "Button 4",
-		// 	callback: () => console.log("OPTION 4 SELECTED"),
-		// }),
+		new Menu.Button({
+			label: "Button 3",
+			callback: () => console.log("OPTION 3 SELECTED"),
+		}),
+		new Menu.Button({
+			label: "Button 4",
+			callback: () => console.log("OPTION 4 SELECTED"),
+		}),
 	],
 	title: "Example Menu",
 	layer: "system",
@@ -61,6 +61,12 @@ const menu = new Menu(scene, {
 
 new ScrollTo(menu);
 
-// new TextInput(scene, { x: 6, y: 8, layer: "system" });
+const message = new Text(scene, {
+	x: 0,
+	y: menu.y + menu.height,
+	value: "Check console for input results.",
+	layer: "system",
+});
+message.x = menu.x + (menu.width / 2 - message.value.length / 2);
 
 runtime.loadScene(scene);

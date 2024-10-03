@@ -84,7 +84,7 @@ class Slider extends Item {
 	 * @param {number} config.max The maximum value for the `Slider`.
 	 * @param {number} config.step The amount the value will change by each input.
 	 * @param {function} config.onChange The function to call when the value of this `Slider` changes.
-	 * @param {function} config.callback The function to call when "enter" is pressed on the `Slider`. This callback is passed the `Menu` instance as an argument.
+	 * @param {function} config.callback The function to call when "enter" is pressed on the `Slider`. This callback is passed the current `Menu.Slider` value as an argument.
 	 */
 	constructor(config) {
 		super();
@@ -159,13 +159,13 @@ class Slider extends Item {
 			keys: { enter, left, right },
 		} = event;
 
-		if (enter) this.callback(this.menu);
+		if (enter) this.callback(this.value);
 		if (left) this.value -= this.step;
 		if (right) this.value += this.step;
 	}
 
 	onClick() {
-		this.callback(this.menu);
+		this.callback(this.value);
 	}
 
 	onLoad() {}
