@@ -34,10 +34,10 @@ const menu = new Menu(scene, {
 			callback: () => console.log("OPTION 2 SELECTED"),
 		}),
 		new Menu.Slider({
-			value: 8,
+			value: 0,
 			min: 0,
-			max: 10,
-			step: 0.5,
+			max: 50,
+			step: 1,
 			label: "Volume",
 			showValue: false,
 			showPercentage: true,

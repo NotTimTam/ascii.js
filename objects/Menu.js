@@ -170,6 +170,21 @@ class Slider extends Item {
 
 	onLoad() {}
 
+	/**
+	 * Get the width of the slider portion of the renderable.
+	 */
+	get sliderWidth() {
+		const potentialInputs = (this.max - this.min) / this.step + 1;
+
+		if (potentialInputs <= 10) return Math.round(potentialInputs);
+		else
+			return clamp(
+				potentialInputs,
+				10,
+				this.menu.runtime.renderer.width / 3
+			);
+	}
+
 	get renderable() {
 		const {
 			menu: { index: activeIndex },
@@ -181,6 +196,7 @@ class Slider extends Item {
 			label,
 			showValue,
 			showPercentage,
+			sliderWidth,
 		} = this;
 
 		const active = activeIndex === index;
@@ -193,7 +209,6 @@ class Slider extends Item {
 			data.push(labelMesh.data[0]);
 		}
 
-		const sliderWidth = 10;
 		const sliderWidthWithoutThumb = sliderWidth - 1;
 
 		const positionOnSlider = Math.floor(
