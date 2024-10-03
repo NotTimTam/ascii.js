@@ -828,16 +828,32 @@ class InputManager {
 				(gamepad) => gamepad && gamepad.mapping === "standard"
 			);
 
-		if (!this.__gamepadButtonHistory)
-			this.__gamepadButtonHistory = Object.fromEntries(
-				gamepads.map((gamepad) => [gamepad.index, {}])
-			);
+		if (!this.__gamepadButtonHistory) this.__gamepadButtonHistory = {};
 
 		for (const gamepad of gamepads) {
-			const { buttons } = gamepad;
+			const { buttons, index } = gamepad;
 
 			for (const [button, { pressed }] of Object.entries(buttons)) {
-				if (pressed) {
+				const alreadyPressed =
+					this.__gamepadButtonHistory[index] &&
+					this.__gamepadButtonHistory[index][button];
+
+				if (pressed && !alreadyPressed) {
+					if (!this.__gamepadButtonHistory[index])
+						this.__gamepadButtonHistory[index] = {};
+					this.__gamepadButtonHistory[index][button] = true;
+				} else if (!pressed && alreadyPressed) {
+					this.__gamepadButtonHistory[index][button] = false;
+
+					const returnable = {
+						type: "gamepadbuttonclicked",
+						gamepad,
+						button,
+						buttons: this.__gamepadButtonHistory[index],
+					};
+
+					this.__triggerEvents("gamepadbuttonclicked", returnable); // Trigger the specific event type that fired.
+					this.__triggerEvents("all", returnable); // Trigger the "all" event type.
 				}
 			}
 		}
