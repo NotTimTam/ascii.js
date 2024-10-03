@@ -53,8 +53,6 @@ class Button extends Item {
 		this.callback(this.menu);
 	}
 
-	onLoad() {}
-
 	get renderable() {
 		const {
 			menu: { index: activeIndex },
@@ -191,8 +189,6 @@ class Slider extends Item {
 		this.__positionByMouse(event);
 	}
 
-	onLoad() {}
-
 	/**
 	 * Get the width of the slider portion of the renderable.
 	 */
@@ -292,10 +288,78 @@ class Slider extends Item {
 	}
 }
 
+class Toggle extends Item {
+	/**
+	 * A checkbox that can be toggled.
+	 * @param {Object} config The `Toggle`'s config object.
+	 * @param {string} config.label The `Toggle`'s display label.
+	 * @param {boolean} config.checked The initial status of the `Toggle`. Default: `false`.
+	 * @param {boolean} config.prepend Whether to put the checkbox icon at the start or end of the label. Default: `true`.
+	 * @param {function} config.callback The function to call when this item is toggled. This callback is passed the current `checked` state as an argument.
+	 */
+	constructor(config) {
+		super();
+
+		const { label, callback, checked = false, prepend = true } = config;
+
+		if (typeof label !== "string")
+			throw new TypeError(
+				"Menu.Button config.label property must be a string."
+			);
+
+		this.label = label && label.trim();
+		this.prepend = Boolean(prepend);
+		this.checked = Boolean(checked);
+		this.callback = callback;
+	}
+
+	get checked() {
+		return this.__rawChecked;
+	}
+
+	set checked(bool) {
+		this.__rawChecked = Boolean(bool);
+	}
+
+	onKeyDown(event) {
+		if (event.keys.enter) this.checked = !this.checked;
+
+		this.callback(this.checked);
+	}
+	onClick() {
+		this.checked = !this.checked;
+
+		this.callback(this.checked);
+	}
+
+	get renderable() {
+		const {
+			menu: { index: activeIndex },
+			index,
+			checked,
+			prepend,
+		} = this;
+
+		const icon = checked ? "☑" : "☐";
+
+		const display = PixelMesh.fromString(
+			`${prepend ? icon + " " : ""}${this.label}${
+				!prepend ? " " + icon : ""
+			}`
+		);
+
+		if (activeIndex === index) display.setColor("white");
+		else display.setColor("grey");
+
+		return display;
+	}
+}
+
 class Menu extends GameObject {
 	static Item = Item;
 	static Button = Button;
 	static Slider = Slider;
+	static Toggle = Toggle;
 	static Space = new Menu.Item();
 
 	static horizontalSpacing = 1;

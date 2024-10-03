@@ -56,6 +56,12 @@ const menu = new Menu(scene, {
 			label: "Button 4",
 			callback: () => console.log("OPTION 4 SELECTED"),
 		}),
+
+		new Menu.Toggle({
+			label: "Random Checkbox",
+			callback: (checked) =>
+				console.log("CHECKBOX", checked ? "CHECKED" : "UNCHECKED"),
+		}),
 	],
 	title: "Example Menu",
 	layer: "system",
