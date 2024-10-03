@@ -146,7 +146,12 @@ class Slider extends Item {
 	}
 
 	set value(n) {
-		this.__rawValue = clamp(n, this.min, this.max);
+		n = clamp(n, this.min, this.max);
+
+		let changed = n !== this.__rawValue;
+		this.__rawValue = n;
+
+		this.onChange && changed && this.onChange(this.value);
 	}
 
 	onKeyDown(event) {

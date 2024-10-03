@@ -44,7 +44,7 @@ const menu = new Menu(scene, {
 			onChange: (v) => {
 				console.log("CHANGED", v);
 			},
-			callback: () => console.log("OPTION 2 SELECTED"),
+			callback: () => console.log("ENTER ON SLIDER"),
 		}),
 		// new Menu.Button({
 		// 	label: "Button 3",
