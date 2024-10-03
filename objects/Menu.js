@@ -563,7 +563,7 @@ class Menu extends GameObject {
 		if (this.maintainFocus) return;
 
 		this.focused = false;
-		this.index = -1;
+		this.__rawIndex = -1;
 
 		if (this.deleteOnBlur) this.delete();
 	}
@@ -610,7 +610,7 @@ class Menu extends GameObject {
 
 			if (down) this.index++;
 			else if (up) this.index--;
-			else this.currentItem.onKeyDown(event);
+			else this.currentItem && this.currentItem.onKeyDown(event);
 		}
 	}
 
@@ -637,7 +637,8 @@ class Menu extends GameObject {
 
 		this.__determineMouseOverInput(event);
 
-		if (this.__inputMode === "mouse") this.currentItem.onMouseMove(event);
+		if (this.__inputMode === "mouse")
+			this.currentItem && this.currentItem.onMouseMove(event);
 	}
 
 	__determineMouseOverInput(event) {
@@ -658,7 +659,7 @@ class Menu extends GameObject {
 		) {
 			this.index = mouseMenuIndex;
 		} else {
-			this.index = -1;
+			this.__rawIndex = -1;
 		}
 	}
 
@@ -679,7 +680,7 @@ class Menu extends GameObject {
 		if (this.__inputMode === "mouse") {
 			this.__determineMouseOverInput(event);
 
-			this.currentItem.onClick(event);
+			this.currentItem && this.currentItem.onClick(event);
 		}
 	}
 
