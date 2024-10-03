@@ -1,21 +1,73 @@
 import GameObject from "../core/GameObject.js";
-import { PixelMesh } from "../core/Pixel.js";
+import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 import { isPlainObject } from "../util/data.js";
 import Box from "./Box.js";
-import Text from "./Text.js";
+
+class Item {
+	onLoad() {
+		console.log(
+			"Overwrite extended \"Menu.Item\" class's 'onLoad' method."
+		);
+	}
+	get renderable() {
+		return Pixel.fromString("#");
+	}
+}
+
+class Button extends Item {
+	/**
+	 * A string of text that can be rendered on screen.
+	 * @param {Object} config The `Button`'s config object.
+	 * @param {string} config.label The `Button`'s display label.
+	 * @param {string} config.color The color of the display label.
+	 * @param {function} config.callback The function to call when this item is clicked/activated. This callback is passed the `Menu` instance as an argument.
+	 */
+	constructor(config) {
+		super();
+
+		const { label, color = "white", callback } = config;
+
+		this.label = label;
+		this.color = color;
+		this.callback = callback;
+	}
+
+	onLoad() {}
+
+	get renderable() {
+		const {
+			menu: { index: activeIndex },
+			index,
+		} = this;
+
+		const display = PixelMesh.fromString(this.label);
+
+		if (activeIndex === index) display.setColor("white");
+		else display.setColor("grey");
+
+		return display;
+	}
+}
 
 class Menu extends GameObject {
+	static Item = Item;
+	static Button = Button;
+
+	static horizontalSpacing = 1;
+	static borderWidth = 1;
+
 	/**
-	 * A list of user input options that can be rendered on screen.
+	 * A menu of various items that can be rendered on screen.
 	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {Object} config The `Menu`'s config object.
 	 * @param {number} config.x This `Menu` object's x-coordinate.
 	 * @param {number} config.y This `Menu` object's y-coordinate.
-	 * @param {Object} config.options An object of key value pairs, the values representing option labels, and the keys being what is returned when an object is selected.
-	 * @param {function} config.callback A callback function that is called when a menu option is selected. Passed the key of the selected option.
+	 * @param {Object} config.items An array of `Menu.Item` instances. You can extend the `Menu.Item` class to make your own items.
 	 * @param {string} config.title Optional menu title.
 	 * @param {string} config.layer The label of the layer to start the `Menu` on.
+	 * @param {boolean} config.autoFocus Whether to automatically focus on the `Menu` after it has been instantiated. Default `true`.
+	 * @param {boolean} config.deleteOnBlur Whether to delete the menu when it becomes unfocused. Default `false`. **NOTE:** If `config.autoFocus` is set to false, the `Menu` will be deleted immediately!
 	 */
 	constructor(scene, config) {
 		if (!isPlainObject(config))
@@ -27,18 +79,36 @@ class Menu extends GameObject {
 			x,
 			y,
 			title,
-			options,
-			callback = (option) => console.log(option),
+			items = [],
 			layer,
+			autoFocus = true,
+			deleteOnBlur = false,
 		} = config;
 		super(scene, x, y, layer);
 
-		this.options = options;
-		this.callback = callback;
+		this.deleteOnBlur = Boolean(deleteOnBlur);
+
+		if (!(items instanceof Array))
+			throw new TypeError(
+				`"Menu" constructor config.items object should be an array of "Menu.Item" instances.`
+			);
+
+		for (const item of items) {
+			if (!(item instanceof Menu.Item))
+				throw new TypeError(
+					'Each item in the "Menu" constructor config.items array must be an instance of "Menu.Item".'
+				);
+
+			item.menu = this;
+			item.index = items.indexOf(item);
+
+			scene.runtime.__runOnLoad(item);
+		}
+
+		this.items = items;
 
 		this.index = 0;
-
-		this.longestOption = this.determineLongestOption();
+		this.focused = Boolean(autoFocus);
 
 		if (title && typeof title !== "string")
 			throw new Error(
@@ -47,70 +117,84 @@ class Menu extends GameObject {
 
 		this.title = title;
 
-		scene.inputManager.addEventListener("all", this.handleInput.bind(this));
+		scene.inputManager.addEventListener(
+			"keydown",
+			this.__onKeyDown.bind(this)
+		);
+
+		scene.inputManager.addEventListener(
+			"mousemove",
+			this.__onMouseMove.bind(this)
+		);
+
+		scene.inputManager.addEventListener("click", this.__onClick.bind(this));
 
 		this.__inputMode = "keyboard";
 	}
 
-	handleInput(event) {
-		if (!this.isOnScreen || !this.visible) return;
-
-		if (event.type === "keydown") {
-			this.__inputMode = "keyboard";
-
-			const {
-				keys: { up, down, enter },
-			} = event;
-
-			if (down) this.index++;
-			if (up) this.index--;
-			if (enter) this.callback(Object.keys(this.options)[this.index]);
-
-			const topIndex = Object.keys(this.options).length - 1;
-
-			if (this.index < 0) this.index = topIndex;
-			if (this.index > topIndex) this.index = 0;
-		} else if (event.type === "mousemove") {
-			const { onLayer } = event;
-
-			const [x, y] = onLayer[this.layer.label];
-
-			const [menuX, menuY] = [x - this.x, y - this.y];
-
-			const mouseMenuIndex = Math.floor(menuY - 1.5);
-
-			if (
-				mouseMenuIndex >= 0 &&
-				mouseMenuIndex < Object.keys(this.options).length &&
-				menuX >= 0 &&
-				menuX <= this.width
-			) {
-				this.__inputMode = "mouse";
-				this.index = mouseMenuIndex;
-			}
-		} else if (
-			event.type === "mousedown" &&
-			this.__inputMode === "mouse" &&
-			this.index >= 0 &&
-			this.index < Object.keys(this.options).length
-		) {
-			this.callback(Object.keys(this.options)[this.index]);
-		}
-	}
-
-	get width() {
+	/**
+	 * Get the screen-space available to the menu.
+	 * Return format: `[width, height]`
+	 */
+	get availableScreenSpace() {
 		const {
-			runtime: {
-				renderer: { width },
+			scene: {
+				runtime: {
+					renderer: { width, height },
+				},
 			},
+			positionOnScreen: [x, y],
 		} = this;
 
-		const optionsWidth = Math.round(this.longestOption + 2);
-		const titleWidth = this.title ? this.title.length + 4 : 0;
-
-		return Math.max(optionsWidth, titleWidth, width / 4);
+		return [width - x, height - y];
 	}
 
+	/**
+	 * Get the screen-space available to the content of the menu.
+	 * Return format: `[width, height]`
+	 */
+	get availableContentSpace() {
+		const [width, height] = this.availableScreenSpace;
+
+		return [
+			width - Menu.horizontalSpacing * 2 - Menu.borderWidth * 2,
+			height,
+		];
+	}
+
+	/**
+	 * Get the actual current width of the `Menu`.
+	 */
+	get width() {
+		const { items, title } = this;
+
+		const [width] = this.availableContentSpace;
+
+		let itemsWidth = 0;
+
+		for (const { renderable } of items) {
+			if (!renderable) continue;
+
+			const renderableWidth =
+				renderable instanceof PixelMesh ? renderable.width : 1;
+			if (renderableWidth > itemsWidth) {
+				itemsWidth = renderableWidth;
+			}
+		}
+
+		const titleWidth = title ? title.length : 0;
+
+		// Nearest even number to actual width.
+		return (
+			Math.min(width, Math.max(itemsWidth, titleWidth)) +
+			Menu.horizontalSpacing * 2 +
+			Menu.borderWidth * 2
+		);
+	}
+
+	/**
+	 * Get the actual current height of the `Menu`.
+	 */
 	get height() {
 		const {
 			runtime: {
@@ -118,124 +202,217 @@ class Menu extends GameObject {
 			},
 		} = this;
 
-		return Math.min(
-			Math.round(Object.keys(this.options).length + 4),
-			height
-		);
+		let itemsHeight = 0;
+
+		for (const { renderable } of this.items) {
+			if (!renderable) continue;
+			if (renderable instanceof PixelMesh)
+				itemsHeight += renderable.height;
+			else itemsHeight++;
+		}
+
+		return Math.round(itemsHeight + Menu.borderWidth * 2); // // 2 is added for the box borders on the top and bottom.
 	}
 
-	determineLongestOption() {
-		const { options } = this;
+	/**
+	 * Get the screen-space currently used by the content of the menu.
+	 * Return format: `[width, height]`
+	 */
+	get currentContentSpace() {
+		const { width, height } = this;
 
-		let longestOption = 0;
+		return [width - Menu.borderWidth * 2, height - Menu.borderWidth * 2];
+	}
 
-		Object.values(options).forEach((value) => {
-			const optionDisplay = value;
-			if (optionDisplay.length > longestOption)
-				longestOption = optionDisplay.length;
-		});
+	/**
+	 * Get the item at the current menu index.
+	 */
+	get currentItem() {
+		return this.items[this.index];
+	}
 
-		return longestOption;
+	/**
+	 * Unfocus the menu.
+	 */
+	blur() {
+		this.focused = false;
+		this.index = -1;
+	}
+
+	/**
+	 * Get an item at a y-coordinate relative to the menu.
+	 * @param {number} y The y-coordinate to check.
+	 * @returns {Menu.Item|undefined} The item at that coordinate, or `undefined` if there is no item at the coordinate.
+	 */
+	itemAtCoordinate(y) {
+		let cumulativeHeight = 0;
+
+		for (const item of this.items) {
+			const { renderable } = item;
+			const itemHeight =
+				renderable instanceof PixelMesh ? renderable.height : 1;
+
+			const itemY = cumulativeHeight;
+
+			if (y >= itemY && y <= itemY + itemHeight) return item;
+
+			cumulativeHeight += itemHeight;
+		}
+
+		return undefined;
+	}
+
+	/**
+	 * Handle a key being pressed.
+	 * @param {Event} event The event that triggered this method.
+	 */
+	__onKeyDown(event) {
+		if (!this.isOnScreen || !this.visible || !this.focused) return;
+
+		this.__inputMode = "keyboard";
+
+		const {
+			keys: { up, down, enter, escape },
+		} = event;
+
+		if (escape) return this.blur();
+
+		this.focus;
+
+		if (down) this.index++;
+		if (up) this.index--;
+
+		const topIndex = this.items.length - 1;
+		if (this.index < 0) this.index = topIndex;
+		if (this.index > topIndex) this.index = 0;
+
+		if (this.currentItem instanceof Menu.Button && enter)
+			this.currentItem.callback(this);
+	}
+
+	/**
+	 * Handle the mouse being moved.
+	 * @param {Event} event The event that triggered this method.
+	 */
+	__onMouseMove(event) {
+		if (!this.isOnScreen || !this.visible) return;
+
+		const { onLayer } = event;
+		const [x, y] = onLayer[this.layer.label];
+		const [menuX, menuY] = [x - this.x, y - this.y];
+
+		const mouseMenuIndex = this.items.indexOf(this.itemAtCoordinate(menuY));
+
+		if (
+			mouseMenuIndex >= 0 &&
+			mouseMenuIndex < this.items.length &&
+			menuX >= 0 &&
+			menuX <= this.width
+		) {
+			this.focused = true;
+			this.__inputMode = "mouse";
+			this.index = mouseMenuIndex;
+		} else {
+			this.__inputMode = "keyboard";
+			this.index = -1;
+		}
+	}
+
+	/**
+	 * Handle the mouse being clicked.
+	 * @param {event} event The event that triggered this method.
+	 */
+	__onClick(event) {
+		if (!this.isOnScreen || !this.visible) return;
+
+		if (this.focused) {
+			if (!event.targets.includes(this.id)) return this.blur();
+
+			if (this.__inputMode === "mouse") {
+				if (this.currentItem instanceof Menu.Button)
+					this.currentItem.callback(this);
+			}
+		} else if (event.targets.includes(this.id)) {
+			this.focused = true;
+			this.__inputMode = "mouse";
+		}
 	}
 
 	get renderable() {
 		const {
-			options,
-			scene,
-			runtime: {
-				renderer: { width, height },
-			},
 			title,
+			items,
+			width,
+			height,
+			availableContentSpace: [
+				availableContentWidth,
+				availableContentHeight,
+			],
+			availableScreenSpace: [availableScreenWidth, availableScreenHeight],
+			currentContentSpace: [currentContentWidth, currentContentHeight],
 		} = this;
 
-		const maxWidth = width - 2;
+		const {
+			data: box,
+			width: boxWidth,
+			height: boxHeight,
+		} = Box.asPixelMesh(
+			width,
+			height,
+			this.focused ? "white" : "grey",
+			undefined,
+			"double"
+		);
 
-		const data = [];
+		let data = box;
 
-		if (options) {
-			const optionValues = Object.values(options);
+		if (items) {
+			let y = Menu.borderWidth;
+			for (const { renderable } of items) {
+				if (!renderable) continue;
 
-			let displayOptions = optionValues;
-			if (optionValues.length + 4 > height) {
-				const toDisplay = Math.min(optionValues.length, height - 4);
+				if (renderable instanceof PixelMesh) {
+					if (renderable.width > availableContentWidth)
+						throw new Error(
+							`Menu.Item renderable.width is greater than the Menu's maximum content width of ${availableContentWidth}.`
+						);
 
-				if (this.index < Math.floor(toDisplay / 2))
-					displayOptions = optionValues.slice(0, toDisplay);
-				else if (
-					this.index >
-					optionValues.length - Math.ceil(toDisplay / 2)
-				)
-					displayOptions = optionValues.slice(
-						optionValues.length - toDisplay
-					);
-				else if (this.index >= Math.floor(toDisplay / 2))
-					displayOptions = optionValues.slice(
-						this.index - Math.floor(toDisplay / 2),
-						this.index + Math.ceil(toDisplay / 2)
-					);
-				// displayOptions = optionValues.slice(startIndex, endIndex + 1);
+					renderable.data.forEach((row) => {
+						data[y].splice(
+							currentContentWidth / 2 -
+								row.length / 2 +
+								Menu.horizontalSpacing,
+							row.length,
+							...row
+						);
+						y++;
+					});
+				} else {
+					data[y].splice(
+						currentContentWidth % 2 === 0
+							? Menu.horizontalSpacing + Menu.borderWidth
+							: Math.round(currentContentWidth / 2),
+						1,
+						renderable
+					); // Put the Pixel in its own row in the new data.
+
+					y++;
+				}
 			}
-
-			displayOptions.forEach((value) => {
-				if (!value || typeof value !== "string") return;
-
-				const str = value.slice(0, maxWidth);
-				const remainingSpace = this.width - 1 - str.length;
-
-				const index = optionValues.indexOf(value);
-
-				const text = new Text(scene, {
-					x: 0,
-					y: 0,
-					value: `${" ".repeat(
-						Math.floor(remainingSpace) / 2
-					)}${str}${" ".repeat(Math.ceil(remainingSpace) / 2)}`,
-					wrap: false,
-					// color: index === this.index ? "#000000" : "#ffffff",
-					// backgroundColor:
-					// 	index === this.index ? "#ffffff" : "#000000",
-					// fontWeight: index === this.index ? "800" : "400",
-					color: index === this.index ? "#ffffff" : "grey",
-					fontWeight: index === this.index ? "800" : "100",
-					backgroundColor: "#000000",
-				}).renderable.data[0];
-
-				data.push(text);
-			});
-		}
-
-		const box = new Box(scene, {
-			x: 0,
-			y: 0,
-			width: this.width,
-			height: Object.keys(options).length + 4,
-			backgroundColor: "#000000",
-		}).renderable.data;
-
-		data.unshift(box[1]); // Add top padding.
-		data.unshift(box[0]); // Add top bar.
-		data.push(box[1]); // Add bottom padding.
-		data.push(box[box.length - 1]); // Add bottom bar.
-
-		for (let column = 2; column < data.length - 2; column++) {
-			data[column].unshift(box[column][0]);
-			data[column][this.width - 1] = box[column][box[column].length - 1];
 		}
 
 		if (title) {
-			const titleText = new Text(scene, {
-				x: 0,
-				y: 0,
-				value: title.slice(0, maxWidth - 2),
-				wrap: false,
-				color: "#ffffff",
-				backgroundColor: "#000000",
-			}).renderable.data[0];
+			const {
+				data: [titleText],
+			} = PixelMesh.fromString(
+				title.slice(0, this.availableContentSpace[0])
+			);
 
-			const startIndex = Math.floor((this.width - titleText.length) / 2);
-
+			const startIndex = Math.floor(
+				(currentContentWidth - titleText.length) / 2
+			);
 			for (let i = 0; i < titleText.length; i++) {
-				data[0][i + startIndex] = titleText[i];
+				data[0][i + startIndex + Menu.horizontalSpacing] = titleText[i];
 			}
 		}
 

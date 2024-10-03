@@ -10,12 +10,12 @@ import { displayArray, isPlainObject } from "../util/data.js";
 const lineSource = {
 	line: [
 		["┌", "─", "┐"],
-		["│", " ", "│"],
+		["│", null, "│"],
 		["└", "─", "┘"],
 	],
 	double: [
 		["╔", "═", "╗"],
-		["║", " ", "║"],
+		["║", null, "║"],
 		["╚", "═", "╝"],
 	],
 };
@@ -125,12 +125,14 @@ class Box extends GameObject {
 				let char = styleSet[inY][inX];
 
 				row.push(
-					new Pixel({
-						value: char,
-						color,
-						backgroundColor,
-						solid: false,
-					})
+					char
+						? new Pixel({
+								value: char,
+								color,
+								backgroundColor,
+								solid: false,
+						  })
+						: char
 				);
 			}
 

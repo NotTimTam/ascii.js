@@ -38,6 +38,27 @@ class GameObject extends Core {
 	}
 
 	/**
+	 * Get this `GameObject`'s position on the screen, relative to the camera and the layer parallax.
+	 * Return format: `[x, y]`
+	 */
+	get positionOnScreen() {
+		const {
+			scene: { camera },
+			layer: {
+				parallax: [pX, pY],
+			},
+		} = this;
+
+		// Camera position based on parallax.
+		const [adjustedCameraX, adjustedCameraY] = [
+			Math.round(camera.x * pX),
+			Math.round(camera.y * pY),
+		];
+
+		return [this.x - adjustedCameraX, this.y - adjustedCameraY]; // Position relative to camera.
+	}
+
+	/**
 	 * Get whether the game object is on-screen.
 	 */
 	get isOnScreen() {

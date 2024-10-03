@@ -124,9 +124,10 @@ export class PixelMesh {
 						.split("")
 						.map(
 							(value) =>
-								value &&
-								value.trim() !== "" &&
-								Pixel.fromString(value)
+								(value &&
+									value.trim() !== "" &&
+									Pixel.fromString(value)) ||
+								null
 						)
 				),
 		});

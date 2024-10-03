@@ -1,4 +1,4 @@
-import Runtime, { Scene, TextInput } from "../../index.js";
+import Runtime, { Menu, Scene, ScrollTo } from "../../index.js";
 
 const runtime = new Runtime({
 	renderer: {
@@ -21,16 +21,33 @@ const scene = new Scene(runtime, {
 
 const { width, height } = runtime.renderer;
 
-// const menu = new Menu(scene, {
-// 	x: 0,
-// 	y: 0,
-// 	options: [],
-// 	callback: (e) => {
-// 		console.log(e);
-// 	},
-// 	layer: "system",
-// });
+const menu = new Menu(scene, {
+	x: 0,
+	y: 0,
+	items: [
+		new Menu.Button({
+			label: "Option 1",
+			callback: () => alert("OPTION 1 SELECTED"),
+		}),
+		new Menu.Button({
+			label: "Option 2",
+			callback: () => alert("OPTION 2 SELECTED"),
+		}),
+		new Menu.Button({
+			label: "Option 3",
+			callback: () => alert("OPTION 3 SELECTED"),
+		}),
+		new Menu.Button({
+			label: "Option 4",
+			callback: () => alert("OPTION 4 SELECTED"),
+		}),
+	],
+	title: "Example Menu",
+	layer: "system",
+});
 
-new TextInput(scene, { x: 6, y: 8, layer: "system" });
+new ScrollTo(menu);
+
+// new TextInput(scene, { x: 6, y: 8, layer: "system" });
 
 runtime.loadScene(scene);
