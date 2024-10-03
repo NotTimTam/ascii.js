@@ -19,12 +19,9 @@ class Item {
 		return this.menu.items.indexOf(this);
 	}
 
-	onKeyDown() {
-		console.warn("overwrite Menu.Item.onKeyDown");
-	}
-	onClick() {
-		console.warn("overwrite Menu.Item.onKeyDown");
-	}
+	onKeyDown() {}
+	onClick() {}
+	onMouseMove() {}
 }
 
 class Button extends Item {
@@ -154,6 +151,10 @@ class Slider extends Item {
 		this.onChange && changed && this.onChange(this.value);
 	}
 
+	snapToStep(n) {
+		return Math.round((n - this.min) / this.step) * this.step + this.min;
+	}
+
 	onKeyDown(event) {
 		const {
 			keys: { enter, left, right },
@@ -164,8 +165,29 @@ class Slider extends Item {
 		if (right) this.value += this.step;
 	}
 
-	onClick() {
+	__positionByMouse(event) {
+		let [x] = event.onLayer[this.menu.layerLabel];
+
+		x -= Menu.borderWidth + Menu.horizontalSpacing;
+
+		if (this.label) x -= this.label.length + 0.5;
+
+		const value = this.snapToStep(
+			clamp((x / this.sliderWidth) * this.max, this.min, this.max)
+		);
+
+		this.value = value;
+	}
+
+	onClick(event) {
+		this.__positionByMouse(event);
 		this.callback(this.value);
+	}
+
+	onMouseMove(event) {
+		if (!event.buttons.left) return;
+
+		this.__positionByMouse(event);
 	}
 
 	onLoad() {}
@@ -181,7 +203,7 @@ class Slider extends Item {
 			return clamp(
 				potentialInputs,
 				10,
-				this.menu.runtime.renderer.width / 3
+				this.menu.runtime.renderer.width / 4
 			);
 	}
 
@@ -548,6 +570,8 @@ class Menu extends GameObject {
 		}
 
 		this.__determineMouseOverInput(event);
+
+		if (this.__inputMode === "mouse") this.currentItem.onMouseMove(event);
 	}
 
 	__determineMouseOverInput(event) {

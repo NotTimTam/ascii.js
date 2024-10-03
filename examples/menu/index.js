@@ -36,7 +36,7 @@ const menu = new Menu(scene, {
 		new Menu.Slider({
 			value: 0,
 			min: 0,
-			max: 50,
+			max: 10,
 			step: 1,
 			label: "Volume",
 			showValue: false,
