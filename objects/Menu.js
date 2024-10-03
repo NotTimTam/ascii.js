@@ -201,7 +201,7 @@ class Slider extends Item {
 		);
 
 		const track = new Pixel({
-			value: "-",
+			value: "─",
 			color: active ? "white" : "grey",
 		});
 
