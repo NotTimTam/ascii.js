@@ -20,7 +20,7 @@ Initializes the game state using the provided configuration object.
 
         -   `canvas` &mdash; `Element|string` A DOM `<canvas/>` element, or a CSS selector string that targets one. This element will be used for rendering.
 
-        -   `fontSize` &mdash; `string` A string CSS `font-size` value that will be used for text displayed in the renderer.
+        -   `fontSize` &mdash; `string` A string CSS `font-size` value that will be used for text displayed in the renderer. Defaults to `"32px"`. An increased font size does not increase the size of characters on the screen, but their resolution quality instead. (smaller font sizes will result in blurrier characters)
 
         -   `scaling` &mdash; `"off"|"letterbox"` The scaling mode for the canvas. Should be one of: `"off"`, `"letterbox"`.
 

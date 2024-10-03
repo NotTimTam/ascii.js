@@ -305,7 +305,7 @@ class Renderer {
 			this.clearDisplay();
 
 			const {
-				config: { fontSize },
+				config: { fontSize = "32px" },
 
 				characterSize: [cW, cH],
 

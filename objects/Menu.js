@@ -67,6 +67,7 @@ class Menu extends GameObject {
 	 * @param {string} config.title Optional menu title.
 	 * @param {string} config.layer The label of the layer to start the `Menu` on.
 	 * @param {boolean} config.autoFocus Whether to automatically focus on the `Menu` after it has been instantiated. Default `true`.
+	 * @param {boolean} config.maintainFocus Forces the menu to stay focused. Default `true`.
 	 * @param {boolean} config.deleteOnBlur Whether to delete the menu when it becomes unfocused. Default `false`. **NOTE:** If `config.autoFocus` is set to false, the `Menu` will be deleted immediately!
 	 */
 	constructor(scene, config) {
@@ -83,10 +84,12 @@ class Menu extends GameObject {
 			layer,
 			autoFocus = true,
 			deleteOnBlur = false,
+			maintainFocus = true,
 		} = config;
 		super(scene, x, y, layer);
 
 		this.deleteOnBlur = Boolean(deleteOnBlur);
+		this.maintainFocus = Boolean(maintainFocus);
 
 		if (!(items instanceof Array))
 			throw new TypeError(
@@ -235,8 +238,12 @@ class Menu extends GameObject {
 	 * Unfocus the menu.
 	 */
 	blur() {
+		if (this.maintainFocus) return;
+
 		this.focused = false;
 		this.index = -1;
+
+		if (this.deleteOnBlur) this.delete();
 	}
 
 	/**

@@ -26,19 +26,19 @@ const menu = new Menu(scene, {
 	y: 0,
 	items: [
 		new Menu.Button({
-			label: "Option 1",
+			label: "Button 1",
 			callback: () => console.log("OPTION 1 SELECTED"),
 		}),
 		new Menu.Button({
-			label: "Option 2",
+			label: "Button 2",
 			callback: () => console.log("OPTION 2 SELECTED"),
 		}),
 		new Menu.Button({
-			label: "Option 3",
+			label: "Button 3",
 			callback: () => console.log("OPTION 3 SELECTED"),
 		}),
 		new Menu.Button({
-			label: "Option 4",
+			label: "Button 4",
 			callback: () => console.log("OPTION 4 SELECTED"),
 		}),
 	],
