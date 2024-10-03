@@ -297,6 +297,26 @@ class Menu extends GameObject {
 	__onMouseMove(event) {
 		if (!this.isOnScreen || !this.visible) return;
 
+		// Determine if the mouse is moving over the menu.
+		const { onLayer } = event;
+		const [x, y] = onLayer[this.layer.label];
+		const [menuX, menuY] = [x - this.x, y - this.y];
+
+		if (
+			menuX >= 0 &&
+			menuX <= this.width &&
+			menuY >= 0 &&
+			menuY < this.height
+		) {
+			this.__inputMode = "mouse";
+		}
+
+		this.__determineMouseOverInput(event);
+	}
+
+	__determineMouseOverInput(event) {
+		if (this.__inputMode !== "mouse") return;
+
 		const { onLayer } = event;
 		const [x, y] = onLayer[this.layer.label];
 		const [menuX, menuY] = [x - this.x, y - this.y];
@@ -307,13 +327,11 @@ class Menu extends GameObject {
 			mouseMenuIndex >= 0 &&
 			mouseMenuIndex < this.items.length &&
 			menuX >= 0 &&
-			menuX <= this.width
+			menuX <= this.width &&
+			this.focused
 		) {
-			this.focused = true;
-			this.__inputMode = "mouse";
 			this.index = mouseMenuIndex;
 		} else {
-			this.__inputMode = "keyboard";
 			this.index = -1;
 		}
 	}
@@ -325,16 +343,18 @@ class Menu extends GameObject {
 	__onClick(event) {
 		if (!this.isOnScreen || !this.visible) return;
 
-		if (this.focused) {
-			if (!event.targets.includes(this.id)) return this.blur();
-
-			if (this.__inputMode === "mouse") {
-				if (this.currentItem instanceof Menu.Button)
-					this.currentItem.callback(this);
-			}
-		} else if (event.targets.includes(this.id)) {
+		if (this.focused && !event.targets.includes(this.id))
+			return this.blur();
+		else if (event.targets.includes(this.id)) {
 			this.focused = true;
 			this.__inputMode = "mouse";
+		}
+
+		if (this.__inputMode === "mouse") {
+			this.__determineMouseOverInput(event);
+
+			if (this.currentItem instanceof Menu.Button)
+				this.currentItem.callback(this);
 		}
 	}
 
