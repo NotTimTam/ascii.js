@@ -33,6 +33,7 @@ const menu = new Menu(scene, {
 			label: "Button 2",
 			callback: () => console.log("OPTION 2 SELECTED"),
 		}),
+		Menu.Space,
 		new Menu.Slider({
 			value: 0,
 			min: 0,
@@ -46,6 +47,7 @@ const menu = new Menu(scene, {
 			},
 			callback: (v) => console.log("ENTER ON SLIDER", v),
 		}),
+		Menu.Space,
 		new Menu.Button({
 			label: "Button 3",
 			callback: () => console.log("OPTION 3 SELECTED"),

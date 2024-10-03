@@ -11,8 +11,9 @@ class Item {
 			"Overwrite extended \"Menu.Item\" class's 'onLoad' method."
 		);
 	}
+
 	get renderable() {
-		return Pixel.fromString("#");
+		return Pixel.fromString(" ");
 	}
 
 	get index() {
@@ -295,6 +296,7 @@ class Menu extends GameObject {
 	static Item = Item;
 	static Button = Button;
 	static Slider = Slider;
+	static Space = new Menu.Item();
 
 	static horizontalSpacing = 1;
 	static borderWidth = 1;
