@@ -143,6 +143,10 @@ class Scene {
 	}
 
 	__onTick() {
+		// Input
+		this.inputManager.__onTick();
+
+		// Logic & Rendering
 		this.layerManager.__onTick();
 
 		if (this.onTickPassthrough) this.onTickPassthrough(this);

@@ -300,6 +300,7 @@ class InputManager {
 		this.mouse = { buttons: {}, onLayer: {} };
 
 		this.__eventListeners = {
+			gamepadbuttonclicked: [],
 			all: [],
 			click: [
 				(e) => {
@@ -341,6 +342,15 @@ class InputManager {
 
 			return new GamepadInterface(this, index);
 		});
+	}
+
+	/**
+	 * Get the number of gamepads currently connected to the navigator.
+	 */
+	get gamepadsConnected() {
+		return this.gamepads
+			? this.gamepads.filter((gamepad) => gamepad).length
+			: 0;
 	}
 
 	/**
@@ -804,6 +814,33 @@ class InputManager {
 		);
 		this.__removeGlobalEventListener("contextmenu", this.__contextHandler);
 		window.removeEventListener("blur", this.__windowBlurHandler);
+	}
+
+	/**
+	 * Handle non-window events that don't have native listeners.
+	 */
+	__onTick() {
+		if (this.gamepadsConnected === 0) return;
+
+		const gamepads =
+			this.gamepads &&
+			this.gamepads.filter(
+				(gamepad) => gamepad && gamepad.mapping === "standard"
+			);
+
+		if (!this.__gamepadButtonHistory)
+			this.__gamepadButtonHistory = Object.fromEntries(
+				gamepads.map((gamepad) => [gamepad.index, {}])
+			);
+
+		for (const gamepad of gamepads) {
+			const { buttons } = gamepad;
+
+			for (const [button, { pressed }] of Object.entries(buttons)) {
+				if (pressed) {
+				}
+			}
+		}
 	}
 }
 

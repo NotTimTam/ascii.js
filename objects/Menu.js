@@ -6,12 +6,6 @@ import { clamp } from "../util/math.js";
 import Box from "./Box.js";
 
 class Item {
-	onLoad() {
-		console.log(
-			"Overwrite extended \"Menu.Item\" class's 'onLoad' method."
-		);
-	}
-
 	get renderable() {
 		return Pixel.fromString(" ");
 	}
@@ -20,6 +14,7 @@ class Item {
 		return this.menu.items.indexOf(this);
 	}
 
+	onLoad() {}
 	onKeyDown() {}
 	onClick() {}
 	onMouseMove() {}
@@ -360,7 +355,6 @@ class Menu extends GameObject {
 	static Button = Button;
 	static Slider = Slider;
 	static Toggle = Toggle;
-	static Space = new Menu.Item();
 
 	static horizontalSpacing = 1;
 	static borderWidth = 1;
@@ -377,6 +371,7 @@ class Menu extends GameObject {
 	 * @param {boolean} config.autoFocus Whether to automatically focus on the `Menu` after it has been instantiated. Default `true`.
 	 * @param {boolean} config.maintainFocus Forces the menu to stay focused. Default `true`.
 	 * @param {boolean} config.deleteOnBlur Whether to delete the menu when it becomes unfocused. Default `false`. **NOTE:** If `config.autoFocus` is set to false, the `Menu` will be deleted immediately!
+	 * @param {number} config.gamepad An optional number indicating the gamepad (0-based index) this menu should accept input from. Set to `-1` to accept input from all gamepads.
 	 */
 	constructor(scene, config) {
 		if (!isPlainObject(config))
@@ -393,6 +388,7 @@ class Menu extends GameObject {
 			autoFocus = true,
 			deleteOnBlur = false,
 			maintainFocus = true,
+			gamepad,
 		} = config;
 		super(scene, x, y, layer);
 
@@ -427,6 +423,8 @@ class Menu extends GameObject {
 
 		this.title = title;
 
+		this.gamepad = gamepad;
+
 		scene.inputManager.addEventListener(
 			"keydown",
 			this.__onKeyDown.bind(this)
@@ -440,6 +438,38 @@ class Menu extends GameObject {
 		scene.inputManager.addEventListener("click", this.__onClick.bind(this));
 
 		this.__inputMode = "keyboard";
+
+		this.__handleGamepadButtonClicked.bind(this);
+	}
+
+	get gamepad() {
+		return this.__rawGamepad;
+	}
+
+	set gamepad(n) {
+		if (typeof n !== "number") {
+			this.onTick = undefined;
+			this.__rawGamepad = undefined;
+			this.scene.inputManager.removeEventListener(
+				"gamepadbuttonclicked",
+				this.__handleGamepadButtonClicked
+			);
+
+			return;
+		}
+
+		if (typeof n !== "number" || !Number.isInteger(n) || n < -1 || n > 3)
+			throw new Error(
+				`Menu gamepad property should be an integer at or between -1 and 3.`
+			);
+
+		this.onTick = this.__handleGamepadInput.bind(this);
+		this.scene.inputManager.addEventListener(
+			"gamepadbuttonclicked",
+			this.__handleGamepadButtonClicked
+		);
+
+		this.__rawGamepad = n;
 	}
 
 	get index() {
@@ -682,6 +712,46 @@ class Menu extends GameObject {
 
 			this.currentItem && this.currentItem.onClick(event);
 		}
+	}
+
+	__handleGamepadInput() {
+		// const { __lastGamepadInterval = -1 } = this;
+		// const now = performance.now();
+		// if (now - __lastGamepadInterval < 75) return;
+		// const {
+		// 	scene: {
+		// 		inputManager: { gamepads },
+		// 	},
+		// } = this;
+		// const gamepadsToListenTo = (
+		// 	this.gamepad > -1 ? [gamepads[this.gamepad]] : gamepads
+		// ).filter((gamepad) => gamepad);
+		// for (const gamepad of gamepadsToListenTo) {
+		// 	const {
+		// 		buttons: {
+		// 			a: { pressed: a },
+		// 			up: { pressed: up },
+		// 			down: { pressed: down },
+		// 			left: { pressed: left },
+		// 			right: { pressed: right },
+		// 		},
+		// 	} = gamepad;
+		// 	if (up) this.index--;
+		// 	else if (down) this.index++;
+		// 	if (
+		// 		a &&
+		// 		this.currentItem &&
+		// 		this.__lastGamepadClick !== this.index
+		// 	) {
+		// 		this.__lastGamepadClick = this.index;
+		// 		this.currentItem.onClick();
+		// 	}
+		// }
+		// this.__lastGamepadInterval = now;
+	}
+
+	__handleGamepadButtonClicked(event) {
+		console.log(event);
 	}
 
 	get renderable() {
