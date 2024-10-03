@@ -2,6 +2,7 @@ import GameObject from "../core/GameObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 import { isPlainObject } from "../util/data.js";
+import { clamp } from "../util/math.js";
 import Box from "./Box.js";
 
 class Item {
@@ -13,6 +14,17 @@ class Item {
 	get renderable() {
 		return Pixel.fromString("#");
 	}
+
+	get index() {
+		return this.menu.items.indexOf(this);
+	}
+
+	onKeyDown() {
+		console.warn("overwrite Menu.Item.onKeyDown");
+	}
+	onClick() {
+		console.warn("overwrite Menu.Item.onKeyDown");
+	}
 }
 
 class Button extends Item {
@@ -20,17 +32,27 @@ class Button extends Item {
 	 * A string of text that can be rendered on screen.
 	 * @param {Object} config The `Button`'s config object.
 	 * @param {string} config.label The `Button`'s display label.
-	 * @param {string} config.color The color of the display label.
 	 * @param {function} config.callback The function to call when this item is clicked/activated. This callback is passed the `Menu` instance as an argument.
 	 */
 	constructor(config) {
 		super();
 
-		const { label, color = "white", callback } = config;
+		const { label, callback } = config;
 
-		this.label = label;
-		this.color = color;
+		if (typeof label !== "string")
+			throw new TypeError(
+				"Menu.Button config.label property must be a string."
+			);
+
+		this.label = label && label.trim();
 		this.callback = callback;
+	}
+
+	onKeyDown(event) {
+		if (event.keys.enter) this.callback(this.menu);
+	}
+	onClick() {
+		this.callback(this.menu);
 	}
 
 	onLoad() {}
@@ -50,9 +72,187 @@ class Button extends Item {
 	}
 }
 
+class Slider extends Item {
+	/**
+	 * A string of text that can be rendered on screen.
+	 * @param {Object} config The `Slider`'s config object.
+	 * @param {string} config.label An optional `Slider` display label.
+	 * @param {boolean} config.showValue Whether to show the value of the `Slider` after it. Default: `false`.
+	 * @param {boolean} config.showPercentage Whether to show the value (in percentage format) of the `Slider` after it. Default: `true`.
+	 * @param {number} config.value The starting value of the `Slider`.
+	 * @param {number} config.min The minimum value for the `Slider`.
+	 * @param {number} config.max The maximum value for the `Slider`.
+	 * @param {number} config.step The amount the value will change by each input.
+	 * @param {function} config.onChange The function to call when the value of this `Slider` changes.
+	 * @param {function} config.callback The function to call when "enter" is pressed on the `Slider`. This callback is passed the `Menu` instance as an argument.
+	 */
+	constructor(config) {
+		super();
+
+		const {
+			label,
+			value = 0,
+			min = 0,
+			max = 100,
+			step = 1,
+			onChange,
+			callback,
+			showValue = true,
+			showPercentage = true,
+		} = config;
+
+		if (label && typeof label !== "string")
+			throw new TypeError(
+				"Menu.Button config.label property must be a string."
+			);
+		if (typeof value !== "number")
+			throw new TypeError(
+				`Menu.Slider config.value property must be a number.`
+			);
+		if (typeof min !== "number")
+			throw new TypeError(
+				`Menu.Slider config.min property must be a number.`
+			);
+		if (typeof max !== "number")
+			throw new TypeError(
+				`Menu.Slider max.value property must be a number.`
+			);
+		if (typeof step !== "number")
+			throw new TypeError(
+				`Menu.Slider config.step property must be a number.`
+			);
+		if (min > max)
+			throw new Error(
+				"Menu.Slider config.min cannot be greater than config.max."
+			);
+
+		this.showValue = Boolean(showValue);
+		this.showPercentage = Boolean(showPercentage);
+
+		this.label = label && label.trim();
+		this.min = min;
+		this.max = max;
+		this.value = value;
+		this.step = step;
+		this.callback = callback;
+		this.onChange = onChange;
+	}
+
+	/**
+	 * Get the value of this `Slider`.
+	 */
+	get value() {
+		return this.__rawValue;
+	}
+
+	set value(n) {
+		this.__rawValue = clamp(n, this.min, this.max);
+	}
+
+	onKeyDown(event) {
+		const {
+			keys: { enter, left, right },
+		} = event;
+
+		if (enter) this.callback(this.menu);
+		if (left) this.value -= this.step;
+		if (right) this.value += this.step;
+	}
+
+	onClick() {
+		this.callback(this.menu);
+	}
+
+	onLoad() {}
+
+	get renderable() {
+		const {
+			menu: { index: activeIndex },
+			index,
+			value,
+			min,
+			max,
+			step,
+			label,
+			showValue,
+			showPercentage,
+		} = this;
+
+		const active = activeIndex === index;
+
+		let data = [];
+
+		if (label) {
+			const labelMesh = PixelMesh.fromString(this.label + " ");
+			if (!active) labelMesh.setColor("grey");
+			data.push(labelMesh.data[0]);
+		}
+
+		const sliderWidth = 10;
+		const sliderWidthWithoutThumb = sliderWidth - 1;
+
+		const positionOnSlider = Math.floor(
+			((value - min) / (max - min)) * sliderWidthWithoutThumb
+		);
+
+		const track = new Pixel({
+			value: "-",
+			color: active ? "white" : "grey",
+		});
+
+		const [leftSide, rightSide] = [
+			new Array(positionOnSlider).fill(track),
+			new Array(sliderWidthWithoutThumb - positionOnSlider).fill(track),
+		];
+
+		const sliderMesh = new PixelMesh({
+			data: [
+				...leftSide,
+				new Pixel({ value: "█", color: active ? "green" : "grey" }),
+				...rightSide,
+			],
+		});
+
+		data[0] = [...data[0], ...sliderMesh.data];
+
+		if (showValue) {
+			const valueMesh = PixelMesh.fromString(
+				" " +
+					String(value).padEnd(
+						Math.max(
+							String(max - max / step + (step < 1 ? step : 0))
+								.length - 1,
+							1
+						),
+						" "
+					)
+			);
+			if (!active) valueMesh.setColor("grey");
+			data[0].push(...valueMesh.data[0]);
+		}
+
+		if (showValue && showPercentage)
+			data[0].push(
+				null,
+				new Pixel({ value: "-", color: active ? "white" : "grey" })
+			);
+
+		if (showPercentage) {
+			const percentageMesh = PixelMesh.fromString(
+				(" " + Math.round((value / max) * 100) + "%").padEnd(5, " ")
+			);
+			if (!active) percentageMesh.setColor("grey");
+			data[0].push(...percentageMesh.data[0]);
+		}
+
+		return new PixelMesh({ data });
+	}
+}
+
 class Menu extends GameObject {
 	static Item = Item;
 	static Button = Button;
+	static Slider = Slider;
 
 	static horizontalSpacing = 1;
 	static borderWidth = 1;
@@ -103,14 +303,13 @@ class Menu extends GameObject {
 				);
 
 			item.menu = this;
-			item.index = items.indexOf(item);
 
 			scene.runtime.__runOnLoad(item);
 		}
 
 		this.items = items;
 
-		this.index = 0;
+		this.__rawIndex = 0;
 		this.focused = Boolean(autoFocus);
 
 		if (title && typeof title !== "string")
@@ -133,6 +332,21 @@ class Menu extends GameObject {
 		scene.inputManager.addEventListener("click", this.__onClick.bind(this));
 
 		this.__inputMode = "keyboard";
+	}
+
+	get index() {
+		return this.__rawIndex;
+	}
+
+	set index(n) {
+		if (typeof n !== "number" || !Number.isInteger(n))
+			throw new TypeError("Menu index must be an integer.");
+
+		const topIndex = this.items.length - 1;
+		if (n < 0) n = topIndex;
+		if (n > topIndex) n = 0;
+
+		this.__rawIndex = n;
 	}
 
 	/**
@@ -279,22 +493,17 @@ class Menu extends GameObject {
 		this.__inputMode = "keyboard";
 
 		const {
-			keys: { up, down, enter, escape },
+			keys: { up, down, escape },
 		} = event;
 
 		if (escape) return this.blur();
+		else {
+			this.focus = true;
 
-		this.focus;
-
-		if (down) this.index++;
-		if (up) this.index--;
-
-		const topIndex = this.items.length - 1;
-		if (this.index < 0) this.index = topIndex;
-		if (this.index > topIndex) this.index = 0;
-
-		if (this.currentItem instanceof Menu.Button && enter)
-			this.currentItem.callback(this);
+			if (down) this.index++;
+			else if (up) this.index--;
+			else this.currentItem.onKeyDown(event);
+		}
 	}
 
 	/**
@@ -360,8 +569,7 @@ class Menu extends GameObject {
 		if (this.__inputMode === "mouse") {
 			this.__determineMouseOverInput(event);
 
-			if (this.currentItem instanceof Menu.Button)
-				this.currentItem.callback(this);
+			this.currentItem.onClick(event);
 		}
 	}
 
