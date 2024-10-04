@@ -28,6 +28,7 @@ jobs:
                   if git tag --contains HEAD | grep -q '^gui'; then
                     echo "This commit has a 'gui' tag. Exiting workflow."
                     exit 0
+                  fi
 
             - name: Run Rollup build
               run: npm run build
