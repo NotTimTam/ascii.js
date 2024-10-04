@@ -21,16 +21,6 @@ jobs:
             - name: Install dependencies
               run: npm install
 
-            - name: Check if commit has a 'gui' tag
-              id: check_tag
-              run: |
-                  # Check if the current commit has a tag starting with 'gui'
-                  if git tag --contains HEAD | grep -q '^gui'; then
-                    echo "This commit is tagged as a gui update. Exiting workflow."
-                    gh run cancel ${{ github.run_id }}
-                    exit 1
-                  fi
-
             - name: Run Rollup build
               run: npm run build
 
