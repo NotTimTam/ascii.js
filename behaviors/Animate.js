@@ -101,15 +101,20 @@ class Animate extends Behavior {
 	/**
 	 * Animate a `GameObject`.
 	 * @param {GameObject} gameObject The game object to append this behavior to.
-	 * @param {boolean} enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
 	 * @param {Object} config The configuration for this `Animate`.
 	 * @param {Array<Animation>} config.animations The animations for this behavior.
+	 * @param {boolean} config.enabledByDefault Whether the Behavior starts out enabled. Default: `true`.
 	 * @param {string} config.initialAnimation The label of the animation to start on.
 	 * @param {number} config.initialFrame The frame of the animation to start on.
 	 * @param {boolean} config.overwriteObjectRenderable Whether or not to force the GameObject's `renderable` property to return this `Animate` instance's `renderable` property. Default `false`.
 	 */
-	constructor(gameObject, enabledByDefault = true, config) {
-		super(gameObject, enabledByDefault);
+	constructor(gameObject, config) {
+		super(
+			gameObject,
+			config.hasOwnProperty("enabledByDefault")
+				? config.enabledByDefault
+				: true
+		);
 
 		Animate.validateConfig(config);
 

@@ -6,15 +6,15 @@ Animate a `GameObject`.
 
 ## Constructor
 
-`new Animate(gameObject, enabledByDefault = true, config)`
+`new Animate(gameObject, config)`
 
 Initializes the animation behavior for a specified game object.
 
 ### Arguments
 
 -   `gameObject` &mdash; `GameObject` The game object to append this behavior to.
--   `enabledByDefault` &mdash; `boolean` Whether the Behavior starts out enabled. Default: `true`.
 -   `config` &mdash; `Object` The configuration for this `Animate`.
+    -   `enabledByDefault` &mdash; `boolean` Whether the Behavior starts out enabled. Default: `true`.
     -   `animations` &mdash; `Array<Animation>` The animations for this behavior.
     -   `initialAnimation` &mdash; `string` The label of the animation to start on.
     -   `initialFrame` &mdash; `number` The frame of the animation to start on.

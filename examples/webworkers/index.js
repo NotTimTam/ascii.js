@@ -101,7 +101,7 @@ const pixelMeshGenerator = (offset = 0) =>
 
 const animatable = new GameObject(scene, 0, 0, "system");
 new ScrollTo(animatable, true);
-const animate = new Animate(animatable, true, {
+const animate = new Animate(animatable, {
 	animations: [
 		new Animation({
 			label: "anim1",
@@ -121,6 +121,7 @@ const animate = new Animate(animatable, true, {
 	initialAnimation: "anim1",
 	initialFrame: 0,
 	overwriteObjectRenderable: true,
+	enabledByDefault: true,
 });
 
 const frameRate = new Text(scene, {
