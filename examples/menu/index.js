@@ -15,8 +15,18 @@ const runtime = new Runtime({
 
 runtime.start((runtime) => {});
 
+let avg = [];
 const scene = new Scene(runtime, {
 	label: "game",
+	// onTick: () => {
+	// 	avg.push(runtime.fps);
+
+	// 	while (avg.length > 30) {
+	// 		avg.shift();
+	// 	}
+
+	// 	console.log(avg.reduce((a, b) => a + b) / avg.length);
+	// },
 });
 
 const { width, height } = runtime.renderer;
@@ -26,12 +36,8 @@ const menu = new Menu(scene, {
 	y: 0,
 	items: [
 		new Menu.Button({
-			label: "Button 1",
-			callback: () => console.log("OPTION 1 SELECTED"),
-		}),
-		new Menu.Button({
-			label: "Button 2",
-			callback: () => console.log("OPTION 2 SELECTED"),
+			label: "Reload Objects",
+			callback: () => console.log("RELOAD BUTTON PRESSED"),
 		}),
 		new Menu.Slider({
 			value: 0,
@@ -46,19 +52,18 @@ const menu = new Menu(scene, {
 			},
 			callback: (v) => console.log("ENTER ON SLIDER", v),
 		}),
-		new Menu.Button({
-			label: "Button 3",
-			callback: () => console.log("OPTION 3 SELECTED"),
-		}),
-		new Menu.Button({
-			label: "Button 4",
-			callback: () => console.log("OPTION 4 SELECTED"),
-		}),
-
 		new Menu.Toggle({
-			label: "Random Checkbox",
+			label: "Mute Audio",
 			callback: (checked) =>
 				console.log("CHECKBOX", checked ? "CHECKED" : "UNCHECKED"),
+		}),
+		new Menu.Button({
+			label: "Save Changes",
+			callback: () => console.log("SAVE BUTTON PRESSED"),
+		}),
+		new Menu.Button({
+			label: "Exit",
+			callback: () => console.log("EXIT BUTTON PRESSED"),
 		}),
 	],
 	title: "Example Menu",

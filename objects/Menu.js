@@ -17,6 +17,7 @@ class Item {
 	onLoad() {}
 	onKeyDown() {}
 	onClick() {}
+	onGamepadButton() {}
 	onMouseMove() {}
 }
 
@@ -43,6 +44,9 @@ class Button extends Item {
 
 	onKeyDown(event) {
 		if (event.keys.enter) this.callback(this.menu);
+	}
+	onGamepadButton(event) {
+		if (event.buttons.a) this.callback(this.menu);
 	}
 	onClick() {
 		this.callback(this.menu);
@@ -155,6 +159,15 @@ class Slider extends Item {
 		} = event;
 
 		if (enter) this.callback(this.value);
+		if (left) this.value -= this.step;
+		if (right) this.value += this.step;
+	}
+	onGamepadButton(event) {
+		const {
+			buttons: { a, left, right },
+		} = event;
+
+		if (a) this.callback(this.value);
 		if (left) this.value -= this.step;
 		if (right) this.value += this.step;
 	}
@@ -326,6 +339,11 @@ class Toggle extends Item {
 
 		this.callback(this.checked);
 	}
+	onGamepadButton(event) {
+		if (event.buttons.a) this.checked = !this.checked;
+
+		this.callback(this.checked);
+	}
 
 	get renderable() {
 		const {
@@ -438,8 +456,6 @@ class Menu extends GameObject {
 		scene.inputManager.addEventListener("click", this.__onClick.bind(this));
 
 		this.__inputMode = "keyboard";
-
-		this.__handleGamepadButtonClicked.bind(this);
 	}
 
 	get gamepad() {
@@ -448,11 +464,14 @@ class Menu extends GameObject {
 
 	set gamepad(n) {
 		if (typeof n !== "number") {
-			this.onTick = undefined;
 			this.__rawGamepad = undefined;
 			this.scene.inputManager.removeEventListener(
-				"gamepadbuttonclicked",
-				this.__handleGamepadButtonClicked
+				"gamepadbuttondown",
+				this.__handleGamepadButtonDown.bind(this)
+			);
+			this.scene.inputManager.removeEventListener(
+				"gamepadbuttonpressed",
+				this.__handleGamepadButtonPressed.bind(this)
 			);
 
 			return;
@@ -463,10 +482,13 @@ class Menu extends GameObject {
 				`Menu gamepad property should be an integer at or between -1 and 3.`
 			);
 
-		this.onTick = this.__handleGamepadInput.bind(this);
 		this.scene.inputManager.addEventListener(
-			"gamepadbuttonclicked",
-			this.__handleGamepadButtonClicked
+			"gamepadbuttondown",
+			this.__handleGamepadButtonDown.bind(this)
+		);
+		this.scene.inputManager.addEventListener(
+			"gamepadbuttonpressed",
+			this.__handleGamepadButtonPressed.bind(this)
 		);
 
 		this.__rawGamepad = n;
@@ -714,44 +736,25 @@ class Menu extends GameObject {
 		}
 	}
 
-	__handleGamepadInput() {
-		// const { __lastGamepadInterval = -1 } = this;
-		// const now = performance.now();
-		// if (now - __lastGamepadInterval < 75) return;
-		// const {
-		// 	scene: {
-		// 		inputManager: { gamepads },
-		// 	},
-		// } = this;
-		// const gamepadsToListenTo = (
-		// 	this.gamepad > -1 ? [gamepads[this.gamepad]] : gamepads
-		// ).filter((gamepad) => gamepad);
-		// for (const gamepad of gamepadsToListenTo) {
-		// 	const {
-		// 		buttons: {
-		// 			a: { pressed: a },
-		// 			up: { pressed: up },
-		// 			down: { pressed: down },
-		// 			left: { pressed: left },
-		// 			right: { pressed: right },
-		// 		},
-		// 	} = gamepad;
-		// 	if (up) this.index--;
-		// 	else if (down) this.index++;
-		// 	if (
-		// 		a &&
-		// 		this.currentItem &&
-		// 		this.__lastGamepadClick !== this.index
-		// 	) {
-		// 		this.__lastGamepadClick = this.index;
-		// 		this.currentItem.onClick();
-		// 	}
-		// }
-		// this.__lastGamepadInterval = now;
+	__handleGamepadButtonDown(event) {
+		if (this.gamepad !== event.index && this.gamepad !== -1) return;
+
+		const { axes } = event;
+
+		console.log(axes);
 	}
 
-	__handleGamepadButtonClicked(event) {
-		console.log(event);
+	__handleGamepadButtonPressed(event) {
+		if (this.gamepad !== event.index && this.gamepad !== -1) return;
+		const {
+			buttons: { up, down },
+		} = event;
+		if (up) this.index--;
+		else if (down) this.index++;
+		else if (this.currentItem) {
+			this.__lastGamepadClick = this.index;
+			this.currentItem.onGamepadButton(event);
+		}
 	}
 
 	get renderable() {

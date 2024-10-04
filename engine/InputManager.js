@@ -3,6 +3,31 @@ import { clamp } from "../util/math.js";
 import Scene from "./Scene.js";
 
 class GamepadInterface {
+	static gamepadButtonIntervals = 100;
+	static deadzoneThreshold = 0.1;
+
+	/**
+	 * Apply a deadzone value to a set of axes inputs.
+	 * @param {Object<number>} values The axis input values. In a key-value object.
+	 * @param {number} threshold The deadzone threshold value. (default `0.1`)
+	 * @returns
+	 */
+	static applyDeadzone(
+		values,
+		threshold = GamepadInterface.deadzoneThreshold
+	) {
+		for (const [name, value] of Object.entries(values)) {
+			// If the value is within the deadzone range, return 0 (consider it neutral)
+			if (Math.abs(value) < threshold) values[name] = 0;
+
+			// If outside the deadzone, adjust the value by scaling it from the edge of the deadzone to 1 or -1
+			values[name] =
+				(value - Math.sign(value) * threshold) / (1 - threshold);
+		}
+
+		return values;
+	}
+
 	static xbButtonMap = [
 		"a",
 		"b",
@@ -113,16 +138,18 @@ class GamepadInterface {
 
 		if (mapping === "standard")
 			return {
-				axes: Object.fromEntries(
-					axes
-						.filter(
-							(axis, index) =>
-								GamepadInterface.standardAxesMap[index]
-						)
-						.map((axis, index) => [
-							GamepadInterface.standardAxesMap[index],
-							axis,
-						])
+				axes: GamepadInterface.applyDeadzone(
+					Object.fromEntries(
+						axes
+							.filter(
+								(_, index) =>
+									GamepadInterface.standardAxesMap[index]
+							)
+							.map((axis, index) => [
+								GamepadInterface.standardAxesMap[index],
+								axis,
+							])
+					)
 				),
 				buttons: Object.fromEntries(
 					buttons
@@ -300,7 +327,9 @@ class InputManager {
 		this.mouse = { buttons: {}, onLayer: {} };
 
 		this.__eventListeners = {
-			gamepadbuttonclicked: [],
+			gamepadbuttonpressed: [],
+			gamepadbuttondown: [],
+			gamepadbuttonup: [],
 			all: [],
 			click: [
 				(e) => {
@@ -828,33 +857,84 @@ class InputManager {
 				(gamepad) => gamepad && gamepad.mapping === "standard"
 			);
 
-		if (!this.__gamepadButtonHistory) this.__gamepadButtonHistory = {};
+		if (
+			this.__eventListeners.gamepadbuttonpressed.length > 0 ||
+			this.__eventListeners.gamepadbuttondown.length > 0 ||
+			this.__eventListeners.gamepadbuttonup.length > 0
+		) {
+			if (!this.__gamepadButtonHistory) this.__gamepadButtonHistory = {};
 
-		for (const gamepad of gamepads) {
-			const { buttons, index } = gamepad;
+			const timeSinceLastButtonEvent =
+				performance.now() - (this.__lastGamepadButtonEvent || 0);
 
-			for (const [button, { pressed }] of Object.entries(buttons)) {
-				const alreadyPressed =
-					this.__gamepadButtonHistory[index] &&
-					this.__gamepadButtonHistory[index][button];
+			const canTriggerButtonEvent =
+				timeSinceLastButtonEvent >
+				GamepadInterface.gamepadButtonIntervals;
 
-				if (pressed && !alreadyPressed) {
+			for (const gamepad of gamepads) {
+				const { buttons, index } = gamepad;
+
+				for (const [button, { pressed }] of Object.entries(buttons)) {
+					const alreadyPressed =
+						this.__gamepadButtonHistory[index] &&
+						this.__gamepadButtonHistory[index][button];
+
 					if (!this.__gamepadButtonHistory[index])
 						this.__gamepadButtonHistory[index] = {};
-					this.__gamepadButtonHistory[index][button] = true;
-				} else if (!pressed && alreadyPressed) {
-					this.__gamepadButtonHistory[index][button] = false;
 
 					const returnable = {
-						type: "gamepadbuttonclicked",
 						gamepad,
+						index,
 						button,
 						buttons: this.__gamepadButtonHistory[index],
 					};
 
-					this.__triggerEvents("gamepadbuttonclicked", returnable); // Trigger the specific event type that fired.
-					this.__triggerEvents("all", returnable); // Trigger the "all" event type.
+					if (pressed) {
+						this.__gamepadButtonHistory[index][button] = true;
+
+						// gamepadbuttondown
+						if (canTriggerButtonEvent) {
+							this.__triggerEvents("gamepadbuttondown", {
+								...returnable,
+								type: "gamepadbuttondown",
+							}); // Trigger the specific event type that fired.
+							this.__triggerEvents("all", {
+								...returnable,
+								type: "gamepadbuttondown",
+							}); // Trigger the "all" event type.
+						}
+					} else {
+						// gamepadbuttonpressed
+						if (alreadyPressed) {
+							this.__triggerEvents("gamepadbuttonpressed", {
+								...returnable,
+								type: "gamepadbuttonpressed",
+							}); // Trigger the specific event type that fired.
+							this.__triggerEvents("all", {
+								...returnable,
+								type: "gamepadbuttonpressed",
+							}); // Trigger the "all" event type.
+						}
+
+						this.__gamepadButtonHistory[index][button] = false;
+
+						// gamepadbuttonup
+						if (canTriggerButtonEvent) {
+							this.__triggerEvents("gamepadbuttonup", {
+								...returnable,
+								type: "gamepadbuttonup",
+							}); // Trigger the specific event type that fired.
+							this.__triggerEvents("all", {
+								...returnable,
+								type: "gamepadbuttonup",
+							}); // Trigger the "all" event type.
+						}
+					}
 				}
+			}
+
+			if (canTriggerButtonEvent) {
+				this.__lastGamepadButtonEvent = performance.now();
 			}
 		}
 	}
