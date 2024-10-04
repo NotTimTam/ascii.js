@@ -3,9 +3,7 @@ import { displayArray } from "../util/data.js";
 import Pixel from "../core/Pixel.js";
 import Frame from "./Frame.js";
 import Runtime from "./Runtime.js";
-import DrawFrameWorker from "../workers/DrawFrameWorker.js";
-
-// import DrawFrameWorker from "../workers/DrawFrameWorker.js?worker";
+import FrameToImageDataWorker from "../workers/FrameToImageDataWorker.js";
 
 class Renderer {
 	/**
@@ -249,7 +247,7 @@ class Renderer {
 		this.webWorkers = {
 			drawFrame: new Worker(
 				URL.createObjectURL(
-					new Blob([DrawFrameWorker], {
+					new Blob([FrameToImageDataWorker], {
 						type: "application/javascript",
 					})
 				),
