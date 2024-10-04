@@ -1,5 +1,5 @@
 export default `
-self.onmessage = function ({ data: { data: frame, characterSize: [cW, cH], width, height, fontSize } }) {
+self.onmessage = function ({ data: { data: frame, characterSize: [cW, cH], width, height, fontSize, lastFrame } }) {
 	const canvas = new OffscreenCanvas(cW * width, cH * height);
 	const ctx = canvas.getContext('2d');
 	ctx.textAlign = "left";
@@ -43,8 +43,6 @@ self.onmessage = function ({ data: { data: frame, characterSize: [cW, cH], width
 			ctx.closePath();
 		}
 
-	const imageData = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
-
-	self.postMessage(imageData);
+	self.postMessage({ bitmap: canvas.transferToImageBitmap(), lastFrame });
 };
 `;

@@ -323,9 +323,7 @@ class LayerManager {
 
 		this.lastFrame = JSON.stringify(frame);
 
-		renderer.clearDisplay();
-
-		renderer.drawFrame(frame);
+		renderer.drawFrames([frame]);
 	}
 
 	__stackedRender() {
@@ -337,7 +335,7 @@ class LayerManager {
 
 		const frames = this.visibleLayers.map((layer) => layer.frame);
 
-		for (const frame of frames) renderer.drawFrame(frame);
+		renderer.drawFrames(frames);
 	}
 
 	__onLoad() {
