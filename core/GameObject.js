@@ -135,14 +135,20 @@ class GameObject extends Core {
 	 * Get the width of this `GameObject`'s renderable.
 	 */
 	get width() {
-		return (this.renderable && this.renderable.width) || 0;
+		if (!this.renderable) return 0;
+
+		if (this.renderable instanceof PixelMesh) return this.renderable.width;
+		else return 1;
 	}
 
 	/**
 	 * Get the height of this `GameObject`'s renderable.
 	 */
 	get height() {
-		return (this.renderable && this.renderable.height) || 0;
+		if (!this.renderable) return 0;
+
+		if (this.renderable instanceof PixelMesh) return this.renderable.height;
+		else return 1;
 	}
 
 	/**
