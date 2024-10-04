@@ -37,6 +37,15 @@ jobs:
               id: get_version
               run: echo "VERSION=$(node -p -e "require('./package.json').version")" >> $GITHUB_ENV
 
+            - name: Check for existing release
+              id: check_release
+              run: |
+                  existing_release=$(gh release list --json tagName --jq '.[] | select(.tagName == "v${{ env.VERSION }}") | .tagName')
+                  if [ -n "$existing_release" ]; then
+                    echo "Release v${{ env.VERSION }} already exists. Exiting workflow."
+                    exit 0
+                  fi
+
             - name: Create GitHub Release
               id: create_release
               uses: softprops/action-gh-release@v2
