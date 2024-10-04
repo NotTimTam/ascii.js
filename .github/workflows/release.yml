@@ -42,7 +42,9 @@ jobs:
               env:
                   GH_TOKEN: ${{ secrets.REPO_TOKEN }}
               run: |
-                  existing_release=$(gh release list --json tagName --jq '.[] | select(.tagName == "v${{ env.VERSION }}") | .tagName')
+                  echo "Checking for existing release with tag v${{ env.VERSION }}..."
+                  existing_release=$(gh release list --json tagName --jq '.[] | select(.tagName == "v'${{ env.VERSION }}'") | .tagName')
+                  echo "Found existing release: $existing_release"
                   if [ -n "$existing_release" ]; then
                     echo "Release v${{ env.VERSION }} already exists. Exiting workflow."
                     exit 0
