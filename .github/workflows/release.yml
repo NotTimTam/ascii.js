@@ -39,7 +39,7 @@ jobs:
                   if [ -n "$existing_release" ]; then
                     echo "Release v${{ env.VERSION }} already exists. Exiting workflow."
                     gh run cancel ${{ github.run_id }}
-                    exit 1
+                    exit 0
                   fi
 
             - name: Create GitHub Release
