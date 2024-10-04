@@ -39,6 +39,8 @@ jobs:
 
             - name: Check for existing release
               id: check_release
+              env:
+                  GH_TOKEN: ${{ secrets.REPO_TOKEN }}
               run: |
                   existing_release=$(gh release list --json tagName --jq '.[] | select(.tagName == "v${{ env.VERSION }}") | .tagName')
                   if [ -n "$existing_release" ]; then
