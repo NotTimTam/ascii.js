@@ -26,7 +26,7 @@ jobs:
               run: |
                   # Check if the current commit has a tag starting with 'gui'
                   if git tag --contains HEAD | grep -q '^gui'; then
-                    echo "This commit has a 'gui' tag. Exiting workflow."
+                    echo "This commit is tagged as a gui update. Exiting workflow."
                     gh run cancel ${{ github.run_id }}
                     exit 1
                   fi
