@@ -27,7 +27,8 @@ jobs:
                   # Check if the current commit has a tag starting with 'gui'
                   if git tag --contains HEAD | grep -q '^gui'; then
                     echo "This commit has a 'gui' tag. Exiting workflow."
-                    exit 0
+                    gh run cancel ${{ github.run_id }}
+                    exit 1
                   fi
 
             - name: Run Rollup build
@@ -47,7 +48,8 @@ jobs:
                   echo "Found existing release: $existing_release"
                   if [ -n "$existing_release" ]; then
                     echo "Release v${{ env.VERSION }} already exists. Exiting workflow."
-                    exit 0
+                    gh run cancel ${{ github.run_id }}
+                    exit 1
                   fi
 
             - name: Create GitHub Release
