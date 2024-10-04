@@ -44,13 +44,13 @@ Validates a renderer configuration file and throws an error if it is invalid.
 
 Clears the screen.
 
-### `drawFrame(frame)`
+### `drawFrames(frames)`
 
-Draws a frame to the screen.
+Draws an array of frames to the screen.
 
 #### Arguments
 
--   `frame` &mdash; `Frame` The frame to draw.
+-   `frames` &mdash; `Array<Frame>` The frames to draw.
 
 ### `coordinatesToIndex(x, y)`
 
