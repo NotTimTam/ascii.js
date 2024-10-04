@@ -124,7 +124,7 @@ class Renderer {
 		this.drawing = false;
 		this.hasDrawn = false;
 
-		const { fontSize, canvas } = this.config;
+		const { fontSize, canvas, forceParentStyles = true } = this.config;
 
 		// Load in the renderer's canvas.
 		if (typeof canvas === "string")
@@ -135,7 +135,8 @@ class Renderer {
 		)
 			this.element = canvas;
 
-		document.body.style = `
+		if (forceParentStyles)
+			this.element.parentElement.style = `
 			width: 100vw;
 			height: 100vh;
 			overflow: hidden;
@@ -143,6 +144,7 @@ class Renderer {
 			padding: 0;
 			margin: 0;
 			box-sizing: border-box;
+			position: relative;
 		`;
 
 		this.element.style = `
@@ -157,6 +159,8 @@ class Renderer {
 
 			width: 100%;
 			height: 100%;
+
+			background-color: black;
 		`;
 
 		this.ctx = this.element.getContext("2d");
@@ -204,11 +208,10 @@ class Renderer {
 			return;
 		}
 
-		const { innerWidth: viewportWidth, innerHeight: viewportHeight } =
-			window;
-
 		element.style.transform = `translateX(-50%) translateY(-50%) scale(1)`;
 
+		const { width: viewportWidth, height: viewportHeight } =
+			element.parentElement.getBoundingClientRect();
 		const { width: currentWidth, height: currentHeight } =
 			element.getBoundingClientRect();
 
