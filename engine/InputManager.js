@@ -330,6 +330,7 @@ class InputManager {
 			gamepadbuttonpressed: [],
 			gamepadbuttondown: [],
 			gamepadbuttonup: [],
+			gamepadaxes: [],
 			all: [],
 			click: [
 				(e) => {
@@ -856,6 +857,33 @@ class InputManager {
 			this.gamepads.filter(
 				(gamepad) => gamepad && gamepad.mapping === "standard"
 			);
+
+		if (this.__eventListeners.gamepadaxes.length > 0) {
+			for (const gamepad of gamepads) {
+				const { axes, index } = gamepad;
+
+				const anyNotNeutral = Object.values(axes)
+					.map((value) => value !== 0)
+					.find((value) => value);
+
+				if (anyNotNeutral) {
+					const returnable = {
+						gamepad,
+						index,
+						axes,
+					};
+
+					this.__triggerEvents("gamepadaxes", {
+						...returnable,
+						type: "gamepadaxes",
+					}); // Trigger the specific event type that fired.
+					this.__triggerEvents("all", {
+						...returnable,
+						type: "gamepadaxes",
+					}); // Trigger the "all" event type.
+				}
+			}
+		}
 
 		if (
 			this.__eventListeners.gamepadbuttonpressed.length > 0 ||

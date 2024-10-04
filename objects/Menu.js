@@ -465,10 +465,7 @@ class Menu extends GameObject {
 	set gamepad(n) {
 		if (typeof n !== "number") {
 			this.__rawGamepad = undefined;
-			this.scene.inputManager.removeEventListener(
-				"gamepadbuttondown",
-				this.__handleGamepadButtonDown.bind(this)
-			);
+
 			this.scene.inputManager.removeEventListener(
 				"gamepadbuttonpressed",
 				this.__handleGamepadButtonPressed.bind(this)
@@ -482,10 +479,6 @@ class Menu extends GameObject {
 				`Menu gamepad property should be an integer at or between -1 and 3.`
 			);
 
-		this.scene.inputManager.addEventListener(
-			"gamepadbuttondown",
-			this.__handleGamepadButtonDown.bind(this)
-		);
 		this.scene.inputManager.addEventListener(
 			"gamepadbuttonpressed",
 			this.__handleGamepadButtonPressed.bind(this)
@@ -734,14 +727,6 @@ class Menu extends GameObject {
 
 			this.currentItem && this.currentItem.onClick(event);
 		}
-	}
-
-	__handleGamepadButtonDown(event) {
-		if (this.gamepad !== event.index && this.gamepad !== -1) return;
-
-		const { axes } = event;
-
-		console.log(axes);
 	}
 
 	__handleGamepadButtonPressed(event) {
