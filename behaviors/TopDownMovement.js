@@ -22,7 +22,7 @@ class TopDownMovement extends Behavior {
 		if (defaultControls)
 			this.scene.inputManager.addEventListener(
 				"keydown",
-				this.handleInput.bind(this)
+				this.__handleKeyDown.bind(this)
 			);
 	}
 
@@ -89,7 +89,7 @@ class TopDownMovement extends Behavior {
 		this.__tryToMoveToPosition(x + 1, y);
 	};
 
-	handleInput(event) {
+	__handleKeyDown(event) {
 		if (this.gameObject.paused) return;
 
 		const {
