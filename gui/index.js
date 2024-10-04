@@ -111,7 +111,7 @@ new Animate(loader, {
 					)
 				),
 			],
-			speed: 16,
+			speed: 42,
 			loop: true,
 		}),
 	],
