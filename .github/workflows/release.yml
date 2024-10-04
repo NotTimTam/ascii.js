@@ -21,6 +21,14 @@ jobs:
             - name: Install dependencies
               run: npm install
 
+            - name: Check if commit has a 'gui' tag
+              id: check_tag
+              run: |
+                  # Check if the current commit has a tag starting with 'gui'
+                  if git tag --contains HEAD | grep -q '^gui'; then
+                    echo "This commit has a 'gui' tag. Exiting workflow."
+                    exit 0
+
             - name: Run Rollup build
               run: npm run build
 
@@ -40,13 +48,3 @@ jobs:
                   name: Version ${{ env.VERSION }} # Title of the release
                   draft: false
                   prerelease: false
-
-            # - name: Upload CJS file to release
-            #   uses: actions/upload-release-asset@v1
-            #   env:
-            #       GITHUB_TOKEN: ${{ secrets.REPO_TOKEN }}
-            #   with:
-            #       upload_url: ${{ steps.create_release.outputs.upload_url }}
-            #       asset_path: dist/bundle.cjs.js
-            #       asset_name: bundle.cjs.js
-            #       asset_content_type: application/javascript
