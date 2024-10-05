@@ -77,6 +77,34 @@ class Text extends GameObject {
 		const { wrap, value, maxWidth, color, backgroundColor, fontWeight } =
 			this;
 
+		return Text.asPixelMesh(
+			value,
+			maxWidth,
+			wrap,
+			color,
+			backgroundColor,
+			fontWeight
+		);
+	}
+
+	/**
+	 * Get just the renderable `PixelMesh` portion of a `Text` instance.
+	 * @param {string} config.value The text to display. (use `"\n"` for newlines)
+	 * @param {number} config.maxWidth The maximum width of the `Text`. Defaults to `Renderer.width`.
+	 * @param {boolean} config.wrap Whether to wrap the text if it overflows the screen.
+	 * @param {string} config.color Option text color.
+	 * @param {string} config.backgroundColor Optional background color.
+	 * @param {string} config.fontWeight Optional font weight.
+	 * @returns {PixelMesh} The generated `PixelMesh`.
+	 */
+	static asPixelMesh(
+		value,
+		maxWidth,
+		wrap,
+		color,
+		backgroundColor,
+		fontWeight
+	) {
 		const lines = value.split("\n");
 
 		const data = [];

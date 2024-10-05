@@ -1,9 +1,15 @@
-import Runtime, { Scene } from "../../index.js";
-import Animate, { Animation, AnimationFrame } from "../behaviors/Animate.js";
-import ScrollTo from "../behaviors/ScrollTo.js";
-import GameObject from "../core/GameObject.js";
-import { PixelMesh } from "../core/Pixel.js";
-import Text from "../objects/Text.js";
+import Runtime, {
+	Scene,
+	Animate,
+	Animation,
+	AnimationFrame,
+	ScrollTo,
+	GameObject,
+	PixelMesh,
+} from "../../index.js";
+import terminal from "./terminal/index.js";
+
+export const version = "0.0.0";
 
 const runtime = new Runtime({
 	renderer: {
@@ -32,82 +38,82 @@ new Animate(loader, {
 			animationFrames: [
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`  □▣■  \n ▪      \n▫        \n        \n       `
+						`  □▣■  \n ▪      \n▫   |    \n        \n       `
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`  ▪□▣■ \n        \n         \n        \n       `
+						`  ▪□▣■ \n        \n    /    \n        \n       `
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`   ▪□▣■\n        \n         \n        \n       `
+						`   ▪□▣■\n        \n    –    \n        \n       `
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`    ▪□▣\n       ■\n         \n        \n       `
+						`    ▪□▣\n       ■\n    \\    \n        \n       `
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`     ▪□\n       ▣\n        ■\n        \n       `
+						`     ▪□\n       ▣\n    |   ■\n        \n       `
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`      ▪\n       □\n        ▣\n       ■\n       `
+						`      ▪\n       □\n    /   ▣\n       ■\n       `
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`       \n       ▪\n        □\n       ▣\n      ■`
+						`       \n       ▪\n    –   □\n       ▣\n      ■`
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`       \n        \n        ▪\n       □\n     ■▣`
+						`       \n        \n    \\   ▪\n       □\n     ■▣`
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`       \n        \n         \n       ▪\n    ■▣□`
+						`       \n        \n    |    \n       ▪\n    ■▣□`
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`       \n        \n         \n        \n   ■▣□▪`
+						`       \n        \n    /    \n        \n   ■▣□▪`
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`       \n        \n         \n        \n  ■▣□▪ `
+						`       \n        \n    –    \n        \n  ■▣□▪ `
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`       \n        \n         \n ■      \n  ▣□▪  `
+						`       \n        \n    \\    \n ■      \n  ▣□▪  `
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`       \n        \n■        \n ▣      \n  □▪   `
+						`       \n        \n■   |    \n ▣      \n  □▪   `
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`       \n ■      \n▣        \n □      \n  ▪    `
+						`       \n ■      \n▣   /    \n □      \n  ▪    `
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`  ■    \n ▣      \n□        \n ▪      \n       `
+						`  ■    \n ▣      \n□   –    \n ▪      \n       `
 					)
 				),
 				new AnimationFrame(
 					PixelMesh.fromString(
-						`  ▣■   \n □      \n▪        \n        \n       `
+						`  ▣■   \n □      \n▪   \\    \n        \n       `
 					)
 				),
 			],
@@ -120,13 +126,6 @@ new Animate(loader, {
 });
 new ScrollTo(loader);
 
-console.log(loader);
-
-new Text(scene, {
-	x: loader.x - 3,
-	y: loader.y + loader.height + 1,
-	value: "ascii.js - gui",
-	layer: "system",
-});
-
 runtime.loadScene(scene);
+
+setTimeout(() => runtime.loadScene(terminal(runtime)), 150);

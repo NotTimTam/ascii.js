@@ -21,6 +21,8 @@ class TextInput extends Text {
 	 * @param {string} config.autoFocus Automatically focus on element once it is instantiated.
 	 * @param {function} config.onChange Callback that runs when the input's value changes.
 	 * @param {function} config.onKeyDown Callback that runs when the input recieves a keypress.
+	 * @param {function} config.onFocus Callback that runs when focus on this input is gained.
+	 * @param {function} config.onBlur Callback that runs when focus on this input is lost.
 	 * @param {number} config.maxLength An optional maximum input length.
 	 * @param {string} config.layer The label of the layer to start the `TextInput` on.
 	 */
@@ -41,6 +43,8 @@ class TextInput extends Text {
 			backgroundColorActive = "white",
 			onChange,
 			onKeyDown,
+			onFocus,
+			onBlur,
 			maxLength,
 		} = config;
 
@@ -86,6 +90,24 @@ class TextInput extends Text {
 			this.onKeyDown = onKeyDown;
 		}
 
+		if (onFocus) {
+			if (typeof onFocus !== "function")
+				throw new TypeError(
+					"Expected a function for TextInput config.onFocus value."
+				);
+
+			this.onFocus = onFocus;
+		}
+
+		if (onBlur) {
+			if (typeof onFocus !== "function")
+				throw new TypeError(
+					"Expected a function for TextInput config.onBlur value."
+				);
+
+			this.onBlur = onBlur;
+		}
+
 		if (maxLength) {
 			if (
 				typeof maxLength !== "number" ||
@@ -101,7 +123,7 @@ class TextInput extends Text {
 
 		this.scroll = 0;
 
-		this.focused = Boolean(config.autoFocus);
+		this.focused = config.autoFocus;
 		this.caret = config.value ? config.value.length : 0;
 
 		scene.inputManager.watchObjectClick(this.id, this.__onClick.bind(this));
@@ -113,6 +135,17 @@ class TextInput extends Text {
 			"keydown",
 			this.__onKeyDown.bind(this)
 		);
+	}
+
+	get focused() {
+		return this.__rawFocused;
+	}
+
+	set focused(bool) {
+		this.__rawFocused = Boolean(bool);
+
+		if (bool) this.onFocus && this.onFocus();
+		else this.onBlur && this.onBlur();
 	}
 
 	/**
