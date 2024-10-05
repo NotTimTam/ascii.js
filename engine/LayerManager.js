@@ -304,7 +304,13 @@ class LayerManager {
 		this.layers = [];
 
 		if (!layers.includes("system")) new Layer(this, { label: "system" });
-		for (const config of layers) new Layer(this, config);
+		for (const config of layers) {
+			if (this.getLayerByLabel(config.label))
+				throw new Error(
+					`More than one layer is currently configured with the label: "${config.label}"`
+				);
+			new Layer(this, config);
+		}
 	}
 
 	__mergedRender() {

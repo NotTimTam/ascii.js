@@ -385,6 +385,8 @@ class Menu extends GameObject {
 	 * @param {number} config.y This `Menu` object's y-coordinate.
 	 * @param {Object} config.items An array of `Menu.Item` instances. You can extend the `Menu.Item` class to make your own items.
 	 * @param {string} config.title Optional menu title.
+	 * @param {boolean} config.alignCenter Whether or not to align the content to the center of the menu. Default `true`.
+	 * @param {boolean} config.border Whether or not to create a border around the menu. Default `true`.
 	 * @param {string} config.layer The label of the layer to start the `Menu` on.
 	 * @param {boolean} config.autoFocus Whether to automatically focus on the `Menu` after it has been instantiated. Default `true`.
 	 * @param {boolean} config.maintainFocus Forces the menu to stay focused. Default `true`.
@@ -407,11 +409,15 @@ class Menu extends GameObject {
 			deleteOnBlur = false,
 			maintainFocus = true,
 			gamepad,
+			alignCenter = true,
+			border = true,
 		} = config;
 		super(scene, x, y, layer);
 
 		this.deleteOnBlur = Boolean(deleteOnBlur);
 		this.maintainFocus = Boolean(maintainFocus);
+		this.alignCenter = Boolean(alignCenter);
+		this.border = Boolean(border);
 
 		if (!(items instanceof Array))
 			throw new TypeError(
@@ -513,10 +519,12 @@ class Menu extends GameObject {
 					renderer: { width, height },
 				},
 			},
-			positionOnScreen: [x, y],
+			positionOnScreen,
 		} = this;
 
-		return [width - x, height - y];
+		if (!positionOnScreen) return [width, height];
+
+		return [width - positionOnScreen[0], height - positionOnScreen[1]];
 	}
 
 	/**
@@ -557,8 +565,8 @@ class Menu extends GameObject {
 		// Nearest even number to actual width.
 		return (
 			Math.min(width, Math.max(itemsWidth, titleWidth)) +
-			Menu.horizontalSpacing * 2 +
-			Menu.borderWidth * 2
+			(this.border ? Menu.horizontalSpacing * 2 : 0) +
+			(this.border ? Menu.borderWidth * 2 : 0)
 		);
 	}
 
@@ -581,7 +589,9 @@ class Menu extends GameObject {
 			else itemsHeight++;
 		}
 
-		return Math.round(itemsHeight + Menu.borderWidth * 2); // // 2 is added for the box borders on the top and bottom.
+		return Math.round(
+			itemsHeight + (this.border ? Menu.borderWidth * 2 : 0)
+		); // // 2 is added for the box borders on the top and bottom.
 	}
 
 	/**
@@ -591,7 +601,9 @@ class Menu extends GameObject {
 	get currentContentSpace() {
 		const { width, height } = this;
 
-		return [width - Menu.borderWidth * 2, height - Menu.borderWidth * 2];
+		return this.border
+			? [width - Menu.borderWidth * 2, height - Menu.borderWidth * 2]
+			: [width, height];
 	}
 
 	/**
@@ -756,22 +768,27 @@ class Menu extends GameObject {
 			currentContentSpace: [currentContentWidth, currentContentHeight],
 		} = this;
 
-		const {
-			data: box,
-			width: boxWidth,
-			height: boxHeight,
-		} = Box.asPixelMesh(
-			width,
-			height,
-			this.focused ? "white" : "grey",
-			undefined,
-			"double"
-		);
+		let data = [];
 
-		let data = box;
+		if (this.border) {
+			const {
+				data: box,
+				width: boxWidth,
+				height: boxHeight,
+			} = Box.asPixelMesh(
+				width,
+				height,
+				this.focused ? "white" : "grey",
+				undefined,
+				"double"
+			);
+
+			data = box;
+		}
 
 		if (items) {
-			let y = Menu.borderWidth;
+			let y = this.border || this.title ? Menu.borderWidth : 0;
+
 			for (const { renderable } of items) {
 				if (!renderable) continue;
 
@@ -782,19 +799,29 @@ class Menu extends GameObject {
 						);
 
 					renderable.data.forEach((row) => {
+						if (!data[y])
+							data[y] = this.border
+								? []
+								: new Array(currentContentWidth).fill(null);
+
 						data[y].splice(
-							currentContentWidth / 2 -
-								row.length / 2 +
-								Menu.horizontalSpacing,
+							Math.round(
+								this.alignCenter
+									? currentContentWidth / 2 - row.length / 2
+									: 0
+							) + (this.border ? Menu.horizontalSpacing : 0),
 							row.length,
 							...row
 						);
 						y++;
 					});
 				} else {
+					if (!data[y]) data[y] = [];
+
 					data[y].splice(
-						currentContentWidth % 2 === 0
-							? Menu.horizontalSpacing + Menu.borderWidth
+						currentContentWidth % 2 === 0 && this.alignCenter
+							? (this.border ? Menu.horizontalSpacing : 0) +
+									(this.border ? Menu.borderWidth : 0)
 							: Math.round(currentContentWidth / 2),
 						1,
 						renderable
@@ -806,17 +833,26 @@ class Menu extends GameObject {
 		}
 
 		if (title) {
-			const {
-				data: [titleText],
-			} = PixelMesh.fromString(
+			const titleMesh = PixelMesh.fromString(
 				title.slice(0, this.availableContentSpace[0])
 			);
 
-			const startIndex = Math.floor(
-				(currentContentWidth - titleText.length) / 2
-			);
+			if (!this.border) titleMesh.setFontWeight(800);
+
+			const {
+				data: [titleText],
+			} = titleMesh;
+
+			const startIndex =
+				this.border || this.alignCenter
+					? Math.floor((currentContentWidth - titleText.length) / 2)
+					: 0;
+
 			for (let i = 0; i < titleText.length; i++) {
-				data[0][i + startIndex + Menu.horizontalSpacing] = titleText[i];
+				if (!data[0]) data[0] = [];
+				data[0][
+					i + startIndex + (this.border ? Menu.horizontalSpacing : 0)
+				] = titleText[i];
 			}
 		}
 

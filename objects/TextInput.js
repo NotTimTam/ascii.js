@@ -100,7 +100,7 @@ class TextInput extends Text {
 		}
 
 		if (onBlur) {
-			if (typeof onFocus !== "function")
+			if (typeof onBlur !== "function")
 				throw new TypeError(
 					"Expected a function for TextInput config.onBlur value."
 				);
@@ -144,8 +144,8 @@ class TextInput extends Text {
 	set focused(bool) {
 		this.__rawFocused = Boolean(bool);
 
-		if (bool) this.onFocus && this.onFocus();
-		else this.onBlur && this.onBlur();
+		if (bool) this.onFocus && this.onFocus(this);
+		else this.onBlur && this.onBlur(this);
 	}
 
 	/**
@@ -178,6 +178,8 @@ class TextInput extends Text {
 
 		const { key } = event;
 
+		const startValue = this.value;
+
 		// Only allow ASCII range typeable keys.
 		if (
 			/^[\x20-\x7E]$/.test(key) &&
@@ -206,8 +208,9 @@ class TextInput extends Text {
 
 		this.__updateScrollPosition();
 
-		this.onChange && this.onChange({ target: this });
-		this.onKeyDown && this.onKeyDown({ target: this, key });
+		if (startValue !== this.value && this.onChange)
+			this.onChange({ target: this, ...event });
+		this.onKeyDown && this.onKeyDown({ target: this, ...event });
 	}
 
 	/**

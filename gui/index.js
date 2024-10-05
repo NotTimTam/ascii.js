@@ -7,7 +7,7 @@ import Runtime, {
 	GameObject,
 	PixelMesh,
 } from "../../index.js";
-import terminal from "./terminal/index.js";
+import terminal from "./terminal.js";
 
 export const version = "0.0.0";
 

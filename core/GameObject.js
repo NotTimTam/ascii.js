@@ -42,6 +42,8 @@ class GameObject extends Core {
 	 * Return format: `[x, y]`
 	 */
 	get positionOnScreen() {
+		if (!this.layer) return undefined;
+
 		const {
 			scene: { camera },
 			layer: {
