@@ -703,7 +703,10 @@ class Menu extends GameObject {
 
 		const { onLayer } = event;
 		const [x, y] = onLayer[this.layer.label];
-		const [menuX, menuY] = [x - this.x, y - this.y];
+		const [menuX, menuY] = [
+			x - this.x,
+			y - this.y + (this.title || this.border ? 0 : 1),
+		];
 
 		const mouseMenuIndex = this.items.indexOf(this.itemAtCoordinate(menuY));
 

@@ -49,11 +49,11 @@ const editor = (runtime, cartridge) => {
 						const menu = new Menu(scene, {
 							x: 0,
 							y: 1,
-							alignCenter: false,
+							alignCenter: true,
 							border: false,
 							items: [
 								new Menu.Button({
-									label: "Code",
+									label: "View Code",
 									callback: () => {},
 								}),
 								new Menu.Button({
@@ -61,11 +61,11 @@ const editor = (runtime, cartridge) => {
 									callback: () => {},
 								}),
 								new Menu.Button({
-									label: "Sounds",
+									label: "Edit Sounds",
 									callback: () => {},
 								}),
 								new Menu.Button({
-									label: "Preview",
+									label: "Preview Cartridge",
 									callback: () => {},
 								}),
 							],
@@ -82,8 +82,6 @@ const editor = (runtime, cartridge) => {
 			},
 		],
 	});
-
-	console.log(scene);
 
 	return scene;
 };
