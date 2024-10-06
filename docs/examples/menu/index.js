@@ -1,4 +1,4 @@
-import Runtime, { Menu, Scene, ScrollTo, Text } from "../../index.js";
+import Runtime, { Menu, Scene, ScrollTo, Text } from "../../../index.js";
 
 const runtime = new Runtime({
 	renderer: {
