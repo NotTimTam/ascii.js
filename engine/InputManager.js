@@ -1,3 +1,4 @@
+import GameObject from "../core/GameObject.js";
 import { displayArray } from "../util/data.js";
 import { clamp } from "../util/math.js";
 import Scene from "./Scene.js";
@@ -326,6 +327,9 @@ class InputManager {
 		};
 		this.mouse = { buttons: {}, onLayer: {} };
 
+		this.__rawFocusables = [];
+		this.__focusIndex = -1;
+
 		this.__eventListeners = {
 			gamepadbuttonpressed: [],
 			gamepadbuttondown: [],
@@ -352,6 +356,49 @@ class InputManager {
 		this.__onCreated();
 
 		this.__windowBlurHandler = this.__windowBlurHandler.bind(this);
+	}
+
+	/**
+	 * Get the current focused item.
+	 */
+	get focusTarget() {
+		return this.focusables[this.__focusIndex];
+	}
+
+	/**
+	 * Get all focusable items.
+	 */
+	get focusables() {
+		return this.__rawFocusables;
+	}
+
+	/**
+	 * Set focusable items.
+	 */
+	set focusables(arr) {
+		if (!(arr instanceof Array))
+			throw new TypeError(
+				"InputManager focusables property must be an array of GameObjects."
+			);
+
+		for (const focusable of arr)
+			if (!focusable instanceof GameObject)
+				throw new TypeError(
+					`InputManager focusables must be of type "GameObject".`
+				);
+
+		this.__rawFocusables = arr;
+	}
+
+	/**
+	 * Add a `GameObject` to the list of focusable objects.
+	 * @param {GameObject} gameObject The `GameObject` instance to add.
+	 */
+	addFocusable(gameObject) {
+		if (this.focusables.includes(gameObject))
+			throw new Error("This object is already in the focusable list.");
+
+		this.focusables.push(gameObject);
 	}
 
 	/**

@@ -135,6 +135,8 @@ class TextInput extends Text {
 			"keydown",
 			this.__onKeyDown.bind(this)
 		);
+
+		scene.inputManager.addFocusable(this);
 	}
 
 	get focused() {

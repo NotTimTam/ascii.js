@@ -1,31 +1,21 @@
-import { GameObject, Menu, Pixel, PixelMesh, Scene } from "../../index.js";
+import { Menu, Pixel, PixelMesh, Scene, TextInput } from "../../index.js";
 
-class Header extends GameObject {
-	constructor(cartridge, scene, x, y, layer) {
-		super(scene, x, y, layer);
+class Header extends TextInput {
+	constructor(cartridge, scene, config) {
+		config.backgroundColor = "tomato";
+		config.maxWidth = scene.runtime.renderer.width;
+		config.maxLength = 64;
+		config.onChange = ({ target: { value } }) => {
+			this.cartridge.name = value;
+
+			console.log(this.cartridge);
+		};
+
+		super(scene, config);
 
 		this.cartridge = cartridge;
-	}
 
-	get renderable() {
-		const data = [];
-
-		data[0] = new Array(this.scene.runtime.renderer.width).fill(
-			new Pixel({ value: " ", backgroundColor: "tomato" })
-		);
-
-		if (this.cartridge) {
-			const name = this.cartridge.name.trim() + ".ajc";
-
-			for (const i in name.split("")) {
-				data[0][i] = new Pixel({
-					value: name[i],
-					backgroundColor: "tomato",
-				});
-			}
-		}
-
-		return new PixelMesh({ data });
+		this.value = this.cartridge.name;
 	}
 }
 
@@ -43,7 +33,7 @@ const editor = (runtime, cartridge) => {
 				label: "menu",
 				gameObjectConstructors: [
 					(scene) => {
-						return new Header(cartridge, scene, 0, 0);
+						return new Header(cartridge, scene, { x: 0, y: 0 });
 					},
 					(scene) => {
 						const menu = new Menu(scene, {
@@ -69,6 +59,7 @@ const editor = (runtime, cartridge) => {
 									callback: () => {},
 								}),
 							],
+							maintainFocus: false,
 						});
 
 						menu.x =
