@@ -1,32 +1,32 @@
 {
-	"name": "ascii.js",
-	"version": "1.0.30",
-	"description": "A text-based 2d-canvas-rendered game engine.",
-	"main": "index.js",
-	"type": "module",
-	"scripts": {
-		"build": "vite build"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/NotTimTam/ascii.js.git"
-	},
-	"keywords": [
-		"game",
-		"engine",
-		"ascii",
-		"text"
-	],
-	"author": "NotTimTam",
-	"license": "CC0-1.0",
-	"bugs": {
-		"url": "https://github.com/NotTimTam/ascii.js/issues"
-	},
-	"homepage": "https://github.com/NotTimTam/ascii.js#readme",
-	"devDependencies": {
-		"vite": "^5.4.8"
-	},
-	"dependencies": {
-		"@types/react": "^18.3.11"
-	}
+  "name": "ascii.js",
+  "version": "1.0.31",
+  "description": "A text-based 2d-canvas-rendered game engine.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "build": "vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NotTimTam/ascii.js.git"
+  },
+  "keywords": [
+    "game",
+    "engine",
+    "ascii",
+    "text"
+  ],
+  "author": "NotTimTam",
+  "license": "CC0-1.0",
+  "bugs": {
+    "url": "https://github.com/NotTimTam/ascii.js/issues"
+  },
+  "homepage": "https://github.com/NotTimTam/ascii.js#readme",
+  "devDependencies": {
+    "vite": "^5.4.8"
+  },
+  "dependencies": {
+    "@types/react": "^18.3.11"
+  }
 }
