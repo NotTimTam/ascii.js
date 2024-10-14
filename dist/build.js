@@ -2,7 +2,7 @@ var oe = Object.defineProperty, ae = Object.defineProperties;
 var he = Object.getOwnPropertyDescriptors;
 var q = Object.getOwnPropertySymbols;
 var le = Object.prototype.hasOwnProperty, ce = Object.prototype.propertyIsEnumerable;
-var A = Math.pow, G = (l, e, t) => e in l ? oe(l, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : l[e] = t, x = (l, e) => {
+var j = Math.pow, G = (l, e, t) => e in l ? oe(l, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : l[e] = t, x = (l, e) => {
   for (var t in e || (e = {}))
     le.call(e, t) && G(l, t, e[t]);
   if (q)
@@ -38,7 +38,7 @@ const T = (l) => `[${l.map((e) => {
   __proto__: null,
   displayArray: T,
   isPlainObject: M
-}, Symbol.toStringTag, { value: "Module" })), W = class W {
+}, Symbol.toStringTag, { value: "Module" })), F = class F {
   /**
    * A pixel mesh stores a 2-dimensional array of `Pixels`.
    * @param {Object} config The config for this `PixelMesh` instance.
@@ -132,7 +132,7 @@ const T = (l) => `[${l.map((e) => {
  * @param {string} string The string to convert to a `PixelMesh`.
  * @returns {Pixel} the newly created `PixelMesh` object.
  */
-p(W, "fromString", (e) => new W({
+p(F, "fromString", (e) => new F({
   data: e.split(`
 `).map(
     (t) => t.split("").map(
@@ -140,8 +140,8 @@ p(W, "fromString", (e) => new W({
     )
   )
 }));
-let w = W;
-const F = class F {
+let w = F;
+const W = class W {
   /**
    * Pixel data for a frame coordinate.
    * @param {Object} config The pixel config object.
@@ -197,8 +197,8 @@ const F = class F {
  * @param {string} string The string to convert to a `Pixel`.
  * @returns {Pixel} the newly created `Pixel` object.
  */
-p(F, "fromString", (e) => new F({ value: e }));
-let _ = F;
+p(W, "fromString", (e) => new W({ value: e }));
+let _ = W;
 const S = class S {
   /**
    * A display frame.
@@ -219,7 +219,7 @@ p(S, "fromString", (e) => new S(e.split("").map((t) => new _({ value: t })))), /
  * @param {Array<Array<Pixel>} array The array to convert.
  */
 p(S, "from2DArray", (e) => new S(e.flat()));
-let j = S;
+let B = S;
 const z = (l, e, t, r, i, n, s, h) => l < i + s && l + t > i && e < n + h && e + r > n, L = (l, e, t) => Math.max(e, Math.min(l, t)), X = (l) => l * (180 / Math.PI), R = (l) => l * (Math.PI / 180), de = (l, e) => Math.floor(Math.random() * (e - l + 1)) + l, ue = (l) => {
   if (l === 0 || l === 1) return 1;
   for (let e = l - 1; e >= 1; e--)
@@ -230,8 +230,8 @@ const z = (l, e, t, r, i, n, s, h) => l < i + s && l + t > i && e < n + h && e +
   e * Math.sin(R(l))
 ], me = (l, e) => [
   X(Math.atan2(e, l)),
-  Math.sqrt(A(l, 2) + A(e, 2))
-], pe = (l, e, t, r) => X(Math.atan2(r - e, t - l)), ge = (l, e, t, r) => Math.sqrt(A(t - l, 2) + A(r - e, 2)), Se = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  Math.sqrt(j(l, 2) + j(e, 2))
+], pe = (l, e, t, r) => X(Math.atan2(r - e, t - l)), ge = (l, e, t, r) => Math.sqrt(j(t - l, 2) + j(r - e, 2)), Se = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   aabb: z,
   angleBetweenPoints: pe,
@@ -466,6 +466,249 @@ class _e {
         "Camera y-coordinate value must be of type 'number'."
       );
     this.__rawY = e;
+  }
+}
+class Q {
+  /**
+   * The most core level object.
+   * @param {Scene} scene The scene this Object is a part of.
+   */
+  constructor(e) {
+    if (!crypto || !crypto.randomUUID)
+      throw new Error(
+        'This environment does not support the JavaScript "crypto" library. Only secure contexts (HTTPS) support "crypto.randomUUID".'
+      );
+    if (!(e instanceof H))
+      throw new TypeError(
+        'Invalid object provided to Core class constructor. Expected an instance of "Scene".'
+      );
+    this.scene = e, this.id = crypto.randomUUID();
+  }
+  get runtime() {
+    return this.scene.runtime;
+  }
+}
+class A extends Q {
+  /**
+   * A core object that can have its runtime methods managed by the runtime itself, or another object.
+   *
+   * `GameObject`s can have a `get renderable()` get method that returns a `Pixel` or `PixelMesh` object for rendering purposes.
+   * `GameObject`s do not always need to be rendered, and a `get renderable()` method is not indicative of whether the `GameObject`'s logic will function.
+   * `GameObject`s will not be rendered unless they are added to a layer.
+   *
+   * @param {Scene} scene The scene this `GameObject` is a part of.
+   * @param {number} x This `GameObject`'s x-coordinate.
+   * @param {number} y This  `GameObject`'s y-coordinate.
+   *@param {string} layer The label of the layer to start the `GameObject` on.
+   */
+  constructor(e, t = 0, r = 0, i) {
+    if (super(e), typeof t != "number")
+      throw new Error(
+        "GameObject x-coordinate value must be of type 'number'."
+      );
+    if (typeof r != "number")
+      throw new Error(
+        "GameObject y-coordinate value must be of type 'number'."
+      );
+    this.__rawX = t, this.__rawY = r, this.__rawVisible = !0, this.__rawRenderable = new _({ value: "#", color: "magenta" }), this.behaviors = [], i && (this.layer = i);
+  }
+  /**
+   * Get this `GameObject`'s position on the screen, relative to the camera and the layer parallax.
+   * Return format: `[x, y]`
+   */
+  get positionOnScreen() {
+    if (!this.layer) return;
+    const {
+      scene: { camera: e },
+      layer: {
+        parallax: [t, r]
+      }
+    } = this, [i, n] = [
+      Math.round(e.x * t),
+      Math.round(e.y * r)
+    ];
+    return [this.x - i, this.y - n];
+  }
+  /**
+   * Get whether the game object is on-screen.
+   */
+  get isOnScreen() {
+    if (!this.scene || !this.layer) return !1;
+    const {
+      scene: { camera: e },
+      x: t,
+      y: r
+    } = this;
+    if (!this.renderable) return !1;
+    const { width: i, height: n } = this.renderable, [s, h] = this.layer.parallax;
+    return e.isOnScreen(t, r, i, n, s, h);
+  }
+  /**
+   * Get the `GameObject`'s visibility status.
+   * If the `GameObject` is not part of a layer,
+   * or is in a `Layer` whose `visible` parameter is false,
+   * it will also be false.
+   */
+  get visible() {
+    return this.__rawVisible && this.layer && this.layer.visible;
+  }
+  /**
+   * Set the `GameObject`'s visibility status.
+   */
+  set visible(e) {
+    this.__rawVisible = !!e;
+  }
+  /**
+   * Get the game object's adjusted x-coordinate.
+   */
+  get x() {
+    return Math.round(this.__rawX);
+  }
+  /**
+   * Set the game object's x-coordinate.
+   */
+  set x(e) {
+    if (typeof e != "number")
+      throw new Error(
+        "GameObject x-coordinate value must be of type 'number'."
+      );
+    this.__rawX = e;
+  }
+  /**
+   * Get the game object's adjusted y-coordinate.
+   */
+  get y() {
+    return Math.round(this.__rawY);
+  }
+  /**
+   * Set the game object's y-coordinate.
+   */
+  set y(e) {
+    if (typeof e != "number")
+      throw new Error(
+        "GameObject y-coordinate value must be of type 'number'."
+      );
+    this.__rawY = e;
+  }
+  /**
+   * Get the width of this `GameObject`'s renderable.
+   */
+  get width() {
+    return this.renderable ? this.renderable instanceof w ? this.renderable.width : 1 : 0;
+  }
+  /**
+   * Get the height of this `GameObject`'s renderable.
+   */
+  get height() {
+    return this.renderable ? this.renderable instanceof w ? this.renderable.height : 1 : 0;
+  }
+  /**
+   * Get the origin of this `GameObject`'s renderable.
+   */
+  get origin() {
+    return this.renderable && this.renderable.origin || [0, 0];
+  }
+  /**
+   * Get the `GameObject`'s current layer.
+   */
+  get layer() {
+    return this.scene.layerManager.layers.find(
+      ({ gameObjects: e }) => e.includes(this)
+    );
+  }
+  /**
+   * Get the label of the `GameObject`'s current layer.
+   */
+  get layerLabel() {
+    return this.layer && this.layer.label;
+  }
+  /**
+   * Change the `GameObject`'s layer. Set to a falsey value to remove from any active layers.
+   * @param {string} layer The name of the layer to move to.
+   */
+  set layer(e) {
+    if (this.layer && (this.layer.gameObjects = this.layer.gameObjects.filter(
+      (t) => t !== this
+    )), e) {
+      if (typeof e != "string")
+        throw new Error("Provided layer label is not a string.");
+      const {
+        scene: {
+          layerManager: { layers: t }
+        }
+      } = this, r = t.find((i) => i.label === e);
+      if (!r)
+        throw new Error(`No layer exists with label "${e}"`);
+      r.gameObjects.push(this);
+    }
+  }
+  /**
+   * The object's renderable element.
+   */
+  get renderable() {
+    return this.__rawRenderable;
+  }
+  /**
+   * Set this `GameObject`'s renderable.
+   */
+  set renderable(e) {
+    if (e && !(e instanceof _) && !(e instanceof w))
+      throw new TypeError(
+        "A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
+      );
+    this.__rawRenderable = e;
+  }
+  /**
+   * Restore the initial getter/setter functionality for this `GameObject` instance's `renderable` property.
+   */
+  __resetRenderable() {
+    Object.defineProperty(this, "renderable", {
+      get() {
+        return this.__rawRenderable;
+      },
+      set(e) {
+        if (e && !(e instanceof _) && !(e instanceof w))
+          throw new TypeError(
+            "A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
+          );
+        this.__rawRenderable = e;
+      },
+      configurable: !0,
+      enumerable: !0
+    });
+  }
+  /**
+   * Whether the object is on a paused layer or the runtime is paused.
+   *
+   * This should be checked when input and logic functions are called, to ensure they do not run when the `GameObject` is paused.
+   *
+   * This **does not** need to be checked in the `GameObject`s `onTick()` method, as the `onTick()` method is not called by its parent layer when that layer is paused.
+   */
+  get paused() {
+    const { runtime: e, layer: t } = this;
+    return !!(t && t.paused || e.paused);
+  }
+  /**
+   * Run the events of each object behavior.
+   *
+   * Runs before this `GameObject`'s `onTick` method.
+   */
+  __behave() {
+    if (!this.paused)
+      for (const e of this.behaviors)
+        e.enabled && e.onTick && e.onTick();
+  }
+  /**
+   * Delete this `GameObject`.
+   *
+   * **NOTE:** JavaScript has an automatic garbage collector, which means as long as an object is not referenced anywhere, it will be removed from memory.
+   * This method will remove references to the object from engine-created runtime objects. Custom objects or variables that reference this object must stop referencing it before it is fully removed from memory.
+   *
+   *
+   * At minimum, this functions behaviors and tick methods will stop when `GameObject.delete()` is executed. Unless they are called from somewhere other than its parent `Layer`.
+   */
+  delete() {
+    this.layer && (this.layer = void 0), delete this;
   }
 }
 const b = class b {
@@ -708,7 +951,7 @@ p(b, "gamepadButtonIntervals", 100), p(b, "deadzoneThreshold", 0.1), p(b, "xbBut
   "left",
   "right"
 ]), p(b, "standardAxesMap", ["lh", "lv", "rh", "rv"]);
-let P = b;
+let I = b;
 class ye {
   /**
    * Handles user input.
@@ -728,7 +971,7 @@ class ye {
       keyCodes: {},
       keyCode: void 0,
       key: void 0
-    }, this.mouse = { buttons: {}, onLayer: {} }, this.__eventListeners = {
+    }, this.mouse = { buttons: {}, onLayer: {} }, this.__rawFocusables = [], this.__focusIndex = -1, this.__eventListeners = {
       gamepadbuttonpressed: [],
       gamepadbuttondown: [],
       gamepadbuttonup: [],
@@ -746,6 +989,42 @@ class ye {
     }, this.__gameObjectClicks = [], this.__onCreated(), this.__windowBlurHandler = this.__windowBlurHandler.bind(this);
   }
   /**
+   * Get the current focused item.
+   */
+  get focusTarget() {
+    return this.focusables[this.__focusIndex];
+  }
+  /**
+   * Get all focusable items.
+   */
+  get focusables() {
+    return this.__rawFocusables;
+  }
+  /**
+   * Set focusable items.
+   */
+  set focusables(e) {
+    if (!(e instanceof Array))
+      throw new TypeError(
+        "InputManager focusables property must be an array of GameObjects."
+      );
+    for (const t of e)
+      if (!t instanceof A)
+        throw new TypeError(
+          'InputManager focusables must be of type "GameObject".'
+        );
+    this.__rawFocusables = e;
+  }
+  /**
+   * Add a `GameObject` to the list of focusable objects.
+   * @param {GameObject} gameObject The `GameObject` instance to add.
+   */
+  addFocusable(e) {
+    if (this.focusables.includes(e))
+      throw new Error("This object is already in the focusable list.");
+    this.focusables.push(e);
+  }
+  /**
    * Get the raw `navigator.getGamepads()` data.
    */
   get rawGamepads() {
@@ -758,7 +1037,7 @@ class ye {
     return this.rawGamepads.map((e) => {
       if (!e) return null;
       const { index: t } = e;
-      return new P(this, t);
+      return new I(this, t);
     });
   }
   /**
@@ -1126,7 +1405,7 @@ class ye {
       }
     if (this.__eventListeners.gamepadbuttonpressed.length > 0 || this.__eventListeners.gamepadbuttondown.length > 0 || this.__eventListeners.gamepadbuttonup.length > 0) {
       this.__gamepadButtonHistory || (this.__gamepadButtonHistory = {});
-      const r = performance.now() - (this.__lastGamepadButtonEvent || 0) > P.gamepadButtonIntervals;
+      const r = performance.now() - (this.__lastGamepadButtonEvent || 0) > I.gamepadButtonIntervals;
       for (const i of e) {
         const { buttons: n, index: s } = i;
         for (const [h, { pressed: c }] of Object.entries(n)) {
@@ -1155,249 +1434,6 @@ class ye {
       }
       r && (this.__lastGamepadButtonEvent = performance.now());
     }
-  }
-}
-class Q {
-  /**
-   * The most core level object.
-   * @param {Scene} scene The scene this Object is a part of.
-   */
-  constructor(e) {
-    if (!crypto || !crypto.randomUUID)
-      throw new Error(
-        'This environment does not support the JavaScript "crypto" library. Only secure contexts (HTTPS) support "crypto.randomUUID".'
-      );
-    if (!(e instanceof H))
-      throw new TypeError(
-        'Invalid object provided to Core class constructor. Expected an instance of "Scene".'
-      );
-    this.scene = e, this.id = crypto.randomUUID();
-  }
-  get runtime() {
-    return this.scene.runtime;
-  }
-}
-class B extends Q {
-  /**
-   * A core object that can have its runtime methods managed by the runtime itself, or another object.
-   *
-   * `GameObject`s can have a `get renderable()` get method that returns a `Pixel` or `PixelMesh` object for rendering purposes.
-   * `GameObject`s do not always need to be rendered, and a `get renderable()` method is not indicative of whether the `GameObject`'s logic will function.
-   * `GameObject`s will not be rendered unless they are added to a layer.
-   *
-   * @param {Scene} scene The scene this `GameObject` is a part of.
-   * @param {number} x This `GameObject`'s x-coordinate.
-   * @param {number} y This  `GameObject`'s y-coordinate.
-   *@param {string} layer The label of the layer to start the `GameObject` on.
-   */
-  constructor(e, t = 0, r = 0, i) {
-    if (super(e), typeof t != "number")
-      throw new Error(
-        "GameObject x-coordinate value must be of type 'number'."
-      );
-    if (typeof r != "number")
-      throw new Error(
-        "GameObject y-coordinate value must be of type 'number'."
-      );
-    this.__rawX = t, this.__rawY = r, this.__rawVisible = !0, this.__rawRenderable = new _({ value: "#", color: "magenta" }), this.behaviors = [], i && (this.layer = i);
-  }
-  /**
-   * Get this `GameObject`'s position on the screen, relative to the camera and the layer parallax.
-   * Return format: `[x, y]`
-   */
-  get positionOnScreen() {
-    if (!this.layer) return;
-    const {
-      scene: { camera: e },
-      layer: {
-        parallax: [t, r]
-      }
-    } = this, [i, n] = [
-      Math.round(e.x * t),
-      Math.round(e.y * r)
-    ];
-    return [this.x - i, this.y - n];
-  }
-  /**
-   * Get whether the game object is on-screen.
-   */
-  get isOnScreen() {
-    if (!this.scene || !this.layer) return !1;
-    const {
-      scene: { camera: e },
-      x: t,
-      y: r
-    } = this;
-    if (!this.renderable) return !1;
-    const { width: i, height: n } = this.renderable, [s, h] = this.layer.parallax;
-    return e.isOnScreen(t, r, i, n, s, h);
-  }
-  /**
-   * Get the `GameObject`'s visibility status.
-   * If the `GameObject` is not part of a layer,
-   * or is in a `Layer` whose `visible` parameter is false,
-   * it will also be false.
-   */
-  get visible() {
-    return this.__rawVisible && this.layer && this.layer.visible;
-  }
-  /**
-   * Set the `GameObject`'s visibility status.
-   */
-  set visible(e) {
-    this.__rawVisible = !!e;
-  }
-  /**
-   * Get the game object's adjusted x-coordinate.
-   */
-  get x() {
-    return Math.round(this.__rawX);
-  }
-  /**
-   * Set the game object's x-coordinate.
-   */
-  set x(e) {
-    if (typeof e != "number")
-      throw new Error(
-        "GameObject x-coordinate value must be of type 'number'."
-      );
-    this.__rawX = e;
-  }
-  /**
-   * Get the game object's adjusted y-coordinate.
-   */
-  get y() {
-    return Math.round(this.__rawY);
-  }
-  /**
-   * Set the game object's y-coordinate.
-   */
-  set y(e) {
-    if (typeof e != "number")
-      throw new Error(
-        "GameObject y-coordinate value must be of type 'number'."
-      );
-    this.__rawY = e;
-  }
-  /**
-   * Get the width of this `GameObject`'s renderable.
-   */
-  get width() {
-    return this.renderable ? this.renderable instanceof w ? this.renderable.width : 1 : 0;
-  }
-  /**
-   * Get the height of this `GameObject`'s renderable.
-   */
-  get height() {
-    return this.renderable ? this.renderable instanceof w ? this.renderable.height : 1 : 0;
-  }
-  /**
-   * Get the origin of this `GameObject`'s renderable.
-   */
-  get origin() {
-    return this.renderable && this.renderable.origin || [0, 0];
-  }
-  /**
-   * Get the `GameObject`'s current layer.
-   */
-  get layer() {
-    return this.scene.layerManager.layers.find(
-      ({ gameObjects: e }) => e.includes(this)
-    );
-  }
-  /**
-   * Get the label of the `GameObject`'s current layer.
-   */
-  get layerLabel() {
-    return this.layer && this.layer.label;
-  }
-  /**
-   * Change the `GameObject`'s layer. Set to a falsey value to remove from any active layers.
-   * @param {string} layer The name of the layer to move to.
-   */
-  set layer(e) {
-    if (this.layer && (this.layer.gameObjects = this.layer.gameObjects.filter(
-      (t) => t !== this
-    )), e) {
-      if (typeof e != "string")
-        throw new Error("Provided layer label is not a string.");
-      const {
-        scene: {
-          layerManager: { layers: t }
-        }
-      } = this, r = t.find((i) => i.label === e);
-      if (!r)
-        throw new Error(`No layer exists with label "${e}"`);
-      r.gameObjects.push(this);
-    }
-  }
-  /**
-   * The object's renderable element.
-   */
-  get renderable() {
-    return this.__rawRenderable;
-  }
-  /**
-   * Set this `GameObject`'s renderable.
-   */
-  set renderable(e) {
-    if (e && !(e instanceof _) && !(e instanceof w))
-      throw new TypeError(
-        "A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
-      );
-    this.__rawRenderable = e;
-  }
-  /**
-   * Restore the initial getter/setter functionality for this `GameObject` instance's `renderable` property.
-   */
-  __resetRenderable() {
-    Object.defineProperty(this, "renderable", {
-      get() {
-        return this.__rawRenderable;
-      },
-      set(e) {
-        if (e && !(e instanceof _) && !(e instanceof w))
-          throw new TypeError(
-            "A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
-          );
-        this.__rawRenderable = e;
-      },
-      configurable: !0,
-      enumerable: !0
-    });
-  }
-  /**
-   * Whether the object is on a paused layer or the runtime is paused.
-   *
-   * This should be checked when input and logic functions are called, to ensure they do not run when the `GameObject` is paused.
-   *
-   * This **does not** need to be checked in the `GameObject`s `onTick()` method, as the `onTick()` method is not called by its parent layer when that layer is paused.
-   */
-  get paused() {
-    const { runtime: e, layer: t } = this;
-    return !!(t && t.paused || e.paused);
-  }
-  /**
-   * Run the events of each object behavior.
-   *
-   * Runs before this `GameObject`'s `onTick` method.
-   */
-  __behave() {
-    if (!this.paused)
-      for (const e of this.behaviors)
-        e.enabled && e.onTick && e.onTick();
-  }
-  /**
-   * Delete this `GameObject`.
-   *
-   * **NOTE:** JavaScript has an automatic garbage collector, which means as long as an object is not referenced anywhere, it will be removed from memory.
-   * This method will remove references to the object from engine-created runtime objects. Custom objects or variables that reference this object must stop referencing it before it is fully removed from memory.
-   *
-   *
-   * At minimum, this functions behaviors and tick methods will stop when `GameObject.delete()` is executed. Unless they are called from somewhere other than its parent `Layer`.
-   */
-  delete() {
-    this.layer && (this.layer = void 0), delete this;
   }
 }
 class Z {
@@ -1432,13 +1468,13 @@ class Z {
       const r = t(
         this.layerManager.scene
       );
-      if (!(r instanceof B))
+      if (!(r instanceof A))
         throw new TypeError(
           'Each gameObjectConstructor function must return an object of type "GameObject".'
         );
       return r;
     }).filter(
-      (t) => t && t instanceof B
+      (t) => t && t instanceof A
     );
     for (const t of this.gameObjects)
       t.layer = this.label;
@@ -1510,7 +1546,7 @@ class Z {
       } else
         continue;
     }
-    return new j(c);
+    return new B(c);
   }
   __onTick() {
     const {
@@ -2117,7 +2153,7 @@ class Y {
     if (!this.drawing) {
       this.hasDrawn || (this.hasDrawn = !0), this.drawing = !0, this.useWebWorkers ? this.buffer = [] : this.clearDisplay();
       for (const t of e) {
-        if (!(t instanceof j))
+        if (!(t instanceof B))
           throw new Error(
             "Provided frame object is not an instance of the Frame constructor."
           );
@@ -2174,7 +2210,7 @@ class Y {
         n && (t[s] = n);
       });
     }
-    return new j(t);
+    return new B(t);
   }
   /**
    * Code that runs when the render is created.
@@ -2205,7 +2241,7 @@ const $ = {
     ["╚", "═", "╝"]
   ]
 };
-class K extends B {
+class K extends A {
   /**
    * A box that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -2427,7 +2463,7 @@ class Me extends D {
   }
   __positionByMouse(e) {
     let [t] = e.onLayer[this.menu.layerLabel];
-    t -= I.borderWidth + I.horizontalSpacing, this.label && (t -= this.label.length + 0.5);
+    t -= P.borderWidth + P.horizontalSpacing, this.label && (t -= this.label.length + 0.5);
     const r = this.snapToStep(
       L(t / this.sliderWidth * this.max, this.min, this.max)
     );
@@ -2552,7 +2588,7 @@ class Ce extends D {
     return e === t ? s.setColor("white") : s.setColor("grey"), s;
   }
 }
-const y = class y extends B {
+const y = class y extends A {
   /**
    * A menu of various items that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -2747,7 +2783,10 @@ const y = class y extends B {
   }
   __determineMouseOverInput(e) {
     if (this.__inputMode !== "mouse") return;
-    const { onLayer: t } = e, [r, i] = t[this.layer.label], [n, s] = [r - this.x, i - this.y], h = this.items.indexOf(this.itemAtCoordinate(s));
+    const { onLayer: t } = e, [r, i] = t[this.layer.label], [n, s] = [
+      r - this.x,
+      i - this.y + (this.title || this.border ? 0 : 1)
+    ], h = this.items.indexOf(this.itemAtCoordinate(s));
     h >= 0 && h < this.items.length && n >= 0 && n <= this.width && this.focused ? this.index = h : this.__rawIndex = -1;
   }
   /**
@@ -2838,8 +2877,8 @@ const y = class y extends B {
   }
 };
 p(y, "Item", D), p(y, "Button", ke), p(y, "Slider", Me), p(y, "Toggle", Ce), p(y, "horizontalSpacing", 1), p(y, "borderWidth", 1);
-let I = y;
-class U extends B {
+let P = y;
+class U extends A {
   /**
    * A string of text that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -3063,7 +3102,7 @@ class Te extends U {
     ), e.inputManager.addEventListener(
       "keydown",
       this.__onKeyDown.bind(this)
-    );
+    ), e.inputManager.addFocusable(this);
   }
   get focused() {
     return this.__rawFocused;
@@ -3491,10 +3530,10 @@ export {
   N as Behavior,
   K as Box,
   Q as Core,
-  j as Frame,
-  B as GameObject,
+  B as Frame,
+  A as GameObject,
   Z as Layer,
-  I as Menu,
+  P as Menu,
   _ as Pixel,
   w as PixelMesh,
   H as Scene,
