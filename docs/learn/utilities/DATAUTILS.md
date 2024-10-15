@@ -27,3 +27,17 @@ Check if a value is a plain JavaScript object. (A non-array, key-value structure
 ### Returns
 
 Returns a boolean indicating whether or not the value is a plain object.
+
+## `dataUtils.wrapString()`
+
+Wrap text if it goes over a certain width, using `"\n"` characters.
+
+### Arguments
+
+-   `string` &mdash; `string` The string to wrap.
+-   `maxWidth` &mdash; `number` The maximum width for the string.
+-   `breakWord` &mdash; `boolean` Whether to break words that exceed the maxWidth.
+
+### Returns
+
+The newly wrapped string.
