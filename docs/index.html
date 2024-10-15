@@ -291,7 +291,11 @@
 									border: none;
 									`;
 
-									iframe.src = path;
+									iframe.src =
+										window.location.host ===
+										"nottimtam.github.io"
+											? `https://github.com/NotTimTam/ascii.js/tree/main${path}`
+											: path;
 
 									iframeContainer.appendChild(iframe);
 
