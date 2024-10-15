@@ -14,12 +14,25 @@
         Menu,
       } from "https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/build.js";
 
+      const tree = [
+        { path: "/examples", label: "examples", type: "dir" },
+        { path: "/getting-started", label: "getting-started", type: "dir" },
+        { path: "/learn", label: "learn", type: "dir" },
+        { path: "/INDEX.md", label: "INDEX", type: "file" },
+      ];
+
       const runtime = new Runtime({
         renderer: {
-          resolution: [32, 64],
+          resolution: [64, 32],
           canvas: "canvas#canvas",
+          fontSize: "32px",
+          forceParentStyles: true,
+          scaling: "letterbox",
+          useWebWorkers: true,
+          renderMode: "merged",
         },
       });
+      self.runtime = runtime;
 
       const scene = new Scene(runtime, {
         label: "Documentation",
@@ -28,11 +41,33 @@
       const menu = new Menu(scene, {
         x: 0,
         y: 0,
-        options: [],
-        title: []
+        maintainFocus: true,
+        deleteOnBlur: false,
+        alignCenter: false,
+        gamepad: -1,
+        border: false,
+        layer: "system",
       });
 
+      const updateMenuItems = (items) => {
+        menu.items = items.map(
+          ({ path, label, type }) =>
+            new Menu.Button({
+              label: label,
+              callback: () => {
+                console.log(`${label} clicked.`);
+              },
+            })
+        );
+
+        console.log(menu.items);
+      };
+
+      updateMenuItems([...tree]);
+
       runtime.start();
+
+      runtime.loadScene(scene);
     </script>
   </body>
 </html>
