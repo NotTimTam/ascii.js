@@ -1,43 +1,61 @@
-var ae = Object.defineProperty, oe = Object.defineProperties;
-var he = Object.getOwnPropertyDescriptors;
+var ae = Object.defineProperty, he = Object.defineProperties;
+var le = Object.getOwnPropertyDescriptors;
 var q = Object.getOwnPropertySymbols;
-var le = Object.prototype.hasOwnProperty, ce = Object.prototype.propertyIsEnumerable;
-var j = Math.pow, G = (l, e, t) => e in l ? ae(l, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : l[e] = t, x = (l, e) => {
+var ce = Object.prototype.hasOwnProperty, de = Object.prototype.propertyIsEnumerable;
+var j = Math.pow, G = (c, e, t) => e in c ? ae(c, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : c[e] = t, x = (c, e) => {
   for (var t in e || (e = {}))
-    le.call(e, t) && G(l, t, e[t]);
+    ce.call(e, t) && G(c, t, e[t]);
   if (q)
     for (var t of q(e))
-      ce.call(e, t) && G(l, t, e[t]);
-  return l;
-}, C = (l, e) => oe(l, he(e));
-var m = (l, e, t) => G(l, typeof e != "symbol" ? e + "" : e, t);
-var J = (l, e, t) => new Promise((r, i) => {
-  var n = (c) => {
+      de.call(e, t) && G(c, t, e[t]);
+  return c;
+}, C = (c, e) => he(c, le(e));
+var m = (c, e, t) => G(c, typeof e != "symbol" ? e + "" : e, t);
+var J = (c, e, t) => new Promise((r, i) => {
+  var n = (h) => {
     try {
-      h(t.next(c));
-    } catch (o) {
-      i(o);
+      o(t.next(h));
+    } catch (l) {
+      i(l);
     }
-  }, s = (c) => {
+  }, s = (h) => {
     try {
-      h(t.throw(c));
-    } catch (o) {
-      i(o);
+      o(t.throw(h));
+    } catch (l) {
+      i(l);
     }
-  }, h = (c) => c.done ? r(c.value) : Promise.resolve(c.value).then(n, s);
-  h((t = t.apply(l, e)).next());
+  }, o = (h) => h.done ? r(h.value) : Promise.resolve(h.value).then(n, s);
+  o((t = t.apply(c, e)).next());
 });
-const T = (l) => `[${l.map((e) => {
+const S = (c) => `[${c.map((e) => {
   switch (typeof e) {
     case "string":
       return `"${e}"`;
     default:
       return e;
   }
-}).join(", ")}]`, M = (l) => l && typeof l == "object" && !(l instanceof Array), Le = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+}).join(", ")}]`, M = (c) => c && typeof c == "object" && !(c instanceof Array), Q = (c, e, t = !1) => {
+  const r = c.split(" ");
+  let i = [], n = "";
+  for (const s of r)
+    if ((n + s).length > e)
+      if (t && s.length > e) {
+        let o = Math.ceil(s.length / e);
+        for (let h = 0; h < o; h++) {
+          const l = s.slice(h * e, (h + 1) * e);
+          n.trim() && i.push(n.trim()), n = l + " ";
+        }
+      } else
+        n && i.push(n.trim()), n = s + " ";
+    else
+      n += s + " ";
+  return n && i.push(n.trim()), i.join(`
+`);
+}, Te = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  displayArray: T,
-  isPlainObject: M
+  displayArray: S,
+  isPlainObject: M,
+  wrapString: Q
 }, Symbol.toStringTag, { value: "Module" })), F = class F {
   /**
    * A pixel mesh stores a 2-dimensional array of `Pixels`.
@@ -136,11 +154,11 @@ m(F, "fromString", (e) => new F({
   data: e.split(`
 `).map(
     (t) => t.split("").map(
-      (r) => r && r.trim() !== "" && _.fromString(r) || null
+      (r) => r && r.trim() !== "" && y.fromString(r) || null
     )
   )
 }));
-let w = F;
+let g = F;
 const W = class W {
   /**
    * Pixel data for a frame coordinate.
@@ -163,17 +181,17 @@ const W = class W {
       fontWeight: i = "normal",
       backgroundColor: n,
       solid: s = !1,
-      origin: h
+      origin: o
     } = e;
     if (typeof t != "string" || t.length !== 1)
       throw new Error(
         "The value of this pixel can only be a 1-character long string."
       );
-    if (h && !(h instanceof Array))
+    if (o && !(o instanceof Array))
       throw new Error(
         'Invalid origin provided to "Pixel". Expected: [<xOffset>, <yOffset>]'
       );
-    this.value = t, this.color = r, this.fontWeight = i, this.backgroundColor = n, this.solid = s, this.origin = h;
+    this.value = t, this.color = r, this.fontWeight = i, this.backgroundColor = n, this.solid = s, this.origin = o;
   }
   get origin() {
     return this.__rawOrigin;
@@ -198,8 +216,8 @@ const W = class W {
  * @returns {Pixel} the newly created `Pixel` object.
  */
 m(W, "fromString", (e) => new W({ value: e }));
-let _ = W;
-const S = class S {
+let y = W;
+const T = class T {
   /**
    * A display frame.
    * @param {Array<Pixel>} data The frame's 1-dimensional (left-to-right, top-to-bottom) data array.
@@ -214,37 +232,37 @@ const S = class S {
  * @param {string} string The string to convert.
  * @returns {Frame} the generated Frame.
  */
-m(S, "fromString", (e) => new S(e.split("").map((t) => new _({ value: t })))), /**
+m(T, "fromString", (e) => new T(e.split("").map((t) => new y({ value: t })))), /**
  * Convert a 2D array of `Pixel`s to a Frame.
  * @param {Array<Array<Pixel>} array The array to convert.
  */
-m(S, "from2DArray", (e) => new S(e.flat()));
-let B = S;
-const z = (l, e, t, r, i, n, s, h) => l < i + s && l + t > i && e < n + h && e + r > n, L = (l, e, t) => Math.max(e, Math.min(l, t)), X = (l) => l * (180 / Math.PI), R = (l) => l * (Math.PI / 180), de = (l, e) => Math.floor(Math.random() * (e - l + 1)) + l, ue = (l) => {
-  if (l === 0 || l === 1) return 1;
-  for (let e = l - 1; e >= 1; e--)
-    l *= e;
-  return l;
-}, fe = (l, e) => [
-  e * Math.cos(R(l)),
-  e * Math.sin(R(l))
-], me = (l, e) => [
-  X(Math.atan2(e, l)),
-  Math.sqrt(j(l, 2) + j(e, 2))
-], pe = (l, e, t, r) => X(Math.atan2(r - e, t - l)), ge = (l, e, t, r) => Math.sqrt(j(t - l, 2) + j(r - e, 2)), Se = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+m(T, "from2DArray", (e) => new T(e.flat()));
+let B = T;
+const z = (c, e, t, r, i, n, s, o) => c < i + s && c + t > i && e < n + o && e + r > n, L = (c, e, t) => Math.max(e, Math.min(c, t)), X = (c) => c * (180 / Math.PI), R = (c) => c * (Math.PI / 180), ue = (c, e) => Math.floor(Math.random() * (e - c + 1)) + c, fe = (c) => {
+  if (c === 0 || c === 1) return 1;
+  for (let e = c - 1; e >= 1; e--)
+    c *= e;
+  return c;
+}, me = (c, e) => [
+  e * Math.cos(R(c)),
+  e * Math.sin(R(c))
+], pe = (c, e) => [
+  X(Math.atan2(e, c)),
+  Math.sqrt(j(c, 2) + j(e, 2))
+], ge = (c, e, t, r) => X(Math.atan2(r - e, t - c)), be = (c, e, t, r) => Math.sqrt(j(t - c, 2) + j(r - e, 2)), Se = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
   aabb: z,
-  angleBetweenPoints: pe,
-  cartesianToVector: me,
+  angleBetweenPoints: ge,
+  cartesianToVector: pe,
   clamp: L,
   degreeToRadian: R,
-  distanceBetweenPoints: ge,
-  fact: ue,
+  distanceBetweenPoints: be,
+  fact: fe,
   radianToDegree: X,
-  range: de,
-  vectorToCartesian: fe
+  range: ue,
+  vectorToCartesian: me
 }, Symbol.toStringTag, { value: "Module" }));
-class be {
+class we {
   /**
    * Manages loading and playback of an audio file.
    * @param {AudioManager} audioManager The audio manager that will parent this Sound.
@@ -354,7 +372,7 @@ class be {
     this.element.paused || this.element.pause();
   }
 }
-class we {
+class _e {
   /**
    * Controls audio playback.
    * @param {Runtime} runtime The game's runtime object.
@@ -375,7 +393,7 @@ class we {
    * @param {function} onReady An optional method to call when the audio file is ready to play. Passed the sound object.
    */
   preload(e, t, r) {
-    new be(this, e, t, r);
+    new we(this, e, t, r);
   }
   /**
    * Unload a preloaded audio file.
@@ -408,7 +426,7 @@ class we {
     });
   }
 }
-class _e {
+class ye {
   /**
    * The scene contains variable layers and compiles them into one frame to render to the screen.
    * @param {Scene} scene The `Scene` this `Camera` is a part of.
@@ -468,7 +486,7 @@ class _e {
     this.__rawY = e;
   }
 }
-class Q {
+class ee {
   /**
    * The most core level object.
    * @param {Scene} scene The scene this Object is a part of.
@@ -488,7 +506,7 @@ class Q {
     return this.scene.runtime;
   }
 }
-class A extends Q {
+class A extends ee {
   /**
    * A core object that can have its runtime methods managed by the runtime itself, or another object.
    *
@@ -510,7 +528,7 @@ class A extends Q {
       throw new Error(
         "GameObject y-coordinate value must be of type 'number'."
       );
-    this.__rawX = t, this.__rawY = r, this.__rawVisible = !0, this.__rawRenderable = new _({ value: "#", color: "magenta" }), this.behaviors = [], i && (this.layer = i);
+    this.__rawX = t, this.__rawY = r, this.__rawVisible = !0, this.__rawRenderable = new y({ value: "#", color: "magenta" }), this.behaviors = [], i && (this.layer = i);
   }
   /**
    * Get this `GameObject`'s position on the screen, relative to the camera and the layer parallax.
@@ -540,8 +558,8 @@ class A extends Q {
       y: r
     } = this;
     if (!this.renderable) return !1;
-    const { width: i, height: n } = this.renderable, [s, h] = this.layer.parallax;
-    return e.isOnScreen(t, r, i, n, s, h);
+    const { width: i, height: n } = this.renderable, [s, o] = this.layer.parallax;
+    return e.isOnScreen(t, r, i, n, s, o);
   }
   /**
    * Get the `GameObject`'s visibility status.
@@ -594,13 +612,13 @@ class A extends Q {
    * Get the width of this `GameObject`'s renderable.
    */
   get width() {
-    return this.renderable ? this.renderable instanceof w ? this.renderable.width : 1 : 0;
+    return this.renderable ? this.renderable instanceof g ? this.renderable.width : 1 : 0;
   }
   /**
    * Get the height of this `GameObject`'s renderable.
    */
   get height() {
-    return this.renderable ? this.renderable instanceof w ? this.renderable.height : 1 : 0;
+    return this.renderable ? this.renderable instanceof g ? this.renderable.height : 1 : 0;
   }
   /**
    * Get the origin of this `GameObject`'s renderable.
@@ -652,7 +670,7 @@ class A extends Q {
    * Set this `GameObject`'s renderable.
    */
   set renderable(e) {
-    if (e && !(e instanceof _) && !(e instanceof w))
+    if (e && !(e instanceof y) && !(e instanceof g))
       throw new TypeError(
         "A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
       );
@@ -667,7 +685,7 @@ class A extends Q {
         return this.__rawRenderable;
       },
       set(e) {
-        if (e && !(e instanceof _) && !(e instanceof w))
+        if (e && !(e instanceof y) && !(e instanceof g))
           throw new TypeError(
             "A GameObject's renderable property must be an instance of Pixel, an instance of PixelMesh, or falsey."
           );
@@ -711,14 +729,14 @@ class A extends Q {
     this.layer && (this.layer = void 0), delete this;
   }
 }
-const b = class b {
+const p = class p {
   /**
    * Apply a deadzone value to a set of axes inputs.
    * @param {Object<number>} values The axis input values. In a key-value object.
    * @param {number} threshold The deadzone threshold value. (default `0.1`)
    * @returns
    */
-  static applyDeadzone(e, t = b.deadzoneThreshold) {
+  static applyDeadzone(e, t = p.deadzoneThreshold) {
     for (const [r, i] of Object.entries(e))
       Math.abs(i) < t && (e[r] = 0), e[r] = (i - Math.sign(i) * t) / (1 - t);
     return e;
@@ -749,21 +767,21 @@ const b = class b {
       raw: { axes: e, buttons: t, mapping: r }
     } = this;
     return r === "standard" ? {
-      axes: b.applyDeadzone(
+      axes: p.applyDeadzone(
         Object.fromEntries(
           e.filter(
-            (i, n) => b.standardAxesMap[n]
+            (i, n) => p.standardAxesMap[n]
           ).map((i, n) => [
-            b.standardAxesMap[n],
+            p.standardAxesMap[n],
             i
           ])
         )
       ),
       buttons: Object.fromEntries(
         t.filter(
-          (i, n) => b.standardButtonMap[n]
+          (i, n) => p.standardButtonMap[n]
         ).map((i, n) => [
-          b.standardButtonMap[n],
+          p.standardButtonMap[n],
           i
         ])
       )
@@ -780,17 +798,17 @@ const b = class b {
     return {
       axes: Object.fromEntries(
         e.filter(
-          (r, i) => b.standardAxesMap[i]
+          (r, i) => p.standardAxesMap[i]
         ).map((r, i) => [
-          b.standardAxesMap[i],
+          p.standardAxesMap[i],
           r
         ])
       ),
       buttons: Object.fromEntries(
         t.filter(
-          (r, i) => b.xbButtonMap[i]
+          (r, i) => p.xbButtonMap[i]
         ).map((r, i) => [
-          b.xbButtonMap[i],
+          p.xbButtonMap[i],
           r
         ])
       )
@@ -807,17 +825,17 @@ const b = class b {
     return {
       axes: Object.fromEntries(
         e.filter(
-          (r, i) => b.standardAxesMap[i]
+          (r, i) => p.standardAxesMap[i]
         ).map((r, i) => [
-          b.standardAxesMap[i],
+          p.standardAxesMap[i],
           r
         ])
       ),
       buttons: Object.fromEntries(
         t.filter(
-          (r, i) => b.psButtonMap[i]
+          (r, i) => p.psButtonMap[i]
         ).map((r, i) => [
-          b.psButtonMap[i],
+          p.psButtonMap[i],
           r
         ])
       )
@@ -834,17 +852,17 @@ const b = class b {
     return {
       axes: Object.fromEntries(
         e.filter(
-          (r, i) => b.standardAxesMap[i]
+          (r, i) => p.standardAxesMap[i]
         ).map((r, i) => [
-          b.standardAxesMap[i],
+          p.standardAxesMap[i],
           r
         ])
       ),
       buttons: Object.fromEntries(
         t.filter(
-          (r, i) => b.nsButtonMap[i]
+          (r, i) => p.nsButtonMap[i]
         ).map((r, i) => [
-          b.nsButtonMap[i],
+          p.nsButtonMap[i],
           r
         ])
       )
@@ -882,7 +900,7 @@ const b = class b {
     return this.raw && this.raw.hand;
   }
 };
-m(b, "gamepadButtonIntervals", 100), m(b, "deadzoneThreshold", 0.1), m(b, "xbButtonMap", [
+m(p, "gamepadButtonIntervals", 100), m(p, "deadzoneThreshold", 0.1), m(p, "xbButtonMap", [
   "a",
   "b",
   "x",
@@ -899,7 +917,7 @@ m(b, "gamepadButtonIntervals", 100), m(b, "deadzoneThreshold", 0.1), m(b, "xbBut
   "down",
   "left",
   "right"
-]), m(b, "psButtonMap", [
+]), m(p, "psButtonMap", [
   "x",
   "o",
   "square",
@@ -916,7 +934,7 @@ m(b, "gamepadButtonIntervals", 100), m(b, "deadzoneThreshold", 0.1), m(b, "xbBut
   "down",
   "left",
   "right"
-]), m(b, "nsButtonMap", [
+]), m(p, "nsButtonMap", [
   "b",
   "a",
   "y",
@@ -933,7 +951,7 @@ m(b, "gamepadButtonIntervals", 100), m(b, "deadzoneThreshold", 0.1), m(b, "xbBut
   "down",
   "left",
   "right"
-]), m(b, "standardButtonMap", [
+]), m(p, "standardButtonMap", [
   "a",
   "b",
   "x",
@@ -950,9 +968,9 @@ m(b, "gamepadButtonIntervals", 100), m(b, "deadzoneThreshold", 0.1), m(b, "xbBut
   "down",
   "left",
   "right"
-]), m(b, "standardAxesMap", ["lh", "lv", "rh", "rv"]);
-let I = b;
-class ye {
+]), m(p, "standardAxesMap", ["lh", "lv", "rh", "rv"]);
+let I = p;
+class ve {
   /**
    * Handles user input.
    * @param {Scene} scene The current scene.
@@ -1159,11 +1177,11 @@ class ye {
   __onMouseMove(e) {
     const { clientX: t, clientY: r, movementX: i, movementY: n } = e, {
       scene: {
-        camera: { x: s, y: h },
-        layerManager: { layers: c },
+        camera: { x: s, y: o },
+        layerManager: { layers: h },
         runtime: {
           renderer: {
-            width: o,
+            width: l,
             height: a,
             element: d
           }
@@ -1172,29 +1190,29 @@ class ye {
     } = this, {
       x: u,
       y: f,
-      width: p,
-      height: g
-    } = d.getBoundingClientRect(), [E, k] = [t - u, r - f], [O, v] = [E / p, k / g];
+      width: _,
+      height: b
+    } = d.getBoundingClientRect(), [E, k] = [t - u, r - f], [O, v] = [E / _, k / b];
     if (this.hasPointerLock)
       this.mouse.velocity = [i, n];
     else {
       this.mouse.velocity = [i, n], this.mouse.rawX = t, this.mouse.rawY = r, this.mouse.canvasX = E, this.mouse.canvasY = k, this.mouse.x = L(
-        Math.floor(O * o),
+        Math.floor(O * l),
         0,
-        o
+        l
       ), this.mouse.y = L(
         Math.floor(v * a),
         0,
         a
       ), this.mouse.onLayer = {};
-      for (const re of c) {
+      for (const ie of h) {
         const {
-          label: ie,
-          parallax: [ne, se]
-        } = re;
-        this.mouse.onLayer[ie] = [
-          this.mouse.x + s * ne,
-          this.mouse.y + h * se
+          label: ne,
+          parallax: [se, oe]
+        } = ie;
+        this.mouse.onLayer[ne] = [
+          this.mouse.x + s * se,
+          this.mouse.y + o * oe
         ];
       }
     }
@@ -1306,7 +1324,7 @@ class ye {
   addEventListener(e, t) {
     if (!this.types.includes(e))
       throw new Error(
-        `"${e}" is not a valid event type. Must be one of: ${T(
+        `"${e}" is not a valid event type. Must be one of: ${S(
           this.types
         )}`
       );
@@ -1320,7 +1338,7 @@ class ye {
   removeEventListener(e, t) {
     if (!this.types.includes(e))
       throw new Error(
-        `"${e}" is not a valid event type. Must be one of: ${T(
+        `"${e}" is not a valid event type. Must be one of: ${S(
           this.types
         )}`
       );
@@ -1408,24 +1426,24 @@ class ye {
       const r = performance.now() - (this.__lastGamepadButtonEvent || 0) > I.gamepadButtonIntervals;
       for (const i of e) {
         const { buttons: n, index: s } = i;
-        for (const [h, { pressed: c }] of Object.entries(n)) {
-          const o = this.__gamepadButtonHistory[s] && this.__gamepadButtonHistory[s][h];
+        for (const [o, { pressed: h }] of Object.entries(n)) {
+          const l = this.__gamepadButtonHistory[s] && this.__gamepadButtonHistory[s][o];
           this.__gamepadButtonHistory[s] || (this.__gamepadButtonHistory[s] = {});
           const a = {
             gamepad: i,
             index: s,
-            button: h,
+            button: o,
             buttons: this.__gamepadButtonHistory[s]
           };
-          c ? (this.__gamepadButtonHistory[s][h] = !0, r && (this.__triggerEvents("gamepadbuttondown", C(x({}, a), {
+          h ? (this.__gamepadButtonHistory[s][o] = !0, r && (this.__triggerEvents("gamepadbuttondown", C(x({}, a), {
             type: "gamepadbuttondown"
           })), this.__triggerEvents("all", C(x({}, a), {
             type: "gamepadbuttondown"
-          })))) : (o && (this.__triggerEvents("gamepadbuttonpressed", C(x({}, a), {
+          })))) : (l && (this.__triggerEvents("gamepadbuttonpressed", C(x({}, a), {
             type: "gamepadbuttonpressed"
           })), this.__triggerEvents("all", C(x({}, a), {
             type: "gamepadbuttonpressed"
-          }))), this.__gamepadButtonHistory[s][h] = !1, r && (this.__triggerEvents("gamepadbuttonup", C(x({}, a), {
+          }))), this.__gamepadButtonHistory[s][o] = !1, r && (this.__triggerEvents("gamepadbuttonup", C(x({}, a), {
             type: "gamepadbuttonup"
           })), this.__triggerEvents("all", C(x({}, a), {
             type: "gamepadbuttonup"
@@ -1506,25 +1524,25 @@ class Z {
     } = this, [n, s] = [
       Math.round(e.x * r),
       Math.round(e.y * i)
-    ], h = (o, a, d) => {
-      if (!o || !(o instanceof _) || !e.isOnScreen(a, d, 1, 1, r, i) || (!o.value || o.value.trim() === "") && (!o.backgroundColor || o.backgroundColor === "transparent"))
+    ], o = (l, a, d) => {
+      if (!l || !(l instanceof y) || !e.isOnScreen(a, d, 1, 1, r, i) || (!l.value || l.value.trim() === "") && (!l.backgroundColor || l.backgroundColor === "transparent"))
         return;
-      const [u, f] = [a - n, d - s], p = t.coordinatesToIndex(u, f);
-      c[p] = o;
-    }, c = [];
-    for (const o of this.gameObjects.filter(
+      const [u, f] = [a - n, d - s], _ = t.coordinatesToIndex(u, f);
+      h[_] = l;
+    }, h = [];
+    for (const l of this.gameObjects.filter(
       ({ visible: a }) => a
     )) {
-      const { renderable: a } = o;
-      let { x: d, y: u } = o;
+      const { renderable: a } = l;
+      let { x: d, y: u } = l;
       if (a) {
         if (a.origin) {
-          const [f, p] = a.origin;
-          d -= f, u -= p, d = Math.round(d), u = Math.round(u);
+          const [f, _] = a.origin;
+          d -= f, u -= _, d = Math.round(d), u = Math.round(u);
         }
-        if (a instanceof _)
-          h(a, d, u);
-        else if (a instanceof w) {
+        if (a instanceof y)
+          o(a, d, u);
+        else if (a instanceof g) {
           if (!e.isOnScreen(
             d,
             u,
@@ -1535,18 +1553,18 @@ class Z {
           ))
             continue;
           for (let f = 0; f < a.data.length; f++) {
-            const p = a.data[f];
-            if (!(!p || p.length === 0))
-              for (let g = 0; g < p.length; g++) {
-                const E = p[g];
-                h(E, d + g, u + f);
+            const _ = a.data[f];
+            if (!(!_ || _.length === 0))
+              for (let b = 0; b < _.length; b++) {
+                const E = _[b];
+                o(E, d + b, u + f);
               }
           }
         }
       } else
         continue;
     }
-    return new B(c);
+    return new B(h);
   }
   __onTick() {
     const {
@@ -1561,7 +1579,7 @@ class Z {
         i.__behave(), e.__runOnTick(i);
   }
 }
-class ve {
+class xe {
   /**
    * The layer manager contains variable layers and compiles them into one frame to render to the screen.
    * @param {Scene} scene The current loaded `Scene`.
@@ -1589,17 +1607,17 @@ class ve {
    * @param {string} layer An optional layer to check. If no layer is provided, all layer's are checked.
    */
   getAtPosition(e, t, r) {
-    const i = this.layers.find(({ label: h }) => h === r);
+    const i = this.layers.find(({ label: o }) => o === r);
     if (r && !i)
       throw new Error(`No layer exists with label "${r}".`);
     const n = r ? [i] : this.layers, s = [];
-    for (const h of n) {
-      const { gameObjects: c } = h;
-      for (const o of c) {
-        const { renderable: a, x: d, y: u } = o;
-        if (a instanceof _ && d === e && u === t)
-          s.push({ gameObject: o, pixel: a });
-        else if (a instanceof w && z(
+    for (const o of n) {
+      const { gameObjects: h } = o;
+      for (const l of h) {
+        const { renderable: a, x: d, y: u } = l;
+        if (a instanceof y && d === e && u === t)
+          s.push({ gameObject: l, pixel: a });
+        else if (a instanceof g && z(
           e,
           t,
           1,
@@ -1612,7 +1630,7 @@ class ve {
           const f = a.data[t - u] && a.data[t - u][e - d];
           if (!f) continue;
           s.push({
-            gameObject: o,
+            gameObject: l,
             pixel: f
           });
         }
@@ -1697,13 +1715,13 @@ class H {
    * @param {function} config.onTick A callback (passed this `Scene` as an argument) that runs every frame that this `Scene` is loaded.
    */
   constructor(e, t) {
-    if (this.runtime = e, !e || !(e instanceof xe))
+    if (this.runtime = e, !e || !(e instanceof Ee))
       throw new TypeError(
         "Scene constructor was not provided an instance of Runtime."
       );
     H.validateConfig(t);
     const { label: r, layers: i, onLoad: n, onTick: s } = t;
-    this.label = r, this.camera = new _e(this), this.layerManager = new ve(this, i), this.inputManager = new ye(this), n && (this.onLoadPassthrough = n), s && (this.onTickPassthrough = s), this.__onTick.bind(this), this.__onLoad();
+    this.label = r, this.camera = new ye(this), this.layerManager = new xe(this, i), this.inputManager = new ve(this), n && (this.onLoadPassthrough = n), s && (this.onTickPassthrough = s), this.__onTick.bind(this), this.__onLoad();
   }
   /**
    * Get the number of `GameObject`s in the current scene.
@@ -1781,7 +1799,7 @@ class H {
     this.inputManager.__onTick(), this.layerManager.__onTick(), this.onTickPassthrough && this.onTickPassthrough(this);
   }
 }
-class xe {
+class Ee {
   /**
    * The overall game state and management system.
    * @param {Object} config The game's config object.
@@ -1826,7 +1844,7 @@ class xe {
      * @param  {...any} passthrough The data to pass through to that method.
      */
     m(this, "__runOnLoad", (e, ...t) => e.onLoad && e.onLoad(...t));
-    this.config = e, this.validateConfig(e), this.audioManager = new we(this), this.renderer = new Y(this), this.running = !1, this.initialized = !1, this.paused = !1;
+    this.config = e, this.validateConfig(e), this.audioManager = new _e(this), this.renderer = new Y(this), this.running = !1, this.initialized = !1, this.paused = !1;
   }
   get webGLSupported() {
     try {
@@ -1896,7 +1914,7 @@ class xe {
     this.running = !0, this.initialized || (this.__onStartup(), this.initialized = !0, e && typeof e == "function" && e(this)), requestAnimationFrame((t) => this.__onTick(t));
   }
 }
-const Ee = `
+const ke = `
 self.onmessage = function ({ data: { data: frame, characterSize: [cW, cH], width, height, fontSize, lastFrame } }) {
 	const canvas = new OffscreenCanvas(cW * width, cH * height);
 	const ctx = canvas.getContext('2d');
@@ -2007,7 +2025,7 @@ class Y {
       const t = ["off", "letterbox"];
       if (!t.includes(e.scaling))
         throw new Error(
-          `Invalid scaling value provided, must be one of: ${T(
+          `Invalid scaling value provided, must be one of: ${S(
             t
           )}`
         );
@@ -2016,7 +2034,7 @@ class Y {
       const t = ["stacked", "merged"];
       if (!t.includes(e.renderMode))
         throw new Error(
-          `Provided render mode is invalid. Must be of type: ${T(
+          `Provided render mode is invalid. Must be of type: ${S(
             t
           )}`
         );
@@ -2075,14 +2093,14 @@ class Y {
     const {
       width: n,
       fontBoundingBoxAscent: s,
-      fontBoundingBoxDescent: h
-    } = this.ctx.measureText("█"), c = s + h;
-    this.characterSize = [n, c];
-    const [o, a] = [
+      fontBoundingBoxDescent: o
+    } = this.ctx.measureText("█"), h = s + o;
+    this.characterSize = [n, h];
+    const [l, a] = [
       n * this.width,
-      c * this.height
+      h * this.height
     ];
-    i.canvas.width = o, i.canvas.height = a, i.canvas.style.width = `${o}px`, i.canvas.style.height = `${a}px`;
+    i.canvas.width = l, i.canvas.height = a, i.canvas.style.width = `${l}px`, i.canvas.style.height = `${a}px`;
   }
   /**
    * Rescale the display to fit the screen.
@@ -2097,11 +2115,11 @@ class Y {
       return;
     }
     e.style.transform = "translateX(-50%) translateY(-50%) scale(1)";
-    const { width: r, height: i } = e.parentElement.getBoundingClientRect(), { width: n, height: s } = e.getBoundingClientRect(), [h, c] = [
+    const { width: r, height: i } = e.parentElement.getBoundingClientRect(), { width: n, height: s } = e.getBoundingClientRect(), [o, h] = [
       r / n,
       i / s
-    ], o = Math.min(h, c);
-    e.style.transform = `translateX(-50%) translateY(-50%) scale(${o})`;
+    ], l = Math.min(o, h);
+    e.style.transform = `translateX(-50%) translateY(-50%) scale(${l})`;
   }
   /**
    * Clear the screen;
@@ -2122,7 +2140,7 @@ class Y {
     this.webWorkers = {
       drawFrame: new Worker(
         URL.createObjectURL(
-          new Blob([Ee], {
+          new Blob([ke], {
             type: "application/javascript"
           })
         ),
@@ -2177,20 +2195,20 @@ class Y {
             config: { fontSize: r = "32px" },
             characterSize: [i, n],
             ctx: s,
-            width: h
+            width: o
           } = this;
           s.textAlign = "left", s.textBaseline = "top";
-          for (let c = 0; c < this.width; c++)
-            for (let o = 0; o < this.height; o++) {
-              const a = o * this.width + c, d = t.data[a];
-              if (!d || !(d instanceof _)) continue;
-              const { value: u, color: f, fontWeight: p, backgroundColor: g } = d;
-              g && (s.beginPath(), s.fillStyle = g, s.fillRect(
-                c * i,
-                o * n,
-                i + Math.max(1 / h, 1),
+          for (let h = 0; h < this.width; h++)
+            for (let l = 0; l < this.height; l++) {
+              const a = l * this.width + h, d = t.data[a];
+              if (!d || !(d instanceof y)) continue;
+              const { value: u, color: f, fontWeight: _, backgroundColor: b } = d;
+              b && (s.beginPath(), s.fillStyle = b, s.fillRect(
+                h * i,
+                l * n,
+                i + Math.max(1 / o, 1),
                 n
-              ), s.closePath()), s.beginPath(), s.font = `${p || "normal"} ${r} monospace`, s.fillStyle = f || "#FFFFFF", s.fillText(u, c * i, o * n), s.closePath();
+              ), s.closePath()), s.beginPath(), s.font = `${_ || "normal"} ${r} monospace`, s.fillStyle = f || "#FFFFFF", s.fillText(u, h * i, l * n), s.closePath();
             }
         }
       }
@@ -2219,7 +2237,7 @@ class Y {
     this.__intializeDisplay(), this.__rescaleDisplay(), window.addEventListener("resize", () => this.__rescaleDisplay());
   }
 }
-class N extends Q {
+class N extends ee {
   /**
    * A core object that modifies the behavior of a GameObject. Behaviors need an `onTick` method that will run every frame right before their `GameObject`'s `onTick`.
    * @param {GameObject} gameObject The game object to append this behavior to.
@@ -2265,18 +2283,18 @@ class K extends A {
       y: i,
       width: n,
       height: s,
-      color: h = "#ffffff",
-      backgroundColor: c,
-      style: o = "double",
+      color: o = "#ffffff",
+      backgroundColor: h,
+      style: l = "double",
       layer: a
     } = t;
-    if (super(e, r, i, a), this.__rawWidth = n, this.__rawHeight = s, this.color = h, this.backgroundColor = c, !Object.keys($).includes(o))
+    if (super(e, r, i, a), this.__rawWidth = n, this.__rawHeight = s, this.color = o, this.backgroundColor = h, !Object.keys($).includes(l))
       throw new Error(
-        `Invalid box style "${o}" provided. Must be one of: ${T(
+        `Invalid box style "${l}" provided. Must be one of: ${S(
           Object.keys($)
         )}`
       );
-    this.style = o;
+    this.style = l;
   }
   get width() {
     return Math.round(this.__rawWidth);
@@ -2310,15 +2328,15 @@ class K extends A {
    * @returns {PixelMesh} The generated `PixelMesh`.
    */
   static asPixelMesh(e, t, r, i, n) {
-    const s = $[n], h = [];
-    for (let c = 0; c < t; c++) {
-      const o = [];
+    const s = $[n], o = [];
+    for (let h = 0; h < t; h++) {
+      const l = [];
       for (let a = 0; a < e; a++) {
         let d = 0, u = 0;
-        a === e - 1 ? d = 2 : a > 0 && (d = 1), c === t - 1 ? u = 2 : c > 0 && (u = 1);
+        a === e - 1 ? d = 2 : a > 0 && (d = 1), h === t - 1 ? u = 2 : h > 0 && (u = 1);
         let f = s[u][d];
-        o.push(
-          f && new _({
+        l.push(
+          f && new y({
             value: f,
             color: r,
             backgroundColor: i,
@@ -2326,14 +2344,14 @@ class K extends A {
           })
         );
       }
-      h.push(o);
+      o.push(l);
     }
-    return new w({ data: h });
+    return new g({ data: o });
   }
 }
 class D {
   get renderable() {
-    return _.fromString(" ");
+    return y.fromString(" ");
   }
   get index() {
     return this.menu.items.indexOf(this);
@@ -2349,21 +2367,22 @@ class D {
   onMouseMove() {
   }
 }
-class ke extends D {
+class Me extends D {
   /**
    * A string of text that triggers an event when clicked.
    * @param {Object} config The `Button`'s config object.
    * @param {string} config.label The `Button`'s display label.
    * @param {function} config.callback The function to call when this item is clicked/activated. This callback is passed the `Menu` instance as an argument.
+   * @param {boolean} config.wrap Whether or not to wrap the text if it overflows the container. Will break words. Default `false`.
    */
   constructor(e) {
     super();
-    const { label: t, callback: r } = e;
+    const { label: t, callback: r, wrap: i } = e;
     if (typeof t != "string")
       throw new TypeError(
         "Menu.Button config.label property must be a string."
       );
-    this.label = t && t.trim(), this.callback = r;
+    this.label = t && t.trim(), this.callback = r, this.wrap = !!i;
   }
   onKeyDown(e) {
     e.keys.enter && this.callback(this.menu);
@@ -2376,13 +2395,20 @@ class ke extends D {
   }
   get renderable() {
     const {
-      menu: { index: e },
-      index: t
-    } = this, r = w.fromString(this.label);
-    return e === t ? r.setColor("white") : r.setColor("grey"), r;
+      menu: {
+        index: e,
+        availableContentSpace: [t]
+      },
+      index: r,
+      label: i,
+      wrap: n
+    } = this, s = g.fromString(
+      n ? Q(i, t, !0) : i.slice(0, t)
+    );
+    return e === r ? s.setColor("white") : s.setColor("grey"), s;
   }
 }
-class Me extends D {
+class Ce extends D {
   /**
    * A slider that allows value selection.
    * @param {Object} config The `Slider`'s config object.
@@ -2404,9 +2430,9 @@ class Me extends D {
       min: i = 0,
       max: n = 100,
       step: s = 1,
-      onChange: h,
-      callback: c,
-      showValue: o = !0,
+      onChange: o,
+      callback: h,
+      showValue: l = !0,
       showPercentage: a = !0
     } = e;
     if (t && typeof t != "string")
@@ -2418,16 +2444,22 @@ class Me extends D {
         "Menu.Slider config.value property must be a number."
       );
     if (typeof i != "number")
-      throw new TypeError("Menu.Slider config.min property must be a number.");
+      throw new TypeError(
+        "Menu.Slider config.min property must be a number."
+      );
     if (typeof n != "number")
-      throw new TypeError("Menu.Slider max.value property must be a number.");
+      throw new TypeError(
+        "Menu.Slider max.value property must be a number."
+      );
     if (typeof s != "number")
-      throw new TypeError("Menu.Slider config.step property must be a number.");
+      throw new TypeError(
+        "Menu.Slider config.step property must be a number."
+      );
     if (i > n)
       throw new Error(
         "Menu.Slider config.min cannot be greater than config.max."
       );
-    this.showValue = !!o, this.showPercentage = !!a, this.label = t && t.trim(), this.min = i, this.max = n, this.value = r, this.step = s, this.callback = c, this.onChange = h;
+    this.showValue = !!l, this.showPercentage = !!a, this.label = t && t.trim(), this.min = i, this.max = n, this.value = r, this.step = s, this.callback = h, this.onChange = o;
   }
   /**
    * Get the value of this `Slider`.
@@ -2474,7 +2506,11 @@ class Me extends D {
    */
   get sliderWidth() {
     const e = (this.max - this.min) / this.step + 1;
-    return e <= 10 ? Math.round(e) : L(e, 10, this.menu.runtime.renderer.width / 4);
+    return e <= 10 ? Math.round(e) : L(
+      e,
+      10,
+      this.menu.runtime.renderer.width / 4
+    );
   }
   get renderable() {
     const {
@@ -2484,33 +2520,33 @@ class Me extends D {
       min: i,
       max: n,
       step: s,
-      label: h,
-      showValue: c,
-      showPercentage: o,
+      label: o,
+      showValue: h,
+      showPercentage: l,
       sliderWidth: a
     } = this, d = e === t;
     let u = [];
-    if (h) {
-      const v = w.fromString(this.label + " ");
+    if (o) {
+      const v = g.fromString(this.label + " ");
       d || v.setColor("grey"), u.push(v.data[0]);
     }
-    const f = a - 1, p = Math.floor(
+    const f = a - 1, _ = Math.floor(
       (r - i) / (n - i) * f
-    ), g = new _({
+    ), b = new y({
       value: "─",
       color: d ? "white" : "grey"
     }), [E, k] = [
-      new Array(p).fill(g),
-      new Array(f - p).fill(g)
-    ], O = new w({
+      new Array(_).fill(b),
+      new Array(f - _).fill(b)
+    ], O = new g({
       data: [
         ...E,
-        new _({ value: "█", color: d ? "green" : "grey" }),
+        new y({ value: "█", color: d ? "green" : "grey" }),
         ...k
       ]
     });
-    if (u[0] = [...u[0], ...O.data], c) {
-      const v = w.fromString(
+    if (u[0] = [...u[0], ...O.data], h) {
+      const v = g.fromString(
         " " + String(r).padEnd(
           Math.max(
             String(n - n / s + (s < 1 ? s : 0)).length - 1,
@@ -2521,19 +2557,19 @@ class Me extends D {
       );
       d || v.setColor("grey"), u[0].push(...v.data[0]);
     }
-    if (c && o && u[0].push(
+    if (h && l && u[0].push(
       null,
-      new _({ value: "-", color: d ? "white" : "grey" })
-    ), o) {
-      const v = w.fromString(
+      new y({ value: "-", color: d ? "white" : "grey" })
+    ), l) {
+      const v = g.fromString(
         (" " + Math.round(r / n * 100) + "%").padEnd(5, " ")
       );
       d || v.setColor("grey"), u[0].push(...v.data[0]);
     }
-    return new w({ data: u });
+    return new g({ data: u });
   }
 }
-class Ce extends D {
+class Oe extends D {
   /**
    * A checkbox that can be toggled.
    * @param {Object} config The `Toggle`'s config object.
@@ -2572,13 +2608,13 @@ class Ce extends D {
       index: t,
       checked: r,
       prepend: i
-    } = this, n = r ? "☑" : "☐", s = w.fromString(
+    } = this, n = r ? "☑" : "☐", s = g.fromString(
       `${i ? n + " " : ""}${this.label}${i ? "" : " " + n}`
     );
     return e === t ? s.setColor("white") : s.setColor("grey"), s;
   }
 }
-const y = class y extends A {
+const w = class w extends A {
   /**
    * A menu of various items that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -2605,23 +2641,26 @@ const y = class y extends A {
       y: i,
       title: n,
       items: s = [],
-      layer: h,
-      autoFocus: c = !0,
-      deleteOnBlur: o = !1,
+      layer: o,
+      autoFocus: h = !0,
+      deleteOnBlur: l = !1,
       maintainFocus: a = !0,
       gamepad: d,
       alignCenter: u = !0,
       border: f = !0
     } = t;
-    if (super(e, r, i, h), this.deleteOnBlur = !!o, this.maintainFocus = !!a, this.alignCenter = !!u, this.border = !!f, !(s instanceof Array))
+    if (super(e, r, i, o), this.deleteOnBlur = !!l, this.maintainFocus = !!a, this.alignCenter = !!u, this.border = !!f, !(s instanceof Array))
       throw new TypeError(
         '"Menu" constructor config.items object should be an array of "Menu.Item" instances.'
       );
-    if (this.items = s, this.__rawIndex = 0, this.focused = !!c, n && typeof n != "string")
+    if (this.items = s, this.__rawIndex = 0, this.focused = !!h, n && typeof n != "string")
       throw new Error(
         `Provided menu title "${n}" is not of type "string".`
       );
-    this.title = n, this.gamepad = d, e.inputManager.addEventListener("keydown", this.__onKeyDown.bind(this)), e.inputManager.addEventListener(
+    this.title = n, this.gamepad = d, e.inputManager.addEventListener(
+      "keydown",
+      this.__onKeyDown.bind(this)
+    ), e.inputManager.addEventListener(
       "mousemove",
       this.__onMouseMove.bind(this)
     ), e.inputManager.addEventListener("click", this.__onClick.bind(this)), this.__inputMode = "keyboard";
@@ -2637,7 +2676,7 @@ const y = class y extends A {
    */
   set items(e) {
     for (const t of e) {
-      if (!(t instanceof y.Item))
+      if (!(t instanceof w.Item))
         throw new TypeError(
           'Each object in the Menu.items array must be an instance of "Menu.Item".'
         );
@@ -2687,27 +2726,15 @@ const y = class y extends A {
     e < 0 && (e = t), e > t && (e = 0), this.__rawIndex = e;
   }
   /**
-   * Get the screen-space available to the menu.
-   * Return format: `[width, height]`
-   */
-  get availableScreenSpace() {
-    const {
-      scene: {
-        runtime: {
-          renderer: { width: e, height: t }
-        }
-      },
-      positionOnScreen: r
-    } = this;
-    return r ? [e - r[0], t - r[1]] : [e, t];
-  }
-  /**
    * Get the screen-space available to the content of the menu.
    * Return format: `[width, height]`
    */
   get availableContentSpace() {
-    const [e, t] = this.availableScreenSpace;
-    return [e - y.horizontalSpacing * 2 - y.borderWidth * 2, t];
+    const { width: e, height: t } = this.scene.runtime.renderer;
+    return [
+      e - w.horizontalSpacing * 2 - w.borderWidth * 2,
+      t
+    ];
   }
   /**
    * Get the actual current width of the `Menu`.
@@ -2717,11 +2744,11 @@ const y = class y extends A {
     let i = 0;
     for (const { renderable: s } of e) {
       if (!s) continue;
-      const h = s instanceof w ? s.width : 1;
-      h > i && (i = h);
+      const o = s instanceof g ? s.width : 1;
+      o > i && (i = o);
     }
     const n = t ? t.length : 0;
-    return Math.min(r, Math.max(i, n)) + (this.border ? y.horizontalSpacing * 2 : 0) + (this.border ? y.borderWidth * 2 : 0);
+    return Math.min(r, Math.max(i, n)) + (this.border ? w.horizontalSpacing * 2 : 0) + (this.border ? w.borderWidth * 2 : 0);
   }
   /**
    * Get the actual current height of the `Menu`.
@@ -2729,8 +2756,10 @@ const y = class y extends A {
   get height() {
     let e = 0;
     for (const { renderable: t } of this.items)
-      t && (t instanceof w ? e += t.height : e++);
-    return Math.round(e + (this.border ? y.borderWidth * 2 : 0));
+      t && (t instanceof g ? e += t.height : e++);
+    return Math.round(
+      e + (this.border ? w.borderWidth * 2 : 0)
+    );
   }
   /**
    * Get the screen-space currently used by the content of the menu.
@@ -2738,7 +2767,18 @@ const y = class y extends A {
    */
   get currentContentSpace() {
     const { width: e, height: t } = this;
-    return this.border ? [e - y.borderWidth * 2, t - y.borderWidth * 2] : [e, t];
+    return this.border ? [e - w.borderWidth * 2, t - w.borderWidth * 2] : [e, t];
+  }
+  /**
+   * Get the screen-space available to the content of the menu.
+   * Return format: `[width, height]`
+   */
+  get availableContentSpace() {
+    const { width: e, height: t } = this.scene.runtime.renderer;
+    return [
+      e - w.horizontalSpacing * 2 - w.borderWidth * 2,
+      t
+    ];
   }
   /**
    * Get the item at the current menu index.
@@ -2760,7 +2800,7 @@ const y = class y extends A {
   itemAtCoordinate(e) {
     let t = 0;
     for (const r of this.items) {
-      const { renderable: i } = r, n = i instanceof w ? i.height : 1, s = t;
+      const { renderable: i } = r, n = i instanceof g ? i.height : 1, s = t;
       if (e >= s && e <= s + n) return r;
       t += n;
     }
@@ -2792,8 +2832,8 @@ const y = class y extends A {
     const { onLayer: t } = e, [r, i] = t[this.layer.label], [n, s] = [
       r - this.x,
       i - this.y + (this.title || this.border ? 0 : 1)
-    ], h = this.items.indexOf(this.itemAtCoordinate(s));
-    h >= 0 && h < this.items.length && n >= 0 && n <= this.width && this.focused ? this.index = h : this.__rawIndex = -1;
+    ], o = this.items.indexOf(this.itemAtCoordinate(s));
+    o >= 0 && o < this.items.length && n >= 0 && n <= this.width && this.focused ? this.index = o : this.__rawIndex = -1;
   }
   /**
    * Handle the mouse being clicked.
@@ -2801,7 +2841,8 @@ const y = class y extends A {
    */
   __onClick(e) {
     if (!(!this.isOnScreen || !this.visible)) {
-      if (this.focused && !e.targets.includes(this.id)) return this.blur();
+      if (this.focused && !e.targets.includes(this.id))
+        return this.blur();
       e.targets.includes(this.id) && (this.focused = !0, this.__inputMode = "mouse"), this.__inputMode === "mouse" && (this.__determineMouseOverInput(e), this.currentItem && this.currentItem.onClick(e));
     }
   }
@@ -2818,16 +2859,14 @@ const y = class y extends A {
       items: t,
       width: r,
       height: i,
-      availableContentSpace: [n, s],
-      availableScreenSpace: [h, c],
-      currentContentSpace: [o, a]
+      currentContentSpace: [n]
     } = this;
-    let d = [];
+    let s = [];
     if (this.border) {
       const {
-        data: u,
-        width: f,
-        height: p
+        data: o,
+        width: h,
+        height: l
       } = K.asPixelMesh(
         r,
         i,
@@ -2835,51 +2874,51 @@ const y = class y extends A {
         void 0,
         "double"
       );
-      d = u;
+      s = o;
     }
     if (t) {
-      let u = this.border || this.title ? y.borderWidth : 0;
-      for (const { renderable: f } of t)
-        if (f)
-          if (f instanceof w) {
-            if (f.width > n)
+      let o = this.border || this.title ? w.borderWidth : 0;
+      for (const { renderable: h } of t)
+        if (h)
+          if (h instanceof g) {
+            if (h.width > this.availableContentSpace[0])
               throw new Error(
-                `Menu.Item renderable.width is greater than the Menu's maximum content width of ${n}.`
+                `Menu.Item renderable.width is greater than the Menu's maximum content width of ${this.availableContentSpace[0]}.`
               );
-            f.data.forEach((p) => {
-              d[u] || (d[u] = this.border ? [] : new Array(o).fill(null)), d[u].splice(
+            h.data.forEach((l) => {
+              s[o] || (s[o] = this.border ? [] : new Array(n).fill(null)), s[o].splice(
                 Math.round(
-                  this.alignCenter ? o / 2 - p.length / 2 : 0
-                ) + (this.border ? y.horizontalSpacing : 0),
-                p.length,
-                ...p
-              ), u++;
+                  this.alignCenter ? n / 2 - l.length / 2 : 0
+                ) + (this.border ? w.horizontalSpacing : 0),
+                l.length,
+                ...l
+              ), o++;
             });
           } else
-            d[u] || (d[u] = []), d[u].splice(
-              o % 2 === 0 && this.alignCenter ? (this.border ? y.horizontalSpacing : 0) + (this.border ? y.borderWidth : 0) : Math.round(o / 2),
+            s[o] || (s[o] = []), s[o].splice(
+              n % 2 === 0 && this.alignCenter ? (this.border ? w.horizontalSpacing : 0) + (this.border ? w.borderWidth : 0) : Math.round(n / 2),
               1,
-              f
-            ), u++;
+              h
+            ), o++;
     }
     if (e) {
-      const u = w.fromString(
+      const o = g.fromString(
         e.slice(0, this.availableContentSpace[0])
       );
-      this.border || u.setFontWeight(800);
+      this.border || o.setFontWeight(800);
       const {
-        data: [f]
-      } = u, p = this.border || this.alignCenter ? Math.floor((o - f.length) / 2) : 0;
-      for (let g = 0; g < f.length; g++)
-        d[0] || (d[0] = []), d[0][g + p + (this.border ? y.horizontalSpacing : 0)] = f[g];
+        data: [h]
+      } = o, l = this.border || this.alignCenter ? Math.floor((n - h.length) / 2) : 0;
+      for (let a = 0; a < h.length; a++)
+        s[0] || (s[0] = []), s[0][a + l + (this.border ? w.horizontalSpacing : 0)] = h[a];
     }
-    return new w({ data: d });
+    return new g({ data: s });
   }
   set renderable(e) {
   }
 };
-m(y, "Item", D), m(y, "Button", ke), m(y, "Slider", Me), m(y, "Toggle", Ce), m(y, "horizontalSpacing", 1), m(y, "borderWidth", 1);
-let P = y;
+m(w, "Item", D), m(w, "Button", Me), m(w, "Slider", Ce), m(w, "Toggle", Oe), m(w, "horizontalSpacing", 1), m(w, "borderWidth", 1);
+let P = w;
 class U extends A {
   /**
    * A string of text that can be rendered on screen.
@@ -2905,9 +2944,9 @@ class U extends A {
       y: i,
       value: n = "Hello, world!",
       wrap: s = !0,
-      color: h = "#ffffff",
-      backgroundColor: c,
-      fontWeight: o = 400,
+      color: o = "#ffffff",
+      backgroundColor: h,
+      fontWeight: l = 400,
       maxWidth: a = e.runtime.renderer.width,
       layer: d
     } = t;
@@ -2919,7 +2958,7 @@ class U extends A {
       throw new Error(
         `Provided text value "${n}" is not of type "string".`
       );
-    this.__rawValue = n, this.wrap = s, this.color = h, this.backgroundColor = c, this.fontWeight = o, this.maxWidth = a;
+    this.__rawValue = n, this.wrap = s, this.color = o, this.backgroundColor = h, this.fontWeight = l, this.maxWidth = a;
   }
   /**
    * Get the value of the text object.
@@ -2955,13 +2994,13 @@ class U extends A {
    * @returns {PixelMesh} The generated `PixelMesh`.
    */
   static asPixelMesh(e, t, r, i, n, s) {
-    const h = e.split(`
-`), c = [];
-    for (const o of h)
-      if (!r && o.length > t)
-        c.push(
-          o.substring(0, t).split("").map(
-            (a) => new _({
+    const o = e.split(`
+`), h = [];
+    for (const l of o)
+      if (!r && l.length > t)
+        h.push(
+          l.substring(0, t).split("").map(
+            (a) => new y({
               value: a,
               color: i,
               backgroundColor: n,
@@ -2971,12 +3010,12 @@ class U extends A {
         );
       else {
         let a = [], d = 0;
-        for (const u of o) {
+        for (const u of l) {
           if (d >= t)
             if (r)
-              c.push(
+              h.push(
                 a.map(
-                  (f) => new _({
+                  (f) => new y({
                     value: f,
                     color: i,
                     backgroundColor: n,
@@ -2988,9 +3027,9 @@ class U extends A {
               break;
           a.push(u), d++;
         }
-        a.length > 0 && c.push(
+        a.length > 0 && h.push(
           a.map(
-            (u) => new _({
+            (u) => new y({
               value: u,
               color: i,
               backgroundColor: n,
@@ -2999,12 +3038,12 @@ class U extends A {
           )
         );
       }
-    return new w({ data: c });
+    return new g({ data: h });
   }
   set renderable(e) {
   }
 }
-class Te extends U {
+class Ae extends U {
   /**
    * A text input that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -3037,9 +3076,9 @@ class Te extends U {
       backgroundColor: i = "transparent",
       backgroundColorActive: n = "white",
       onChange: s,
-      onKeyDown: h,
-      onFocus: c,
-      onBlur: o,
+      onKeyDown: o,
+      onFocus: h,
+      onBlur: l,
       maxLength: a
     } = t;
     if (r) {
@@ -3070,26 +3109,26 @@ class Te extends U {
         );
       this.onChange = s;
     }
-    if (h) {
-      if (typeof h != "function")
-        throw new TypeError(
-          "Expected a function for TextInput config.onKeyDown value."
-        );
-      this.onKeyDown = h;
-    }
-    if (c) {
-      if (typeof c != "function")
-        throw new TypeError(
-          "Expected a function for TextInput config.onFocus value."
-        );
-      this.onFocus = c;
-    }
     if (o) {
       if (typeof o != "function")
         throw new TypeError(
+          "Expected a function for TextInput config.onKeyDown value."
+        );
+      this.onKeyDown = o;
+    }
+    if (h) {
+      if (typeof h != "function")
+        throw new TypeError(
+          "Expected a function for TextInput config.onFocus value."
+        );
+      this.onFocus = h;
+    }
+    if (l) {
+      if (typeof l != "function")
+        throw new TypeError(
           "Expected a function for TextInput config.onBlur value."
         );
-      this.onBlur = o;
+      this.onBlur = l;
     }
     if (a) {
       if (typeof a != "number" || !Number.isInteger(a) || a < 0)
@@ -3156,27 +3195,27 @@ class Te extends U {
       caret: i,
       color: n,
       activeColor: s,
-      backgroundColor: h,
-      backgroundColorActive: c,
-      focused: o
+      backgroundColor: o,
+      backgroundColorActive: h,
+      focused: l
     } = this, a = [], d = e.length - r + 1;
     this.scroll > d && (this.scroll = d), this.scroll < 0 && (this.scroll = 0);
     const { scroll: u } = this, f = e.substring(u, u + r).padEnd(r, " ").split("");
-    for (let p = 0; p < f.length; p++) {
-      const g = f[p], E = p + u === i && o;
+    for (let _ = 0; _ < f.length; _++) {
+      const b = f[_], E = _ + u === i && l;
       a.push(
-        new _({
-          value: g,
+        new y({
+          value: b,
           color: E ? s : n,
-          backgroundColor: E ? c : h,
+          backgroundColor: E ? h : o,
           fontWeight: t
         })
       );
     }
-    return new w({ data: [a] });
+    return new g({ data: [a] });
   }
 }
-class Ae extends N {
+class je extends N {
   /**
    * Scroll the camera to a `GameObject`.
    * @param {GameObject} gameObject The game object to append this behavior to.
@@ -3196,16 +3235,16 @@ class Ae extends N {
         origin: [n, s]
       },
       scene: {
-        camera: h,
+        camera: o,
         runtime: {
-          renderer: { width: c, height: o }
+          renderer: { width: h, height: l }
         }
       }
     } = this;
-    h.x = e - n + r / 2 - c / 2, h.y = t - s + i / 2 - o / 2;
+    o.x = e - n + r / 2 - h / 2, o.y = t - s + i / 2 - l / 2;
   }
 }
-class ee extends N {
+class te extends N {
   /**
    * Move a `GameObject` from a top-down perspective.
    * @param {GameObject} gameObject The game object to append this behavior to.
@@ -3255,7 +3294,7 @@ class ee extends N {
       } = this;
       this.__tryToMoveToPosition(t + 1, r);
     });
-    ee.validateConfig(i);
+    te.validateConfig(i);
     const { defaultControls: n = !0 } = i;
     n && this.scene.inputManager.addEventListener(
       "keydown",
@@ -3291,30 +3330,30 @@ class ee extends N {
       gameObject: {
         width: n,
         height: s,
-        origin: [h, c]
+        origin: [o, h]
       },
-      scene: { layerManager: o }
+      scene: { layerManager: l }
     } = this;
     if (n <= 1 && s <= 1) {
-      const g = o.solidAtPosition(t, r);
-      (!g || g.gameObject === i) && (i.x = t, i.y = r);
+      const b = l.solidAtPosition(t, r);
+      (!b || b.gameObject === i) && (i.x = t, i.y = r);
       return;
     }
     let a = !0;
-    const d = t > i.x, u = t < i.x, f = r > i.y, p = r < i.y;
+    const d = t > i.x, u = t < i.x, f = r > i.y, _ = r < i.y;
     if (d || u) {
-      const g = i.y - c, E = g + s - 1;
-      for (let k = g; k <= E; k++) {
-        const O = d ? t + n - 1 - h : t - h, v = o.solidAtPosition(O, k);
+      const b = i.y - h, E = b + s - 1;
+      for (let k = b; k <= E; k++) {
+        const O = d ? t + n - 1 - o : t - o, v = l.solidAtPosition(O, k);
         if (v && v.gameObject !== i) {
           a = !1;
           break;
         }
       }
-    } else if (f || p) {
-      const g = i.x - h, E = g + n - 1;
-      for (let k = g; k <= E; k++) {
-        const O = f ? r + s - 1 - c : r - c, v = o.solidAtPosition(k, O);
+    } else if (f || _) {
+      const b = i.x - o, E = b + n - 1;
+      for (let k = b; k <= E; k++) {
+        const O = f ? r + s - 1 - h : r - h, v = l.solidAtPosition(k, O);
         if (v && v.gameObject !== i) {
           a = !1;
           break;
@@ -3326,14 +3365,14 @@ class ee extends N {
   onTick() {
   }
 }
-class je {
+class Be {
   /**
    * An animation frame. The `renderable` value of this Frame should return a `Pixel` or `PixelMesh` that will determine what is displayed on this frame.
    * @param {Pixel|PixelMesh} renderable The renderable item to display for this frame.
    * @param {number} duration The duration (in frames) of this frame. Example: a value of `2` will make this frame last twice as long as the rest.
    */
-  constructor(e = _.fromString("#"), t) {
-    if (!e || !(e instanceof _) && !(e instanceof w))
+  constructor(e = y.fromString("#"), t) {
+    if (!e || !(e instanceof y) && !(e instanceof g))
       throw new Error(
         `Invalid renderable provided to "AnimationFrame": ${e}. Must be of type "Pixel" or "PixelMesh".`
       );
@@ -3370,9 +3409,9 @@ class V {
       speed: i = 12,
       loop: n = !1,
       repeatCount: s = 1,
-      pingPong: h = !1
+      pingPong: o = !1
     } = e;
-    this.label = t, this.animationFrames = r, this.speed = i, this.loop = n, this.repeatCount = s, this.pingPong = h;
+    this.label = t, this.animationFrames = r, this.speed = i, this.loop = n, this.repeatCount = s, this.pingPong = o;
   }
   /**
    * Validates a TopDownMovement configuration object and throws an error if it is invalid.
@@ -3399,7 +3438,7 @@ class V {
       );
   }
 }
-class te extends N {
+class re extends N {
   /**
    * Animate a `GameObject`.
    * @param {GameObject} gameObject The game object to append this behavior to.
@@ -3414,7 +3453,7 @@ class te extends N {
     super(
       e,
       t.hasOwnProperty("enabledByDefault") ? t.enabledByDefault : !0
-    ), te.validateConfig(t);
+    ), re.validateConfig(t);
     const {
       animations: r,
       initialFrame: i = 0,
@@ -3526,29 +3565,29 @@ class te extends N {
 }
 export {
   Se as AdvMath,
-  te as Animate,
+  re as Animate,
   V as Animation,
-  je as AnimationFrame,
+  Be as AnimationFrame,
   N as Behavior,
   K as Box,
-  Q as Core,
+  ee as Core,
   B as Frame,
   A as GameObject,
   Z as Layer,
   P as Menu,
-  _ as Pixel,
-  w as PixelMesh,
+  y as Pixel,
+  g as PixelMesh,
   H as Scene,
-  Ae as ScrollTo,
+  je as ScrollTo,
   U as Text,
-  Te as TextInput,
-  ee as TopDownMovement,
-  we as __AudioManager,
-  _e as __Camera,
-  ye as __InputManager,
-  ve as __LayerManager,
+  Ae as TextInput,
+  te as TopDownMovement,
+  _e as __AudioManager,
+  ye as __Camera,
+  ve as __InputManager,
+  xe as __LayerManager,
   Y as __Renderer,
-  be as __Sound,
-  Le as dataUtils,
-  xe as default
+  we as __Sound,
+  Te as dataUtils,
+  Ee as default
 };
