@@ -2351,7 +2351,7 @@ class D {
 }
 class ke extends D {
   /**
-   * A string of text that can be rendered on screen.
+   * A string of text that triggers an event when clicked.
    * @param {Object} config The `Button`'s config object.
    * @param {string} config.label The `Button`'s display label.
    * @param {function} config.callback The function to call when this item is clicked/activated. This callback is passed the `Menu` instance as an argument.
@@ -2384,7 +2384,7 @@ class ke extends D {
 }
 class Me extends D {
   /**
-   * A string of text that can be rendered on screen.
+   * A slider that allows value selection.
    * @param {Object} config The `Slider`'s config object.
    * @param {string} config.label An optional `Slider` display label.
    * @param {boolean} config.showValue Whether to show the value of the `Slider` after it. Default: `false`.
