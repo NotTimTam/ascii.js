@@ -126,7 +126,7 @@ Base class for menu items, which can be extended to create custom items.
 
 ### `Menu.Button`
 
-A button that can be clicked or activated.
+A string of text that triggers an event when clicked.
 
 #### Constructor
 
