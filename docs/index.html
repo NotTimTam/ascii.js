@@ -229,7 +229,7 @@
 
 			const runtime = new Runtime({
 				renderer: {
-					resolution: [16, 32],
+					resolution: [64, 32],
 					canvas: "canvas#canvas",
 					fontSize: "32px",
 					forceParentStyles: true,
@@ -242,74 +242,178 @@
 
 			const scene = new Scene(runtime, {
 				label: "Documentation",
-			});
+				layers: [
+					{
+						label: "menu",
+						gameObjectConstructors: [
+							(scene) => {
+								const menu = new Menu(scene, {
+									x: 0,
+									y: 0,
+									maintainFocus: true,
+									deleteOnBlur: false,
+									alignCenter: false,
+									gamepad: -1,
+									border: false,
+									layer: "system",
+								});
 
-			const menu = new Menu(scene, {
-				x: 0,
-				y: 0,
-				maintainFocus: true,
-				deleteOnBlur: false,
-				alignCenter: false,
-				gamepad: -1,
-				border: false,
-				layer: "system",
-			});
-
-			const updateMenuItems = (items, top, currentDir) => {
-				let mapped = items.map(
-					({ path: itemPath, label, type }, index) =>
-						new Menu.Button({
-							label: label,
-							callback: () => {
-								console.log(`${currentDir}${itemPath}`);
-								if (type === "dir")
-									return updateMenuItems(
-										items[index].items || [],
-										top,
-										`${currentDir}${itemPath}`
-									);
-								else
-									window.location = `${currentDir}${itemPath}`;
-							},
-						})
-				);
-
-				if (currentDir !== "/docs")
-					mapped.unshift(
-						new Menu.Button({
-							label: "← " + currentDir,
-							callback: () => {
-								const newPath = currentDir
-									.split("/")
-									.slice(0, -1)
-									.join("/");
-
-								const itemsForNewPath = newPath
-									.split("/")
-									.slice(2)
-									.filter((path) => path)
-									.reduce((acc, key) => {
-										const found = acc.find(
-											(item) => item.path.slice(1) === key
-										);
-										return found ? found.items : [];
-									}, tree);
-
-								return updateMenuItems(
-									itemsForNewPath,
+								const loadFile = (
+									path,
+									items,
 									top,
-									newPath
-								);
+									currentDir
+								) => {
+									updateMenuItems(null); // Remove menu items.
+
+									// Load item and iframe.
+									const iframeContainer =
+										document.createElement("div");
+
+									iframeContainer.style = `
+									width: 100%;
+									height: 100%;
+									position: absolute;
+									bottom: 0;
+									left: 0;
+									display: flex; flex-direction: column;
+									`;
+
+									const iframe =
+										document.createElement("iframe");
+
+									iframe.style = `
+									width: 100%;
+									flex-grow: 2;
+									border: none;
+									`;
+
+									iframe.src = path;
+
+									iframeContainer.appendChild(iframe);
+
+									const closeButton =
+										document.createElement("button");
+
+									closeButton.style = `
+									width: 100%;
+									background: none;
+									padding: 1rem;
+									border: none;
+									border-bottom: 3px double white;
+									color: white;
+									font-family: "Courier New", Courier, monospace;
+									cursor: pointer;
+									font-weight: 800;
+									text-align: left;
+									`;
+
+									closeButton.innerHTML = `[x] Close`;
+
+									closeButton.onclick = () => {
+										document.body.removeChild(
+											iframeContainer
+										);
+										updateMenuItems(items, top, currentDir);
+									};
+
+									iframeContainer.prepend(closeButton);
+
+									document.body.appendChild(iframeContainer);
+								};
+
+								const updateMenuItems = (
+									items,
+									top,
+									currentDir
+								) => {
+									if (!items) return (menu.items = []);
+									menu.title = "";
+
+									let mapped = items.map(
+										(
+											{ path: itemPath, label, type },
+											index
+										) =>
+											new Menu.Button({
+												label: label,
+												callback: () => {
+													if (type === "dir")
+														return updateMenuItems(
+															items[index]
+																.items || [],
+															top,
+															`${currentDir}${itemPath}`
+														);
+													else
+														return loadFile(
+															`${currentDir}${itemPath}`,
+															items,
+															top,
+															currentDir
+														);
+												},
+											})
+									);
+
+									if (currentDir !== "/docs")
+										mapped.unshift(
+											new Menu.Button({
+												label: "← " + currentDir,
+												callback: () => {
+													const newPath = currentDir
+														.split("/")
+														.slice(0, -1)
+														.join("/");
+
+													const itemsForNewPath =
+														newPath
+															.split("/")
+															.slice(2)
+															.filter(
+																(path) => path
+															)
+															.reduce(
+																(acc, key) => {
+																	const found =
+																		acc.find(
+																			(
+																				item
+																			) =>
+																				item.path.slice(
+																					1
+																				) ===
+																				key
+																		);
+																	return found
+																		? found.items
+																		: [];
+																},
+																tree
+															);
+
+													return updateMenuItems(
+														itemsForNewPath,
+														top,
+														newPath
+													);
+												},
+											})
+										);
+
+									menu.items = mapped;
+								};
+
+								new ScrollTo(menu);
+
+								updateMenuItems([...tree], tree, "/docs");
+
+								return menu;
 							},
-						})
-					);
-
-				menu.items = mapped;
-			};
-
-			new ScrollTo(menu);
-
-			updateMenuItems([...tree], tree, "/docs");
+						],
+					},
+				],
+			});
 
 			runtime.start();
 
