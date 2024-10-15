@@ -27,11 +27,12 @@ class Button extends Item {
 	 * @param {Object} config The `Button`'s config object.
 	 * @param {string} config.label The `Button`'s display label.
 	 * @param {function} config.callback The function to call when this item is clicked/activated. This callback is passed the `Menu` instance as an argument.
+	 * @param {boolean} config.wrap Whether or not to wrap the text if it overflows the container. Will break words. Default `false`.
 	 */
 	constructor(config) {
 		super();
 
-		const { label, callback } = config;
+		const { label, callback, wrap } = config;
 
 		if (typeof label !== "string")
 			throw new TypeError(
@@ -40,6 +41,7 @@ class Button extends Item {
 
 		this.label = label && label.trim();
 		this.callback = callback;
+		this.wrap = Boolean(wrap);
 	}
 
 	onKeyDown(event) {
@@ -60,9 +62,12 @@ class Button extends Item {
 			},
 			index,
 			label,
+			wrap,
 		} = this;
 
-		const display = PixelMesh.fromString(wrapString(label, width, true));
+		const display = PixelMesh.fromString(
+			wrap ? wrapString(label, width, true) : label.slice(0, width)
+		);
 
 		if (activeIndex === index) display.setColor("white");
 		else display.setColor("grey");
