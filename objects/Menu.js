@@ -437,10 +437,16 @@ class Menu extends GameObject {
     this.__inputMode = "keyboard";
   }
 
+  /**
+   * Get the menu items instantiated in this `Menu`.
+   */
   get items() {
     return this.__rawItems;
   }
 
+  /**
+   * Set the menu items instantiated in this `Menu`.
+   */
   set items(arr) {
     for (const item of arr) {
       if (!(item instanceof Menu.Item))
@@ -456,10 +462,16 @@ class Menu extends GameObject {
     this.__rawItems = arr;
   }
 
+  /**
+   * Get the index of the active gamepad.
+   */
   get gamepad() {
     return this.__rawGamepad;
   }
 
+  /**
+   * Set the index of the gamepad whose inputs should be listened to.
+   */
   set gamepad(n) {
     if (typeof n !== "number") {
       this.__rawGamepad = undefined;
@@ -485,10 +497,16 @@ class Menu extends GameObject {
     this.__rawGamepad = n;
   }
 
+  /**
+   * Get the current active index in the menu.
+   */
   get index() {
     return this.__rawIndex;
   }
 
+  /**
+   * Set the current active index in the menu.
+   */
   set index(n) {
     if (typeof n !== "number" || !Number.isInteger(n))
       throw new TypeError("Menu index must be an integer.");
