@@ -26,65 +26,6 @@ A menu of various items that can be rendered on screen.
 
 ---
 
-## Static Classes
-
-### `Menu.Item`
-
-Base class for menu items, which can be extended to create custom items.
-
-### `Menu.Button`
-
-A button that can be clicked or activated.
-
-#### Constructor
-
-`new Menu.Button(config);`
-
-##### Arguments
-
-- `config` &mdash; `Object` The `Button`'s config object.
-  - `label` &mdash; `string` The `Button`'s display label.
-  - `callback` &mdash; `function` The function to call when this item is clicked/activated.
-
-### `Menu.Slider`
-
-A slider that allows value selection.
-
-#### Constructor
-
-`new Menu.Slider(config);`
-
-##### Arguments
-
-- `config` &mdash; `Object` The `Slider`'s config object.
-  - `label` &mdash; `string` An optional `Slider` display label.
-  - `value` &mdash; `number` The starting value of the `Slider`.
-  - `min` &mdash; `number` The minimum value for the `Slider`.
-  - `max` &mdash; `number` The maximum value for the `Slider`.
-  - `step` &mdash; `number` The amount the value will change by each input.
-  - `onChange` &mdash; `function` The function to call when the value of this `Slider` changes.
-  - `callback` &mdash; `function` The function to call when "enter" is pressed on the `Slider`. This callback is passed the current `Menu.Slider` value as an argument.
-  - `showValue` &mdash; `boolean` Whether to show the value of the `Slider` after it. Default: `false`.
-  - `showPercentage` &mdash; `boolean` Whether to show the value (in percentage format) of the `Slider` after it. Default: `true`.
-
-### `Menu.Toggle`
-
-A checkbox that can be toggled on or off.
-
-#### Constructor
-
-`new Menu.Toggle(config);`
-
-##### Arguments
-
-- `config` &mdash; `Object` The `Toggle`'s config object.
-  - `label` &mdash; `string` The `Toggle`'s display label.
-  - `checked` &mdash; `boolean` The initial status of the `Toggle`. Default: `false`.
-  - `prepend` &mdash; `boolean` Whether to put the checkbox icon at the start or end of the label. Default: `true`.
-  - `callback` &mdash; `function` The function to call when this item is toggled.
-
----
-
 ## Properties
 
 ### `gamepad`
@@ -98,6 +39,10 @@ An array of `Menu.Item` instances that are part of the menu.
 ### `title`
 
 The title of the menu.
+
+### `index`
+
+The index of the current item that is selected in the menu.
 
 ---
 
@@ -170,3 +115,62 @@ Get an item at a y-coordinate relative to the menu.
 #### Returns
 
 - `Menu.Item|undefined` The item at that coordinate, or `undefined` if there is no item at the coordinate.
+
+---
+
+## Sub-Classes
+
+### `Menu.Item`
+
+Base class for menu items, which can be extended to create custom items.
+
+### `Menu.Button`
+
+A button that can be clicked or activated.
+
+#### Constructor
+
+`new Menu.Button(config);`
+
+##### Arguments
+
+- `config` &mdash; `Object` The `Button`'s config object.
+  - `label` &mdash; `string` The `Button`'s display label.
+  - `callback` &mdash; `function` The function to call when this item is clicked/activated.
+
+### `Menu.Slider`
+
+A slider that allows value selection.
+
+#### Constructor
+
+`new Menu.Slider(config);`
+
+##### Arguments
+
+- `config` &mdash; `Object` The `Slider`'s config object.
+  - `label` &mdash; `string` An optional `Slider` display label.
+  - `value` &mdash; `number` The starting value of the `Slider`.
+  - `min` &mdash; `number` The minimum value for the `Slider`.
+  - `max` &mdash; `number` The maximum value for the `Slider`.
+  - `step` &mdash; `number` The amount the value will change by each input.
+  - `onChange` &mdash; `function` The function to call when the value of this `Slider` changes.
+  - `callback` &mdash; `function` The function to call when "enter" is pressed on the `Slider`. This callback is passed the current `Menu.Slider` value as an argument.
+  - `showValue` &mdash; `boolean` Whether to show the value of the `Slider` after it. Default: `false`.
+  - `showPercentage` &mdash; `boolean` Whether to show the value (in percentage format) of the `Slider` after it. Default: `true`.
+
+### `Menu.Toggle`
+
+A checkbox that can be toggled on or off.
+
+#### Constructor
+
+`new Menu.Toggle(config);`
+
+##### Arguments
+
+- `config` &mdash; `Object` The `Toggle`'s config object.
+  - `label` &mdash; `string` The `Toggle`'s display label.
+  - `checked` &mdash; `boolean` The initial status of the `Toggle`. Default: `false`.
+  - `prepend` &mdash; `boolean` Whether to put the checkbox icon at the start or end of the label. Default: `true`.
+  - `callback` &mdash; `function` The function to call when this item is toggled.
