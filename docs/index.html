@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Documentation | ascii.js</title>
+  </head>
+  <body>
+    <canvas id="canvas"></canvas>
+
+    <script type="module">
+      import Runtime, {
+        Scene,
+        Menu,
+      } from "https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/build.js";
+
+      const runtime = new Runtime({
+        renderer: {
+          resolution: [32, 64],
+          canvas: "canvas#canvas",
+        },
+      });
+
+      const scene = new Scene(runtime, {
+        label: "Documentation",
+      });
+
+      const menu = new Menu(scene, {
+        x: 0,
+        y: 0,
+        options: [],
+        title: []
+      });
+
+      runtime.start();
+    </script>
+  </body>
+</html>
