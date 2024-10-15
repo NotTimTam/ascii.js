@@ -12,18 +12,131 @@
       import Runtime, {
         Scene,
         Menu,
+        ScrollTo,
       } from "https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/build.js";
 
       const tree = [
-        { path: "/examples", label: "examples", type: "dir" },
-        { path: "/getting-started", label: "getting-started", type: "dir" },
-        { path: "/learn", label: "learn", type: "dir" },
+        {
+          path: "/examples",
+          label: "examples",
+          type: "dir",
+          items: [
+            { path: "/cursor/index.html", label: "cursor", type: "file" },
+            { path: "/gamepad/index.html", label: "gamepad", type: "file" },
+            { path: "/keyboard/index.html", label: "keyboard", type: "file" },
+            { path: "/menu/index.html", label: "menu", type: "file" },
+            {
+              path: "/webworkers/index.html",
+              label: "webworkers",
+              type: "file",
+            },
+          ],
+        },
+        {
+          path: "/getting-started",
+          label: "getting-started",
+          type: "dir",
+          items: [
+            { path: "/INSTALLATION.md", label: "INSTALLATION", type: "file" },
+            { path: "/QUICKSTART.md", label: "QUICKSTART", type: "file" },
+          ],
+        },
+        {
+          path: "/learn",
+          label: "learn",
+          type: "dir",
+          items: [
+            {
+              path: "/behaviors",
+              label: "behaviors",
+              type: "dir",
+              items: [
+                { path: "/ANIMATE.md", label: "ANIMATE", type: "file" },
+                { path: "/SCROLLTO.md", label: "SCROLLTO", type: "file" },
+                {
+                  path: "/TOPDOWNMOVEMENT.md",
+                  label: "TOPDOWNMOVEMENT",
+                  type: "file",
+                },
+              ],
+            },
+            {
+              path: "/core",
+              label: "core",
+              type: "dir",
+              items: [
+                { path: "/BEHAVIOR.md", label: "BEHAVIOR", type: "file" },
+                { path: "/CORE.md", label: "CORE", type: "file" },
+                { path: "/GAMEOBJECT.md", label: "GAMEOBJECT", type: "file" },
+              ],
+            },
+            {
+              path: "/engine",
+              label: "engine",
+              type: "dir",
+              items: [
+                {
+                  path: "/AUDIOMANAGER.md",
+                  label: "AUDIOMANAGER",
+                  type: "file",
+                },
+                { path: "/CAMERA.md", label: "CAMERA", type: "file" },
+                {
+                  path: "/INPUTMANAGER.md",
+                  label: "INPUTMANAGER",
+                  type: "file",
+                },
+                {
+                  path: "/LAYERMANAGER.md",
+                  label: "LAYERMANAGER",
+                  type: "file",
+                },
+                { path: "/RENDERER.md", label: "RENDERER", type: "file" },
+                { path: "/SCENE.md", label: "SCENE", type: "file" },
+                { path: "/SOUND.md", label: "SOUND", type: "file" },
+              ],
+            },
+            {
+              path: "/objects",
+              label: "objects",
+              type: "dir",
+              items: [
+                { path: "/BOX.md", label: "BOX", type: "file" },
+                { path: "/MENU.md", label: "MENU", type: "file" },
+                { path: "/TEXT.md", label: "TEXT", type: "file" },
+                { path: "/TEXTINPUT.md", label: "TEXTINPUT", type: "file" },
+              ],
+            },
+            {
+              path: "/rendering",
+              label: "rendering",
+              type: "dir",
+              items: [
+                { path: "/FRAME.md", label: "FRAME", type: "file" },
+                { path: "/LAYER.md", label: "LAYER", type: "file" },
+                { path: "/PIXEL.md", label: "PIXEL", type: "file" },
+                { path: "/PIXELMESH.md", label: "PIXELMESH", type: "file" },
+              ],
+            },
+            {
+              path: "/utilities",
+              label: "utilities",
+              type: "dir",
+              items: [
+                { path: "/ADVMATH.md", label: "ADVMATH", type: "file" },
+                { path: "/DATAUTILS.md", label: "DATAUTILS", type: "file" },
+              ],
+            },
+            { path: "/MODULE.md", label: "MODULE", type: "file" },
+            { path: "/RUNTIME.md", label: "RUNTIME", type: "file" },
+          ],
+        },
         { path: "/INDEX.md", label: "INDEX", type: "file" },
       ];
 
       const runtime = new Runtime({
         renderer: {
-          resolution: [64, 32],
+          resolution: [32, 32],
           canvas: "canvas#canvas",
           fontSize: "32px",
           forceParentStyles: true,
@@ -49,21 +162,53 @@
         layer: "system",
       });
 
-      const updateMenuItems = (items) => {
-        menu.items = items.map(
-          ({ path, label, type }) =>
+      const updateMenuItems = (items, top, currentDir) => {
+        let mapped = items.map(
+          ({ path: itemPath, label, type }, index) =>
             new Menu.Button({
               label: label,
               callback: () => {
-                console.log(`${label} clicked.`);
+                console.log(`${currentDir}${itemPath}`);
+                if (type === "dir")
+                  return updateMenuItems(
+                    items[index].items || [],
+                    top,
+                    `${currentDir}${itemPath}`
+                  );
+                else window.location = `${currentDir}${itemPath}`;
               },
             })
         );
 
-        console.log(menu.items);
+        if (currentDir !== "/docs")
+          mapped.unshift(
+            new Menu.Button({
+              label: "← " + currentDir,
+              callback: () => {
+                const newPath = currentDir.split("/").slice(0, -1).join("/");
+
+                const itemsForNewPath = newPath
+                  .split("/")
+                  .slice(2)
+                  .filter((path) => path)
+                  .reduce((acc, key) => {
+                    const found = acc.find(
+                      (item) => item.path.slice(1) === key
+                    );
+                    return found ? found.items : [];
+                  }, tree);
+
+                return updateMenuItems(itemsForNewPath, top, newPath);
+              },
+            })
+          );
+
+        menu.items = mapped;
       };
 
-      updateMenuItems([...tree]);
+      new ScrollTo(menu);
+
+      updateMenuItems([...tree], tree, "/docs");
 
       runtime.start();
 

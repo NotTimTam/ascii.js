@@ -1,28 +1,28 @@
-var oe = Object.defineProperty, ae = Object.defineProperties;
+var ae = Object.defineProperty, oe = Object.defineProperties;
 var he = Object.getOwnPropertyDescriptors;
 var q = Object.getOwnPropertySymbols;
 var le = Object.prototype.hasOwnProperty, ce = Object.prototype.propertyIsEnumerable;
-var j = Math.pow, G = (l, e, t) => e in l ? oe(l, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : l[e] = t, x = (l, e) => {
+var j = Math.pow, G = (l, e, t) => e in l ? ae(l, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : l[e] = t, x = (l, e) => {
   for (var t in e || (e = {}))
     le.call(e, t) && G(l, t, e[t]);
   if (q)
     for (var t of q(e))
       ce.call(e, t) && G(l, t, e[t]);
   return l;
-}, C = (l, e) => ae(l, he(e));
-var p = (l, e, t) => G(l, typeof e != "symbol" ? e + "" : e, t);
+}, C = (l, e) => oe(l, he(e));
+var m = (l, e, t) => G(l, typeof e != "symbol" ? e + "" : e, t);
 var J = (l, e, t) => new Promise((r, i) => {
   var n = (c) => {
     try {
       h(t.next(c));
-    } catch (a) {
-      i(a);
+    } catch (o) {
+      i(o);
     }
   }, s = (c) => {
     try {
       h(t.throw(c));
-    } catch (a) {
-      i(a);
+    } catch (o) {
+      i(o);
     }
   }, h = (c) => c.done ? r(c.value) : Promise.resolve(c.value).then(n, s);
   h((t = t.apply(l, e)).next());
@@ -132,7 +132,7 @@ const T = (l) => `[${l.map((e) => {
  * @param {string} string The string to convert to a `PixelMesh`.
  * @returns {Pixel} the newly created `PixelMesh` object.
  */
-p(F, "fromString", (e) => new F({
+m(F, "fromString", (e) => new F({
   data: e.split(`
 `).map(
     (t) => t.split("").map(
@@ -197,7 +197,7 @@ const W = class W {
  * @param {string} string The string to convert to a `Pixel`.
  * @returns {Pixel} the newly created `Pixel` object.
  */
-p(W, "fromString", (e) => new W({ value: e }));
+m(W, "fromString", (e) => new W({ value: e }));
 let _ = W;
 const S = class S {
   /**
@@ -214,11 +214,11 @@ const S = class S {
  * @param {string} string The string to convert.
  * @returns {Frame} the generated Frame.
  */
-p(S, "fromString", (e) => new S(e.split("").map((t) => new _({ value: t })))), /**
+m(S, "fromString", (e) => new S(e.split("").map((t) => new _({ value: t })))), /**
  * Convert a 2D array of `Pixel`s to a Frame.
  * @param {Array<Array<Pixel>} array The array to convert.
  */
-p(S, "from2DArray", (e) => new S(e.flat()));
+m(S, "from2DArray", (e) => new S(e.flat()));
 let B = S;
 const z = (l, e, t, r, i, n, s, h) => l < i + s && l + t > i && e < n + h && e + r > n, L = (l, e, t) => Math.max(e, Math.min(l, t)), X = (l) => l * (180 / Math.PI), R = (l) => l * (Math.PI / 180), de = (l, e) => Math.floor(Math.random() * (e - l + 1)) + l, ue = (l) => {
   if (l === 0 || l === 1) return 1;
@@ -423,7 +423,7 @@ class _e {
      * @param {number} parallaxX Optional parallax x-value.
      * @param {number} parallaxY Optional parallax y-value.
      */
-    p(this, "isOnScreen", (e, t, r, i, n = 1, s = 1) => z(
+    m(this, "isOnScreen", (e, t, r, i, n = 1, s = 1) => z(
       e,
       t,
       r,
@@ -882,7 +882,7 @@ const b = class b {
     return this.raw && this.raw.hand;
   }
 };
-p(b, "gamepadButtonIntervals", 100), p(b, "deadzoneThreshold", 0.1), p(b, "xbButtonMap", [
+m(b, "gamepadButtonIntervals", 100), m(b, "deadzoneThreshold", 0.1), m(b, "xbButtonMap", [
   "a",
   "b",
   "x",
@@ -899,7 +899,7 @@ p(b, "gamepadButtonIntervals", 100), p(b, "deadzoneThreshold", 0.1), p(b, "xbBut
   "down",
   "left",
   "right"
-]), p(b, "psButtonMap", [
+]), m(b, "psButtonMap", [
   "x",
   "o",
   "square",
@@ -916,7 +916,7 @@ p(b, "gamepadButtonIntervals", 100), p(b, "deadzoneThreshold", 0.1), p(b, "xbBut
   "down",
   "left",
   "right"
-]), p(b, "nsButtonMap", [
+]), m(b, "nsButtonMap", [
   "b",
   "a",
   "y",
@@ -933,7 +933,7 @@ p(b, "gamepadButtonIntervals", 100), p(b, "deadzoneThreshold", 0.1), p(b, "xbBut
   "down",
   "left",
   "right"
-]), p(b, "standardButtonMap", [
+]), m(b, "standardButtonMap", [
   "a",
   "b",
   "x",
@@ -950,7 +950,7 @@ p(b, "gamepadButtonIntervals", 100), p(b, "deadzoneThreshold", 0.1), p(b, "xbBut
   "down",
   "left",
   "right"
-]), p(b, "standardAxesMap", ["lh", "lv", "rh", "rv"]);
+]), m(b, "standardAxesMap", ["lh", "lv", "rh", "rv"]);
 let I = b;
 class ye {
   /**
@@ -958,12 +958,12 @@ class ye {
    * @param {Scene} scene The current scene.
    */
   constructor(e) {
-    p(this, "__eventHandler", (e) => this.__onEvent(e));
-    p(this, "__contextHandler", (e) => e.preventDefault());
+    m(this, "__eventHandler", (e) => this.__onEvent(e));
+    m(this, "__contextHandler", (e) => e.preventDefault());
     /**
      * Handles when the user leaves this tab.
      */
-    p(this, "__windowBlurHandler", () => {
+    m(this, "__windowBlurHandler", () => {
       this.keyboard.keys = {}, this.mouse.buttons = {}, delete this.mouse.deltas, delete this.mouse.scroll;
     });
     this.scene = e, this.keyboard = {
@@ -1163,8 +1163,8 @@ class ye {
         layerManager: { layers: c },
         runtime: {
           renderer: {
-            width: a,
-            height: o,
+            width: o,
+            height: a,
             element: d
           }
         }
@@ -1172,20 +1172,20 @@ class ye {
     } = this, {
       x: u,
       y: f,
-      width: m,
+      width: p,
       height: g
-    } = d.getBoundingClientRect(), [E, k] = [t - u, r - f], [O, v] = [E / m, k / g];
+    } = d.getBoundingClientRect(), [E, k] = [t - u, r - f], [O, v] = [E / p, k / g];
     if (this.hasPointerLock)
       this.mouse.velocity = [i, n];
     else {
       this.mouse.velocity = [i, n], this.mouse.rawX = t, this.mouse.rawY = r, this.mouse.canvasX = E, this.mouse.canvasY = k, this.mouse.x = L(
-        Math.floor(O * a),
-        0,
-        a
-      ), this.mouse.y = L(
-        Math.floor(v * o),
+        Math.floor(O * o),
         0,
         o
+      ), this.mouse.y = L(
+        Math.floor(v * a),
+        0,
+        a
       ), this.mouse.onLayer = {};
       for (const re of c) {
         const {
@@ -1409,25 +1409,25 @@ class ye {
       for (const i of e) {
         const { buttons: n, index: s } = i;
         for (const [h, { pressed: c }] of Object.entries(n)) {
-          const a = this.__gamepadButtonHistory[s] && this.__gamepadButtonHistory[s][h];
+          const o = this.__gamepadButtonHistory[s] && this.__gamepadButtonHistory[s][h];
           this.__gamepadButtonHistory[s] || (this.__gamepadButtonHistory[s] = {});
-          const o = {
+          const a = {
             gamepad: i,
             index: s,
             button: h,
             buttons: this.__gamepadButtonHistory[s]
           };
-          c ? (this.__gamepadButtonHistory[s][h] = !0, r && (this.__triggerEvents("gamepadbuttondown", C(x({}, o), {
+          c ? (this.__gamepadButtonHistory[s][h] = !0, r && (this.__triggerEvents("gamepadbuttondown", C(x({}, a), {
             type: "gamepadbuttondown"
-          })), this.__triggerEvents("all", C(x({}, o), {
+          })), this.__triggerEvents("all", C(x({}, a), {
             type: "gamepadbuttondown"
-          })))) : (a && (this.__triggerEvents("gamepadbuttonpressed", C(x({}, o), {
+          })))) : (o && (this.__triggerEvents("gamepadbuttonpressed", C(x({}, a), {
             type: "gamepadbuttonpressed"
-          })), this.__triggerEvents("all", C(x({}, o), {
+          })), this.__triggerEvents("all", C(x({}, a), {
             type: "gamepadbuttonpressed"
-          }))), this.__gamepadButtonHistory[s][h] = !1, r && (this.__triggerEvents("gamepadbuttonup", C(x({}, o), {
+          }))), this.__gamepadButtonHistory[s][h] = !1, r && (this.__triggerEvents("gamepadbuttonup", C(x({}, a), {
             type: "gamepadbuttonup"
-          })), this.__triggerEvents("all", C(x({}, o), {
+          })), this.__triggerEvents("all", C(x({}, a), {
             type: "gamepadbuttonup"
           }))));
         }
@@ -1506,39 +1506,39 @@ class Z {
     } = this, [n, s] = [
       Math.round(e.x * r),
       Math.round(e.y * i)
-    ], h = (a, o, d) => {
-      if (!a || !(a instanceof _) || !e.isOnScreen(o, d, 1, 1, r, i) || (!a.value || a.value.trim() === "") && (!a.backgroundColor || a.backgroundColor === "transparent"))
+    ], h = (o, a, d) => {
+      if (!o || !(o instanceof _) || !e.isOnScreen(a, d, 1, 1, r, i) || (!o.value || o.value.trim() === "") && (!o.backgroundColor || o.backgroundColor === "transparent"))
         return;
-      const [u, f] = [o - n, d - s], m = t.coordinatesToIndex(u, f);
-      c[m] = a;
+      const [u, f] = [a - n, d - s], p = t.coordinatesToIndex(u, f);
+      c[p] = o;
     }, c = [];
-    for (const a of this.gameObjects.filter(
-      ({ visible: o }) => o
+    for (const o of this.gameObjects.filter(
+      ({ visible: a }) => a
     )) {
-      const { renderable: o } = a;
-      let { x: d, y: u } = a;
-      if (o) {
-        if (o.origin) {
-          const [f, m] = o.origin;
-          d -= f, u -= m, d = Math.round(d), u = Math.round(u);
+      const { renderable: a } = o;
+      let { x: d, y: u } = o;
+      if (a) {
+        if (a.origin) {
+          const [f, p] = a.origin;
+          d -= f, u -= p, d = Math.round(d), u = Math.round(u);
         }
-        if (o instanceof _)
-          h(o, d, u);
-        else if (o instanceof w) {
+        if (a instanceof _)
+          h(a, d, u);
+        else if (a instanceof w) {
           if (!e.isOnScreen(
             d,
             u,
-            o.width,
-            o.height,
+            a.width,
+            a.height,
             r,
             i
           ))
             continue;
-          for (let f = 0; f < o.data.length; f++) {
-            const m = o.data[f];
-            if (!(!m || m.length === 0))
-              for (let g = 0; g < m.length; g++) {
-                const E = m[g];
+          for (let f = 0; f < a.data.length; f++) {
+            const p = a.data[f];
+            if (!(!p || p.length === 0))
+              for (let g = 0; g < p.length; g++) {
+                const E = p[g];
                 h(E, d + g, u + f);
               }
           }
@@ -1573,7 +1573,7 @@ class ve {
      * @param {string} label The label of the layer to get.
      * @returns {Layer} A layer with the label provided. Or `undefined` if no layer was found.
      */
-    p(this, "getLayerByLabel", (e) => this.layers.find((t) => t.label === e));
+    m(this, "getLayerByLabel", (e) => this.layers.find((t) => t.label === e));
     this.scene = e, this.layers = t;
   }
   /**
@@ -1595,24 +1595,24 @@ class ve {
     const n = r ? [i] : this.layers, s = [];
     for (const h of n) {
       const { gameObjects: c } = h;
-      for (const a of c) {
-        const { renderable: o, x: d, y: u } = a;
-        if (o instanceof _ && d === e && u === t)
-          s.push({ gameObject: a, pixel: o });
-        else if (o instanceof w && z(
+      for (const o of c) {
+        const { renderable: a, x: d, y: u } = o;
+        if (a instanceof _ && d === e && u === t)
+          s.push({ gameObject: o, pixel: a });
+        else if (a instanceof w && z(
           e,
           t,
           1,
           1,
           d,
           u,
-          o.width,
-          o.height
+          a.width,
+          a.height
         )) {
-          const f = o.data[t - u] && o.data[t - u][e - d];
+          const f = a.data[t - u] && a.data[t - u][e - d];
           if (!f) continue;
           s.push({
-            gameObject: a,
+            gameObject: o,
             pixel: f
           });
         }
@@ -1813,19 +1813,19 @@ class xe {
      * @param {Object} object The object whose method should be run.
      * @param  {...any} passthrough The data to pass through to that method.
      */
-    p(this, "__runOnStartup", (e, ...t) => e.onStartup && e.onStartup(...t));
+    m(this, "__runOnStartup", (e, ...t) => e.onStartup && e.onStartup(...t));
     /**
      * Run the onTick method of any object.
      * @param {Object} object The object whose method should be run.
      * @param  {...any} passthrough The data to pass through to that method.
      */
-    p(this, "__runOnTick", (e, ...t) => e.onTick && e.onTick(this, ...t));
+    m(this, "__runOnTick", (e, ...t) => e.onTick && e.onTick(this, ...t));
     /**
      * Run the onLoad method of any object.
      * @param {Object} object The object whose method should be run.
      * @param  {...any} passthrough The data to pass through to that method.
      */
-    p(this, "__runOnLoad", (e, ...t) => e.onLoad && e.onLoad(...t));
+    m(this, "__runOnLoad", (e, ...t) => e.onLoad && e.onLoad(...t));
     this.config = e, this.validateConfig(e), this.audioManager = new we(this), this.renderer = new Y(this), this.running = !1, this.initialized = !1, this.paused = !1;
   }
   get webGLSupported() {
@@ -1956,13 +1956,13 @@ class Y {
      * @param {number} y The y-value of the coordinate.
      * @returns {number} The index of that coordinate in a frame.
      */
-    p(this, "coordinatesToIndex", (e, t) => t * this.width + e);
+    m(this, "coordinatesToIndex", (e, t) => t * this.width + e);
     /**
      * Convert a frame index into x and y coordinates.
      * @param {number} index The frame index.
      * @returns {Array<Number>} A coordinate array.
      */
-    p(this, "indexToCoordinates", (e) => [
+    m(this, "indexToCoordinates", (e) => [
       e % this.width,
       Math.floor(e / this.width)
     ]);
@@ -2078,11 +2078,11 @@ class Y {
       fontBoundingBoxDescent: h
     } = this.ctx.measureText("█"), c = s + h;
     this.characterSize = [n, c];
-    const [a, o] = [
+    const [o, a] = [
       n * this.width,
       c * this.height
     ];
-    i.canvas.width = a, i.canvas.height = o, i.canvas.style.width = `${a}px`, i.canvas.style.height = `${o}px`;
+    i.canvas.width = o, i.canvas.height = a, i.canvas.style.width = `${o}px`, i.canvas.style.height = `${a}px`;
   }
   /**
    * Rescale the display to fit the screen.
@@ -2100,8 +2100,8 @@ class Y {
     const { width: r, height: i } = e.parentElement.getBoundingClientRect(), { width: n, height: s } = e.getBoundingClientRect(), [h, c] = [
       r / n,
       i / s
-    ], a = Math.min(h, c);
-    e.style.transform = `translateX(-50%) translateY(-50%) scale(${a})`;
+    ], o = Math.min(h, c);
+    e.style.transform = `translateX(-50%) translateY(-50%) scale(${o})`;
   }
   /**
    * Clear the screen;
@@ -2181,16 +2181,16 @@ class Y {
           } = this;
           s.textAlign = "left", s.textBaseline = "top";
           for (let c = 0; c < this.width; c++)
-            for (let a = 0; a < this.height; a++) {
-              const o = a * this.width + c, d = t.data[o];
+            for (let o = 0; o < this.height; o++) {
+              const a = o * this.width + c, d = t.data[a];
               if (!d || !(d instanceof _)) continue;
-              const { value: u, color: f, fontWeight: m, backgroundColor: g } = d;
+              const { value: u, color: f, fontWeight: p, backgroundColor: g } = d;
               g && (s.beginPath(), s.fillStyle = g, s.fillRect(
                 c * i,
-                a * n,
+                o * n,
                 i + Math.max(1 / h, 1),
                 n
-              ), s.closePath()), s.beginPath(), s.font = `${m || "normal"} ${r} monospace`, s.fillStyle = f || "#FFFFFF", s.fillText(u, c * i, a * n), s.closePath();
+              ), s.closePath()), s.beginPath(), s.font = `${p || "normal"} ${r} monospace`, s.fillStyle = f || "#FFFFFF", s.fillText(u, c * i, o * n), s.closePath();
             }
         }
       }
@@ -2267,16 +2267,16 @@ class K extends A {
       height: s,
       color: h = "#ffffff",
       backgroundColor: c,
-      style: a = "double",
-      layer: o
+      style: o = "double",
+      layer: a
     } = t;
-    if (super(e, r, i, o), this.__rawWidth = n, this.__rawHeight = s, this.color = h, this.backgroundColor = c, !Object.keys($).includes(a))
+    if (super(e, r, i, a), this.__rawWidth = n, this.__rawHeight = s, this.color = h, this.backgroundColor = c, !Object.keys($).includes(o))
       throw new Error(
-        `Invalid box style "${a}" provided. Must be one of: ${T(
+        `Invalid box style "${o}" provided. Must be one of: ${T(
           Object.keys($)
         )}`
       );
-    this.style = a;
+    this.style = o;
   }
   get width() {
     return Math.round(this.__rawWidth);
@@ -2312,12 +2312,12 @@ class K extends A {
   static asPixelMesh(e, t, r, i, n) {
     const s = $[n], h = [];
     for (let c = 0; c < t; c++) {
-      const a = [];
-      for (let o = 0; o < e; o++) {
+      const o = [];
+      for (let a = 0; a < e; a++) {
         let d = 0, u = 0;
-        o === e - 1 ? d = 2 : o > 0 && (d = 1), c === t - 1 ? u = 2 : c > 0 && (u = 1);
+        a === e - 1 ? d = 2 : a > 0 && (d = 1), c === t - 1 ? u = 2 : c > 0 && (u = 1);
         let f = s[u][d];
-        a.push(
+        o.push(
           f && new _({
             value: f,
             color: r,
@@ -2326,7 +2326,7 @@ class K extends A {
           })
         );
       }
-      h.push(a);
+      h.push(o);
     }
     return new w({ data: h });
   }
@@ -2406,8 +2406,8 @@ class Me extends D {
       step: s = 1,
       onChange: h,
       callback: c,
-      showValue: a = !0,
-      showPercentage: o = !0
+      showValue: o = !0,
+      showPercentage: a = !0
     } = e;
     if (t && typeof t != "string")
       throw new TypeError(
@@ -2418,22 +2418,16 @@ class Me extends D {
         "Menu.Slider config.value property must be a number."
       );
     if (typeof i != "number")
-      throw new TypeError(
-        "Menu.Slider config.min property must be a number."
-      );
+      throw new TypeError("Menu.Slider config.min property must be a number.");
     if (typeof n != "number")
-      throw new TypeError(
-        "Menu.Slider max.value property must be a number."
-      );
+      throw new TypeError("Menu.Slider max.value property must be a number.");
     if (typeof s != "number")
-      throw new TypeError(
-        "Menu.Slider config.step property must be a number."
-      );
+      throw new TypeError("Menu.Slider config.step property must be a number.");
     if (i > n)
       throw new Error(
         "Menu.Slider config.min cannot be greater than config.max."
       );
-    this.showValue = !!a, this.showPercentage = !!o, this.label = t && t.trim(), this.min = i, this.max = n, this.value = r, this.step = s, this.callback = c, this.onChange = h;
+    this.showValue = !!o, this.showPercentage = !!a, this.label = t && t.trim(), this.min = i, this.max = n, this.value = r, this.step = s, this.callback = c, this.onChange = h;
   }
   /**
    * Get the value of this `Slider`.
@@ -2480,11 +2474,7 @@ class Me extends D {
    */
   get sliderWidth() {
     const e = (this.max - this.min) / this.step + 1;
-    return e <= 10 ? Math.round(e) : L(
-      e,
-      10,
-      this.menu.runtime.renderer.width / 4
-    );
+    return e <= 10 ? Math.round(e) : L(e, 10, this.menu.runtime.renderer.width / 4);
   }
   get renderable() {
     const {
@@ -2496,22 +2486,22 @@ class Me extends D {
       step: s,
       label: h,
       showValue: c,
-      showPercentage: a,
-      sliderWidth: o
+      showPercentage: o,
+      sliderWidth: a
     } = this, d = e === t;
     let u = [];
     if (h) {
       const v = w.fromString(this.label + " ");
       d || v.setColor("grey"), u.push(v.data[0]);
     }
-    const f = o - 1, m = Math.floor(
+    const f = a - 1, p = Math.floor(
       (r - i) / (n - i) * f
     ), g = new _({
       value: "─",
       color: d ? "white" : "grey"
     }), [E, k] = [
-      new Array(m).fill(g),
-      new Array(f - m).fill(g)
+      new Array(p).fill(g),
+      new Array(f - p).fill(g)
     ], O = new w({
       data: [
         ...E,
@@ -2531,10 +2521,10 @@ class Me extends D {
       );
       d || v.setColor("grey"), u[0].push(...v.data[0]);
     }
-    if (c && a && u[0].push(
+    if (c && o && u[0].push(
       null,
       new _({ value: "-", color: d ? "white" : "grey" })
-    ), a) {
+    ), o) {
       const v = w.fromString(
         (" " + Math.round(r / n * 100) + "%").padEnd(5, " ")
       );
@@ -2617,34 +2607,37 @@ const y = class y extends A {
       items: s = [],
       layer: h,
       autoFocus: c = !0,
-      deleteOnBlur: a = !1,
-      maintainFocus: o = !0,
+      deleteOnBlur: o = !1,
+      maintainFocus: a = !0,
       gamepad: d,
       alignCenter: u = !0,
       border: f = !0
     } = t;
-    if (super(e, r, i, h), this.deleteOnBlur = !!a, this.maintainFocus = !!o, this.alignCenter = !!u, this.border = !!f, !(s instanceof Array))
+    if (super(e, r, i, h), this.deleteOnBlur = !!o, this.maintainFocus = !!a, this.alignCenter = !!u, this.border = !!f, !(s instanceof Array))
       throw new TypeError(
         '"Menu" constructor config.items object should be an array of "Menu.Item" instances.'
       );
-    for (const m of s) {
-      if (!(m instanceof y.Item))
-        throw new TypeError(
-          'Each item in the "Menu" constructor config.items array must be an instance of "Menu.Item".'
-        );
-      m.menu = this, e.runtime.__runOnLoad(m);
-    }
     if (this.items = s, this.__rawIndex = 0, this.focused = !!c, n && typeof n != "string")
       throw new Error(
         `Provided menu title "${n}" is not of type "string".`
       );
-    this.title = n, this.gamepad = d, e.inputManager.addEventListener(
-      "keydown",
-      this.__onKeyDown.bind(this)
-    ), e.inputManager.addEventListener(
+    this.title = n, this.gamepad = d, e.inputManager.addEventListener("keydown", this.__onKeyDown.bind(this)), e.inputManager.addEventListener(
       "mousemove",
       this.__onMouseMove.bind(this)
     ), e.inputManager.addEventListener("click", this.__onClick.bind(this)), this.__inputMode = "keyboard";
+  }
+  get items() {
+    return this.__rawItems;
+  }
+  set items(e) {
+    for (const t of e) {
+      if (!(t instanceof y.Item))
+        throw new TypeError(
+          'Each object in the Menu.items array must be an instance of "Menu.Item".'
+        );
+      t.menu = this, this.scene.runtime.__runOnLoad(t);
+    }
+    this.__rawItems = e;
   }
   get gamepad() {
     return this.__rawGamepad;
@@ -2696,10 +2689,7 @@ const y = class y extends A {
    */
   get availableContentSpace() {
     const [e, t] = this.availableScreenSpace;
-    return [
-      e - y.horizontalSpacing * 2 - y.borderWidth * 2,
-      t
-    ];
+    return [e - y.horizontalSpacing * 2 - y.borderWidth * 2, t];
   }
   /**
    * Get the actual current width of the `Menu`.
@@ -2722,9 +2712,7 @@ const y = class y extends A {
     let e = 0;
     for (const { renderable: t } of this.items)
       t && (t instanceof w ? e += t.height : e++);
-    return Math.round(
-      e + (this.border ? y.borderWidth * 2 : 0)
-    );
+    return Math.round(e + (this.border ? y.borderWidth * 2 : 0));
   }
   /**
    * Get the screen-space currently used by the content of the menu.
@@ -2795,8 +2783,7 @@ const y = class y extends A {
    */
   __onClick(e) {
     if (!(!this.isOnScreen || !this.visible)) {
-      if (this.focused && !e.targets.includes(this.id))
-        return this.blur();
+      if (this.focused && !e.targets.includes(this.id)) return this.blur();
       e.targets.includes(this.id) && (this.focused = !0, this.__inputMode = "mouse"), this.__inputMode === "mouse" && (this.__determineMouseOverInput(e), this.currentItem && this.currentItem.onClick(e));
     }
   }
@@ -2813,19 +2800,16 @@ const y = class y extends A {
       items: t,
       width: r,
       height: i,
-      availableContentSpace: [
-        n,
-        s
-      ],
+      availableContentSpace: [n, s],
       availableScreenSpace: [h, c],
-      currentContentSpace: [a, o]
+      currentContentSpace: [o, a]
     } = this;
     let d = [];
     if (this.border) {
       const {
         data: u,
         width: f,
-        height: m
+        height: p
       } = K.asPixelMesh(
         r,
         i,
@@ -2844,18 +2828,18 @@ const y = class y extends A {
               throw new Error(
                 `Menu.Item renderable.width is greater than the Menu's maximum content width of ${n}.`
               );
-            f.data.forEach((m) => {
-              d[u] || (d[u] = this.border ? [] : new Array(a).fill(null)), d[u].splice(
+            f.data.forEach((p) => {
+              d[u] || (d[u] = this.border ? [] : new Array(o).fill(null)), d[u].splice(
                 Math.round(
-                  this.alignCenter ? a / 2 - m.length / 2 : 0
+                  this.alignCenter ? o / 2 - p.length / 2 : 0
                 ) + (this.border ? y.horizontalSpacing : 0),
-                m.length,
-                ...m
+                p.length,
+                ...p
               ), u++;
             });
           } else
             d[u] || (d[u] = []), d[u].splice(
-              a % 2 === 0 && this.alignCenter ? (this.border ? y.horizontalSpacing : 0) + (this.border ? y.borderWidth : 0) : Math.round(a / 2),
+              o % 2 === 0 && this.alignCenter ? (this.border ? y.horizontalSpacing : 0) + (this.border ? y.borderWidth : 0) : Math.round(o / 2),
               1,
               f
             ), u++;
@@ -2867,16 +2851,16 @@ const y = class y extends A {
       this.border || u.setFontWeight(800);
       const {
         data: [f]
-      } = u, m = this.border || this.alignCenter ? Math.floor((a - f.length) / 2) : 0;
+      } = u, p = this.border || this.alignCenter ? Math.floor((o - f.length) / 2) : 0;
       for (let g = 0; g < f.length; g++)
-        d[0] || (d[0] = []), d[0][g + m + (this.border ? y.horizontalSpacing : 0)] = f[g];
+        d[0] || (d[0] = []), d[0][g + p + (this.border ? y.horizontalSpacing : 0)] = f[g];
     }
     return new w({ data: d });
   }
   set renderable(e) {
   }
 };
-p(y, "Item", D), p(y, "Button", ke), p(y, "Slider", Me), p(y, "Toggle", Ce), p(y, "horizontalSpacing", 1), p(y, "borderWidth", 1);
+m(y, "Item", D), m(y, "Button", ke), m(y, "Slider", Me), m(y, "Toggle", Ce), m(y, "horizontalSpacing", 1), m(y, "borderWidth", 1);
 let P = y;
 class U extends A {
   /**
@@ -2905,11 +2889,11 @@ class U extends A {
       wrap: s = !0,
       color: h = "#ffffff",
       backgroundColor: c,
-      fontWeight: a = 400,
-      maxWidth: o = e.runtime.renderer.width,
+      fontWeight: o = 400,
+      maxWidth: a = e.runtime.renderer.width,
       layer: d
     } = t;
-    if (super(e, r, i, d), o && (typeof o != "number" || !Number.isInteger(o) || o < 1))
+    if (super(e, r, i, d), a && (typeof a != "number" || !Number.isInteger(a) || a < 1))
       throw new TypeError(
         "Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
       );
@@ -2917,7 +2901,7 @@ class U extends A {
       throw new Error(
         `Provided text value "${n}" is not of type "string".`
       );
-    this.__rawValue = n, this.wrap = s, this.color = h, this.backgroundColor = c, this.fontWeight = a, this.maxWidth = o;
+    this.__rawValue = n, this.wrap = s, this.color = h, this.backgroundColor = c, this.fontWeight = o, this.maxWidth = a;
   }
   /**
    * Get the value of the text object.
@@ -2955,12 +2939,12 @@ class U extends A {
   static asPixelMesh(e, t, r, i, n, s) {
     const h = e.split(`
 `), c = [];
-    for (const a of h)
-      if (!r && a.length > t)
+    for (const o of h)
+      if (!r && o.length > t)
         c.push(
-          a.substring(0, t).split("").map(
-            (o) => new _({
-              value: o,
+          o.substring(0, t).split("").map(
+            (a) => new _({
+              value: a,
               color: i,
               backgroundColor: n,
               fontWeight: s
@@ -2968,12 +2952,12 @@ class U extends A {
           )
         );
       else {
-        let o = [], d = 0;
-        for (const u of a) {
+        let a = [], d = 0;
+        for (const u of o) {
           if (d >= t)
             if (r)
               c.push(
-                o.map(
+                a.map(
                   (f) => new _({
                     value: f,
                     color: i,
@@ -2981,13 +2965,13 @@ class U extends A {
                     fontWeight: s
                   })
                 )
-              ), o = [], d = 0;
+              ), a = [], d = 0;
             else
               break;
-          o.push(u), d++;
+          a.push(u), d++;
         }
-        o.length > 0 && c.push(
-          o.map(
+        a.length > 0 && c.push(
+          a.map(
             (u) => new _({
               value: u,
               color: i,
@@ -3037,8 +3021,8 @@ class Te extends U {
       onChange: s,
       onKeyDown: h,
       onFocus: c,
-      onBlur: a,
-      maxLength: o
+      onBlur: o,
+      maxLength: a
     } = t;
     if (r) {
       if (typeof r != "string")
@@ -3082,19 +3066,19 @@ class Te extends U {
         );
       this.onFocus = c;
     }
-    if (a) {
-      if (typeof a != "function")
+    if (o) {
+      if (typeof o != "function")
         throw new TypeError(
           "Expected a function for TextInput config.onBlur value."
         );
-      this.onBlur = a;
+      this.onBlur = o;
     }
-    if (o) {
-      if (typeof o != "number" || !Number.isInteger(o) || o < 0)
+    if (a) {
+      if (typeof a != "number" || !Number.isInteger(a) || a < 0)
         throw new TypeError(
           "Invalid config.maxLength value provided to TextInput. Expected an integer greater than or equal to 0."
         );
-      this.maxLength = o;
+      this.maxLength = a;
     }
     this.scroll = 0, this.focused = t.autoFocus, this.caret = t.value ? t.value.length : 0, e.inputManager.watchObjectClick(this.id, this.__onClick.bind(this)), e.inputManager.addEventListener(
       "click",
@@ -3156,13 +3140,13 @@ class Te extends U {
       activeColor: s,
       backgroundColor: h,
       backgroundColorActive: c,
-      focused: a
-    } = this, o = [], d = e.length - r + 1;
+      focused: o
+    } = this, a = [], d = e.length - r + 1;
     this.scroll > d && (this.scroll = d), this.scroll < 0 && (this.scroll = 0);
     const { scroll: u } = this, f = e.substring(u, u + r).padEnd(r, " ").split("");
-    for (let m = 0; m < f.length; m++) {
-      const g = f[m], E = m + u === i && a;
-      o.push(
+    for (let p = 0; p < f.length; p++) {
+      const g = f[p], E = p + u === i && o;
+      a.push(
         new _({
           value: g,
           color: E ? s : n,
@@ -3171,7 +3155,7 @@ class Te extends U {
         })
       );
     }
-    return new w({ data: [o] });
+    return new w({ data: [a] });
   }
 }
 class Ae extends N {
@@ -3196,11 +3180,11 @@ class Ae extends N {
       scene: {
         camera: h,
         runtime: {
-          renderer: { width: c, height: a }
+          renderer: { width: c, height: o }
         }
       }
     } = this;
-    h.x = e - n + r / 2 - c / 2, h.y = t - s + i / 2 - a / 2;
+    h.x = e - n + r / 2 - c / 2, h.y = t - s + i / 2 - o / 2;
   }
 }
 class ee extends N {
@@ -3216,7 +3200,7 @@ class ee extends N {
     /**
      * Attempt to move `GameObject` up.
      */
-    p(this, "simulateControlUp", () => {
+    m(this, "simulateControlUp", () => {
       if (this.gameObject.paused) return;
       const {
         gameObject: { x: t, y: r }
@@ -3226,7 +3210,7 @@ class ee extends N {
     /**
      * Attempt to move `GameObject` down.
      */
-    p(this, "simulateControlDown", () => {
+    m(this, "simulateControlDown", () => {
       if (this.gameObject.paused) return;
       const {
         gameObject: { x: t, y: r }
@@ -3236,7 +3220,7 @@ class ee extends N {
     /**
      * Attempt to move `GameObject` left.
      */
-    p(this, "simulateControlLeft", () => {
+    m(this, "simulateControlLeft", () => {
       if (this.gameObject.paused) return;
       const {
         gameObject: { x: t, y: r }
@@ -3246,7 +3230,7 @@ class ee extends N {
     /**
      * Attempt to move `GameObject` right.
      */
-    p(this, "simulateControlRight", () => {
+    m(this, "simulateControlRight", () => {
       if (this.gameObject.paused) return;
       const {
         gameObject: { x: t, y: r }
@@ -3291,35 +3275,35 @@ class ee extends N {
         height: s,
         origin: [h, c]
       },
-      scene: { layerManager: a }
+      scene: { layerManager: o }
     } = this;
     if (n <= 1 && s <= 1) {
-      const g = a.solidAtPosition(t, r);
+      const g = o.solidAtPosition(t, r);
       (!g || g.gameObject === i) && (i.x = t, i.y = r);
       return;
     }
-    let o = !0;
-    const d = t > i.x, u = t < i.x, f = r > i.y, m = r < i.y;
+    let a = !0;
+    const d = t > i.x, u = t < i.x, f = r > i.y, p = r < i.y;
     if (d || u) {
       const g = i.y - c, E = g + s - 1;
       for (let k = g; k <= E; k++) {
-        const O = d ? t + n - 1 - h : t - h, v = a.solidAtPosition(O, k);
+        const O = d ? t + n - 1 - h : t - h, v = o.solidAtPosition(O, k);
         if (v && v.gameObject !== i) {
-          o = !1;
+          a = !1;
           break;
         }
       }
-    } else if (f || m) {
+    } else if (f || p) {
       const g = i.x - h, E = g + n - 1;
       for (let k = g; k <= E; k++) {
-        const O = f ? r + s - 1 - c : r - c, v = a.solidAtPosition(k, O);
+        const O = f ? r + s - 1 - c : r - c, v = o.solidAtPosition(k, O);
         if (v && v.gameObject !== i) {
-          o = !1;
+          a = !1;
           break;
         }
       }
     }
-    o && (i.x = t, i.y = r);
+    a && (i.x = t, i.y = r);
   }
   onTick() {
   }
