@@ -294,7 +294,10 @@
 									iframe.src =
 										window.location.host ===
 										"nottimtam.github.io"
-											? `https://github.com/NotTimTam/ascii.js/tree/main${path}`
+											? `https://nottimtam.github.io/ascii.js${path.replace(
+													"/docs",
+													""
+											  )}`
 											: path;
 
 									iframeContainer.appendChild(iframe);
