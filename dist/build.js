@@ -2626,9 +2626,15 @@ const y = class y extends A {
       this.__onMouseMove.bind(this)
     ), e.inputManager.addEventListener("click", this.__onClick.bind(this)), this.__inputMode = "keyboard";
   }
+  /**
+   * Get the menu items instantiated in this `Menu`.
+   */
   get items() {
     return this.__rawItems;
   }
+  /**
+   * Set the menu items instantiated in this `Menu`.
+   */
   set items(e) {
     for (const t of e) {
       if (!(t instanceof y.Item))
@@ -2639,9 +2645,15 @@ const y = class y extends A {
     }
     this.__rawItems = e;
   }
+  /**
+   * Get the index of the active gamepad.
+   */
   get gamepad() {
     return this.__rawGamepad;
   }
+  /**
+   * Set the index of the gamepad whose inputs should be listened to.
+   */
   set gamepad(e) {
     if (typeof e != "number") {
       this.__rawGamepad = void 0, this.scene.inputManager.removeEventListener(
@@ -2659,9 +2671,15 @@ const y = class y extends A {
       this.__handleGamepadButtonPressed.bind(this)
     ), this.__rawGamepad = e;
   }
+  /**
+   * Get the current active index in the menu.
+   */
   get index() {
     return this.__rawIndex;
   }
+  /**
+   * Set the current active index in the menu.
+   */
   set index(e) {
     if (typeof e != "number" || !Number.isInteger(e))
       throw new TypeError("Menu index must be an integer.");
