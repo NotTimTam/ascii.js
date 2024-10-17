@@ -88,6 +88,8 @@ class Scroller extends GameObject {
 		this.autoFocus = Boolean(autoFocus);
 		this.maintainFocus = Boolean(maintainFocus);
 
+		scene.inputManager.addFocusable(this);
+
 		scene.inputManager.addEventListener(
 			"mousemove",
 			this.__handleMouse.bind(this)
