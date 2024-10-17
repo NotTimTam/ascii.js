@@ -96,10 +96,13 @@ class Scroller extends GameObject {
 			"mousedown",
 			this.__handleMouse.bind(this)
 		);
-
 		scene.inputManager.addEventListener(
 			"keydown",
 			this.__handleKeyDown.bind(this)
+		);
+		scene.inputManager.addEventListener(
+			"wheel",
+			this.__handleMouseWheel.bind(this)
 		);
 	}
 
@@ -171,6 +174,17 @@ class Scroller extends GameObject {
 		if (right) this.scrollX++;
 		if (up) this.scrollY--;
 		if (down) this.scrollY++;
+	}
+
+	__handleMouseWheel(event) {
+		const {
+			deltas: { x, y },
+		} = event;
+
+		if (x < 0) this.scrollX--;
+		if (x > 0) this.scrollX++;
+		if (y < 0) this.scrollY--;
+		if (y > 0) this.scrollY++;
 	}
 
 	/**
