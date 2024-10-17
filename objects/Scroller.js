@@ -104,6 +104,10 @@ class Scroller extends GameObject {
 			"wheel",
 			this.__handleMouseWheel.bind(this)
 		);
+		scene.inputManager.addEventListener(
+			"gamepadbuttonpressed",
+			this.__handleGamepadButtonPressed.bind(this)
+		);
 	}
 
 	__handleMouse(event) {
@@ -185,6 +189,16 @@ class Scroller extends GameObject {
 		if (x > 0) this.scrollX++;
 		if (y < 0) this.scrollY--;
 		if (y > 0) this.scrollY++;
+	}
+
+	__handleGamepadButtonPressed(event) {
+		const {
+			buttons: { up, down, left, right },
+		} = event;
+		if (up) this.scrollY--;
+		else if (down) this.scrollY++;
+		if (left) this.scrollX--;
+		else if (right) this.scrollX++;
 	}
 
 	/**
