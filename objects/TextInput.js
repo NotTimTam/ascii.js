@@ -1,7 +1,6 @@
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 import { isPlainObject } from "../util/data.js";
-import { clamp } from "../util/math.js";
 import Text from "./Text.js";
 
 class TextInput extends Text {
@@ -51,7 +50,7 @@ class TextInput extends Text {
 		if (activeColor) {
 			if (typeof activeColor !== "string")
 				return new TypeError(
-					"Expected a string for Text config.activeColor value."
+					"Expected a string for TextInput config.activeColor value."
 				);
 			this.activeColor = activeColor;
 		}
@@ -59,7 +58,7 @@ class TextInput extends Text {
 		if (backgroundColor) {
 			if (typeof backgroundColor !== "string")
 				return new TypeError(
-					"Expected a string for Text config.backgroundColor value."
+					"Expected a string for TextInput config.backgroundColor value."
 				);
 			this.backgroundColor = backgroundColor;
 		}
@@ -67,7 +66,7 @@ class TextInput extends Text {
 		if (backgroundColorActive) {
 			if (typeof backgroundColorActive !== "string")
 				return new TypeError(
-					"Expected a string for Text config.backgroundColorActive value."
+					"Expected a string for TextInput config.backgroundColorActive value."
 				);
 			this.backgroundColorActive = backgroundColorActive;
 		}

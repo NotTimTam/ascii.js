@@ -618,16 +618,24 @@ class InputManager {
 			this.mouse.rawY = clientY;
 			this.mouse.canvasX = rX;
 			this.mouse.canvasY = rY;
-			this.mouse.x = clamp(
-				Math.floor(relX * characterWidth),
-				0,
-				characterWidth
-			);
-			this.mouse.y = clamp(
-				Math.floor(relY * characterHeight),
+			this.mouse.floatX = clamp(relX * characterWidth, 0, characterWidth);
+			this.mouse.floatY = clamp(
+				relY * characterHeight,
 				0,
 				characterHeight
 			);
+			// this.mouse.x = clamp(
+			// 	Math.floor(relX * characterWidth),
+			// 	0,
+			// 	characterWidth
+			// );
+			// this.mouse.y = clamp(
+			// 	Math.floor(relY * characterHeight),
+			// 	0,
+			// 	characterHeight
+			// );
+			this.mouse.x = Math.floor(this.mouse.floatX);
+			this.mouse.y = Math.floor(this.mouse.floatY);
 
 			this.mouse.onLayer = {};
 
