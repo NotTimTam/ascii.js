@@ -45,13 +45,13 @@ class Button extends Item {
 	}
 
 	onKeyDown(event) {
-		if (event.keys.enter) this.callback(this.menu);
+		if (event.keys.enter) this.callback && this.callback(this.menu);
 	}
 	onGamepadButton(event) {
-		if (event.buttons.a) this.callback(this.menu);
+		if (event.buttons.a) this.callback && this.callback(this.menu);
 	}
 	onClick() {
-		this.callback(this.menu);
+		this.callback && this.callback(this.menu);
 	}
 
 	get renderable() {
