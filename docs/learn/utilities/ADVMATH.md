@@ -1,4 +1,4 @@
-# AdvMath
+# `AdvMath`
 
 ```js
 import { AdvMath } from "https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/bundle.esm.js";

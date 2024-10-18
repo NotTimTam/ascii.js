@@ -1,4 +1,4 @@
-# AudioManager
+# `AudioManager`
 
 Controls audio playback.
 

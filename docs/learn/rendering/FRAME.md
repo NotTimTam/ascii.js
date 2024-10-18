@@ -1,4 +1,4 @@
-# Frame
+# `Frame`
 
 A display frame.
 

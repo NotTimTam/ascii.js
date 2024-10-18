@@ -1,4 +1,4 @@
-# Box
+# `Box`
 
 A box that can be rendered on screen.
 

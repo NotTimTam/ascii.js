@@ -1,4 +1,4 @@
-# InputManager
+# `InputManager`
 
 A class to handle user input for the game, including keyboard, mouse, and gamepad inputs.
 

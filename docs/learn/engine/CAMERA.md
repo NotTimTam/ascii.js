@@ -1,4 +1,4 @@
-# Camera
+# `Camera`
 
 The scene contains variable layers and compiles them into one frame to render to the screen.
 

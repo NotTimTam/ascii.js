@@ -1,4 +1,4 @@
-# Renderer
+# `Renderer`
 
 Handles rendering the game using **2D Context**.
 

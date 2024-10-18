@@ -1,4 +1,4 @@
-# Sound
+# `Sound`
 
 Manages loading and playback of an audio file.
 

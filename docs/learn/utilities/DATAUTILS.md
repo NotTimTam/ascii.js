@@ -1,4 +1,4 @@
-# dataUtils
+# `dataUtils`
 
 ```js
 import { dataUtils } from "https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/bundle.esm.js";

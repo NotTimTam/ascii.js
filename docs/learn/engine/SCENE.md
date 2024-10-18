@@ -1,4 +1,4 @@
-# Scene
+# `Scene`
 
 A scene is a level, screen, or world that can be loaded at any point during runtime.
 

@@ -1,4 +1,4 @@
-# Text
+# `Text`
 
 A string of text that can be rendered on screen.
 

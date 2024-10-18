@@ -1,4 +1,4 @@
-# Layer
+# `Layer`
 
 A layer is a construct of other objects. The layer manages these objects and can optionally render them to the screen.
 

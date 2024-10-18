@@ -1,25 +1,24 @@
-import Text from "../objects/Text.js";
 import { isPlainObject } from "../util/data.js";
 import GameObject from "./GameObject.js";
 
-class Focusable extends GameObject {
+class Interface extends GameObject {
 	/**
 	 * Extends the `GameObject` class to include several methods and properties for handling input focus.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {Object} config The `Focusable`'s config object.
-	 * @param {number} config.x This `Focusable` object's x-coordinate.
-	 * @param {number} config.y This `Focusable` object's y-coordinate.
-	 * @param {string} config.layer The label of the layer to start the `Focusable` on.
-	 * @param {boolean} config.autoFocus Whether to automatically focus on the `Focusable` after it has been instantiated. Default `false`.
-	 * @param {boolean} config.maintainFocus Forces the focusable to stay focused. Default `false`.
-	 * @param {boolean} config.deleteOnBlur Whether to delete the focusable when it becomes unfocused. Default `false`. **NOTE:** If `config.autoFocus` is set to false, the `Focusable` will be deleted immediately!
+	 * @param {Object} config The `Interface`'s config object.
+	 * @param {number} config.x This `Interface` object's x-coordinate.
+	 * @param {number} config.y This `Interface` object's y-coordinate.
+	 * @param {string} config.layer The label of the layer to start the `Interface` on.
+	 * @param {boolean} config.autoFocus Whether to automatically focus on the `Interface` after it has been instantiated. Default `false`.
+	 * @param {boolean} config.maintainFocus Forces the interface to stay focused. Default `false`.
+	 * @param {boolean} config.deleteOnBlur Whether to delete the interface when it becomes unfocused. Default `false`. **NOTE:** If `config.autoFocus` is set to false, the `Interface` will be deleted immediately!
 	 * @param {function} config.onFocus A callback that triggers when this element gains focus.
 	 * @param {function} config.onBlur A callback that triggers when this element loses focus.
 	 */
 	constructor(scene, config) {
 		if (!isPlainObject(config))
 			throw new TypeError(
-				"Expected a plain object for Focusable constructor config parameter."
+				"Expected a plain object for Interface constructor config parameter."
 			);
 
 		const {
@@ -42,7 +41,7 @@ class Focusable extends GameObject {
 		if (onFocus) {
 			if (typeof onFocus !== "function")
 				throw new TypeError(
-					"Expected a function for Focusable.config.onFocus property."
+					"Expected a function for Interface.config.onFocus property."
 				);
 
 			this.onFocus = onFocus;
@@ -51,13 +50,13 @@ class Focusable extends GameObject {
 		if (onBlur) {
 			if (typeof onBlur !== "function")
 				throw new TypeError(
-					"Expected a function for Focusable.config.onBlur property."
+					"Expected a function for Interface.config.onBlur property."
 				);
 
 			this.onBlur = onBlur;
 		}
 
-		scene.inputManager.addFocusable(this);
+		scene.inputManager.addInterface(this);
 
 		console.log(this);
 	}
@@ -79,12 +78,12 @@ class Focusable extends GameObject {
 	 * Set the focus state of this instance.
 	 */
 	set focused(bool) {
-		const { focusables } = this.scene.inputManager;
+		const { interfaces } = this.scene.inputManager;
 
 		bool = Boolean(bool);
 
 		if (bool) {
-			this.scene.inputManager.__focusIndex = focusables.indexOf(this); // Focus on this element.
+			this.scene.inputManager.__focusIndex = interfaces.indexOf(this); // Focus on this element.
 			this.onFocus && this.onFocus(); // Trigger focus event.
 		} else if (this.focused) {
 			this.scene.inputManager.__focusIndex = -1; // Otherwise blur this element if it is focused.
@@ -107,4 +106,4 @@ class Focusable extends GameObject {
 	}
 }
 
-export default Focusable;
+export default Interface;

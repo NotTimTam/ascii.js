@@ -1,4 +1,4 @@
-# Menu
+# `Menu`
 
 A menu of various items that can be rendered on screen.
 

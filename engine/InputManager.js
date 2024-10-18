@@ -1,4 +1,4 @@
-import Focusable from "../core/Focusable.js";
+import Interface from "../core/Interface.js";
 import GameObject from "../core/GameObject.js";
 import { displayArray } from "../util/data.js";
 import { clamp } from "../util/math.js";
@@ -328,7 +328,7 @@ class InputManager {
 		};
 		this.mouse = { buttons: {}, onLayer: {} };
 
-		this.__rawFocusables = [];
+		this.__rawInterfaces = [];
 		this.__focusIndex = -1;
 
 		this.__eventListeners = {
@@ -363,48 +363,48 @@ class InputManager {
 	 * Get the current focused item.
 	 */
 	get focusTarget() {
-		return this.focusables[this.__focusIndex];
+		return this.interfaces[this.__focusIndex];
 	}
 
 	/**
-	 * Get all focusable items.
+	 * Get all interface items.
 	 */
-	get focusables() {
-		return this.__rawFocusables;
+	get interfaces() {
+		return this.__rawInterfaces;
 	}
 
 	/**
-	 * Set focusable items.
+	 * Set interface items.
 	 */
-	set focusables(arr) {
+	set interfaces(arr) {
 		if (!(arr instanceof Array))
 			throw new TypeError(
-				"InputManager focusables property must be an array of GameObjects."
+				"InputManager interfaces property must be an array of GameObjects."
 			);
 
-		for (const focusable of arr)
-			if (!focusable instanceof GameObject)
+		for (const interface of arr)
+			if (!interface instanceof GameObject)
 				throw new TypeError(
-					`InputManager focusables must be of type "GameObject".`
+					`InputManager interfaces must be of type "GameObject".`
 				);
 
-		this.__rawFocusables = arr;
+		this.__rawInterfaces = arr;
 	}
 
 	/**
-	 * Add a `Focusable` to the list of focusable objects.
-	 * @param {Focusable} focusable The `Focusable` instance to add.
+	 * Add a `Interface` to the list of interface objects.
+	 * @param {Interface} interface The `Interface` instance to add.
 	 */
-	addFocusable(focusable) {
-		if (!(focusable instanceof Focusable))
+	addInterface(interface) {
+		if (!(interface instanceof Interface))
 			throw new TypeError(
-				`Only instances of "Focusable" can be added to the InputManager's focusable list.`
+				`Only instances of "Interface" can be added to the InputManager's interface list.`
 			);
 
-		if (this.focusables.includes(focusable))
-			throw new Error("This object is already in the focusable list.");
+		if (this.interfaces.includes(interface))
+			throw new Error("This object is already in the interface list.");
 
-		this.focusables.push(focusable);
+		this.interfaces.push(interface);
 	}
 
 	/**

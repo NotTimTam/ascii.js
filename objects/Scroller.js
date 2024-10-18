@@ -1,10 +1,10 @@
-import Focusable from "../core/Focusable.js";
+import Interface from "../core/Interface.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 import { aabb, clamp } from "../util/math.js";
 import Box from "./Box.js";
 
-class Scroller extends Focusable {
+class Scroller extends Interface {
 	/**
 	 * The color of the scrollbar track.
 	 */

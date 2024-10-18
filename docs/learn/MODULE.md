@@ -1,4 +1,4 @@
-# Module
+# `Module`
 
 Once you have integrated the source code into your project, you can access several utilities, object constructors, and the main project runtime through it. Here are the exposed exports:
 

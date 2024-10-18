@@ -1,4 +1,4 @@
-# TextInput
+# `TextInput`
 
 A text input that can be rendered on screen.
 

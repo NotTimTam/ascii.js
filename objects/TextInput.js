@@ -1,8 +1,8 @@
-import Focusable from "../core/Focusable.js";
+import Interface from "../core/Interface.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 
-class TextInput extends Focusable {
+class TextInput extends Interface {
 	/**
 	 * A text input that can be rendered on screen.
 	 * @param {Scene} scene The scene this Object is a part of.

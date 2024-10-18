@@ -1,4 +1,4 @@
-# ScrollTo
+# `ScrollTo`
 
 Scroll the camera to a `GameObject`.
 

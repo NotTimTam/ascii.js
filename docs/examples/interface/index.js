@@ -1,4 +1,4 @@
-import Focusable from "../../../core/Focusable.js";
+import Interface from "../../../core/Interface.js";
 import Runtime, {
 	Menu,
 	Scene,
@@ -87,7 +87,7 @@ const scene = new Scene(runtime, {
 
 // new ScrollTo(menu2);
 
-class FocusIndicator extends Focusable {
+class FocusIndicator extends Interface {
 	constructor(scene, config) {
 		super(scene, config);
 	}

@@ -1,4 +1,4 @@
-# LayerManager
+# `LayerManager`
 
 The layer manager contains variable layers and compiles them into one frame to render to the screen.
 
