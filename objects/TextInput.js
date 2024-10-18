@@ -42,7 +42,6 @@ class TextInput extends UIObject {
 			color,
 			fontWeight,
 			maxWidth,
-			tabIndex,
 		} = config;
 
 		if (activeColor) {

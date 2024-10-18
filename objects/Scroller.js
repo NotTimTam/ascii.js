@@ -4,6 +4,15 @@ import Scene from "../engine/Scene.js";
 import { aabb, clamp } from "../util/math.js";
 import Box from "./Box.js";
 
+/**
+ * Configuration data for the `Scroller` class.
+ * @typedef {Object} ScrollerConfig
+ * @property {number} width The width of the `Scroller`. Defaults to `8`. **Note:** This is the width of the `Scroller` "window", not the width of the view area.
+ * @property {number} height The height of the `Scroller`. Defaults to `8`. **Note:** This is the height of the `Scroller` "window", not the height of the view area.
+ * @property {?string} gameObjects The `GameObject`s to display in the `Scroller`. **Note:** These `GameObject`s will be removed from any layer they are a part of, and their `x` and `y` coordinates and renderable will be displayed relative to the scroller.
+ * @property {?string} backgroundColor Optional background color.
+ */
+
 class Scroller extends UIObject {
 	/**
 	 * The color of the scrollbar track.
@@ -28,16 +37,7 @@ class Scroller extends UIObject {
 	/**
 	 * A box that can be scrolled.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {Object} config The `Scroller`'s config object.
-	 * @param {number} config.x This `Scroller` object's x-coordinate.
-	 * @param {number} config.y This `Scroller` object's y-coordinate.
-	 * @param {number} config.width The width of the `Scroller`. Defaults to `8`. **Note:** This is the width of the `Scroller` "window", not the width of the view area.
-	 * @param {number} config.height The height of the `Scroller`. Defaults to `8`. **Note:** This is the height of the `Scroller` "window", not the height of the view area.
-	 * @param {string} config.gameObjects The `GameObject`s to display in the `Scroller`. **Note:** These `GameObject`s will be removed from any layer they are a part of, and their `x` and `y` coordinates and renderable will be displayed relative to the scroller.
-	 * @param {?string} config.backgroundColor Optional background color.
-	 * @param {string} config.autoFocus Automatically focus on element once it is instantiated.
-	 * @param {string} config.maintainFocus Forces the menu to stay focused. Default `true`.
-	 * @param {string} config.layer The label of the layer to start the `Scroller` on.
+	 * @param {import("../core/UIObject.js").UIObjectConfig & ScrollerConfig} config The `Scroller`'s config object.
 	 */
 	constructor(scene, config) {
 		super(scene, config);
