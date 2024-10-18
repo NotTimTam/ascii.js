@@ -1,10 +1,10 @@
-import Interface from "../core/Interface.js";
+import UIObject from "../core/UIObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 import { aabb, clamp } from "../util/math.js";
 import Box from "./Box.js";
 
-class Scroller extends Interface {
+class Scroller extends UIObject {
 	/**
 	 * The color of the scrollbar track.
 	 */

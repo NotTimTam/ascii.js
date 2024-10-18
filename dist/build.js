@@ -825,10 +825,10 @@ const p = class p {
 		return e;
 	}
 	/**
-	 * Create a simple interface for collecting gamepad inputs.
+	 * Create a simple uIObject for collecting gamepad inputs.
 	 *
-	 * This interface attempts to normalize inputs for these controllers to make it easier to interact with them.
-	 * Unsupported controllers can still be interacted with through the interfaces `raw` property.
+	 * This uIObject attempts to normalize inputs for these controllers to make it easier to interact with them.
+	 * Unsupported controllers can still be interacted with through the uIObjects `raw` property.
 	 *
 	 * ### Tested Controllers
 	 * - XB (One) Wireless Controller
@@ -1062,7 +1062,7 @@ class ve {
 				key: void 0,
 			}),
 			(this.mouse = { buttons: {}, onLayer: {} }),
-			(this.__rawInterfaces = []),
+			(this.__rawUIObjects = []),
 			(this.__focusIndex = -1),
 			(this.__eventListeners = {
 				gamepadbuttonpressed: [],
@@ -1088,37 +1088,37 @@ class ve {
 	 * Get the current focused item.
 	 */
 	get focusTarget() {
-		return this.interfaces[this.__focusIndex];
+		return this.uIObjects[this.__focusIndex];
 	}
 	/**
-	 * Get all interface items.
+	 * Get all uIObject items.
 	 */
-	get interfaces() {
-		return this.__rawInterfaces;
+	get uIObjects() {
+		return this.__rawUIObjects;
 	}
 	/**
-	 * Set interface items.
+	 * Set uIObject items.
 	 */
-	set interfaces(e) {
+	set uIObjects(e) {
 		if (!(e instanceof Array))
 			throw new TypeError(
-				"InputManager interfaces property must be an array of GameObjects."
+				"InputManager uIObjects property must be an array of GameObjects."
 			);
 		for (const t of e)
 			if (!t instanceof A)
 				throw new TypeError(
-					'InputManager interfaces must be of type "GameObject".'
+					'InputManager uIObjects must be of type "GameObject".'
 				);
-		this.__rawInterfaces = e;
+		this.__rawUIObjects = e;
 	}
 	/**
-	 * Add a `GameObject` to the list of interface objects.
+	 * Add a `GameObject` to the list of uIObject objects.
 	 * @param {GameObject} gameObject The `GameObject` instance to add.
 	 */
-	addInterface(e) {
-		if (this.interfaces.includes(e))
-			throw new Error("This object is already in the interface list.");
-		this.interfaces.push(e);
+	addUIObject(e) {
+		if (this.uIObjects.includes(e))
+			throw new Error("This object is already in the uIObject list.");
+		this.uIObjects.push(e);
 	}
 	/**
 	 * Get the raw `navigator.getGamepads()` data.
@@ -2210,7 +2210,7 @@ class Y {
 			!window.Worker && this.useWebWorkers)
 		)
 			throw new Error("This environment does not support webworkers.");
-		this.__createWorkerInterface();
+		this.__createWorkerUIObject();
 	}
 	/**
 	 * Get the display's character width.
@@ -2373,9 +2373,9 @@ class Y {
 		e.beginPath(), e.clearRect(0, 0, t, r), e.closePath();
 	}
 	/**
-	 * Create interfaces for each web worker.
+	 * Create uIObjects for each web worker.
 	 */
-	__createWorkerInterface() {
+	__createWorkerUIObject() {
 		(this.webWorkers = {
 			drawFrame: new Worker(
 				URL.createObjectURL(
@@ -3538,7 +3538,7 @@ class Ae extends U {
 				"keydown",
 				this.__onKeyDown.bind(this)
 			),
-			e.inputManager.addInterface(this);
+			e.inputManager.addUIObject(this);
 	}
 	get focused() {
 		return this.__rawFocused;

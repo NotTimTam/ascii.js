@@ -1,4 +1,4 @@
-import Interface from "../core/Interface.js";
+import UIObject from "../core/UIObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 import { wrapString } from "../util/data.js";
@@ -377,7 +377,7 @@ class Toggle extends Item {
 	}
 }
 
-class Menu extends Interface {
+class Menu extends UIObject {
 	static Item = Item;
 	static Button = Button;
 	static Slider = Slider;

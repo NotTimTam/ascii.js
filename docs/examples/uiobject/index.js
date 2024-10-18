@@ -1,4 +1,4 @@
-import Interface from "../../../core/Interface.js";
+import UIObject from "../../../core/UIObject.js";
 import Runtime, {
 	Menu,
 	Scene,
@@ -87,7 +87,7 @@ const scene = new Scene(runtime, {
 
 // new ScrollTo(menu2);
 
-class FocusIndicator extends Interface {
+class FocusIndicator extends UIObject {
 	constructor(scene, config) {
 		super(scene, config);
 	}

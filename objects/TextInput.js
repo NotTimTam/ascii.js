@@ -1,8 +1,8 @@
-import Interface from "../core/Interface.js";
+import UIObject from "../core/UIObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 
-class TextInput extends Interface {
+class TextInput extends UIObject {
 	/**
 	 * A text input that can be rendered on screen.
 	 * @param {Scene} scene The scene this Object is a part of.

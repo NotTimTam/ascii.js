@@ -1,10 +1,10 @@
-import Interface from "../core/Interface.js";
+import UIObject from "../core/UIObject.js";
 import GameObject from "../core/GameObject.js";
 import { displayArray } from "../util/data.js";
 import { clamp } from "../util/math.js";
 import Scene from "./Scene.js";
 
-class GamepadInterface {
+class GamepadUIObject {
 	static gamepadButtonIntervals = 100;
 	static deadzoneThreshold = 0.1;
 
@@ -16,7 +16,7 @@ class GamepadInterface {
 	 */
 	static applyDeadzone(
 		values,
-		threshold = GamepadInterface.deadzoneThreshold
+		threshold = GamepadUIObject.deadzoneThreshold
 	) {
 		for (const [name, value] of Object.entries(values)) {
 			// If the value is within the deadzone range, return 0 (consider it neutral)
@@ -109,10 +109,10 @@ class GamepadInterface {
 	static standardAxesMap = ["lh", "lv", "rh", "rv"];
 
 	/**
-	 * Create a simple interface for collecting gamepad inputs.
+	 * Create a simple uIObject for collecting gamepad inputs.
 	 *
-	 * This interface attempts to normalize inputs for these controllers to make it easier to interact with them.
-	 * Unsupported controllers can still be interacted with through the interfaces `raw` property.
+	 * This uIObject attempts to normalize inputs for these controllers to make it easier to interact with them.
+	 * Unsupported controllers can still be interacted with through the uIObjects `raw` property.
 	 *
 	 * ### Tested Controllers
 	 * - XB (One) Wireless Controller
@@ -140,15 +140,15 @@ class GamepadInterface {
 
 		if (mapping === "standard")
 			return {
-				axes: GamepadInterface.applyDeadzone(
+				axes: GamepadUIObject.applyDeadzone(
 					Object.fromEntries(
 						axes
 							.filter(
 								(_, index) =>
-									GamepadInterface.standardAxesMap[index]
+									GamepadUIObject.standardAxesMap[index]
 							)
 							.map((axis, index) => [
-								GamepadInterface.standardAxesMap[index],
+								GamepadUIObject.standardAxesMap[index],
 								axis,
 							])
 					)
@@ -157,10 +157,10 @@ class GamepadInterface {
 					buttons
 						.filter(
 							(axis, index) =>
-								GamepadInterface.standardButtonMap[index]
+								GamepadUIObject.standardButtonMap[index]
 						)
 						.map((axis, index) => [
-							GamepadInterface.standardButtonMap[index],
+							GamepadUIObject.standardButtonMap[index],
 							axis,
 						])
 				),
@@ -182,20 +182,18 @@ class GamepadInterface {
 			axes: Object.fromEntries(
 				axes
 					.filter(
-						(axis, index) => GamepadInterface.standardAxesMap[index]
+						(axis, index) => GamepadUIObject.standardAxesMap[index]
 					)
 					.map((axis, index) => [
-						GamepadInterface.standardAxesMap[index],
+						GamepadUIObject.standardAxesMap[index],
 						axis,
 					])
 			),
 			buttons: Object.fromEntries(
 				buttons
-					.filter(
-						(axis, index) => GamepadInterface.xbButtonMap[index]
-					)
+					.filter((axis, index) => GamepadUIObject.xbButtonMap[index])
 					.map((axis, index) => [
-						GamepadInterface.xbButtonMap[index],
+						GamepadUIObject.xbButtonMap[index],
 						axis,
 					])
 			),
@@ -216,20 +214,18 @@ class GamepadInterface {
 			axes: Object.fromEntries(
 				axes
 					.filter(
-						(axis, index) => GamepadInterface.standardAxesMap[index]
+						(axis, index) => GamepadUIObject.standardAxesMap[index]
 					)
 					.map((axis, index) => [
-						GamepadInterface.standardAxesMap[index],
+						GamepadUIObject.standardAxesMap[index],
 						axis,
 					])
 			),
 			buttons: Object.fromEntries(
 				buttons
-					.filter(
-						(axis, index) => GamepadInterface.psButtonMap[index]
-					)
+					.filter((axis, index) => GamepadUIObject.psButtonMap[index])
 					.map((axis, index) => [
-						GamepadInterface.psButtonMap[index],
+						GamepadUIObject.psButtonMap[index],
 						axis,
 					])
 			),
@@ -250,20 +246,18 @@ class GamepadInterface {
 			axes: Object.fromEntries(
 				axes
 					.filter(
-						(axis, index) => GamepadInterface.standardAxesMap[index]
+						(axis, index) => GamepadUIObject.standardAxesMap[index]
 					)
 					.map((axis, index) => [
-						GamepadInterface.standardAxesMap[index],
+						GamepadUIObject.standardAxesMap[index],
 						axis,
 					])
 			),
 			buttons: Object.fromEntries(
 				buttons
-					.filter(
-						(axis, index) => GamepadInterface.nsButtonMap[index]
-					)
+					.filter((axis, index) => GamepadUIObject.nsButtonMap[index])
 					.map((axis, index) => [
-						GamepadInterface.nsButtonMap[index],
+						GamepadUIObject.nsButtonMap[index],
 						axis,
 					])
 			),
@@ -328,7 +322,7 @@ class InputManager {
 		};
 		this.mouse = { buttons: {}, onLayer: {} };
 
-		this.__rawInterfaces = [];
+		this.__rawUIObjects = [];
 		this.__focusIndex = -1;
 
 		this.__eventListeners = {
@@ -359,52 +353,52 @@ class InputManager {
 		this.__windowBlurHandler = this.__windowBlurHandler.bind(this);
 	}
 
+	// /**
+	//  * Get the current focused item.
+	//  */
+	// get focusTarget() {
+	// 	return this.uIObjects[this.__focusIndex];
+	// }
+
 	/**
-	 * Get the current focused item.
+	 * Get all uIObject items.
 	 */
-	get focusTarget() {
-		return this.interfaces[this.__focusIndex];
+	get uIObjects() {
+		return this.__rawUIObjects;
 	}
 
 	/**
-	 * Get all interface items.
+	 * Set uIObject items.
 	 */
-	get interfaces() {
-		return this.__rawInterfaces;
-	}
-
-	/**
-	 * Set interface items.
-	 */
-	set interfaces(arr) {
+	set uIObjects(arr) {
 		if (!(arr instanceof Array))
 			throw new TypeError(
-				"InputManager interfaces property must be an array of GameObjects."
+				'InputManager uIObjects property must be an array of "UIObject"s.'
 			);
 
-		for (const interface of arr)
-			if (!interface instanceof GameObject)
+		for (const uIObject of arr)
+			if (!uIObject instanceof UIObject)
 				throw new TypeError(
-					`InputManager interfaces must be of type "GameObject".`
+					`InputManager uIObjects must be of type "UIObject".`
 				);
 
-		this.__rawInterfaces = arr;
+		this.__rawUIObjects = arr;
 	}
 
 	/**
-	 * Add a `Interface` to the list of interface objects.
-	 * @param {Interface} interface The `Interface` instance to add.
+	 * Add a `UIObject` to the list of uIObject objects.
+	 * @param {UIObject} uIObject The `UIObject` instance to add.
 	 */
-	addInterface(interface) {
-		if (!(interface instanceof Interface))
+	addUIObject(uIObject) {
+		if (!(uIObject instanceof UIObject))
 			throw new TypeError(
-				`Only instances of "Interface" can be added to the InputManager's interface list.`
+				`Only instances of "UIObject" can be added to the InputManager's uIObject list.`
 			);
 
-		if (this.interfaces.includes(interface))
-			throw new Error("This object is already in the interface list.");
+		if (this.uIObjects.includes(uIObject))
+			throw new Error("This object is already in the uIObject list.");
 
-		this.interfaces.push(interface);
+		this.uIObjects.push(uIObject);
 	}
 
 	/**
@@ -423,7 +417,7 @@ class InputManager {
 
 			const { index } = gamepad;
 
-			return new GamepadInterface(this, index);
+			return new GamepadUIObject(this, index);
 		});
 	}
 
@@ -958,7 +952,7 @@ class InputManager {
 
 			const canTriggerButtonEvent =
 				timeSinceLastButtonEvent >
-				GamepadInterface.gamepadButtonIntervals;
+				GamepadUIObject.gamepadButtonIntervals;
 
 			for (const gamepad of gamepads) {
 				const { buttons, index } = gamepad;
