@@ -35,13 +35,6 @@ class Focusable extends GameObject {
 
 		super(scene, x, y, layer);
 
-		this.__rawRenderable = Text.asPixelMesh(
-			"Unfocused",
-			undefined,
-			undefined,
-			"grey"
-		);
-
 		this.autoFocus = Boolean(autoFocus);
 		this.maintainFocus = Boolean(maintainFocus);
 		this.deleteOnBlur = Boolean(deleteOnBlur);
@@ -68,6 +61,10 @@ class Focusable extends GameObject {
 
 		console.log(this);
 	}
+
+	__focusDefault() {}
+	__blurDefault() {}
+	__clickDefault() {}
 
 	/**
 	 * Check if this instance is currently in focus.

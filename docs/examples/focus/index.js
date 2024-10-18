@@ -87,9 +87,29 @@ const scene = new Scene(runtime, {
 
 // new ScrollTo(menu2);
 
-new Focusable(scene, { x: 2, y: 0, layer: "system" });
-new Focusable(scene, { x: 2, y: 2, layer: "system" });
-new Focusable(scene, { x: 2, y: 4, layer: "system" });
+class FocusIndicator extends Focusable {
+	constructor(scene, config) {
+		super(scene, config);
+	}
+
+	get renderable() {
+		const { focused } = this;
+		return Text.asPixelMesh(
+			focused ? "Focused" : "Unfocused",
+			undefined,
+			undefined,
+			focused ? "magenta" : "grey"
+		);
+	}
+
+	set renderable(_) {
+		return;
+	}
+}
+
+new FocusIndicator(scene, { x: 2, y: 0, layer: "system" });
+new FocusIndicator(scene, { x: 2, y: 2, layer: "system" });
+new FocusIndicator(scene, { x: 2, y: 4, layer: "system" });
 
 // new TextInput(scene, {
 // 	x: 0,
