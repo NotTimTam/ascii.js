@@ -5,10 +5,26 @@ class UIObject extends GameObject {
 	/**
 	 * A collection of default methods for input handling.
 	 */
-	static eventDefaults = {};
+	static eventDefaults = {
+		keydown: (
+			uIObjectInstance,
+			inputManager,
+			{ preventBrowserDefault, keys: { shift, tab } }
+		) => {
+			if (tab) preventBrowserDefault();
+			else return;
+
+			// Shift + Tab.
+			if (shift) inputManager.focusPrevious();
+			// Shift only.
+			else inputManager.focusNext();
+		},
+	};
 
 	/**
 	 * Extends the `GameObject` class to include several methods and properties for treating the object as a UI element.
+	 *
+	 * Because `UIObject` contains all the features and expected functionality of a regular `GameObject`, this class can be used like a `GameObject`, just with more direct event listening.
 	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {Object} config The `UIObject`'s config object.
 	 * @param {number} config.x This `UIObject` object's x-coordinate.
@@ -25,10 +41,30 @@ class UIObject extends GameObject {
 
 		super(scene, x, y, layer);
 
-		scene.inputManager.addUIObject(this);
+		this.inputManager = scene.inputManager;
 
-		console.log(this);
+		scene.inputManager.addUIObject(this);
 	}
+
+	get eventListeners() {
+		return this.inputManager.getUIObjectEventListeners(this.id);
+	}
+
+	/**
+	 * Add an event listener to the `UIObject`.
+	 * @param {string} type The type of event to add.
+	 * @param {function} listener The event listener function.
+	 */
+	addEventListener = (type, listener) =>
+		this.inputManager.addUIObjectEventListener(this.id, type, listener);
+
+	/**
+	 * Remove an event listener from the `UIObject`.
+	 * @param {string} type The type of event to remove.
+	 * @param {function} listener The event listener function that was added to the event listener.
+	 */
+	removeEventListener = (type, listener) =>
+		this.inputManager.removeUIObjectEventListener(this.id, type, listener);
 
 	/**
 	 * Check if this instance is currently in focus.
@@ -48,10 +84,10 @@ class UIObject extends GameObject {
 		bool = Boolean(bool);
 
 		if (bool) {
-			this.scene.inputManager.__focusIndex = uIObjects.indexOf(this); // Focus on this element.
+			this.scene.inputManager.focusIndex = uIObjects.indexOf(this); // Focus on this element.
 			this.onFocus && this.onFocus(); // Trigger focus event.
 		} else if (this.focused) {
-			this.scene.inputManager.__focusIndex = -1; // Otherwise blur this element if it is focused.
+			this.scene.inputManager.focusIndex = -1; // Otherwise blur this element if it is focused.
 			this.onBlur && this.onBlur(); // Trigger blur event.
 		}
 	}

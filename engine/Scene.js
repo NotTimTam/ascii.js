@@ -1,3 +1,4 @@
+import GameObject from "../core/GameObject.js";
 import { isPlainObject } from "../util/data.js";
 import Camera from "./Camera.js";
 import InputManager from "./InputManager.js";
@@ -47,12 +48,21 @@ class Scene {
 	}
 
 	/**
-	 * Get the number of `GameObject`s in the current scene.
+	 * Get all of the `GameObject`s in the current scene.
 	 */
 	get gameObjects() {
 		return this.layerManager.layers // Get all layers.
-			.map(({ gameObjects }) => gameObjects.length) // Get the number of game objects in each layer.
-			.reduce((a, b) => a + b); // Add up all the numbers.
+			.map(({ gameObjects }) => gameObjects)
+			.flat(); // Get the number of game objects in each layer.
+	}
+
+	/**
+	 * Get a GameObject in the current scene with a specific ID.
+	 * @param {string} gameObjectId The ID of the `GameObject` to find.
+	 * @returns {GameObject|undefined} The `GameObject` with this ID, or `undefined` if one is not found.
+	 */
+	findGameObjectById(gameObjectId) {
+		return this.gameObjects.find(({ id }) => id === gameObjectId);
 	}
 
 	/**

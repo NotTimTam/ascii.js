@@ -1,5 +1,4 @@
 import UIObject from "../core/UIObject.js";
-import GameObject from "../core/GameObject.js";
 import { displayArray } from "../util/data.js";
 import { clamp } from "../util/math.js";
 import Scene from "./Scene.js";
@@ -322,43 +321,67 @@ class InputManager {
 		};
 		this.mouse = { buttons: {}, onLayer: {} };
 
-		this.__rawUIObjects = [];
-		this.__focusIndex = -1;
+		this.__rawFocusIndex = -1;
 
+		// Event listeners for specific `UIObjects`.
+		this.__rawUIObjects = [];
+		this.__uiObjectEventListeners = {};
+
+		// General event listeners.
 		this.__eventListeners = {
 			gamepadbuttonpressed: [],
 			gamepadbuttondown: [],
 			gamepadbuttonup: [],
 			gamepadaxes: [],
 			all: [],
-			click: [
-				(e) => {
-					// Handle clicks on specific game objects.
-					for (const [targetId, listener] of this
-						.__gameObjectClicks) {
-						if (e.targets.includes(targetId)) {
-							let passthrough = { ...e };
-							delete passthrough.targets;
-							passthrough.target = targetId;
-							listener(passthrough);
-						}
-					}
-				},
-			],
 		};
-		this.__gameObjectClicks = [];
 
 		this.__onCreated();
 
 		this.__windowBlurHandler = this.__windowBlurHandler.bind(this);
 	}
 
-	// /**
-	//  * Get the current focused item.
-	//  */
-	// get focusTarget() {
-	// 	return this.uIObjects[this.__focusIndex];
-	// }
+	get focusIndex() {
+		return this.__rawFocusIndex;
+	}
+
+	set focusIndex(n) {
+		if (typeof n !== "number" || !Number.isInteger(n))
+			throw new TypeError(
+				'InputManager "focusIndex" property must be an integer.'
+			);
+
+		// Keep the number in valid bounds.
+		if (n < -1) n = -1;
+		if (n > this.uIObjects.length - 1) n = this.uIObjects.length - 1;
+
+		this.__rawFocusIndex = n;
+	}
+
+	/**
+	 * Focus on the next element in the `uIObjects` array.
+	 */
+	focusNext() {
+		if (this.focusIndex === this.uIObjects.length - 1)
+			this.focusIndex = 0; // Wrap.
+		else this.focusIndex++;
+	}
+
+	/**
+	 * Focus on the previous element in the `uIObjects` array.
+	 */
+	focusPrevious() {
+		if (this.focusIndex === 0)
+			this.focusIndex = this.uIObjects.length - 1; // Wrap.
+		else this.focusIndex--;
+	}
+
+	/**
+	 * Get the current focused item.
+	 */
+	get focusTarget() {
+		return this.uIObjects[this.focusIndex];
+	}
 
 	/**
 	 * Get all uIObject items.
@@ -383,22 +406,6 @@ class InputManager {
 				);
 
 		this.__rawUIObjects = arr;
-	}
-
-	/**
-	 * Add a `UIObject` to the list of uIObject objects.
-	 * @param {UIObject} uIObject The `UIObject` instance to add.
-	 */
-	addUIObject(uIObject) {
-		if (!(uIObject instanceof UIObject))
-			throw new TypeError(
-				`Only instances of "UIObject" can be added to the InputManager's uIObject list.`
-			);
-
-		if (this.uIObjects.includes(uIObject))
-			throw new Error("This object is already in the uIObject list.");
-
-		this.uIObjects.push(uIObject);
 	}
 
 	/**
@@ -437,9 +444,6 @@ class InputManager {
 		return Object.keys(this.__eventListeners);
 	}
 
-	__eventHandler = (e) => this.__onEvent(e);
-	__contextHandler = (e) => e.preventDefault();
-
 	/**
 	 * Get the pointer lock status.
 	 */
@@ -448,6 +452,9 @@ class InputManager {
 		if (document.pointerLockElement === element) return true;
 		else return false;
 	}
+
+	__eventHandler = (e) => this.__onEvent(e);
+	__contextHandler = (e) => e.preventDefault();
 
 	/**
 	 * Initiate a pointer lock request. Pointer lock cannot be achieved unless the user clicks the screen after this method is called.
@@ -478,6 +485,11 @@ class InputManager {
 		document.addEventListener("pointerlockchange", lockChangeAlert, false);
 	}
 
+	/**
+	 * Format a key name to be more readable in development.
+	 * @param {string} key The key name to format.
+	 * @returns {string} The formatted key name.
+	 */
 	__formatKey(key) {
 		if (key === " ") return "space";
 		else if (key === "ArrowUp") return "up";
@@ -500,7 +512,8 @@ class InputManager {
 		this.keyboard.keys[this.__formatKey(key)] = true;
 		this.keyboard.keyCodes[keyCode] = true;
 		this.keyboard.keyCode = keyCode;
-		this.keyboard.key = key;
+		this.keyboard.key = this.__formatKey(key);
+		this.keyboard.rawKey = key;
 	}
 
 	/**
@@ -512,6 +525,9 @@ class InputManager {
 
 		this.keyboard.keys[this.__formatKey(key)] = false;
 		this.keyboard.keyCodes[keyCode] = false;
+		this.keyboard.keyCode = keyCode;
+		this.keyboard.key = this.__formatKey(key);
+		this.keyboard.rawKey = key;
 	}
 
 	/**
@@ -709,11 +725,109 @@ class InputManager {
 	 * Trigger events for a specific event type.
 	 * @param {string} type The type of event to trigger for.
 	 * @param {*} data The data to send to that event.
+	 * @param {Event} browserEvent The browser event object.
 	 */
-	__triggerEvents(type, data) {
-		if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
-		for (const eventListener of this.__eventListeners[type])
+	__triggerEvents(type, data, browserEvent) {
+		/**
+		 * The below code will duplicate the object so `data`
+		 * does not reference the actual data stored in `InputManager`.
+		 * The issue with this is that some of the data, particularly the
+		 * `target` property should be references, not raw data.
+		 */
+		// try {
+		// 	data = structuredClone(data);
+		// } catch (err) {
+		// 	console.debug(
+		// 		'Method "structuredClone" not present in current context.'
+		// 	);
+		// 	data = JSON.parse(JSON.stringify(data));
+		// }
+
+		// Trigger general events. Including "all" events.
+		for (const eventListener of [
+			...(this.__eventListeners[type] || []),
+			...this.__eventListeners.all,
+		])
 			eventListener(data);
+
+		// Trigger click events.
+		if (type === "click") {
+			const { targets } = data;
+
+			if (targets.length === 0) this.focusIndex = -1;
+			else
+				for (const target of targets) {
+					const object = this.scene.findGameObjectById(target);
+
+					if (!(object instanceof UIObject)) continue;
+
+					object.focus();
+					break;
+				}
+		}
+
+		// Trigger object specific events for the current focused UIObject.
+		if (this.focusTarget)
+			this.__triggerUIObjectEvents(
+				this.focusTarget.id,
+				type,
+				{
+					...data,
+					target: this.focusTarget,
+				},
+				browserEvent
+			);
+	}
+
+	/**
+	 * Trigger events for a specific event type, on a specific UIObject.
+	 * @param {string} uIObjectId The `UIObject` to trigger events on.
+	 * @param {string} type The type of event to trigger for.
+	 * @param {*} data The data to send to that event.
+	 * @param {Event} browserEvent The browser event object.
+	 */
+	__triggerUIObjectEvents(uIObjectId, type, data, browserEvent) {
+		const objectEvents = this.getUIObjectEventListeners(uIObjectId);
+
+		if (!objectEvents) return;
+
+		const uIObject = this.scene.findGameObjectById(uIObjectId);
+
+		if (!uIObject) return;
+
+		data = {
+			...data,
+			preventBrowserDefault: browserEvent
+				? browserEvent.preventDefault.bind(browserEvent)
+				: () => {},
+		};
+
+		let defaultPrevented = false;
+
+		const preventEngineDefault = () => {
+			defaultPrevented = true;
+		};
+
+		if (objectEvents[type])
+			objectEvents[type].forEach((callback) => {
+				/**
+				 * Prevent both the browser default event and the engine default event.
+				 */
+				const preventDefault = () => {
+					data.preventBrowserDefault();
+					preventEngineDefault();
+				};
+
+				callback({
+					...data,
+					preventDefault,
+					preventEngineDefault,
+				});
+			});
+
+		// Run default event behavior if it has not been prevented.
+		if (!defaultPrevented && UIObject.eventDefaults[type])
+			UIObject.eventDefaults[type](uIObject, this, data);
 	}
 
 	/**
@@ -742,8 +856,7 @@ class InputManager {
 					break;
 			}
 
-			this.__triggerEvents(type, { type, ...this.mouse }); // Trigger the specific event type that fired.
-			this.__triggerEvents("all", { type, ...this.mouse }); // Trigger the "all" event type.
+			this.__triggerEvents(type, { type, ...this.mouse }, event); // Trigger the specific event type that fired.
 
 			if (type === "click" && this.mouse.target) delete this.mouse.target; // Delete target items to clear for next event.
 			this.__resetMouseWheel();
@@ -759,8 +872,11 @@ class InputManager {
 					break;
 			}
 
-			this.__triggerEvents(type, { type, ...this.keyboard }); // Trigger the specific event type that fired.
-			this.__triggerEvents("all", { type, ...this.keyboard }); // Trigger the "all" event type.
+			this.__triggerEvents(type, { type, ...this.keyboard }, event); // Trigger the specific event type that fired.
+
+			delete this.keyboard.keyCode;
+			delete this.keyboard.key;
+			delete this.keyboard.rawKey;
 		} else if (event instanceof GamepadEvent) {
 			const { type } = event;
 
@@ -773,8 +889,11 @@ class InputManager {
 					break;
 			}
 
-			this.__triggerEvents(type, { type, gamepads: this.gamepads }); // Trigger the specific event type that fired.
-			this.__triggerEvents("all", { type, gamepads: this.gamepads }); // Trigger the "all" event type.
+			this.__triggerEvents(
+				type,
+				{ type, gamepads: this.gamepads },
+				event
+			); // Trigger the specific event type that fired.
 		}
 	}
 
@@ -789,6 +908,22 @@ class InputManager {
 	};
 
 	/**
+	 * Add a `UIObject` to the list of `UIObject`s.
+	 * @param {UIObject} uIObject The `UIObject` instance to add.
+	 */
+	addUIObject(uIObject) {
+		if (!(uIObject instanceof UIObject))
+			throw new TypeError(
+				`Only instances of "UIObject" can be added to the InputManager's uIObject list.`
+			);
+
+		if (this.uIObjects.includes(uIObject))
+			throw new Error("This object is already in the uIObject list.");
+
+		this.uIObjects.push(uIObject);
+	}
+
+	/**
 	 * Add an event listener to the input manager.
 	 * @param {string} type The type of event to add.
 	 * @param {function} listener The event listener function.
@@ -799,6 +934,11 @@ class InputManager {
 				`"${type}" is not a valid event type. Must be one of: ${displayArray(
 					this.types
 				)}`
+			);
+
+		if (typeof listener !== "function")
+			throw new TypeError(
+				'Expected a function for parameter "listener".'
 			);
 
 		this.__eventListeners[type].push(listener);
@@ -817,28 +957,98 @@ class InputManager {
 				)}`
 			);
 
+		if (typeof listener !== "function")
+			throw new TypeError(
+				'Expected a function for parameter "listener".'
+			);
+
 		this.__eventListeners[type] = this.__eventListeners[type].filter(
 			(eventListener) => eventListener !== listener
 		);
 	}
 
 	/**
-	 * Add a listener for clicks on a `GameObject`.
-	 * @param {string} gameObjectId The ID of the `GameObject` that, when clicked, triggers the event.
+	 * Get all event listeners for a specific `UIObject`.
+	 * @param {string} uIObjectId The ID of the `UIObject` to get the listeners for.
+	 * @returns {Array} The event listeners for this specific object.
 	 */
-	watchObjectClick(gameObjectId, listener) {
-		this.__gameObjectClicks.push([gameObjectId, listener]);
+	getUIObjectEventListeners(uIObjectId) {
+		return this.__uiObjectEventListeners[uIObjectId] || {};
 	}
 
 	/**
-	 * Remove a listener for clicks on a `GameObject`.
-	 * @param {string} gameObjectId The ID of the `GameObject`.
+	 * Add an event listener to a specific `UIObject`.
+	 * @param {string} uIObjectId The ID of the `UIObject` to add the event listener to.
+	 * @param {string} type The type of event to add.
+	 * @param {function} listener The event listener function.
+	 */
+	addUIObjectEventListener(uIObjectId, type, listener) {
+		if (
+			typeof uIObjectId !== "string" ||
+			!this.scene.findGameObjectById(uIObjectId)
+		)
+			throw new Error(
+				`The provided uIObjectId is not the ID of any UIObject in the scene.`
+			);
+
+		if (!this.types.includes(type))
+			throw new Error(
+				`"${type}" is not a valid event type. Must be one of: ${displayArray(
+					this.types
+				)}`
+			);
+
+		if (typeof listener !== "function")
+			throw new TypeError(
+				'Expected a function for parameter "listener".'
+			);
+
+		if (!this.__uiObjectEventListeners[uIObjectId])
+			this.__uiObjectEventListeners[uIObjectId] = {};
+
+		if (!this.__uiObjectEventListeners[uIObjectId][type])
+			this.__uiObjectEventListeners[uIObjectId][type] = [];
+
+		this.__uiObjectEventListeners[uIObjectId][type].push(listener);
+	}
+
+	/**
+	 * Remove an event listener for a specific `UIObject`.
+	 * @param {string} uIObjectId The ID of the `UIObject` to remove the event listener from.
+	 * @param {string} type The type of event to remove.
 	 * @param {function} listener The event listener function that was added to the event listener.
 	 */
-	unwatchObjectClick(gameObjectId, listener) {
-		this.__gameObjectClicks = this.__gameObjectClicks.filter(
-			(arr) => arr[0] !== gameObjectId && arr[1] !== listener
-		);
+	removeUIObjectEventListener(uIObjectId, type, listener) {
+		if (
+			typeof uIObjectId !== "string" ||
+			!this.scene.findGameObjectById(uIObjectId)
+		)
+			throw new Error(
+				`The provided uIObjectId is not the ID of any UIObject in the scene.`
+			);
+
+		if (!this.types.includes(type))
+			throw new Error(
+				`"${type}" is not a valid event type. Must be one of: ${displayArray(
+					this.types
+				)}`
+			);
+
+		if (typeof listener !== "function")
+			throw new TypeError(
+				'Expected a function for parameter "listener".'
+			);
+
+		if (
+			!this.__uiObjectEventListeners[uIObjectId] ||
+			!this.__uiObjectEventListeners[uIObjectId][type]
+		)
+			return;
+
+		this.__uiObjectEventListeners[uIObjectId][type] =
+			this.__uiObjectEventListeners[uIObjectId][type].filter(
+				(eventListener) => eventListener !== listener
+			);
 	}
 
 	/**

@@ -90,6 +90,10 @@ const scene = new Scene(runtime, {
 class FocusIndicator extends UIObject {
 	constructor(scene, config) {
 		super(scene, config);
+
+		this.addEventListener("click", (e) => {
+			// console.log(scene.inputManager.uIObjects.indexOf(this), "CLICKED!");
+		});
 	}
 
 	get renderable() {
@@ -117,6 +121,9 @@ new FocusIndicator(scene, { x: 2, y: 4, layer: "system" });
 // 	value: "Hello world!",
 // 	layer: "system",
 // 	maxWidth: 32,
+// });
+// scene.inputManager.addEventListener("all", (e) => {
+// 	console.log(e);
 // });
 
 runtime.loadScene(scene);
