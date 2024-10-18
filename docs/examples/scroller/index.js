@@ -67,7 +67,6 @@ Six big, joyful penguins quickly waddled around the frozen lake, amusing all.\n`
 			items: [
 				new Menu.Button({
 					label: "Reload Objects",
-					callback: () => console.log("RELOAD BUTTON PRESSED"),
 				}),
 				new Menu.Slider({
 					value: 0,

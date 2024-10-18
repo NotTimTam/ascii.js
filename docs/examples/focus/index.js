@@ -1,4 +1,11 @@
-import Runtime, { Menu, Scene, ScrollTo, Text } from "../../../index.js";
+import Focusable from "../../../core/Focusable.js";
+import Runtime, {
+	Menu,
+	Scene,
+	ScrollTo,
+	Text,
+	TextInput,
+} from "../../../index.js";
 
 // "https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/build.js";
 
@@ -15,34 +22,81 @@ const runtime = new Runtime({
 	},
 });
 
-runtime.start((runtime) => {});
+runtime.start();
 
 const scene = new Scene(runtime, {
 	label: "game",
 });
 
-const menu = new Menu(scene, {
-	x: 0,
-	y: 0,
-	items: [
-		new Menu.Button({
-			label: "Reload Objects",
-			// callback: () => console.log("RELOAD BUTTON PRESSED"),
-		}),
-	],
-	title: "Example Menu",
-	layer: "system",
-	gamepad: -1,
-});
+// const menu = new Menu(scene, {
+// 	x: 0,
+// 	y: 0,
+// 	items: [
+// 		new Menu.Button({
+// 			label: "Button A",
+// 		}),
+// 		new Menu.Button({
+// 			label: "Button B",
+// 		}),
+// 		new Menu.Button({
+// 			label: "Button C",
+// 		}),
+// 	],
+// 	title: "Menu 1",
+// 	layer: "system",
+// 	gamepad: -1,
+// });
 
-new ScrollTo(menu);
+// const menu2 = new Menu(scene, {
+// 	x: 14,
+// 	y: 0,
+// 	items: [
+// 		new Menu.Button({
+// 			label: "Button D",
+// 		}),
+// 		new Menu.Button({
+// 			label: "Button E",
+// 		}),
+// 		new Menu.Button({
+// 			label: "Button F",
+// 		}),
+// 	],
+// 	title: "Menu 2",
+// 	layer: "system",
+// 	gamepad: -1,
+// });
 
-const message = new Text(scene, {
-	x: 0,
-	y: menu.y + menu.height,
-	value: "Check console for input results.",
-	layer: "system",
-});
-message.x = menu.x + (menu.width / 2 - message.value.length / 2);
+// const menu3 = new Menu(scene, {
+// 	x: 28,
+// 	y: 0,
+// 	items: [
+// 		new Menu.Button({
+// 			label: "Button G",
+// 		}),
+// 		new Menu.Button({
+// 			label: "Button H",
+// 		}),
+// 		new Menu.Button({
+// 			label: "Button I",
+// 		}),
+// 	],
+// 	title: "Menu 3",
+// 	layer: "system",
+// 	gamepad: -1,
+// });
+
+// new ScrollTo(menu2);
+
+new Focusable(scene, { x: 2, y: 0, layer: "system" });
+new Focusable(scene, { x: 2, y: 2, layer: "system" });
+new Focusable(scene, { x: 2, y: 4, layer: "system" });
+
+// new TextInput(scene, {
+// 	x: 0,
+// 	y: 5,
+// 	value: "Hello world!",
+// 	layer: "system",
+// 	maxWidth: 32,
+// });
 
 runtime.loadScene(scene);

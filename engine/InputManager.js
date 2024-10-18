@@ -1,3 +1,4 @@
+import Focusable from "../core/Focusable.js";
 import GameObject from "../core/GameObject.js";
 import { displayArray } from "../util/data.js";
 import { clamp } from "../util/math.js";
@@ -391,14 +392,19 @@ class InputManager {
 	}
 
 	/**
-	 * Add a `GameObject` to the list of focusable objects.
-	 * @param {GameObject} gameObject The `GameObject` instance to add.
+	 * Add a `Focusable` to the list of focusable objects.
+	 * @param {Focusable} focusable The `Focusable` instance to add.
 	 */
-	addFocusable(gameObject) {
-		if (this.focusables.includes(gameObject))
+	addFocusable(focusable) {
+		if (!(focusable instanceof Focusable))
+			throw new TypeError(
+				`Only instances of "Focusable" can be added to the InputManager's focusable list.`
+			);
+
+		if (this.focusables.includes(focusable))
 			throw new Error("This object is already in the focusable list.");
 
-		this.focusables.push(gameObject);
+		this.focusables.push(focusable);
 	}
 
 	/**

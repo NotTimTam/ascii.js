@@ -36,27 +36,23 @@ class Text extends GameObject {
 		} = config;
 		super(scene, x, y, layer);
 
-		if (
-			maxWidth &&
-			(typeof maxWidth !== "number" ||
+		if (maxWidth) {
+			if (
+				typeof maxWidth !== "number" ||
 				!Number.isInteger(maxWidth) ||
-				maxWidth < 1)
-		)
-			throw new TypeError(
-				"Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
-			);
-
-		if (typeof value !== "string")
-			throw new Error(
-				`Provided text value "${value}" is not of type "string".`
-			);
+				maxWidth < 1
+			)
+				throw new TypeError(
+					"Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
+				);
+			this.maxWidth = maxWidth;
+		}
 
 		this.__rawValue = value;
 		this.wrap = wrap;
 		this.color = color;
 		this.backgroundColor = backgroundColor;
 		this.fontWeight = fontWeight;
-		this.maxWidth = maxWidth;
 	}
 
 	/**
@@ -70,6 +66,11 @@ class Text extends GameObject {
 	 * Set the value of the text object.
 	 */
 	set value(value) {
+		if (typeof value !== "string")
+			throw new Error(
+				`Provided text value "${value}" is not of type "string".`
+			);
+
 		this.__rawValue = value;
 	}
 

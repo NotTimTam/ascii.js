@@ -1,9 +1,8 @@
+import Focusable from "../core/Focusable.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
-import { isPlainObject } from "../util/data.js";
-import Text from "./Text.js";
 
-class TextInput extends Text {
+class TextInput extends Focusable {
 	/**
 	 * A text input that can be rendered on screen.
 	 * @param {Scene} scene The scene this Object is a part of.
@@ -26,11 +25,6 @@ class TextInput extends Text {
 	 * @param {string} config.layer The label of the layer to start the `TextInput` on.
 	 */
 	constructor(scene, config) {
-		if (!isPlainObject(config))
-			throw new TypeError(
-				"Expected a plain object for TextInput constructor config parameter."
-			);
-
 		config.wrap = false;
 		if (!config.maxWidth) config.maxWidth = 8;
 
@@ -42,9 +36,11 @@ class TextInput extends Text {
 			backgroundColorActive = "white",
 			onChange,
 			onKeyDown,
-			onFocus,
-			onBlur,
 			maxLength,
+			wrap,
+			color,
+			fontWeight,
+			maxWidth,
 		} = config;
 
 		if (activeColor) {
@@ -89,24 +85,6 @@ class TextInput extends Text {
 			this.onKeyDown = onKeyDown;
 		}
 
-		if (onFocus) {
-			if (typeof onFocus !== "function")
-				throw new TypeError(
-					"Expected a function for TextInput config.onFocus value."
-				);
-
-			this.onFocus = onFocus;
-		}
-
-		if (onBlur) {
-			if (typeof onBlur !== "function")
-				throw new TypeError(
-					"Expected a function for TextInput config.onBlur value."
-				);
-
-			this.onBlur = onBlur;
-		}
-
 		if (maxLength) {
 			if (
 				typeof maxLength !== "number" ||
@@ -120,10 +98,28 @@ class TextInput extends Text {
 			this.maxLength = maxLength;
 		}
 
+		if (maxWidth) {
+			if (
+				typeof maxWidth !== "number" ||
+				!Number.isInteger(maxWidth) ||
+				maxWidth < 1
+			)
+				throw new TypeError(
+					"Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
+				);
+			this.maxWidth = maxWidth;
+		}
+
 		this.scroll = 0;
 
-		this.focused = config.autoFocus;
 		this.caret = config.value ? config.value.length : 0;
+
+		this.value = config.value;
+
+		this.wrap = wrap;
+		this.color = color;
+		this.backgroundColor = backgroundColor;
+		this.fontWeight = fontWeight;
 
 		scene.inputManager.watchObjectClick(this.id, this.__onClick.bind(this));
 		scene.inputManager.addEventListener(
@@ -134,19 +130,32 @@ class TextInput extends Text {
 			"keydown",
 			this.__onKeyDown.bind(this)
 		);
-
-		scene.inputManager.addFocusable(this);
 	}
 
-	get focused() {
-		return this.__rawFocused;
+	/**
+	 * Get the value of the `TextInput` object.
+	 */
+	get value() {
+		return String(this.__rawValue);
 	}
 
-	set focused(bool) {
-		this.__rawFocused = Boolean(bool);
+	/**
+	 * Set the value of the `TextInput` object.
+	 */
+	set value(value) {
+		if (typeof value !== "string")
+			throw new Error(
+				`Provided text value "${value}" is not of type "string".`
+			);
 
-		if (bool) this.onFocus && this.onFocus(this);
-		else this.onBlur && this.onBlur(this);
+		this.__rawValue = value;
+	}
+
+	/**
+	 * Renderable setter override.
+	 */
+	set renderable(_) {
+		return;
 	}
 
 	/**

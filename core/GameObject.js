@@ -12,7 +12,7 @@ class GameObject extends Core {
 	 * @param {Scene} scene The scene this `GameObject` is a part of.
 	 * @param {number} x This `GameObject`'s x-coordinate.
 	 * @param {number} y This  `GameObject`'s y-coordinate.
-	 *@param {string} layer The label of the layer to start the `GameObject` on.
+	 * @param {string} layer The label of the layer to start the `GameObject` on.
 	 */
 	constructor(scene, x = 0, y = 0, layer) {
 		super(scene);

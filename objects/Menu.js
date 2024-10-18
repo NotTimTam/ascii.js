@@ -1,7 +1,7 @@
-import GameObject from "../core/GameObject.js";
+import Focusable from "../core/Focusable.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
-import { isPlainObject, wrapString } from "../util/data.js";
+import { wrapString } from "../util/data.js";
 import { clamp } from "../util/math.js";
 import Box from "./Box.js";
 
@@ -377,7 +377,7 @@ class Toggle extends Item {
 	}
 }
 
-class Menu extends GameObject {
+class Menu extends Focusable {
 	static Item = Item;
 	static Button = Button;
 	static Slider = Slider;
@@ -403,10 +403,7 @@ class Menu extends GameObject {
 	 * @param {number} config.gamepad An optional number indicating the gamepad (0-based index) this menu should accept input from. Set to `-1` to accept input from all gamepads.
 	 */
 	constructor(scene, config) {
-		if (!isPlainObject(config))
-			throw new TypeError(
-				"Expected a plain object for Menu constructor config parameter."
-			);
+		super(scene, config);
 
 		const {
 			x,
@@ -414,17 +411,11 @@ class Menu extends GameObject {
 			title,
 			items = [],
 			layer,
-			autoFocus = true,
-			deleteOnBlur = false,
-			maintainFocus = true,
 			gamepad,
 			alignCenter = true,
 			border = true,
 		} = config;
-		super(scene, x, y, layer);
 
-		this.deleteOnBlur = Boolean(deleteOnBlur);
-		this.maintainFocus = Boolean(maintainFocus);
 		this.alignCenter = Boolean(alignCenter);
 		this.border = Boolean(border);
 
@@ -436,7 +427,6 @@ class Menu extends GameObject {
 		this.items = items;
 
 		this.__rawIndex = 0;
-		this.focused = Boolean(autoFocus);
 
 		if (title && typeof title !== "string")
 			throw new Error(

@@ -1,11 +1,10 @@
-import GameObject from "../core/GameObject.js";
+import Focusable from "../core/Focusable.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
-import { isPlainObject } from "../util/data.js";
 import { aabb, clamp } from "../util/math.js";
 import Box from "./Box.js";
 
-class Scroller extends GameObject {
+class Scroller extends Focusable {
 	/**
 	 * The color of the scrollbar track.
 	 */
@@ -41,21 +40,9 @@ class Scroller extends GameObject {
 	 * @param {string} config.layer The label of the layer to start the `Scroller` on.
 	 */
 	constructor(scene, config) {
-		if (!isPlainObject(config))
-			throw new TypeError(
-				"Expected a plain object for Scroller constructor config parameter."
-			);
+		super(scene, config);
 
-		super(scene, config.x, config.y, config.layer);
-
-		const {
-			width = 8,
-			height = 8,
-			gameObjects,
-			backgroundColor,
-			autoFocus,
-			maintainFocus,
-		} = config;
+		const { width = 8, height = 8, gameObjects, backgroundColor } = config;
 
 		if (typeof width !== "number" || !Number.isInteger(width) || width < 2)
 			throw new TypeError(
@@ -84,11 +71,6 @@ class Scroller extends GameObject {
 				);
 			this.backgroundColor = backgroundColor;
 		}
-
-		this.autoFocus = Boolean(autoFocus);
-		this.maintainFocus = Boolean(maintainFocus);
-
-		scene.inputManager.addFocusable(this);
 
 		scene.inputManager.addEventListener(
 			"mousemove",
