@@ -134,7 +134,11 @@ class UIObject extends GameObject {
 	 * @param {function} listener The event listener function.
 	 */
 	addEventListener = (type, listener) =>
-		this.inputManager.addUIObjectEventListener(this.id, type, listener);
+		this.inputManager.addUIObjectEventListener(
+			this.id,
+			type,
+			listener.bind(this)
+		);
 
 	/**
 	 * Remove an event listener from the `UIObject`.
@@ -142,7 +146,11 @@ class UIObject extends GameObject {
 	 * @param {function} listener The event listener function that was added to the event listener.
 	 */
 	removeEventListener = (type, listener) =>
-		this.inputManager.removeUIObjectEventListener(this.id, type, listener);
+		this.inputManager.removeUIObjectEventListener(
+			this.id,
+			type,
+			listener.bind(this)
+		);
 }
 
 export default UIObject;

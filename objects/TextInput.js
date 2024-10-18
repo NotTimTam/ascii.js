@@ -121,15 +121,8 @@ class TextInput extends UIObject {
 		this.backgroundColor = backgroundColor;
 		this.fontWeight = fontWeight;
 
-		scene.inputManager.watchObjectClick(this.id, this.__onClick.bind(this));
-		scene.inputManager.addEventListener(
-			"click",
-			this.__onAnyClick.bind(this)
-		);
-		scene.inputManager.addEventListener(
-			"keydown",
-			this.__onKeyDown.bind(this)
-		);
+		this.addEventListener("click", this.__onClick);
+		this.addEventListener("keydown", this.__onKeyDown);
 	}
 
 	/**
@@ -162,20 +155,8 @@ class TextInput extends UIObject {
 	 * Listens to click events.
 	 */
 	__onClick() {
-		if (!this.focused) {
-			this.focused = true;
-			this.caret = this.value.length;
-
-			this.__updateScrollPosition();
-		}
-	}
-
-	/**
-	 * Trigger when anything is clicked.
-	 */
-	__onAnyClick(event) {
-		// Defocus when not clicking on this input.
-		if (!event.targets.includes(this.id)) this.focused = false;
+		this.caret = this.value.length;
+		this.__updateScrollPosition();
 	}
 
 	/**
@@ -183,8 +164,6 @@ class TextInput extends UIObject {
 	 */
 	__onKeyDown(event) {
 		const { caret } = this;
-
-		if (!this.focused) return;
 
 		const { key } = event;
 
@@ -201,20 +180,17 @@ class TextInput extends UIObject {
 				key +
 				this.value.slice(this.caret);
 			this.caret++;
-		} else if (key === "Backspace") {
+		} else if (key === "backspace") {
 			this.value =
 				this.value.slice(0, caret - 1) + this.value.slice(caret);
 
 			if (this.caret !== this.value.length) this.caret--;
-		} else if (key === "Delete") {
+		} else if (key === "delete") {
 			this.value =
 				this.value.slice(0, caret) + this.value.slice(caret + 1);
-		} else if (key === "Tab") {
-			this.value += "    ";
-			this.caret += 4;
-		} else if (key === "Escape") this.focused = false;
-		else if (key === "ArrowLeft") this.caret--;
-		else if (key === "ArrowRight") this.caret++;
+		} else if (key === "escape") this.focused = false;
+		else if (key === "left") this.caret--;
+		else if (key === "right") this.caret++;
 
 		this.__updateScrollPosition();
 

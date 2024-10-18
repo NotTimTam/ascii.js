@@ -124,19 +124,12 @@ new FocusIndicator(scene, { x: 2, y: 6, layer: "system", tabIndex: 2 });
 new FocusIndicator(scene, { x: 2, y: 8, layer: "system", tabIndex: 1 });
 new FocusIndicator(scene, { x: 2, y: 10, layer: "system", tabIndex: 0 });
 
-console.log(
-	scene.inputManager.uIObjectsByTabIndex.map(({ tabIndex }) => tabIndex)
-);
-
-// new TextInput(scene, {
-// 	x: 0,
-// 	y: 5,
-// 	value: "Hello world!",
-// 	layer: "system",
-// 	maxWidth: 32,
-// });
-// scene.inputManager.addEventListener("all", (e) => {
-// 	console.log(e);
-// });
+new TextInput(scene, {
+	x: 2,
+	y: 12,
+	value: "Hello world!",
+	layer: "system",
+	maxWidth: 32,
+});
 
 runtime.loadScene(scene);
