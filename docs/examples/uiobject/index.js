@@ -91,15 +91,21 @@ class FocusIndicator extends UIObject {
 	constructor(scene, config) {
 		super(scene, config);
 
+		this.tabIndex = config.tabIndex || 0;
+
 		this.addEventListener("click", (e) => {
-			// console.log(scene.inputManager.uIObjects.indexOf(this), "CLICKED!");
+			console.log(
+				scene.inputManager.uIObjects.indexOf(this).toString(),
+				"CLICKED! TABINDEX:",
+				this.tabIndex.toString()
+			);
 		});
 	}
 
 	get renderable() {
-		const { focused } = this;
+		const { focused, tabIndex } = this;
 		return Text.asPixelMesh(
-			focused ? "Focused" : "Unfocused",
+			`tabIndex: ${tabIndex} - ${focused ? "Focused" : "Unfocused"}`,
 			undefined,
 			undefined,
 			focused ? "magenta" : "grey"
@@ -111,9 +117,16 @@ class FocusIndicator extends UIObject {
 	}
 }
 
-new FocusIndicator(scene, { x: 2, y: 0, layer: "system" });
-new FocusIndicator(scene, { x: 2, y: 2, layer: "system" });
-new FocusIndicator(scene, { x: 2, y: 4, layer: "system" });
+new FocusIndicator(scene, { x: 2, y: 0, layer: "system", tabIndex: 3 });
+new FocusIndicator(scene, { x: 2, y: 2, layer: "system", tabIndex: 4 });
+new FocusIndicator(scene, { x: 2, y: 4, layer: "system", tabIndex: 5 });
+new FocusIndicator(scene, { x: 2, y: 6, layer: "system", tabIndex: 2 });
+new FocusIndicator(scene, { x: 2, y: 8, layer: "system", tabIndex: 1 });
+new FocusIndicator(scene, { x: 2, y: 10, layer: "system", tabIndex: 0 });
+
+console.log(
+	scene.inputManager.uIObjectsByTabIndex.map(({ tabIndex }) => tabIndex)
+);
 
 // new TextInput(scene, {
 // 	x: 0,

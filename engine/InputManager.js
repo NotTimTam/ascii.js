@@ -362,18 +362,30 @@ class InputManager {
 	 * Focus on the next element in the `uIObjects` array.
 	 */
 	focusNext() {
-		if (this.focusIndex === this.uIObjects.length - 1)
-			this.focusIndex = 0; // Wrap.
-		else this.focusIndex++;
+		let currentIndex = this.uIObjectsByTabIndex.indexOf(this.focusTarget);
+
+		if (currentIndex === this.uIObjectsByTabIndex.length - 1)
+			currentIndex = 0; // Wrap.
+		else currentIndex++;
+
+		this.focusIndex = this.uIObjects.indexOf(
+			this.uIObjectsByTabIndex[currentIndex]
+		);
 	}
 
 	/**
 	 * Focus on the previous element in the `uIObjects` array.
 	 */
 	focusPrevious() {
-		if (this.focusIndex === 0)
-			this.focusIndex = this.uIObjects.length - 1; // Wrap.
-		else this.focusIndex--;
+		let currentIndex = this.uIObjectsByTabIndex.indexOf(this.focusTarget);
+
+		if (currentIndex === 0)
+			currentIndex = this.uIObjectsByTabIndex.length - 1; // Wrap.
+		else currentIndex--;
+
+		this.focusIndex = this.uIObjects.indexOf(
+			this.uIObjectsByTabIndex[currentIndex]
+		);
 	}
 
 	/**
@@ -388,6 +400,13 @@ class InputManager {
 	 */
 	get uIObjects() {
 		return this.__rawUIObjects;
+	}
+
+	/**
+	 * Get all uIObject items, sorted by their `tabIndex` property.
+	 */
+	get uIObjectsByTabIndex() {
+		return this.uIObjects.sort((a, b) => a.tabIndex - b.tabIndex);
 	}
 
 	/**
@@ -761,8 +780,19 @@ class InputManager {
 
 					if (!(object instanceof UIObject)) continue;
 
-					object.focus();
-					break;
+					if (object.focusable) object.focus();
+
+					this.__triggerUIObjectEvents(
+						object.id,
+						"click",
+						{
+							...data,
+							target: object,
+						},
+						browserEvent
+					);
+
+					return;
 				}
 		}
 

@@ -1,30 +1,30 @@
-var Me = Object.defineProperty, Ce = Object.defineProperties;
-var Oe = Object.getOwnPropertyDescriptors;
+var Me = Object.defineProperty, Oe = Object.defineProperties;
+var Ce = Object.getOwnPropertyDescriptors;
 var de = Object.getOwnPropertySymbols;
-var Le = Object.prototype.hasOwnProperty, Se = Object.prototype.propertyIsEnumerable;
+var Le = Object.prototype.hasOwnProperty, Ie = Object.prototype.propertyIsEnumerable;
 var X = Math.pow, ie = (c, e, t) => e in c ? Me(c, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : c[e] = t, x = (c, e) => {
   for (var t in e || (e = {}))
     Le.call(e, t) && ie(c, t, e[t]);
   if (de)
     for (var t of de(e))
-      Se.call(e, t) && ie(c, t, e[t]);
+      Ie.call(e, t) && ie(c, t, e[t]);
   return c;
-}, L = (c, e) => Ce(c, Oe(e));
+}, L = (c, e) => Oe(c, Ce(e));
 var f = (c, e, t) => ie(c, typeof e != "symbol" ? e + "" : e, t);
 var ue = (c, e, t) => new Promise((r, i) => {
-  var n = (a) => {
+  var n = (h) => {
     try {
-      o(t.next(a));
+      o(t.next(h));
     } catch (l) {
       i(l);
     }
-  }, s = (a) => {
+  }, s = (h) => {
     try {
-      o(t.throw(a));
+      o(t.throw(h));
     } catch (l) {
       i(l);
     }
-  }, o = (a) => a.done ? r(a.value) : Promise.resolve(a.value).then(n, s);
+  }, o = (h) => h.done ? r(h.value) : Promise.resolve(h.value).then(n, s);
   o((t = t.apply(c, e)).next());
 });
 const W = (c) => `[${c.map((e) => {
@@ -41,8 +41,8 @@ const W = (c) => `[${c.map((e) => {
     if ((n + s).length > e)
       if (t && s.length > e) {
         let o = Math.ceil(s.length / e);
-        for (let a = 0; a < o; a++) {
-          const l = s.slice(a * e, (a + 1) * e);
+        for (let h = 0; h < o; h++) {
+          const l = s.slice(h * e, (h + 1) * e);
           n.trim() && i.push(n.trim()), n = l + " ";
         }
       } else
@@ -243,7 +243,7 @@ const D = (c, e, t, r, i, n, s, o) => c < i + s && c + t > i && e < n + o && e +
   for (let e = c - 1; e >= 1; e--)
     c *= e;
   return c;
-}, Ie = (c, e) => [
+}, Se = (c, e) => [
   e * Math.cos(se(c)),
   e * Math.sin(se(c))
 ], Ae = (c, e) => [
@@ -260,7 +260,7 @@ const D = (c, e, t, r, i, n, s, o) => c < i + s && c + t > i && e < n + o && e +
   fact: Te,
   radianToDegree: oe,
   range: je,
-  vectorToCartesian: Ie
+  vectorToCartesian: Se
 }, Symbol.toStringTag, { value: "Module" }));
 class We {
   /**
@@ -734,6 +734,9 @@ class A extends Y {
    * Extends the `GameObject` class to include several methods and properties for treating the object as a UI element.
    *
    * Because `UIObject` contains all the features and expected functionality of a regular `GameObject`, this class can be used like a `GameObject`, just with more direct event listening.
+   *
+   * An instance's `tabIndex` can be set to `-1` to prevent focusing of the instance.
+   *
    * @param {Scene} scene The scene this Object is a part of.
    * @param {Object} config The `UIObject`'s config object.
    * @param {number} config.x This `UIObject` object's x-coordinate.
@@ -759,8 +762,33 @@ class A extends Y {
      * @param {function} listener The event listener function that was added to the event listener.
      */
     f(this, "removeEventListener", (t, r) => this.inputManager.removeUIObjectEventListener(this.id, t, r));
-    this.inputManager = t.inputManager, t.inputManager.addUIObject(this);
+    this.inputManager = t.inputManager, this.__rawTabIndex = 0, t.inputManager.addUIObject(this);
   }
+  /**
+   * Determine if this element is focusable.
+   */
+  get focusable() {
+    return this.tabIndex !== -1;
+  }
+  /**
+   * Get this object's tab index.
+   */
+  get tabIndex() {
+    return this.__rawTabIndex;
+  }
+  /**
+   * Set this object's tab index.
+   */
+  set tabIndex(t) {
+    if (typeof t != "number" || !Number.isInteger(t))
+      throw new TypeError(
+        "UIObject instance tabIndex property must be an integer."
+      );
+    t < -1 && (t = -1), this.__rawTabIndex = t;
+  }
+  /**
+   * Get all event listeners associated with this `UIObject`.
+   */
   get eventListeners() {
     return this.inputManager.getUIObjectEventListeners(this.id);
   }
@@ -776,7 +804,7 @@ class A extends Y {
    */
   set focused(t) {
     const { uIObjects: r } = this.scene.inputManager;
-    t = !!t, t ? (this.scene.inputManager.focusIndex = r.indexOf(this), this.onFocus && this.onFocus()) : this.focused && (this.scene.inputManager.focusIndex = -1, this.onBlur && this.onBlur());
+    t = !!t, this.focusable || (t = !1), t ? (this.scene.inputManager.focusIndex = r.indexOf(this), this.onFocus && this.onFocus()) : this.focused && (this.scene.inputManager.focusIndex = -1, this.onBlur && this.onBlur());
   }
   /**
    * Focus on this element.
@@ -795,10 +823,10 @@ class A extends Y {
  * A collection of default methods for input handling.
  */
 f(A, "eventDefaults", {
-  keydown: (t, { preventBrowserDefault: r, keys: { shift: i, tab: n } }) => {
-    if (n) r();
+  keydown: (t, r, { preventBrowserDefault: i, keys: { shift: n, tab: s } }) => {
+    if (s) i();
     else return;
-    i ? t.focusPrevious() : t.focusNext();
+    n ? r.focusPrevious() : r.focusNext();
   }
 });
 const w = class w {
@@ -1061,20 +1089,6 @@ class Xe {
       gamepadbuttonup: [],
       gamepadaxes: [],
       all: []
-      // click: [
-      // 	// (e) => {
-      // 	// 	// Handle clicks on specific game objects.
-      // 	// 	for (const [targetId, listener] of this
-      // 	// 		.__gameObjectClicks) {
-      // 	// 		if (e.targets.includes(targetId)) {
-      // 	// 			let passthrough = { ...e };
-      // 	// 			delete passthrough.targets;
-      // 	// 			passthrough.target = targetId;
-      // 	// 			listener(passthrough);
-      // 	// 		}
-      // 	// 	}
-      // 	// },
-      // ],
     }, this.__onCreated(), this.__windowBlurHandler = this.__windowBlurHandler.bind(this);
   }
   get focusIndex() {
@@ -1091,13 +1105,19 @@ class Xe {
    * Focus on the next element in the `uIObjects` array.
    */
   focusNext() {
-    this.focusIndex === this.uIObjects.length - 1 ? this.focusIndex = 0 : this.focusIndex++;
+    let e = this.uIObjectsByTabIndex.indexOf(this.focusTarget);
+    e === this.uIObjectsByTabIndex.length - 1 ? e = 0 : e++, this.focusIndex = this.uIObjects.indexOf(
+      this.uIObjectsByTabIndex[e]
+    );
   }
   /**
    * Focus on the previous element in the `uIObjects` array.
    */
   focusPrevious() {
-    this.focusIndex === 0 ? this.focusIndex = this.uIObjects.length - 1 : this.focusIndex--;
+    let e = this.uIObjectsByTabIndex.indexOf(this.focusTarget);
+    e === 0 ? e = this.uIObjectsByTabIndex.length - 1 : e--, this.focusIndex = this.uIObjects.indexOf(
+      this.uIObjectsByTabIndex[e]
+    );
   }
   /**
    * Get the current focused item.
@@ -1110,6 +1130,12 @@ class Xe {
    */
   get uIObjects() {
     return this.__rawUIObjects;
+  }
+  /**
+   * Get all uIObject items, sorted by their `tabIndex` property.
+   */
+  get uIObjectsByTabIndex() {
+    return this.uIObjects.sort((e, t) => e.tabIndex - t.tabIndex);
   }
   /**
    * Set uIObject items.
@@ -1267,11 +1293,11 @@ class Xe {
     const { clientX: t, clientY: r, movementX: i, movementY: n } = e, {
       scene: {
         camera: { x: s, y: o },
-        layerManager: { layers: a },
+        layerManager: { layers: h },
         runtime: {
           renderer: {
             width: l,
-            height: h,
+            height: a,
             element: u
           }
         }
@@ -1281,16 +1307,16 @@ class Xe {
       y: p,
       width: m,
       height: g
-    } = u.getBoundingClientRect(), [E, k] = [t - d, r - p], [C, y] = [E / m, k / g];
+    } = u.getBoundingClientRect(), [E, k] = [t - d, r - p], [O, y] = [E / m, k / g];
     if (this.hasPointerLock)
       this.mouse.velocity = [i, n];
     else {
-      this.mouse.velocity = [i, n], this.mouse.rawX = t, this.mouse.rawY = r, this.mouse.canvasX = E, this.mouse.canvasY = k, this.mouse.floatX = j(C * l, 0, l), this.mouse.floatY = j(
-        y * h,
+      this.mouse.velocity = [i, n], this.mouse.rawX = t, this.mouse.rawY = r, this.mouse.canvasX = E, this.mouse.canvasY = k, this.mouse.floatX = j(O * l, 0, l), this.mouse.floatY = j(
+        y * a,
         0,
-        h
+        a
       ), this.mouse.x = Math.floor(this.mouse.floatX), this.mouse.y = Math.floor(this.mouse.floatY), this.mouse.onLayer = {};
-      for (const z of a) {
+      for (const z of h) {
         const {
           label: G,
           parallax: [$, R]
@@ -1349,8 +1375,10 @@ class Xe {
    * @param {Event} browserEvent The browser event object.
    */
   __triggerEvents(e, t, r) {
-    this.__eventListeners[e] || (this.__eventListeners[e] = []);
-    for (const i of this.__eventListeners[e])
+    for (const i of [
+      ...this.__eventListeners[e] || [],
+      ...this.__eventListeners.all
+    ])
       i(t);
     if (e === "click") {
       const { targets: i } = t;
@@ -1359,8 +1387,15 @@ class Xe {
         for (const n of i) {
           const s = this.scene.findGameObjectById(n);
           if (s instanceof A) {
-            s.focus();
-            break;
+            s.focusable && s.focus(), this.__triggerUIObjectEvents(
+              s.id,
+              "click",
+              L(x({}, t), {
+                target: s
+              }),
+              r
+            );
+            return;
           }
         }
     }
@@ -1382,21 +1417,26 @@ class Xe {
    */
   __triggerUIObjectEvents(e, t, r, i) {
     const n = this.getUIObjectEventListeners(e);
-    !n || !n[t] || (r = L(x({}, r), {
+    if (!n) return;
+    const s = this.scene.findGameObjectById(e);
+    if (!s) return;
+    r = L(x({}, r), {
       preventBrowserDefault: i ? i.preventDefault.bind(i) : () => {
       }
-    }), n[t].forEach((s) => {
-      let o = !1;
+    });
+    let o = !1;
+    const h = () => {
+      o = !0;
+    };
+    n[t] && n[t].forEach((l) => {
       const a = () => {
-        o = !0;
-      }, l = () => {
-        r.preventBrowserDefault(), a();
+        r.preventBrowserDefault(), h();
       };
-      s(L(x({}, r), {
-        preventDefault: l,
-        preventEngineDefault: a
-      })), !o && A.eventDefaults[t] && A.eventDefaults[t](this, r);
-    }));
+      l(L(x({}, r), {
+        preventDefault: a,
+        preventEngineDefault: h
+      }));
+    }), !o && A.eventDefaults[t] && A.eventDefaults[t](s, this, r);
   }
   /**
    * Manages different events firing, and maps them to the proper method.
@@ -1422,7 +1462,7 @@ class Xe {
           this.__onClick();
           break;
       }
-      this.__triggerEvents(t, x({ type: t }, this.mouse), e), this.__triggerEvents("all", x({ type: t }, this.mouse), e), t === "click" && this.mouse.target && delete this.mouse.target, this.__resetMouseWheel();
+      this.__triggerEvents(t, x({ type: t }, this.mouse), e), t === "click" && this.mouse.target && delete this.mouse.target, this.__resetMouseWheel();
     } else if (e instanceof KeyboardEvent) {
       const { type: t } = e;
       switch (t) {
@@ -1433,7 +1473,7 @@ class Xe {
           this.__onKeyUp(e);
           break;
       }
-      this.__triggerEvents(t, x({ type: t }, this.keyboard), e), this.__triggerEvents("all", x({ type: t }, this.keyboard), e), delete this.keyboard.keyCode, delete this.keyboard.key, delete this.keyboard.rawKey;
+      this.__triggerEvents(t, x({ type: t }, this.keyboard), e), delete this.keyboard.keyCode, delete this.keyboard.key, delete this.keyboard.rawKey;
     } else if (e instanceof GamepadEvent) {
       const { type: t } = e;
       switch (t) {
@@ -1446,10 +1486,6 @@ class Xe {
       }
       this.__triggerEvents(
         t,
-        { type: t, gamepads: this.gamepads },
-        e
-      ), this.__triggerEvents(
-        "all",
         { type: t, gamepads: this.gamepads },
         e
       );
@@ -1625,26 +1661,26 @@ class Xe {
       const r = performance.now() - (this.__lastGamepadButtonEvent || 0) > K.gamepadButtonIntervals;
       for (const i of e) {
         const { buttons: n, index: s } = i;
-        for (const [o, { pressed: a }] of Object.entries(n)) {
+        for (const [o, { pressed: h }] of Object.entries(n)) {
           const l = this.__gamepadButtonHistory[s] && this.__gamepadButtonHistory[s][o];
           this.__gamepadButtonHistory[s] || (this.__gamepadButtonHistory[s] = {});
-          const h = {
+          const a = {
             gamepad: i,
             index: s,
             button: o,
             buttons: this.__gamepadButtonHistory[s]
           };
-          a ? (this.__gamepadButtonHistory[s][o] = !0, r && (this.__triggerEvents("gamepadbuttondown", L(x({}, h), {
+          h ? (this.__gamepadButtonHistory[s][o] = !0, r && (this.__triggerEvents("gamepadbuttondown", L(x({}, a), {
             type: "gamepadbuttondown"
-          })), this.__triggerEvents("all", L(x({}, h), {
+          })), this.__triggerEvents("all", L(x({}, a), {
             type: "gamepadbuttondown"
-          })))) : (l && (this.__triggerEvents("gamepadbuttonpressed", L(x({}, h), {
+          })))) : (l && (this.__triggerEvents("gamepadbuttonpressed", L(x({}, a), {
             type: "gamepadbuttonpressed"
-          })), this.__triggerEvents("all", L(x({}, h), {
+          })), this.__triggerEvents("all", L(x({}, a), {
             type: "gamepadbuttonpressed"
-          }))), this.__gamepadButtonHistory[s][o] = !1, r && (this.__triggerEvents("gamepadbuttonup", L(x({}, h), {
+          }))), this.__gamepadButtonHistory[s][o] = !1, r && (this.__triggerEvents("gamepadbuttonup", L(x({}, a), {
             type: "gamepadbuttonup"
-          })), this.__triggerEvents("all", L(x({}, h), {
+          })), this.__triggerEvents("all", L(x({}, a), {
             type: "gamepadbuttonup"
           }))));
         }
@@ -1723,36 +1759,36 @@ class fe {
     } = this, [n, s] = [
       Math.round(e.x * r),
       Math.round(e.y * i)
-    ], o = (l, h, u) => {
-      if (!l || !(l instanceof _) || !e.isOnScreen(h, u, 1, 1, r, i) || (!l.value || l.value.trim() === "") && (!l.backgroundColor || l.backgroundColor === "transparent"))
+    ], o = (l, a, u) => {
+      if (!l || !(l instanceof _) || !e.isOnScreen(a, u, 1, 1, r, i) || (!l.value || l.value.trim() === "") && (!l.backgroundColor || l.backgroundColor === "transparent"))
         return;
-      const [d, p] = [h - n, u - s], m = t.coordinatesToIndex(d, p);
-      a[m] = l;
-    }, a = [];
+      const [d, p] = [a - n, u - s], m = t.coordinatesToIndex(d, p);
+      h[m] = l;
+    }, h = [];
     for (const l of this.gameObjects.filter(
-      ({ visible: h }) => h
+      ({ visible: a }) => a
     )) {
-      const { renderable: h } = l;
+      const { renderable: a } = l;
       let { x: u, y: d } = l;
-      if (h) {
-        if (h.origin) {
-          const [p, m] = h.origin;
+      if (a) {
+        if (a.origin) {
+          const [p, m] = a.origin;
           u -= p, d -= m, u = Math.round(u), d = Math.round(d);
         }
-        if (h instanceof _)
-          o(h, u, d);
-        else if (h instanceof b) {
+        if (a instanceof _)
+          o(a, u, d);
+        else if (a instanceof b) {
           if (!e.isOnScreen(
             u,
             d,
-            h.width,
-            h.height,
+            a.width,
+            a.height,
             r,
             i
           ))
             continue;
-          for (let p = 0; p < h.data.length; p++) {
-            const m = h.data[p];
+          for (let p = 0; p < a.data.length; p++) {
+            const m = a.data[p];
             if (!(!m || m.length === 0))
               for (let g = 0; g < m.length; g++) {
                 const E = m[g];
@@ -1763,7 +1799,7 @@ class fe {
       } else
         continue;
     }
-    return new H(a);
+    return new H(h);
   }
   __onTick() {
     const {
@@ -1811,22 +1847,22 @@ class He {
       throw new Error(`No layer exists with label "${r}".`);
     const n = r ? [i] : this.layers, s = [];
     for (const o of n) {
-      const { gameObjects: a } = o;
-      for (const l of a) {
-        const { renderable: h, x: u, y: d } = l;
-        if (h instanceof _ && u === e && d === t)
-          s.push({ gameObject: l, pixel: h });
-        else if (h instanceof b && D(
+      const { gameObjects: h } = o;
+      for (const l of h) {
+        const { renderable: a, x: u, y: d } = l;
+        if (a instanceof _ && u === e && d === t)
+          s.push({ gameObject: l, pixel: a });
+        else if (a instanceof b && D(
           e,
           t,
           1,
           1,
           u,
           d,
-          h.width,
-          h.height
+          a.width,
+          a.height
         )) {
-          const p = h.data[t - d] && h.data[t - d][e - u];
+          const p = a.data[t - d] && a.data[t - d][e - u];
           if (!p) continue;
           s.push({
             gameObject: l,
@@ -2301,13 +2337,13 @@ class ae {
       width: n,
       fontBoundingBoxAscent: s,
       fontBoundingBoxDescent: o
-    } = this.ctx.measureText("█"), a = s + o;
-    this.characterSize = [n, a];
-    const [l, h] = [
+    } = this.ctx.measureText("█"), h = s + o;
+    this.characterSize = [n, h];
+    const [l, a] = [
       n * this.width,
-      a * this.height
+      h * this.height
     ];
-    i.canvas.width = l, i.canvas.height = h, i.canvas.style.width = `${l}px`, i.canvas.style.height = `${h}px`;
+    i.canvas.width = l, i.canvas.height = a, i.canvas.style.width = `${l}px`, i.canvas.style.height = `${a}px`;
   }
   /**
    * Rescale the display to fit the screen.
@@ -2322,10 +2358,10 @@ class ae {
       return;
     }
     e.style.transform = "translateX(-50%) translateY(-50%) scale(1)";
-    const { width: r, height: i } = e.parentElement.getBoundingClientRect(), { width: n, height: s } = e.getBoundingClientRect(), [o, a] = [
+    const { width: r, height: i } = e.parentElement.getBoundingClientRect(), { width: n, height: s } = e.getBoundingClientRect(), [o, h] = [
       r / n,
       i / s
-    ], l = Math.min(o, a);
+    ], l = Math.min(o, h);
     e.style.transform = `translateX(-50%) translateY(-50%) scale(${l})`;
   }
   /**
@@ -2405,17 +2441,17 @@ class ae {
             width: o
           } = this;
           s.textAlign = "left", s.textBaseline = "top";
-          for (let a = 0; a < this.width; a++)
+          for (let h = 0; h < this.width; h++)
             for (let l = 0; l < this.height; l++) {
-              const h = l * this.width + a, u = t.data[h];
+              const a = l * this.width + h, u = t.data[a];
               if (!u || !(u instanceof _)) continue;
               const { value: d, color: p, fontWeight: m, backgroundColor: g } = u;
               g && (s.beginPath(), s.fillStyle = g, s.fillRect(
-                a * i,
+                h * i,
                 l * n,
                 i + Math.max(1 / o, 1),
                 n
-              ), s.closePath()), s.beginPath(), s.font = `${m || "normal"} ${r} monospace`, s.fillStyle = p || "#FFFFFF", s.fillText(d, a * i, l * n), s.closePath();
+              ), s.closePath()), s.beginPath(), s.font = `${m || "normal"} ${r} monospace`, s.fillStyle = p || "#FFFFFF", s.fillText(d, h * i, l * n), s.closePath();
             }
         }
       }
@@ -2491,11 +2527,11 @@ class Q extends Y {
       width: n,
       height: s,
       color: o = "#ffffff",
-      backgroundColor: a,
+      backgroundColor: h,
       style: l = "double",
-      layer: h
+      layer: a
     } = t;
-    if (super(e, r, i, h), this.__rawWidth = n, this.__rawHeight = s, this.color = o, this.backgroundColor = a, !Object.keys(ne).includes(l))
+    if (super(e, r, i, a), this.__rawWidth = n, this.__rawHeight = s, this.color = o, this.backgroundColor = h, !Object.keys(ne).includes(l))
       throw new Error(
         `Invalid box style "${l}" provided. Must be one of: ${W(
           Object.keys(ne)
@@ -2536,11 +2572,11 @@ class Q extends Y {
    */
   static asPixelMesh(e, t, r, i, n) {
     const s = ne[n], o = [];
-    for (let a = 0; a < t; a++) {
+    for (let h = 0; h < t; h++) {
       const l = [];
-      for (let h = 0; h < e; h++) {
+      for (let a = 0; a < e; a++) {
         let u = 0, d = 0;
-        h === e - 1 ? u = 2 : h > 0 && (u = 1), a === t - 1 ? d = 2 : a > 0 && (d = 1);
+        a === e - 1 ? u = 2 : a > 0 && (u = 1), h === t - 1 ? d = 2 : h > 0 && (d = 1);
         let p = s[d][u];
         l.push(
           p && new _({
@@ -2638,9 +2674,9 @@ class $e extends ee {
       max: n = 100,
       step: s = 1,
       onChange: o,
-      callback: a,
+      callback: h,
       showValue: l = !0,
-      showPercentage: h = !0
+      showPercentage: a = !0
     } = e;
     if (t && typeof t != "string")
       throw new TypeError(
@@ -2666,7 +2702,7 @@ class $e extends ee {
       throw new Error(
         "Menu.Slider config.min cannot be greater than config.max."
       );
-    this.showValue = !!l, this.showPercentage = !!h, this.label = t && t.trim(), this.min = i, this.max = n, this.value = r, this.step = s, this.callback = a, this.onChange = o;
+    this.showValue = !!l, this.showPercentage = !!a, this.label = t && t.trim(), this.min = i, this.max = n, this.value = r, this.step = s, this.callback = h, this.onChange = o;
   }
   /**
    * Get the value of this `Slider`.
@@ -2728,16 +2764,16 @@ class $e extends ee {
       max: n,
       step: s,
       label: o,
-      showValue: a,
+      showValue: h,
       showPercentage: l,
-      sliderWidth: h
+      sliderWidth: a
     } = this, u = e === t;
     let d = [];
     if (o) {
       const y = b.fromString(this.label + " ");
       u || y.setColor("grey"), d.push(y.data[0]);
     }
-    const p = h - 1, m = Math.floor(
+    const p = a - 1, m = Math.floor(
       (r - i) / (n - i) * p
     ), g = new _({
       value: "─",
@@ -2745,14 +2781,14 @@ class $e extends ee {
     }), [E, k] = [
       new Array(m).fill(g),
       new Array(p - m).fill(g)
-    ], C = new b({
+    ], O = new b({
       data: [
         ...E,
         new _({ value: "█", color: u ? "green" : "grey" }),
         ...k
       ]
     });
-    if (d[0] = [...d[0], ...C.data], a) {
+    if (d[0] = [...d[0], ...O.data], h) {
       const y = b.fromString(
         " " + String(r).padEnd(
           Math.max(
@@ -2764,7 +2800,7 @@ class $e extends ee {
       );
       u || y.setColor("grey"), d[0].push(...y.data[0]);
     }
-    if (a && l && d[0].push(
+    if (h && l && d[0].push(
       null,
       new _({ value: "-", color: u ? "white" : "grey" })
     ), l) {
@@ -2846,11 +2882,11 @@ const v = class v extends A {
       title: n,
       items: s = [],
       layer: o,
-      gamepad: a,
+      gamepad: h,
       alignCenter: l = !0,
-      border: h = !0
+      border: a = !0
     } = t;
-    if (this.alignCenter = !!l, this.border = !!h, !(s instanceof Array))
+    if (this.alignCenter = !!l, this.border = !!a, !(s instanceof Array))
       throw new TypeError(
         '"Menu" constructor config.items object should be an array of "Menu.Item" instances.'
       );
@@ -2858,7 +2894,7 @@ const v = class v extends A {
       throw new Error(
         `Provided menu title "${n}" is not of type "string".`
       );
-    this.title = n, this.gamepad = a, e.inputManager.addEventListener(
+    this.title = n, this.gamepad = h, e.inputManager.addEventListener(
       "keydown",
       this.__onKeyDown.bind(this)
     ), e.inputManager.addEventListener(
@@ -3066,7 +3102,7 @@ const v = class v extends A {
     if (this.border) {
       const {
         data: o,
-        width: a,
+        width: h,
         height: l
       } = Q.asPixelMesh(
         r,
@@ -3079,14 +3115,14 @@ const v = class v extends A {
     }
     if (t) {
       let o = this.border || this.title ? v.borderWidth : 0;
-      for (const { renderable: a } of t)
-        if (a)
-          if (a instanceof b) {
-            if (a.width > this.availableContentSpace[0])
+      for (const { renderable: h } of t)
+        if (h)
+          if (h instanceof b) {
+            if (h.width > this.availableContentSpace[0])
               throw new Error(
                 `Menu.Item renderable.width is greater than the Menu's maximum content width of ${this.availableContentSpace[0]}.`
               );
-            a.data.forEach((l) => {
+            h.data.forEach((l) => {
               s[o] || (s[o] = this.border ? [] : new Array(n).fill(null)), s[o].splice(
                 Math.round(
                   this.alignCenter ? n / 2 - l.length / 2 : 0
@@ -3099,7 +3135,7 @@ const v = class v extends A {
             s[o] || (s[o] = []), s[o].splice(
               n % 2 === 0 && this.alignCenter ? (this.border ? v.horizontalSpacing : 0) + (this.border ? v.borderWidth : 0) : Math.round(n / 2),
               1,
-              a
+              h
             ), o++;
     }
     if (e) {
@@ -3108,10 +3144,10 @@ const v = class v extends A {
       );
       this.border || o.setFontWeight(800);
       const {
-        data: [a]
-      } = o, l = this.border || this.alignCenter ? Math.floor((n - a.length) / 2) : 0;
-      for (let h = 0; h < a.length; h++)
-        s[0] || (s[0] = []), s[0][h + l + (this.border ? v.horizontalSpacing : 0)] = a[h];
+        data: [h]
+      } = o, l = this.border || this.alignCenter ? Math.floor((n - h.length) / 2) : 0;
+      for (let a = 0; a < h.length; a++)
+        s[0] || (s[0] = []), s[0][a + l + (this.border ? v.horizontalSpacing : 0)] = h[a];
     }
     return new b({ data: s });
   }
@@ -3146,19 +3182,19 @@ class be extends Y {
       value: n = "Hello, world!",
       wrap: s = !0,
       color: o = "#ffffff",
-      backgroundColor: a,
+      backgroundColor: h,
       fontWeight: l = 400,
-      maxWidth: h = e.runtime.renderer.width,
+      maxWidth: a = e.runtime.renderer.width,
       layer: u
     } = t;
-    if (super(e, r, i, u), h) {
-      if (typeof h != "number" || !Number.isInteger(h) || h < 1)
+    if (super(e, r, i, u), a) {
+      if (typeof a != "number" || !Number.isInteger(a) || a < 1)
         throw new TypeError(
           "Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
         );
-      this.maxWidth = h;
+      this.maxWidth = a;
     }
-    this.__rawValue = n, this.wrap = s, this.color = o, this.backgroundColor = a, this.fontWeight = l;
+    this.__rawValue = n, this.wrap = s, this.color = o, this.backgroundColor = h, this.fontWeight = l;
   }
   /**
    * Get the value of the text object.
@@ -3199,13 +3235,13 @@ class be extends Y {
    */
   static asPixelMesh(e, t, r, i, n, s) {
     const o = e.split(`
-`), a = [];
+`), h = [];
     for (const l of o)
       if (!r && l.length > t)
-        a.push(
+        h.push(
           l.substring(0, t).split("").map(
-            (h) => new _({
-              value: h,
+            (a) => new _({
+              value: a,
               color: i,
               backgroundColor: n,
               fontWeight: s
@@ -3213,12 +3249,12 @@ class be extends Y {
           )
         );
       else {
-        let h = [], u = 0;
+        let a = [], u = 0;
         for (const d of l) {
           if (u >= t)
             if (r)
-              a.push(
-                h.map(
+              h.push(
+                a.map(
                   (p) => new _({
                     value: p,
                     color: i,
@@ -3226,13 +3262,13 @@ class be extends Y {
                     fontWeight: s
                   })
                 )
-              ), h = [], u = 0;
+              ), a = [], u = 0;
             else
               break;
-          h.push(d), u++;
+          a.push(d), u++;
         }
-        h.length > 0 && a.push(
-          h.map(
+        a.length > 0 && h.push(
+          a.map(
             (d) => new _({
               value: d,
               color: i,
@@ -3242,7 +3278,7 @@ class be extends Y {
           )
         );
       }
-    return new b({ data: a });
+    return new b({ data: h });
   }
   set renderable(e) {
   }
@@ -3277,9 +3313,9 @@ class Ve extends A {
       backgroundColorActive: n = "white",
       onChange: s,
       onKeyDown: o,
-      maxLength: a,
+      maxLength: h,
       wrap: l,
-      color: h,
+      color: a,
       fontWeight: u,
       maxWidth: d
     } = t;
@@ -3318,12 +3354,12 @@ class Ve extends A {
         );
       this.onKeyDown = o;
     }
-    if (a) {
-      if (typeof a != "number" || !Number.isInteger(a) || a < 0)
+    if (h) {
+      if (typeof h != "number" || !Number.isInteger(h) || h < 0)
         throw new TypeError(
           "Invalid config.maxLength value provided to TextInput. Expected an integer greater than or equal to 0."
         );
-      this.maxLength = a;
+      this.maxLength = h;
     }
     if (d) {
       if (typeof d != "number" || !Number.isInteger(d) || d < 1)
@@ -3332,7 +3368,7 @@ class Ve extends A {
         );
       this.maxWidth = d;
     }
-    this.scroll = 0, this.caret = t.value ? t.value.length : 0, this.value = t.value, this.wrap = l, this.color = h, this.backgroundColor = i, this.fontWeight = u, e.inputManager.watchObjectClick(this.id, this.__onClick.bind(this)), e.inputManager.addEventListener(
+    this.scroll = 0, this.caret = t.value ? t.value.length : 0, this.value = t.value, this.wrap = l, this.color = a, this.backgroundColor = i, this.fontWeight = u, e.inputManager.watchObjectClick(this.id, this.__onClick.bind(this)), e.inputManager.addEventListener(
       "click",
       this.__onAnyClick.bind(this)
     ), e.inputManager.addEventListener(
@@ -3406,26 +3442,26 @@ class Ve extends A {
       color: n,
       activeColor: s,
       backgroundColor: o,
-      backgroundColorActive: a,
+      backgroundColorActive: h,
       focused: l
-    } = this, h = [], u = e.length - r + 1;
+    } = this, a = [], u = e.length - r + 1;
     this.scroll > u && (this.scroll = u), this.scroll < 0 && (this.scroll = 0);
     const { scroll: d } = this, p = e.substring(d, d + r).padEnd(r, " ").split("");
     for (let m = 0; m < p.length; m++) {
       const g = p[m], E = m + d === i && l;
-      h.push(
+      a.push(
         new _({
           value: g,
           color: E ? s : n,
-          backgroundColor: E ? a : o,
+          backgroundColor: E ? h : o,
           fontWeight: t
         })
       );
     }
-    return new b({ data: [h] });
+    return new b({ data: [a] });
   }
 }
-const I = class I extends A {
+const S = class S extends A {
   /**
    * A box that can be scrolled.
    * @param {Scene} scene The scene this Object is a part of.
@@ -3485,11 +3521,11 @@ const I = class I extends A {
         horizontalScrollbarLength: o
       }
     } = this, {
-      onLayer: a,
+      onLayer: h,
       buttons: { left: l }
     } = e;
-    if (!l || !a[this.layer.label]) return;
-    const [h, u] = a[this.layer.label], [d, p] = [h - this.x, u - this.y];
+    if (!l || !h[this.layer.label]) return;
+    const [a, u] = h[this.layer.label], [d, p] = [a - this.x, u - this.y];
     if (r && d >= this.width - 1) {
       const m = Math.round(
         s * (this.viewportSize[1] / (this.spans.down - this.spans.up))
@@ -3619,8 +3655,8 @@ const I = class I extends A {
     for (let { x: t, y: r, renderable: i } of this.gameObjects) {
       const { origin: n } = i, { width: s, height: o } = i instanceof b ? i : { width: 1, height: 1 };
       if (n) {
-        const [a, l] = n;
-        t -= a, r -= l, t = Math.round(t), r = Math.round(r);
+        const [h, l] = n;
+        t -= h, r -= l, t = Math.round(t), r = Math.round(r);
       }
       t < e.left && (e.left = t), r < e.up && (e.up = r), t + s > e.right && (e.right = t + s), r + o > e.down && (e.down = r + o);
     }
@@ -3630,7 +3666,7 @@ const I = class I extends A {
    * Get the scrollbars that are currently usable. This is determined by what content is overflowing.
    */
   get activeScrollbars() {
-    const { width: e, height: t, spans: r } = this, { borderWidth: i } = I;
+    const { width: e, height: t, spans: r } = this, { borderWidth: i } = S;
     return {
       horizontalScrollbar: r.right - r.left > e - i * 2,
       verticalScrollbar: r.down - r.up > t - i * 2
@@ -3640,7 +3676,7 @@ const I = class I extends A {
    * Get the x, y, width, and height of the content area.
    */
   get viewportSize() {
-    const { width: e, height: t } = this, { borderWidth: r } = I;
+    const { width: e, height: t } = this, { borderWidth: r } = S;
     return [e - r * 2, t - r * 2];
   }
   /**
@@ -3662,19 +3698,19 @@ const I = class I extends A {
       spans: i,
       scrollX: n,
       scrollY: s,
-      activeScrollbars: { horizontalScrollbar: o, verticalScrollbar: a },
-      viewportSize: [l, h],
+      activeScrollbars: { horizontalScrollbar: o, verticalScrollbar: h },
+      viewportSize: [l, a],
       scrollBarRect: {
         verticalScrollbarY: u,
         horizontalScrollbarX: d,
         verticalScrollbarLength: p,
         horizontalScrollbarLength: m
       }
-    } = this, { track: g, thumb: E, borderWidth: k } = I, [C, y] = [k, k], [z, G] = [
+    } = this, { track: g, thumb: E, borderWidth: k } = S, [O, y] = [k, k], [z, G] = [
       Math.max(
         1,
         Math.round(
-          p * (h / (i.down - i.up))
+          p * (a / (i.down - i.up))
         )
       ),
       Math.max(
@@ -3684,7 +3720,7 @@ const I = class I extends A {
         )
       )
     ], [$, R] = [
-      s / (i.down - i.up - h) * (p - z),
+      s / (i.down - i.up - a) * (p - z),
       n / (i.right - i.left - l) * (m - G)
     ], [ye, ve] = [
       $,
@@ -3693,65 +3729,65 @@ const I = class I extends A {
       R,
       R + G
     ];
-    let O = Q.asPixelMesh(e, t, "white", null, "line").data;
-    if (a)
+    let C = Q.asPixelMesh(e, t, "white", null, "line").data;
+    if (h)
       for (let M = u; M < u + p; M++) {
-        O[M] || (O[M] = []);
-        const S = M - u;
-        O[M][this.width - 1] = new _({
+        C[M] || (C[M] = []);
+        const I = M - u;
+        C[M][this.width - 1] = new _({
           value: "█",
-          color: S >= ye && S < ve ? E : g
+          color: I >= ye && I < ve ? E : g
         });
       }
     if (o) {
-      O[this.height - 1] || (O[this.height - 1] = []);
+      C[this.height - 1] || (C[this.height - 1] = []);
       for (let M = d; M < d + m; M++) {
-        const S = M - d;
-        O[this.height - 1][M] = new _({
+        const I = M - d;
+        C[this.height - 1][M] = new _({
           value: "▀",
-          color: S >= xe && S < Ee ? E : g
+          color: I >= xe && I < Ee ? E : g
         });
       }
     }
     for (const M of r) {
-      const { renderable: S, x: te, y: re } = M;
-      if (S instanceof _) {
-        const [P, T] = [te + C - n, re + y - s];
-        if (!D(P, T, 1, 1, C, y, l, h) || P > C + l || T > y + h)
+      const { renderable: I, x: te, y: re } = M;
+      if (I instanceof _) {
+        const [P, T] = [te + O - n, re + y - s];
+        if (!D(P, T, 1, 1, O, y, l, a) || P > O + l || T > y + a)
           continue;
-        O[T] || (O[T] = []), O[T][P] = S;
-      } else if (S instanceof b) {
-        if (!D(te, re, M.width, M.height, C, y, l, h)) continue;
-        for (let P = 0; P < S.data.length; P++) {
-          const T = S.data[P];
+        C[T] || (C[T] = []), C[T][P] = I;
+      } else if (I instanceof b) {
+        if (!D(te, re, M.width, M.height, O, y, l, a)) continue;
+        for (let P = 0; P < I.data.length; P++) {
+          const T = I.data[P];
           if (!(!T || T.length === 0))
             for (let N = 0; N < T.length; N++) {
               const ke = T[N], [ce, U] = [
-                te + C + N - n,
+                te + O + N - n,
                 re + y + P - s
               ];
-              D(ce, U, 1, 1, C, y, l, h) && (O[U] || (O[U] = []), O[U][ce] = ke);
+              D(ce, U, 1, 1, O, y, l, a) && (C[U] || (C[U] = []), C[U][ce] = ke);
             }
         }
       }
     }
-    return new b({ data: O });
+    return new b({ data: C });
   }
 };
 /**
  * The color of the scrollbar track.
  */
-f(I, "track", "grey"), /**
+f(S, "track", "grey"), /**
  * The color of the scrollbar thumb.
  */
-f(I, "thumb", "white"), /**
+f(S, "thumb", "white"), /**
  * The width of the `Scroller` container's border.
  */
-f(I, "borderWidth", 1), /**
+f(S, "borderWidth", 1), /**
  * The width of the scrollbars.
  */
-f(I, "scrollbarWidth", 1);
-let pe = I;
+f(S, "scrollbarWidth", 1);
+let pe = S;
 class qe extends he {
   /**
    * Scroll the camera to a `GameObject`.
@@ -3774,11 +3810,11 @@ class qe extends he {
       scene: {
         camera: o,
         runtime: {
-          renderer: { width: a, height: l }
+          renderer: { width: h, height: l }
         }
       }
     } = this;
-    o.x = e - n + r / 2 - a / 2, o.y = t - s + i / 2 - l / 2;
+    o.x = e - n + r / 2 - h / 2, o.y = t - s + i / 2 - l / 2;
   }
 }
 class we extends he {
@@ -3867,7 +3903,7 @@ class we extends he {
       gameObject: {
         width: n,
         height: s,
-        origin: [o, a]
+        origin: [o, h]
       },
       scene: { layerManager: l }
     } = this;
@@ -3876,28 +3912,28 @@ class we extends he {
       (!g || g.gameObject === i) && (i.x = t, i.y = r);
       return;
     }
-    let h = !0;
+    let a = !0;
     const u = t > i.x, d = t < i.x, p = r > i.y, m = r < i.y;
     if (u || d) {
-      const g = i.y - a, E = g + s - 1;
+      const g = i.y - h, E = g + s - 1;
       for (let k = g; k <= E; k++) {
-        const C = u ? t + n - 1 - o : t - o, y = l.solidAtPosition(C, k);
+        const O = u ? t + n - 1 - o : t - o, y = l.solidAtPosition(O, k);
         if (y && y.gameObject !== i) {
-          h = !1;
+          a = !1;
           break;
         }
       }
     } else if (p || m) {
       const g = i.x - o, E = g + n - 1;
       for (let k = g; k <= E; k++) {
-        const C = p ? r + s - 1 - a : r - a, y = l.solidAtPosition(k, C);
+        const O = p ? r + s - 1 - h : r - h, y = l.solidAtPosition(k, O);
         if (y && y.gameObject !== i) {
-          h = !1;
+          a = !1;
           break;
         }
       }
     }
-    h && (i.x = t, i.y = r);
+    a && (i.x = t, i.y = r);
   }
   onTick() {
   }

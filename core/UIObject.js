@@ -25,6 +25,9 @@ class UIObject extends GameObject {
 	 * Extends the `GameObject` class to include several methods and properties for treating the object as a UI element.
 	 *
 	 * Because `UIObject` contains all the features and expected functionality of a regular `GameObject`, this class can be used like a `GameObject`, just with more direct event listening.
+	 *
+	 * An instance's `tabIndex` can be set to `-1` to prevent focusing of the instance.
+	 *
 	 * @param {Scene} scene The scene this Object is a part of.
 	 * @param {Object} config The `UIObject`'s config object.
 	 * @param {number} config.x This `UIObject` object's x-coordinate.
@@ -43,28 +46,45 @@ class UIObject extends GameObject {
 
 		this.inputManager = scene.inputManager;
 
+		this.__rawTabIndex = 0;
+
 		scene.inputManager.addUIObject(this);
 	}
 
-	get eventListeners() {
-		return this.inputManager.getUIObjectEventListeners(this.id);
+	/**
+	 * Determine if this element is focusable.
+	 */
+	get focusable() {
+		return Boolean(this.tabIndex !== -1);
 	}
 
 	/**
-	 * Add an event listener to the `UIObject`.
-	 * @param {string} type The type of event to add.
-	 * @param {function} listener The event listener function.
+	 * Get this object's tab index.
 	 */
-	addEventListener = (type, listener) =>
-		this.inputManager.addUIObjectEventListener(this.id, type, listener);
+	get tabIndex() {
+		return this.__rawTabIndex;
+	}
 
 	/**
-	 * Remove an event listener from the `UIObject`.
-	 * @param {string} type The type of event to remove.
-	 * @param {function} listener The event listener function that was added to the event listener.
+	 * Set this object's tab index.
 	 */
-	removeEventListener = (type, listener) =>
-		this.inputManager.removeUIObjectEventListener(this.id, type, listener);
+	set tabIndex(n) {
+		if (typeof n !== "number" || !Number.isInteger(n))
+			throw new TypeError(
+				"UIObject instance tabIndex property must be an integer."
+			);
+
+		if (n < -1) n = -1;
+
+		this.__rawTabIndex = n;
+	}
+
+	/**
+	 * Get all event listeners associated with this `UIObject`.
+	 */
+	get eventListeners() {
+		return this.inputManager.getUIObjectEventListeners(this.id);
+	}
 
 	/**
 	 * Check if this instance is currently in focus.
@@ -82,6 +102,8 @@ class UIObject extends GameObject {
 		const { uIObjects } = this.scene.inputManager;
 
 		bool = Boolean(bool);
+
+		if (!this.focusable) bool = false; // Always set focused to false if the instance cannot be focused on.
 
 		if (bool) {
 			this.scene.inputManager.focusIndex = uIObjects.indexOf(this); // Focus on this element.
@@ -105,6 +127,22 @@ class UIObject extends GameObject {
 	blur() {
 		this.focused = false;
 	}
+
+	/**
+	 * Add an event listener to the `UIObject`.
+	 * @param {string} type The type of event to add.
+	 * @param {function} listener The event listener function.
+	 */
+	addEventListener = (type, listener) =>
+		this.inputManager.addUIObjectEventListener(this.id, type, listener);
+
+	/**
+	 * Remove an event listener from the `UIObject`.
+	 * @param {string} type The type of event to remove.
+	 * @param {function} listener The event listener function that was added to the event listener.
+	 */
+	removeEventListener = (type, listener) =>
+		this.inputManager.removeUIObjectEventListener(this.id, type, listener);
 }
 
 export default UIObject;
