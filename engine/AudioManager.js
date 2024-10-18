@@ -6,7 +6,7 @@ export class Sound {
 	 * @param {AudioManager} audioManager The audio manager that will parent this Sound.
 	 * @param {string} src The source of the audio.
 	 * @param {string} label The unique label to identify this sound.
-	 * @param {function} onReady An optional method to call when the audio file is ready to play. Passed the sound object.
+	 * @param {?function} onReady An optional method to call when the audio file is ready to play. Passed the sound object.
 	 */
 	constructor(audioManager, src, label, onReady) {
 		if (typeof label !== "string")
@@ -118,7 +118,7 @@ export class Sound {
 	 * Begin audio playback.
 	 * @param {Object} config Playback configuration data.
 	 * @param {boolean} config.allowConcurrentPlayback Whether to allow the sound to be played, even if it is already playing.
-	 * @param {number} config.volume Optionally overwrite the current volume level before playing.
+	 * @param {?number} config.volume Optionally overwrite the current volume level before playing.
 	 * @param {boolean} config.loop Whether to loop audio playback.
 	 */
 	play(config = { allowConcurrentPlayback: false }) {
@@ -170,7 +170,7 @@ class AudioManager {
 	 * Load an audio file to be played at a later time.
 	 * @param {string} src The URL of the audio file to preload.
 	 * @param {string} label An identifer to use to play this audio later.
-	 * @param {function} onReady An optional method to call when the audio file is ready to play. Passed the sound object.
+	 * @param {?function} onReady An optional method to call when the audio file is ready to play. Passed the sound object.
 	 */
 	preload(src, label, onReady) {
 		new Sound(this, src, label, onReady);

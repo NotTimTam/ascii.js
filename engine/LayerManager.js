@@ -235,7 +235,7 @@ class LayerManager {
 	 * Check for content at a location.
 	 * @param {number} x The x-coordinate to check.
 	 * @param {number} y The y-coordinate to check.
-	 * @param {string} layer An optional layer to check. If no layer is provided, all layer's are checked.
+	 * @param {?string} layer An optional layer to check. If no layer is provided, all layer's are checked.
 	 */
 	getAtPosition(x, y, layer) {
 		const layerWithLabel = this.layers.find(({ label }) => label === layer);
@@ -287,7 +287,7 @@ class LayerManager {
 	 * Check for a solid at a location.
 	 * @param {number} x The x-coordinate to check.
 	 * @param {number} y The y-coordinate to check.
-	 * @param {string} layer An optional layer to check. If no layer is provided, all layer's are checked.
+	 * @param {?string} layer An optional layer to check. If no layer is provided, all layer's are checked.
 	 */
 	solidAtPosition(x, y, layer) {
 		const thingsAt = this.getAtPosition(x, y, layer);

@@ -80,7 +80,7 @@ class Slider extends Item {
 	/**
 	 * A slider that allows value selection.
 	 * @param {Object} config The `Slider`'s config object.
-	 * @param {string} config.label An optional `Slider` display label.
+	 * @param {?string} config.label An optional `Slider` display label.
 	 * @param {boolean} config.showValue Whether to show the value of the `Slider` after it. Default: `false`.
 	 * @param {boolean} config.showPercentage Whether to show the value (in percentage format) of the `Slider` after it. Default: `true`.
 	 * @param {number} config.value The starting value of the `Slider`.
@@ -393,14 +393,14 @@ class Menu extends UIObject {
 	 * @param {number} config.x This `Menu` object's x-coordinate.
 	 * @param {number} config.y This `Menu` object's y-coordinate.
 	 * @param {Object} config.items An array of `Menu.Item` instances. You can extend the `Menu.Item` class to make your own items.
-	 * @param {string} config.title Optional menu title.
+	 * @param {?string} config.title Optional menu title.
 	 * @param {boolean} config.alignCenter Whether or not to align the content to the center of the menu. Default `true`.
 	 * @param {boolean} config.border Whether or not to create a border around the menu. Default `true`.
 	 * @param {string} config.layer The label of the layer to start the `Menu` on.
 	 * @param {boolean} config.autoFocus Whether to automatically focus on the `Menu` after it has been instantiated. Default `true`.
 	 * @param {boolean} config.maintainFocus Forces the menu to stay focused. Default `true`.
 	 * @param {boolean} config.deleteOnBlur Whether to delete the menu when it becomes unfocused. Default `false`. **NOTE:** If `config.autoFocus` is set to false, the `Menu` will be deleted immediately!
-	 * @param {number} config.gamepad An optional number indicating the gamepad (0-based index) this menu should accept input from. Set to `-1` to accept input from all gamepads.
+	 * @param {?number} config.gamepad An optional number indicating the gamepad (0-based index) this menu should accept input from. Set to `-1` to accept input from all gamepads.
 	 */
 	constructor(scene, config) {
 		super(scene, config);

@@ -34,7 +34,7 @@ class Scroller extends UIObject {
 	 * @param {number} config.width The width of the `Scroller`. Defaults to `8`. **Note:** This is the width of the `Scroller` "window", not the width of the view area.
 	 * @param {number} config.height The height of the `Scroller`. Defaults to `8`. **Note:** This is the height of the `Scroller` "window", not the height of the view area.
 	 * @param {string} config.gameObjects The `GameObject`s to display in the `Scroller`. **Note:** These `GameObject`s will be removed from any layer they are a part of, and their `x` and `y` coordinates and renderable will be displayed relative to the scroller.
-	 * @param {string} config.backgroundColor Optional background color.
+	 * @param {?string} config.backgroundColor Optional background color.
 	 * @param {string} config.autoFocus Automatically focus on element once it is instantiated.
 	 * @param {string} config.maintainFocus Forces the menu to stay focused. Default `true`.
 	 * @param {string} config.layer The label of the layer to start the `Scroller` on.

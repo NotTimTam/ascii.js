@@ -7,16 +7,16 @@ import Scene from "../engine/Scene.js";
  * @typedef {Object} TextInputConfig
  * @property {number} maxWidth The maximum width of the `TextInput`. Defaults to `8`.
  * @property {string} value The text to display. (use `"\n"` for newlines)
- * @property {string} color Optional text color.
- * @property {string} activeColor Optional text color for active character.
- * @property {string} backgroundColor Optional background color.
- * @property {string} backgroundColorActive Optional background color for active key.
- * @property {string} fontWeight Optional font weight.
+ * @property {?string} color Optional text color.
+ * @property {?string} activeColor Optional text color for active character.
+ * @property {?string} backgroundColor Optional background color.
+ * @property {?string} backgroundColorActive Optional background color for active key.
+ * @property {?string} fontWeight Optional font weight.
  * @property {function} onChange Callback that runs when the input's value changes.
  * @property {function} onKeyDown Callback that runs when the input recieves a keypress.
  * @property {function} onFocus Callback that runs when focus on this input is gained.
  * @property {function} onBlur Callback that runs when focus on this input is lost.
- * @property {number} maxLength An optional maximum input length.
+ * @property {?number} maxLength An optional maximum input length.
  */
 
 class TextInput extends UIObject {

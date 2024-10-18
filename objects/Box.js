@@ -30,7 +30,7 @@ class Box extends GameObject {
 	 * @param {number} config.width This `Box` object's width.
 	 * @param {number} config.height This `Box` object's height.
 	 * @param {string} config.color Option Box color.
-	 * @param {string} config.backgroundColor Optional background color.
+	 * @param {?string} config.backgroundColor Optional background color.
 	 * @param {string} config.style The box line style. `"line" || "double"`
 	 * @param {string} config.layer The label of the layer to start the `Box` on.
 	 */
@@ -100,7 +100,7 @@ class Box extends GameObject {
 	 * @param {number} width This `Box` object's width.
 	 * @param {number} height This `Box` object's height.
 	 * @param {string} color Option Box color.
-	 * @param {string} backgroundColor Optional background color.
+	 * @param {?string} backgroundColor Optional background color.
 	 * @param {string} style The box line style. `"line" || "double"`
 	 * @returns {PixelMesh} The generated `PixelMesh`.
 	 */

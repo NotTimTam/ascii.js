@@ -140,7 +140,7 @@ class Pixel {
 	 * @param {string} config.value The text-value of this spixel.
 	 * @param {string} config.color The CSS color value of this pixel.
 	 * @param {string|number} config.fontWeight The CSS font weight value of this pixel.
-	 * @param {string} config.backgroundColor An optional background color for the pixel.
+	 * @param {?string} config.backgroundColor An optional background color for the pixel.
 	 * @param {boolean} config.solid Whether or not this pixel is solid. This parameter is used for collision detection.
 	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
 	 */

@@ -19,8 +19,8 @@ class Camera {
 	 * @param {number} y The y-coordinate to check.
 	 * @param {number} width The width to check.
 	 * @param {number} height The height to check.
-	 * @param {number} parallaxX Optional parallax x-value.
-	 * @param {number} parallaxY Optional parallax y-value.
+	 * @param {?number} parallaxX Optional parallax x-value.
+	 * @param {?number} parallaxY Optional parallax y-value.
 	 */
 	isOnScreen = (x, y, width, height, parallaxX = 1, parallaxY = 1) =>
 		aabb(

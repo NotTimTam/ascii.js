@@ -13,8 +13,8 @@ class Text extends GameObject {
 	 * @param {string} config.value The text to display. (use `"\n"` for newlines)
 	 * @param {boolean} config.wrap Whether to wrap the text if it overflows the screen.
 	 * @param {string} config.color Option text color.
-	 * @param {string} config.backgroundColor Optional background color.
-	 * @param {string} config.fontWeight Optional font weight.
+	 * @param {?string} config.backgroundColor Optional background color.
+	 * @param {?string} config.fontWeight Optional font weight.
 	 * @param {string} config.layer The label of the layer to start the `Text` on.
 	 */
 	constructor(scene, config) {
@@ -94,8 +94,8 @@ class Text extends GameObject {
 	 * @param {number} config.maxWidth The maximum width of the `Text`. Defaults to `Renderer.width`.
 	 * @param {boolean} config.wrap Whether to wrap the text if it overflows the screen.
 	 * @param {string} config.color Option text color.
-	 * @param {string} config.backgroundColor Optional background color.
-	 * @param {string} config.fontWeight Optional font weight.
+	 * @param {?string} config.backgroundColor Optional background color.
+	 * @param {?string} config.fontWeight Optional font weight.
 	 * @returns {PixelMesh} The generated `PixelMesh`.
 	 */
 	static asPixelMesh(

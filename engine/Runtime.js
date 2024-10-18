@@ -158,7 +158,7 @@ class Runtime {
 
 	/**
 	 * Start the game loop.
-	 * @param {function} onInitialized An optional method to run when the runtime has been initialized.
+	 * @param {?function} onInitialized An optional method to run when the runtime has been initialized.
 	 */
 	start(onInitialized) {
 		this.running = true;

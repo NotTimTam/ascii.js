@@ -204,7 +204,7 @@ const J = class J {
 	 * @param {string} config.value The text-value of this spixel.
 	 * @param {string} config.color The CSS color value of this pixel.
 	 * @param {string|number} config.fontWeight The CSS font weight value of this pixel.
-	 * @param {string} config.backgroundColor An optional background color for the pixel.
+	 * @param {?string} config.backgroundColor An optional background color for the pixel.
 	 * @param {boolean} config.solid Whether or not this pixel is solid. This parameter is used for collision detection.
 	 * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
 	 */
@@ -322,7 +322,7 @@ class We {
 	 * @param {AudioManager} audioManager The audio manager that will parent this Sound.
 	 * @param {string} src The source of the audio.
 	 * @param {string} label The unique label to identify this sound.
-	 * @param {function} onReady An optional method to call when the audio file is ready to play. Passed the sound object.
+	 * @param {?function} onReady An optional method to call when the audio file is ready to play. Passed the sound object.
 	 */
 	constructor(e, t, r, i) {
 		if (typeof r != "string")
