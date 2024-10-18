@@ -181,6 +181,9 @@ class TextInput extends UIObject {
 		} else if (key === "escape") this.focused = false;
 		else if (key === "left") this.caret--;
 		else if (key === "right") this.caret++;
+		else if (key === "end" || key === "down")
+			this.caret = this.value.length;
+		else if (key === "home" || key === "up") this.caret = 0;
 		else if (
 			/^[\x20-\x7E]$/.test(rawKey) &&
 			(typeof this.maxLength !== "number" ||
