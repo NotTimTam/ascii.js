@@ -23,7 +23,7 @@ class TextInput extends UIObject {
 	/**
 	 * A text input that can be rendered on screen.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {...import("../core/UIObject.js").UIObjectConfig~TextInputConfig} config The `TextInput`'s config object.
+	 * @param {import("../core/UIObject.js").UIObjectConfig & TextInputConfig} config The `TextInput`'s config object.
 	 */
 	constructor(scene, config) {
 		config.wrap = false;
