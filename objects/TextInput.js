@@ -165,22 +165,12 @@ class TextInput extends UIObject {
 	__onKeyDown(event) {
 		const { caret } = this;
 
-		const { key } = event;
+		const { key, rawKey } = event;
 
 		const startValue = this.value;
 
 		// Only allow ASCII range typeable keys.
-		if (
-			/^[\x20-\x7E]$/.test(key) &&
-			(typeof this.maxLength !== "number" ||
-				this.value.length < this.maxLength)
-		) {
-			this.value =
-				this.value.slice(0, this.caret) +
-				key +
-				this.value.slice(this.caret);
-			this.caret++;
-		} else if (key === "backspace") {
+		if (key === "backspace") {
 			this.value =
 				this.value.slice(0, caret - 1) + this.value.slice(caret);
 
@@ -191,6 +181,17 @@ class TextInput extends UIObject {
 		} else if (key === "escape") this.focused = false;
 		else if (key === "left") this.caret--;
 		else if (key === "right") this.caret++;
+		else if (
+			/^[\x20-\x7E]$/.test(rawKey) &&
+			(typeof this.maxLength !== "number" ||
+				this.value.length < this.maxLength)
+		) {
+			this.value =
+				this.value.slice(0, this.caret) +
+				rawKey +
+				this.value.slice(this.caret);
+			this.caret++;
+		}
 
 		this.__updateScrollPosition();
 
