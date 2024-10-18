@@ -13,7 +13,7 @@ new LayerManager(scene, layers);
 ### Arguments
 
 -   `scene` &mdash; `Scene` The scene this layerManager is for.
--   `layers` &mdash; `Array<Object>` The layer configuration objects.
+-   `layers` &mdash; `Object[]` The layer configuration objects.
 
 ---
 

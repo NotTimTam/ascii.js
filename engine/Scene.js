@@ -11,7 +11,7 @@ class Scene {
 	 * @param {Runtime} runtime The main runtime object.
 	 * @param {Object} config The `Scene` configuration object.
 	 * @param {string} config.label The `Scene`'s label.
-	 * @param {Array<Object>} config.layers An optional array of configuration objects for each layer in the `Scene`.
+	 * @param {Object[]} config.layers An optional array of configuration objects for each layer in the `Scene`.
 	 * @param {string} config.layers[].label The layer's label.
 	 * @param {Array<number>} [config.layers[].parallax] Optional parallax data, where the format is [integer, integer]. (`[1, 1]` is 100% parallax, `[0, 0]` is 0% parallax)
 	 * @param {Array<function>} [config.layers[].gameObjectConstructors] Optional callback functions that return `GameObject`s for this layer.

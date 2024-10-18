@@ -406,11 +406,8 @@ class Menu extends UIObject {
 		super(scene, config);
 
 		const {
-			x,
-			y,
 			title,
 			items = [],
-			layer,
 			gamepad,
 			alignCenter = true,
 			border = true,

@@ -2,27 +2,28 @@ import UIObject from "../core/UIObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 
+/**
+ * Configuration data for the `TextInput` class.
+ * @typedef {Object} TextInputConfig
+ * @property {number} maxWidth The maximum width of the `TextInput`. Defaults to `8`.
+ * @property {string} value The text to display. (use `"\n"` for newlines)
+ * @property {string} color Optional text color.
+ * @property {string} activeColor Optional text color for active character.
+ * @property {string} backgroundColor Optional background color.
+ * @property {string} backgroundColorActive Optional background color for active key.
+ * @property {string} fontWeight Optional font weight.
+ * @property {function} onChange Callback that runs when the input's value changes.
+ * @property {function} onKeyDown Callback that runs when the input recieves a keypress.
+ * @property {function} onFocus Callback that runs when focus on this input is gained.
+ * @property {function} onBlur Callback that runs when focus on this input is lost.
+ * @property {number} maxLength An optional maximum input length.
+ */
+
 class TextInput extends UIObject {
 	/**
 	 * A text input that can be rendered on screen.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {Object} config The `TextInput`'s config object.
-	 * @param {number} config.x This `TextInput` object's x-coordinate.
-	 * @param {number} config.y This `TextInput` object's y-coordinate.
-	 * @param {number} config.maxWidth The maximum width of the `TextInput`. Defaults to `8`.
-	 * @param {string} config.value The text to display. (use `"\n"` for newlines)
-	 * @param {string} config.color Optional text color.
-	 * @param {string} config.activeColor Optional text color for active character.
-	 * @param {string} config.backgroundColor Optional background color.
-	 * @param {string} config.backgroundColorActive Optional background color for active key.
-	 * @param {string} config.fontWeight Optional font weight.
-	 * @param {string} config.autoFocus Automatically focus on element once it is instantiated.
-	 * @param {function} config.onChange Callback that runs when the input's value changes.
-	 * @param {function} config.onKeyDown Callback that runs when the input recieves a keypress.
-	 * @param {function} config.onFocus Callback that runs when focus on this input is gained.
-	 * @param {function} config.onBlur Callback that runs when focus on this input is lost.
-	 * @param {number} config.maxLength An optional maximum input length.
-	 * @param {string} config.layer The label of the layer to start the `TextInput` on.
+	 * @param {...import("../core/UIObject.js").UIObjectConfig~TextInputConfig} config The `TextInput`'s config object.
 	 */
 	constructor(scene, config) {
 		config.wrap = false;
@@ -41,6 +42,7 @@ class TextInput extends UIObject {
 			color,
 			fontWeight,
 			maxWidth,
+			tabIndex,
 		} = config;
 
 		if (activeColor) {
@@ -120,6 +122,11 @@ class TextInput extends UIObject {
 		this.color = color;
 		this.backgroundColor = backgroundColor;
 		this.fontWeight = fontWeight;
+
+		this.onFocus = () => {
+			console.log("ELEMENT FOCUSED");
+			this.caret = this.value.length;
+		};
 
 		this.addEventListener("click", this.__onClick);
 		this.addEventListener("keydown", this.__onKeyDown);

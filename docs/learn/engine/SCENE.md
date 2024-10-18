@@ -15,7 +15,7 @@ You can provide the `Scene` constructor's config object with a `layers` array, c
 -   `runtime` &mdash; `Runtime` The main runtime object.
 -   `config` &mdash; `Object` The scene configuration object.
     -   `config.label` &mdash; `string` The `Scene`'s label.
-    -   `config.layers` &mdash; `Array<Object>` An optional array of configuration objects for each layer in the `Scene`.
+    -   `config.layers` &mdash; `Object[]` An optional array of configuration objects for each layer in the `Scene`.
     -   `config.layers[].label` &mdash; `string` The layer's label.
     -   `config.layers[].parallax` &mdash; `Array<number>` Optional parallax data, where the format is [integer, integer]. (`[1, 1]` is 100% parallax, `[0, 0]` is 0% parallax)
     -   `config.layers[].gameObjectConstructors` &mdash; `Array<function>` Optional callback functions that return `GameObject`s for this layer.

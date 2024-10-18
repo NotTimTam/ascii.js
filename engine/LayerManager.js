@@ -209,7 +209,7 @@ class LayerManager {
 	/**
 	 * The layer manager contains variable layers and compiles them into one frame to render to the screen.
 	 * @param {Scene} scene The current loaded `Scene`.
-	 * @param {Array<Object>} layers The layer configuration objects.
+	 * @param {Object[]} layers The layer configuration objects.
 	 */
 	constructor(scene, layers) {
 		this.scene = scene;
