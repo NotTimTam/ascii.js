@@ -626,18 +626,6 @@ class Menu extends UIObject {
 	}
 
 	/**
-	 * Unfocus the menu.
-	 */
-	blur() {
-		if (this.maintainFocus) return;
-
-		this.focused = false;
-		this.__rawIndex = -1;
-
-		if (this.deleteOnBlur) this.delete();
-	}
-
-	/**
 	 * Get an item at a y-coordinate relative to the menu.
 	 * @param {number} y The y-coordinate to check.
 	 * @returns {Menu.Item|undefined} The item at that coordinate, or `undefined` if there is no item at the coordinate.
@@ -675,8 +663,6 @@ class Menu extends UIObject {
 
 		if (escape) return this.blur();
 		else {
-			this.focus = true;
-
 			if (down) this.index++;
 			else if (up) this.index--;
 			else this.currentItem && this.currentItem.onKeyDown(event);
@@ -744,7 +730,6 @@ class Menu extends UIObject {
 		if (this.focused && !event.targets.includes(this.id))
 			return this.blur();
 		else if (event.targets.includes(this.id)) {
-			this.focused = true;
 			this.__inputMode = "mouse";
 		}
 

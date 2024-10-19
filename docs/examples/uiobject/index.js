@@ -85,6 +85,9 @@ new Menu(scene, {
 		new Menu.Slider({
 			label: "Slider",
 		}),
+		new Menu.Toggle({
+			label: "Checkbox",
+		}),
 	],
 	title: "Menu 3",
 	layer: "system",
@@ -92,7 +95,7 @@ new Menu(scene, {
 	autoFocus: true,
 });
 
-new ScrollTo(menuCenter);
+// new ScrollTo(menuCenter);
 
 // class FocusIndicator extends UIObject {
 // 	constructor(scene, config) {
