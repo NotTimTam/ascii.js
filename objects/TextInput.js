@@ -129,9 +129,9 @@ class TextInput extends UIObject {
 
 		this.scroll = 0;
 
-		this.caret = config.value ? config.value.length : 0;
-
 		this.value = config.value;
+
+		this.caret = this.value ? this.value.length : 0;
 
 		this.wrap = wrap;
 		this.backgroundColor = backgroundColor;

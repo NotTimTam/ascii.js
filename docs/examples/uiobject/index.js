@@ -152,6 +152,8 @@ new TextInput(scene, {
 	value: "Hello world!",
 	layer: "system",
 	maxWidth: 32,
+	autoFocus: true,
+	maintainFocus: true,
 });
 
 runtime.loadScene(scene);
