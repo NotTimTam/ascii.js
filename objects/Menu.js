@@ -59,6 +59,7 @@ class Button extends Item {
 			menu: {
 				index: activeIndex,
 				availableContentSpace: [width],
+				focused,
 			},
 			index,
 			label,
@@ -69,7 +70,7 @@ class Button extends Item {
 			wrap ? wrapString(label, width, true) : label.slice(0, width)
 		);
 
-		if (activeIndex === index) display.setColor("white");
+		if (activeIndex === index && focused) display.setColor("white");
 		else display.setColor("grey");
 
 		return display;
@@ -167,7 +168,7 @@ class Slider extends Item {
 			keys: { enter, left, right },
 		} = event;
 
-		if (enter) this.callback(this.value);
+		if (enter && this.callback) this.callback(this.value);
 		if (left) this.value -= this.step;
 		if (right) this.value += this.step;
 	}
@@ -176,17 +177,19 @@ class Slider extends Item {
 			buttons: { a, left, right },
 		} = event;
 
-		if (a) this.callback(this.value);
+		if (a && this.callback) this.callback(this.value);
 		if (left) this.value -= this.step;
 		if (right) this.value += this.step;
 	}
 
 	__positionByMouse(event) {
-		let [x] = event.onLayer[this.menu.layerLabel];
+		if (!event.onUIObject) return;
+
+		let [x] = event.onUIObject;
 
 		x -= Menu.borderWidth + Menu.horizontalSpacing;
 
-		if (this.label) x -= this.label.length + 0.5;
+		if (this.label) x -= this.label.length;
 
 		const value = this.snapToStep(
 			clamp((x / this.sliderWidth) * this.max, this.min, this.max)
@@ -197,7 +200,7 @@ class Slider extends Item {
 
 	onClick(event) {
 		this.__positionByMouse(event);
-		this.callback(this.value);
+		this.callback && this.callback(this.value);
 	}
 
 	onMouseMove(event) {
@@ -223,7 +226,7 @@ class Slider extends Item {
 
 	get renderable() {
 		const {
-			menu: { index: activeIndex },
+			menu: { index: activeIndex, focused },
 			index,
 			value,
 			min,
@@ -241,7 +244,7 @@ class Slider extends Item {
 
 		if (label) {
 			const labelMesh = PixelMesh.fromString(this.label + " ");
-			if (!active) labelMesh.setColor("grey");
+			if (!active || !focused) labelMesh.setColor("grey");
 			data.push(labelMesh.data[0]);
 		}
 
@@ -253,7 +256,7 @@ class Slider extends Item {
 
 		const track = new Pixel({
 			value: "─",
-			color: active ? "white" : "grey",
+			color: active && focused ? "white" : "grey",
 		});
 
 		const [leftSide, rightSide] = [
@@ -264,7 +267,10 @@ class Slider extends Item {
 		const sliderMesh = new PixelMesh({
 			data: [
 				...leftSide,
-				new Pixel({ value: "█", color: active ? "green" : "grey" }),
+				new Pixel({
+					value: "█",
+					color: active && focused ? "green" : "grey",
+				}),
 				...rightSide,
 			],
 		});
@@ -283,21 +289,24 @@ class Slider extends Item {
 						" "
 					)
 			);
-			if (!active) valueMesh.setColor("grey");
+			if (!active || !focused) valueMesh.setColor("grey");
 			data[0].push(...valueMesh.data[0]);
 		}
 
 		if (showValue && showPercentage)
 			data[0].push(
 				null,
-				new Pixel({ value: "-", color: active ? "white" : "grey" })
+				new Pixel({
+					value: "-",
+					color: active && focused ? "white" : "grey",
+				})
 			);
 
 		if (showPercentage) {
 			const percentageMesh = PixelMesh.fromString(
 				(" " + Math.round((value / max) * 100) + "%").padEnd(5, " ")
 			);
-			if (!active) percentageMesh.setColor("grey");
+			if (!active || !focused) percentageMesh.setColor("grey");
 			data[0].push(...percentageMesh.data[0]);
 		}
 
@@ -341,17 +350,17 @@ class Toggle extends Item {
 	onKeyDown(event) {
 		if (event.keys.enter) this.checked = !this.checked;
 
-		this.callback(this.checked);
+		this.callback && this.callback(this.checked);
 	}
 	onClick() {
 		this.checked = !this.checked;
 
-		this.callback(this.checked);
+		this.callback && this.callback(this.checked);
 	}
 	onGamepadButton(event) {
 		if (event.buttons.a) this.checked = !this.checked;
 
-		this.callback(this.checked);
+		this.callback && this.callback(this.checked);
 	}
 
 	get renderable() {
@@ -437,6 +446,7 @@ class Menu extends UIObject {
 		this.addEventListener("keydown", this.__onKeyDown);
 		this.addEventListener("mousemove", this.__onMouseMove);
 		this.addEventListener("click", this.__onClick);
+		this.addEventListener("blur", this.__onBlur);
 
 		this.__inputMode = "keyboard";
 	}
@@ -743,6 +753,13 @@ class Menu extends UIObject {
 
 			this.currentItem && this.currentItem.onClick(event);
 		}
+	}
+
+	/**
+	 * Handle the `Menu` being blurred.
+	 */
+	__onBlur() {
+		this.index = -1;
 	}
 
 	__handleGamepadButtonPressed(event) {

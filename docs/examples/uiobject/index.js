@@ -82,6 +82,9 @@ new Menu(scene, {
 		new Menu.Button({
 			label: "Button I",
 		}),
+		new Menu.Slider({
+			label: "Slider",
+		}),
 	],
 	title: "Menu 3",
 	layer: "system",
@@ -153,7 +156,7 @@ new TextInput(scene, {
 	layer: "system",
 	maxWidth: 32,
 	autoFocus: true,
-	maintainFocus: true,
+	// maintainFocus: true,
 });
 
 runtime.loadScene(scene);

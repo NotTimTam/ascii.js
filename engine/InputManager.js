@@ -802,10 +802,12 @@ class InputManager {
 
 			// If the user clicks the screen.
 			if (type === "click") {
-				if (targets && targets.length > 0) {
-					if (targets[0].focusable) targets[0].focus();
+				if (targets && targets.length > 0 && targets[0].focusable) {
+					console.log(targets[0]);
+					targets[0].focus();
 				} else {
-					this.focusIndex = -1; // When empty space is clicked, we blur any focused object and exit the event handler.
+					if (this.focusTarget) this.focusTarget.blur();
+					else this.focusIndex = -1; // When empty space is clicked, we blur any focused object and exit the event handler.
 					return;
 				}
 			}
@@ -818,17 +820,8 @@ class InputManager {
 					layerY - targets[0].y,
 				];
 
-				// Trigger target mouse event.
-				this.__triggerUIObjectEvents(
-					targets[0].id,
-					type,
-					{
-						...data,
-						target: targets[0],
-						onUIObject,
-					},
-					browserEvent
-				);
+				data.onUIObject = onUIObject;
+				data.target = targets[0];
 			}
 		}
 

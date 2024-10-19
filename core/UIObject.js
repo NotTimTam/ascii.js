@@ -27,6 +27,8 @@ class UIObject extends GameObject {
 			if (tab) preventBrowserDefault();
 			else return;
 
+			if (uIObjectInstance.maintainFocus) return;
+
 			// Shift + Tab.
 			if (shift) inputManager.focusPrevious();
 			// Shift only.
@@ -115,11 +117,15 @@ class UIObject extends GameObject {
 	 * Set the focus state of this instance.
 	 */
 	set focused(bool) {
-		const { uIObjects } = this.scene.inputManager;
+		const { uIObjects, focusTarget } = this.scene.inputManager;
 
 		bool = Boolean(bool);
 
-		if (!this.focusable) bool = false; // Always set focused to false if the instance cannot be focused on.
+		if (!this.focusable)
+			bool = false; // Always set focused to false if the instance cannot be focused on.
+		else if (this.maintainFocus) bool = true; // Don't allow focus to be lost if maintainFocus is true.
+
+		if (bool && focusTarget && focusTarget.maintainFocus) return; // Don't focus on this UIObject if one is focused on that has maintainFocus set to true.
 
 		if (bool) this.scene.inputManager.focusIndex = uIObjects.indexOf(this);
 		// Focus on this element.
