@@ -306,6 +306,16 @@ class GamepadUIObject {
 }
 
 class InputManager {
+	static mouseEvents = [
+		"click",
+		"mousedown",
+		"mouseup",
+		"mousemove",
+		"wheel",
+		"mouseenter",
+		"mouseleave",
+	];
+
 	/**
 	 * Handles user input.
 	 * @param {Scene} scene The current scene.
@@ -328,13 +338,7 @@ class InputManager {
 		this.__uiObjectEventListeners = {};
 
 		// General event listeners.
-		this.__eventListeners = {
-			gamepadbuttonpressed: [],
-			gamepadbuttondown: [],
-			gamepadbuttonup: [],
-			gamepadaxes: [],
-			all: [],
-		};
+		this.__eventListeners = {};
 
 		this.__onCreated();
 
@@ -355,7 +359,30 @@ class InputManager {
 		if (n < -1) n = -1;
 		if (n > this.uIObjects.length - 1) n = this.uIObjects.length - 1;
 
+		const previousObject = this.uIObjects[this.focusIndex];
+		if (previousObject)
+			this.__triggerUIObjectEvents(
+				previousObject.id,
+				"blur",
+				{
+					target: previousObject,
+				},
+				undefined
+			);
+
 		this.__rawFocusIndex = n;
+
+		if (n !== -1) {
+			const currentObject = this.uIObjects[n];
+			this.__triggerUIObjectEvents(
+				currentObject.id,
+				"focus",
+				{
+					target: currentObject,
+				},
+				undefined
+			);
+		}
 	}
 
 	/**
@@ -460,7 +487,18 @@ class InputManager {
 	 * Get permitted event types.
 	 */
 	get types() {
-		return Object.keys(this.__eventListeners);
+		return [
+			...Object.keys(this.__eventListeners),
+			"focus",
+			"blur",
+			"gamepadbuttonpressed",
+			"gamepadbuttondown",
+			"gamepadbuttonup",
+			"gamepadaxes",
+			"all",
+			"mouseenter",
+			"mouseleave",
+		];
 	}
 
 	/**
@@ -567,31 +605,6 @@ class InputManager {
 				this.mouse.buttons.right = true;
 				break;
 		}
-	}
-
-	/**
-	 * Calls when a mouse button is clicked.
-	 */
-	__onClick() {
-		const { onLayer } = this.mouse;
-
-		this.mouse.targets = [];
-
-		for (const [label, [x, y]] of Object.entries(onLayer)) {
-			const targetsOnLayer = this.scene.layerManager.getAtPosition(
-				x,
-				y,
-				label
-			);
-
-			this.mouse.targets = [...this.mouse.targets, ...targetsOnLayer];
-		}
-
-		// Convert target objects into an array of IDs.
-		if (this.mouse.targets)
-			this.mouse.targets = this.mouse.targets.map(
-				({ gameObject }) => gameObject.id
-			);
 	}
 
 	/**
@@ -704,6 +717,13 @@ class InputManager {
 	}
 
 	/**
+	 * Calls when the mouse leaves the canvas.
+	 */
+	__onMouseLeave() {
+		this.mouse.targets = [];
+	}
+
+	/**
 	 * Reset mouse wheel return data.
 	 */
 	__resetMouseWheel() {
@@ -765,35 +785,53 @@ class InputManager {
 		// Trigger general events. Including "all" events.
 		for (const eventListener of [
 			...(this.__eventListeners[type] || []),
-			...this.__eventListeners.all,
+			...(this.__eventListeners.all || []),
 		])
 			eventListener(data);
 
-		// Trigger click events.
-		if (type === "click") {
-			const { targets } = data;
+		// Trigger mouse events for any UIObject, even if the UIObject is not focused.
+		if (InputManager.mouseEvents.includes(type)) {
+			const targets =
+				data.targets &&
+				data.targets
+					.map((targetId) => this.scene.findGameObjectById(targetId)) // Get all target instances.
+					.filter((target) => target instanceof UIObject) // Only UIObject instances are considered targets for UIObject events..
+					.sort(
+						(a, b) =>
+							this.scene.layerManager.layers.indexOf(b.layer) -
+							this.scene.layerManager.layers.indexOf(a.layer)
+					); // Sort by layer so topmost items recieve the inputs first.
 
-			if (targets.length === 0) this.focusIndex = -1;
-			else
-				for (const target of targets) {
-					const object = this.scene.findGameObjectById(target);
-
-					if (!(object instanceof UIObject)) continue;
-
-					if (object.focusable) object.focus();
-
-					this.__triggerUIObjectEvents(
-						object.id,
-						"click",
-						{
-							...data,
-							target: object,
-						},
-						browserEvent
-					);
-
+			// If the user clicks the screen.
+			if (type === "click") {
+				if (targets && targets.length > 0) {
+					if (targets[0].focusable) targets[0].focus();
+				} else {
+					this.focusIndex = -1; // When empty space is clicked, we blur any focused object and exit the event handler.
 					return;
 				}
+			}
+
+			if (targets && targets.length > 0) {
+				// Get mouse position on the target.
+				const [layerX, layerY] = data.onLayer[targets[0].layerLabel];
+				const onUIObject = [
+					layerX - targets[0].x,
+					layerY - targets[0].y,
+				];
+
+				// Trigger target mouse event.
+				this.__triggerUIObjectEvents(
+					targets[0].id,
+					type,
+					{
+						...data,
+						target: targets[0],
+						onUIObject,
+					},
+					browserEvent
+				);
+			}
 		}
 
 		// Trigger object specific events for the current focused UIObject.
@@ -878,17 +916,62 @@ class InputManager {
 				case "mousemove":
 					this.__onMouseMove(event);
 					break;
+				case "mouseleave":
+					this.__onMouseLeave();
+					break;
 				case "wheel":
 					this.__onMouseWheel(event);
 					break;
-				case "click":
-					this.__onClick();
-					break;
 			}
+
+			const lastTargets = [...(this.mouse.targets || [])]; // Get the last objects the mouse targeted.
+
+			// Gather mouse targets.
+			const { onLayer } = this.mouse;
+
+			this.mouse.targets = [];
+
+			for (const [label, [x, y]] of Object.entries(onLayer)) {
+				const targetsOnLayer = this.scene.layerManager.getAtPosition(
+					x,
+					y,
+					label
+				);
+
+				this.mouse.targets = [...this.mouse.targets, ...targetsOnLayer];
+			}
+
+			// Convert target objects into an array of IDs.
+			if (this.mouse.targets)
+				this.mouse.targets = this.mouse.targets.map(
+					({ gameObject }) => gameObject.id
+				);
+
+			// Run mouseover/mouseleave events for mouse targets.
+			[...this.mouse.targets]
+				.filter((target) => !lastTargets.includes(target))
+				.forEach((uIObjectId) =>
+					this.__triggerEvents(
+						"mouseenter",
+						{ type, ...this.mouse },
+						event
+					)
+				);
+
+			// New mouseleaves
+			lastTargets
+				.filter((target) => !this.mouse.targets.includes(target))
+				.forEach((uIObjectId) =>
+					this.__triggerEvents(
+						"mouseleave",
+						{ type, ...this.mouse, targets: [uIObjectId] },
+						event
+					)
+				);
 
 			this.__triggerEvents(type, { type, ...this.mouse }, event); // Trigger the specific event type that fired.
 
-			if (type === "click" && this.mouse.target) delete this.mouse.target; // Delete target items to clear for next event.
+			// delete this.mouse.target; // Delete target items to clear for next event.
 			this.__resetMouseWheel();
 		} else if (event instanceof KeyboardEvent) {
 			const { type } = event;
@@ -930,12 +1013,12 @@ class InputManager {
 	/**
 	 * Handles when the user leaves this tab.
 	 */
-	__windowBlurHandler = () => {
+	__windowBlurHandler() {
 		this.keyboard.keys = {};
 		this.mouse.buttons = {};
 		delete this.mouse.deltas;
 		delete this.mouse.scroll;
-	};
+	}
 
 	/**
 	 * Add a `UIObject` to the list of `UIObject`s.
@@ -971,7 +1054,9 @@ class InputManager {
 				'Expected a function for parameter "listener".'
 			);
 
-		this.__eventListeners[type].push(listener);
+		if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
+
+		this.__eventListeners[type].push(listener); // FIX
 	}
 
 	/**
@@ -991,6 +1076,8 @@ class InputManager {
 			throw new TypeError(
 				'Expected a function for parameter "listener".'
 			);
+
+		if (!this.__eventListeners[type]) return;
 
 		this.__eventListeners[type] = this.__eventListeners[type].filter(
 			(eventListener) => eventListener !== listener
@@ -1081,40 +1168,63 @@ class InputManager {
 			);
 	}
 
+	// /**
+	//  * Add an event listener to the window for the entire `InputManager`.
+	//  * @param {string} type The type of event to add.
+	//  * @param {function} handler The handler for that event.
+	//  */
+	// __addWindowEventListener(type, handler) {
+	// 	if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
+	// 	window.addEventListener(type, handler);
+	// }
+
+	// /**
+	//  * Remove an event listener from the window.
+	//  * @param {string} type The type of event to remove.
+	//  * @param {function} handler The handler that was set for that event.
+	//  */
+	// __removeWindowEventListener(type, handler) {
+	// 	delete this.__eventListeners[type];
+	// 	window.removeEventListener(type, handler);
+	// }
+
 	/**
-	 * Add an event listener to the window for the entire `InputManager`.
+	 * Add an event listener to the canvas for the entire `InputManager`.
 	 * @param {string} type The type of event to add.
 	 * @param {function} handler The handler for that event.
 	 */
-	__addGlobalEventListener(type, handler) {
+	__addCanvasEventListener(type, handler) {
 		if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
-		window.addEventListener(type, handler);
+		this.scene.runtime.renderer.element.addEventListener(type, handler);
 	}
 
 	/**
-	 * Remove an event listener from the window.
+	 * Remove an event listener from the canvas.
 	 * @param {string} type The type of event to remove.
 	 * @param {function} handler The handler that was set for that event.
 	 */
-	__removeGlobalEventListener(type, handler) {
+	__removeCanvasEventListener(type, handler) {
 		delete this.__eventListeners[type];
-		window.removeEventListener(type, handler);
+		this.scene.runtime.renderer.element.removeEventListener(type, handler);
 	}
 
 	__onCreated() {
-		this.__addGlobalEventListener("keydown", this.__eventHandler);
-		this.__addGlobalEventListener("keyup", this.__eventHandler);
-		this.__addGlobalEventListener("mousemove", this.__eventHandler);
-		this.__addGlobalEventListener("mousedown", this.__eventHandler);
-		this.__addGlobalEventListener("mouseup", this.__eventHandler);
-		this.__addGlobalEventListener("click", this.__eventHandler);
-		this.__addGlobalEventListener("wheel", this.__eventHandler);
-		this.__addGlobalEventListener("gamepadconnected", this.__eventHandler);
-		this.__addGlobalEventListener(
+		this.__addCanvasEventListener("keydown", this.__eventHandler);
+		this.__addCanvasEventListener("keyup", this.__eventHandler);
+		this.__addCanvasEventListener("mousemove", this.__eventHandler);
+		this.__addCanvasEventListener("mouseenter", this.__eventHandler);
+		this.__addCanvasEventListener("mouseleave", this.__eventHandler);
+		this.__addCanvasEventListener("mousedown", this.__eventHandler);
+		this.__addCanvasEventListener("mouseup", this.__eventHandler);
+		this.__addCanvasEventListener("click", this.__eventHandler);
+		this.__addCanvasEventListener("wheel", this.__eventHandler);
+		this.__addCanvasEventListener("gamepadconnected", this.__eventHandler);
+		this.__addCanvasEventListener(
 			"gamepaddisconnected",
 			this.__eventHandler
 		);
-		this.__addGlobalEventListener("contextmenu", this.__contextHandler);
+		this.__addCanvasEventListener("contextmenu", this.__contextHandler);
+
 		window.addEventListener("blur", this.__windowBlurHandler);
 	}
 
@@ -1122,22 +1232,25 @@ class InputManager {
 	 * Unload the `InputManager` instance by removing all system event listeners.
 	 */
 	__unLoad() {
-		this.__removeGlobalEventListener("keydown", this.__eventHandler);
-		this.__removeGlobalEventListener("keyup", this.__eventHandler);
-		this.__removeGlobalEventListener("mousemove", this.__eventHandler);
-		this.__removeGlobalEventListener("mousedown", this.__eventHandler);
-		this.__removeGlobalEventListener("mouseup", this.__eventHandler);
-		this.__removeGlobalEventListener("click", this.__eventHandler);
-		this.__removeGlobalEventListener("wheel", this.__eventHandler);
-		this.__removeGlobalEventListener(
+		this.__removeCanvasEventListener("keydown", this.__eventHandler);
+		this.__removeCanvasEventListener("keyup", this.__eventHandler);
+		this.__removeCanvasEventListener("mousemove", this.__eventHandler);
+		this.__removeCanvasEventListener("mouseenter", this.__eventHandler);
+		this.__removeCanvasEventListener("mouseleave", this.__eventHandler);
+		this.__removeCanvasEventListener("mousedown", this.__eventHandler);
+		this.__removeCanvasEventListener("mouseup", this.__eventHandler);
+		this.__removeCanvasEventListener("click", this.__eventHandler);
+		this.__removeCanvasEventListener("wheel", this.__eventHandler);
+		this.__removeCanvasEventListener(
 			"gamepadconnected",
 			this.__eventHandler
 		);
-		this.__removeGlobalEventListener(
+		this.__removeCanvasEventListener(
 			"gamepaddisconnected",
 			this.__eventHandler
 		);
-		this.__removeGlobalEventListener("contextmenu", this.__contextHandler);
+		this.__removeCanvasEventListener("contextmenu", this.__contextHandler);
+
 		window.removeEventListener("blur", this.__windowBlurHandler);
 	}
 

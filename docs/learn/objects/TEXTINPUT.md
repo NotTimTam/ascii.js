@@ -24,8 +24,6 @@ A text input that can be rendered on screen.
     -   `autoFocus` &mdash; `boolean` Automatically focus on element once it is instantiated.
     -   `onChange` &mdash; `function` Callback that runs when the input's value changes.
     -   `onKeyDown` &mdash; `function` Callback that runs when the input receives a keypress.
-    -   `onFocus` &mdash; `function` Callback that runs when focus on this input is gained.
-    -   `onBlur` &mdash; `function` Callback that runs when focus on this input is lost.
     -   `maxLength` &mdash; `number` An optional maximum input length.
 
 ---

@@ -434,17 +434,9 @@ class Menu extends UIObject {
 
 		this.gamepad = gamepad;
 
-		scene.inputManager.addEventListener(
-			"keydown",
-			this.__onKeyDown.bind(this)
-		);
-
-		scene.inputManager.addEventListener(
-			"mousemove",
-			this.__onMouseMove.bind(this)
-		);
-
-		scene.inputManager.addEventListener("click", this.__onClick.bind(this));
+		this.addEventListener("keydown", this.__onKeyDown);
+		this.addEventListener("mousemove", this.__onMouseMove);
+		this.addEventListener("click", this.__onClick);
 
 		this.__inputMode = "keyboard";
 	}
@@ -577,12 +569,6 @@ class Menu extends UIObject {
 	 * Get the actual current height of the `Menu`.
 	 */
 	get height() {
-		const {
-			runtime: {
-				renderer: { height },
-			},
-		} = this;
-
 		let itemsHeight = 0;
 
 		for (const { renderable } of this.items) {
@@ -669,7 +655,7 @@ class Menu extends UIObject {
 	 * @param {Event} event The event that triggered this method.
 	 */
 	__onKeyDown(event) {
-		if (!this.isOnScreen || !this.visible || !this.focused) return;
+		if (!this.isOnScreen || !this.visible) return;
 
 		this.__inputMode = "keyboard";
 
@@ -730,8 +716,7 @@ class Menu extends UIObject {
 			mouseMenuIndex >= 0 &&
 			mouseMenuIndex < this.items.length &&
 			menuX >= 0 &&
-			menuX <= this.width &&
-			this.focused
+			menuX <= this.width
 		) {
 			this.index = mouseMenuIndex;
 		} else {

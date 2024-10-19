@@ -38,11 +38,7 @@ class UIObject extends GameObject {
 	 * Extends the `GameObject` class to include several methods and properties for treating the object as a UI element.
 	 *
 	 * Because `UIObject` contains all the features and expected functionality of a regular `GameObject`, this class can be used like a `GameObject`, just with more direct event listening.
-	 *
-	 * An instance's `tabIndex` can be set to `-1` to prevent focusing of the instance.
-	 *
 	 * @param {Scene} scene The scene this Object is a part of.
-	 *
 	 * @param {UIObjectConfig} config The `UIObject`'s config object.
 	 */
 	constructor(scene, config) {
@@ -125,13 +121,9 @@ class UIObject extends GameObject {
 
 		if (!this.focusable) bool = false; // Always set focused to false if the instance cannot be focused on.
 
-		if (bool) {
-			this.scene.inputManager.focusIndex = uIObjects.indexOf(this); // Focus on this element.
-			this.onFocus && this.onFocus(); // Trigger focus event.
-		} else if (this.focused) {
-			this.scene.inputManager.focusIndex = -1; // Otherwise blur this element if it is focused.
-			this.onBlur && this.onBlur(); // Trigger blur event.
-		}
+		if (bool) this.scene.inputManager.focusIndex = uIObjects.indexOf(this);
+		// Focus on this element.
+		else if (this.focused) this.scene.inputManager.focusIndex = -1; // Otherwise blur this element if it is focused.
 	}
 
 	/**
