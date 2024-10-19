@@ -31,127 +31,127 @@ const scene = new Scene(runtime, {
 	layers: [{ label: "BOTTOM" }, { label: "TOP" }],
 });
 
-// new Menu(scene, {
-// 	x: 0,
-// 	y: 0,
-// 	items: [
-// 		new Menu.Button({
-// 			label: "Button A",
-// 		}),
-// 		new Menu.Button({
-// 			label: "Button B",
-// 		}),
-// 		new Menu.Button({
-// 			label: "Button C",
-// 		}),
-// 	],
-// 	title: "Menu 1",
-// 	layer: "system",
-// 	gamepad: -1,
-// });
+new Menu(scene, {
+	x: 0,
+	y: 0,
+	items: [
+		new Menu.Button({
+			label: "Button A",
+		}),
+		new Menu.Button({
+			label: "Button B",
+		}),
+		new Menu.Button({
+			label: "Button C",
+		}),
+	],
+	title: "Menu 1",
+	layer: "system",
+	gamepad: -1,
+});
 
-// const menuCenter = new Menu(scene, {
-// 	x: 14,
-// 	y: 0,
-// 	items: [
-// 		new Menu.Button({
-// 			label: "Button D",
-// 		}),
-// 		new Menu.Button({
-// 			label: "Button E",
-// 		}),
-// 		new Menu.Button({
-// 			label: "Button F",
-// 		}),
-// 	],
-// 	title: "Menu 2",
-// 	layer: "system",
-// 	gamepad: -1,
-// });
+const menuCenter = new Menu(scene, {
+	x: 14,
+	y: 0,
+	items: [
+		new Menu.Button({
+			label: "Button D",
+		}),
+		new Menu.Button({
+			label: "Button E",
+		}),
+		new Menu.Button({
+			label: "Button F",
+		}),
+	],
+	title: "Menu 2",
+	layer: "system",
+	gamepad: -1,
+});
 
-// new Menu(scene, {
-// 	x: 28,
-// 	y: 0,
-// 	items: [
-// 		new Menu.Button({
-// 			label: "Button G",
-// 		}),
-// 		new Menu.Button({
-// 			label: "Button H",
-// 		}),
-// 		new Menu.Button({
-// 			label: "Button I",
-// 		}),
-// 	],
-// 	title: "Menu 3",
-// 	layer: "system",
-// 	gamepad: -1,
-// 	autoFocus: true,
-// });
+new Menu(scene, {
+	x: 28,
+	y: 0,
+	items: [
+		new Menu.Button({
+			label: "Button G",
+		}),
+		new Menu.Button({
+			label: "Button H",
+		}),
+		new Menu.Button({
+			label: "Button I",
+		}),
+	],
+	title: "Menu 3",
+	layer: "system",
+	gamepad: -1,
+	autoFocus: true,
+});
 
-// new ScrollTo(menuCenter);
+new ScrollTo(menuCenter);
 
-class FocusIndicator extends UIObject {
-	constructor(scene, config) {
-		super(scene, config);
+// class FocusIndicator extends UIObject {
+// 	constructor(scene, config) {
+// 		super(scene, config);
 
-		this.addEventListener("mousemove", (e) => {
-			this.onThis = e.onUIObject;
-		});
+// 		this.addEventListener("mousemove", (e) => {
+// 			this.onThis = e.onUIObject;
+// 		});
 
-		this.addEventListener("mouseleave", (e) => {
-			this.onThis = null;
-		});
-	}
+// 		this.addEventListener("mouseleave", (e) => {
+// 			this.onThis = null;
+// 		});
+// 	}
 
-	get renderable() {
-		const { focused, tabIndex } = this;
+// 	get renderable() {
+// 		const { focused, tabIndex } = this;
 
-		let data = [];
+// 		let data = [];
 
-		data.push(
-			`tabIndex: ${tabIndex} - ${
-				focused ? "Focused" : "Unfocused"
-			} - ${Math.round(this.scene.runtime.fps).toString()}`
-				.split("")
-				.map(
-					(char, index) =>
-						new Pixel({
-							value: char,
-							color:
-								this.onThis && this.onThis[0] === index
-									? "lime"
-									: focused
-									? "magenta"
-									: "grey",
-						})
-				)
-		);
+// 		data.push(
+// 			`tabIndex: ${tabIndex} - ${
+// 				focused ? "Focused" : "Unfocused"
+// 			} - ${Math.round(this.scene.runtime.fps).toString()}`
+// 				.split("")
+// 				.map(
+// 					(char, index) =>
+// 						new Pixel({
+// 							value: char,
+// 							color:
+// 								this.onThis && this.onThis[0] === index
+// 									? "lime"
+// 									: focused
+// 									? "magenta"
+// 									: "grey",
+// 						})
+// 				)
+// 		);
 
-		return new PixelMesh({ data });
-	}
+// 		return new PixelMesh({ data });
+// 	}
 
-	set renderable(_) {
-		return;
-	}
-}
+// 	set renderable(_) {
+// 		return;
+// 	}
+// }
 
-new FocusIndicator(scene, { x: 2, y: 0, layer: "system", tabIndex: 3 });
-new FocusIndicator(scene, { x: 2, y: 2, layer: "system", tabIndex: 4 });
-new FocusIndicator(scene, { x: 2, y: 4, layer: "system", tabIndex: 5 });
-new FocusIndicator(scene, { x: 2, y: 6, layer: "system", tabIndex: 2 });
-new FocusIndicator(scene, { x: 2, y: 8, layer: "system", tabIndex: 1 });
-new FocusIndicator(scene, { x: 2, y: 10, layer: "system", tabIndex: 0 });
+// new FocusIndicator(scene, { x: 2, y: 0, layer: "system", tabIndex: 3 });
+// new FocusIndicator(scene, { x: 2, y: 2, layer: "system", tabIndex: 4 });
+// new FocusIndicator(scene, { x: 2, y: 4, layer: "system", tabIndex: 5 });
+// new FocusIndicator(scene, { x: 2, y: 6, layer: "system", tabIndex: 2 });
+// new FocusIndicator(scene, { x: 2, y: 8, layer: "system", tabIndex: 1 });
+// new FocusIndicator(scene, { x: 2, y: 10, layer: "system", tabIndex: 0 });
 
 // new FocusIndicator(scene, { x: 2, y: 12, layer: "BOTTOM", tabIndex: 0 });
 // new FocusIndicator(scene, { x: 2, y: 12, layer: "TOP", tabIndex: 0 });
 
-// new TextInput(scene, {
-// 	x: 2,
-// 	y: 12,
-// 	value: "Hello world!",
-// 	layer: "system",
-// 	maxWidth: 32,
-// });
+new TextInput(scene, {
+	x: 2,
+	y: 12,
+	value: "Hello world!",
+	layer: "system",
+	maxWidth: 32,
+});
 
 runtime.loadScene(scene);

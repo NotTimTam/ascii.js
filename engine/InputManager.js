@@ -341,8 +341,6 @@ class InputManager {
 		this.__eventListeners = {};
 
 		this.__onCreated();
-
-		this.__windowBlurHandler = this.__windowBlurHandler.bind(this);
 	}
 
 	get focusIndex() {
@@ -1225,7 +1223,7 @@ class InputManager {
 		);
 		this.__addCanvasEventListener("contextmenu", this.__contextHandler);
 
-		window.addEventListener("blur", this.__windowBlurHandler);
+		window.addEventListener("blur", this.__windowBlurHandler.bind(this));
 	}
 
 	/**
@@ -1251,7 +1249,7 @@ class InputManager {
 		);
 		this.__removeCanvasEventListener("contextmenu", this.__contextHandler);
 
-		window.removeEventListener("blur", this.__windowBlurHandler);
+		window.removeEventListener("blur", this.__windowBlurHandler.bind(this));
 	}
 
 	/**
