@@ -1014,6 +1014,7 @@ class InputManager {
 	__windowBlurHandler() {
 		this.keyboard.keys = {};
 		this.mouse.buttons = {};
+		this.mouse.targets = [];
 		delete this.mouse.deltas;
 		delete this.mouse.scroll;
 	}
@@ -1166,26 +1167,6 @@ class InputManager {
 			);
 	}
 
-	// /**
-	//  * Add an event listener to the window for the entire `InputManager`.
-	//  * @param {string} type The type of event to add.
-	//  * @param {function} handler The handler for that event.
-	//  */
-	// __addWindowEventListener(type, handler) {
-	// 	if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
-	// 	window.addEventListener(type, handler);
-	// }
-
-	// /**
-	//  * Remove an event listener from the window.
-	//  * @param {string} type The type of event to remove.
-	//  * @param {function} handler The handler that was set for that event.
-	//  */
-	// __removeWindowEventListener(type, handler) {
-	// 	delete this.__eventListeners[type];
-	// 	window.removeEventListener(type, handler);
-	// }
-
 	/**
 	 * Add an event listener to the canvas for the entire `InputManager`.
 	 * @param {string} type The type of event to add.
@@ -1206,9 +1187,29 @@ class InputManager {
 		this.scene.runtime.renderer.element.removeEventListener(type, handler);
 	}
 
+	/**
+	 * Add an event listener to the window for the entire `InputManager`.
+	 * @param {string} type The type of event to add.
+	 * @param {function} handler The handler for that event.
+	 */
+	__addWindowEventListener(type, handler) {
+		if (!this.__eventListeners[type]) this.__eventListeners[type] = [];
+		window.addEventListener(type, handler);
+	}
+
+	/**
+	 * Remove an event listener from the window.
+	 * @param {string} type The type of event to remove.
+	 * @param {function} handler The handler that was set for that event.
+	 */
+	__removeWindowEventListener(type, handler) {
+		delete this.__eventListeners[type];
+		window.removeEventListener(type, handler);
+	}
+
 	__onCreated() {
-		this.__addCanvasEventListener("keydown", this.__eventHandler);
-		this.__addCanvasEventListener("keyup", this.__eventHandler);
+		this.__addWindowEventListener("keydown", this.__eventHandler);
+		this.__addWindowEventListener("keyup", this.__eventHandler);
 		this.__addCanvasEventListener("mousemove", this.__eventHandler);
 		this.__addCanvasEventListener("mouseenter", this.__eventHandler);
 		this.__addCanvasEventListener("mouseleave", this.__eventHandler);
@@ -1230,8 +1231,8 @@ class InputManager {
 	 * Unload the `InputManager` instance by removing all system event listeners.
 	 */
 	__unLoad() {
-		this.__removeCanvasEventListener("keydown", this.__eventHandler);
-		this.__removeCanvasEventListener("keyup", this.__eventHandler);
+		this.__removeWindowEventListener("keydown", this.__eventHandler);
+		this.__removeWindowEventListener("keyup", this.__eventHandler);
 		this.__removeCanvasEventListener("mousemove", this.__eventHandler);
 		this.__removeCanvasEventListener("mouseenter", this.__eventHandler);
 		this.__removeCanvasEventListener("mouseleave", this.__eventHandler);
