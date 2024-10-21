@@ -3139,7 +3139,7 @@ const y = class y extends A {
    * @param {Event} event The event that triggered this method.
    */
   __onMouseMove(e) {
-    if (console.log("MOUSE MOVE"), !this.isOnScreen || !this.visible) return;
+    if (!this.isOnScreen || !this.visible) return;
     const { onLayer: t } = e, [r, i] = t[this.layer.label], [n, s] = [r - this.x, i - this.y];
     n >= 0 && n <= this.width && s >= 0 && s < this.height && (this.__inputMode = "mouse"), this.__determineMouseOverInput(e), this.__inputMode === "mouse" && this.currentItem && this.currentItem.onMouseMove(e);
   }

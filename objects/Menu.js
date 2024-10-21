@@ -697,8 +697,6 @@ class Menu extends UIObject {
 	 * @param {Event} event The event that triggered this method.
 	 */
 	__onMouseMove(event) {
-		console.log("MOUSE MOVE");
-
 		if (!this.isOnScreen || !this.visible) return;
 
 		// Determine if the mouse is moving over the menu.
