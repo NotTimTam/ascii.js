@@ -26,7 +26,6 @@ class UIObject extends GameObject {
 		) => {
 			if (tab) preventBrowserDefault();
 			else return;
-			console.log("TDEFAULT");
 
 			if (uIObjectInstance.maintainFocus) return;
 
