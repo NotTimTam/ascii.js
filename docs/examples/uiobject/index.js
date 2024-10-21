@@ -1,15 +1,8 @@
-import UIObject from "../../../core/UIObject.js";
 import Runtime, {
 	Menu,
-	Pixel,
-	PixelMesh,
 	Scene,
 	ScrollTo,
-	Text,
-	TextInput,
-} from "../../../index.js";
-
-// "https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/build.js";
+} from "https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/build.js";
 
 const runtime = new Runtime({
 	renderer: {
@@ -89,70 +82,5 @@ new Menu(scene, {
 });
 
 new ScrollTo(menuCenter);
-
-// class FocusIndicator extends UIObject {
-// 	constructor(scene, config) {
-// 		super(scene, config);
-
-// 		this.addEventListener("mousemove", (e) => {
-// 			this.onThis = e.onUIObject;
-// 		});
-
-// 		this.addEventListener("mouseleave", (e) => {
-// 			this.onThis = null;
-// 		});
-// 	}
-
-// 	get renderable() {
-// 		const { focused, tabIndex } = this;
-
-// 		let data = [];
-
-// 		data.push(
-// 			`tabIndex: ${tabIndex} - ${
-// 				focused ? "Focused" : "Unfocused"
-// 			} - ${Math.round(this.scene.runtime.fps).toString()}`
-// 				.split("")
-// 				.map(
-// 					(char, index) =>
-// 						new Pixel({
-// 							value: char,
-// 							color:
-// 								this.onThis && this.onThis[0] === index
-// 									? "lime"
-// 									: focused
-// 									? "magenta"
-// 									: "grey",
-// 						})
-// 				)
-// 		);
-
-// 		return new PixelMesh({ data });
-// 	}
-
-// 	set renderable(_) {
-// 		return;
-// 	}
-// }
-
-// new FocusIndicator(scene, { x: 2, y: 0, layer: "system", tabIndex: 3 });
-// new FocusIndicator(scene, { x: 2, y: 2, layer: "system", tabIndex: 4 });
-// new FocusIndicator(scene, { x: 2, y: 4, layer: "system", tabIndex: 5 });
-// new FocusIndicator(scene, { x: 2, y: 6, layer: "system", tabIndex: 2 });
-// new FocusIndicator(scene, { x: 2, y: 8, layer: "system", tabIndex: 1 });
-// new FocusIndicator(scene, { x: 2, y: 10, layer: "system", tabIndex: 0 });
-
-// new FocusIndicator(scene, { x: 2, y: 12, layer: "BOTTOM", tabIndex: 0 });
-// new FocusIndicator(scene, { x: 2, y: 12, layer: "TOP", tabIndex: 0 });
-
-// new TextInput(scene, {
-// 	x: 2,
-// 	y: 12,
-// 	value: "Hello world!",
-// 	layer: "system",
-// 	maxWidth: 32,
-// 	autoFocus: true,
-// 	// maintainFocus: true,
-// });
 
 runtime.loadScene(scene);
