@@ -250,7 +250,8 @@ class LayerManager {
 			const { gameObjects } = layer;
 
 			for (const gameObject of gameObjects) {
-				const { renderable, x: gX, y: gY } = gameObject;
+				const { renderable, relX: gX, relY: gY } = gameObject;
+
 				if (renderable instanceof Pixel && gX === x && gY === y)
 					atPosition.push({ gameObject, pixel: renderable });
 				else if (

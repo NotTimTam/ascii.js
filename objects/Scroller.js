@@ -3,6 +3,7 @@ import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 import { aabb, clamp } from "../util/math.js";
 import Box from "./Box.js";
+import GameObject from "../core/GameObject.js";
 
 /**
  * Configuration data for the `Scroller` class.
@@ -80,6 +81,22 @@ class Scroller extends UIObject {
 			"gamepadbuttonpressed",
 			this.__handleGamepadButtonPressed
 		);
+	}
+
+	getChildPosition(child) {
+		if (
+			!child ||
+			!(child instanceof GameObject) ||
+			!this.children.includes(child)
+		)
+			throw new TypeError(
+				`"getChildPosition" method called on an object that is not a child of this GameObject.`
+			);
+
+		return [
+			child.x + Scroller.borderWidth - scrollX,
+			child.y + Scroller.borderWidth - scrollY,
+		];
 	}
 
 	__handleMouse(event) {

@@ -98,6 +98,24 @@ class GameObject extends Core {
 	}
 
 	/**
+	 * Get the `GameObject`s relative x-position. Automatically returns the object's global position relative its parent if it has one.
+	 */
+	get relX() {
+		if (this.positionInParent)
+			return this.parent.relX + this.positionInParent[0];
+		else return this.x;
+	}
+
+	/**
+	 * Get the `GameObject`s relative y-position. Automatically returns the object's global position relative in its parent if it has one.
+	 */
+	get relY() {
+		if (this.positionInParent)
+			return this.parent.relY + this.positionInParent[1];
+		else return this.x;
+	}
+
+	/**
 	 * Get the game object's adjusted x-coordinate.
 	 */
 	get x() {
@@ -235,6 +253,31 @@ class GameObject extends Core {
 		}
 
 		this.__rawChildren = arr;
+	}
+
+	/**
+	 * Get this child's position in its parent.
+	 */
+	get positionInParent() {
+		if (
+			!this.parent ||
+			!this.parent.getChildPosition ||
+			typeof this.parent.getChildPosition !== "function"
+		)
+			return undefined;
+
+		const pos = this.parent.getChildPosition(this);
+
+		if (
+			!(pos instanceof Array) ||
+			pos.length !== 2 ||
+			pos.find((v) => typeof v !== "number" || isNaN(v))
+		)
+			throw new TypeError(
+				`A GameObject's "getChildPosition" method must return an array in format: [x, y]`
+			);
+
+		return pos;
 	}
 
 	/**

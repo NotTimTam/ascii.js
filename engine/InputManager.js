@@ -815,8 +815,8 @@ class InputManager {
 				// Get mouse position on the target.
 				const [layerX, layerY] = data.onLayer[targets[0].layerLabel];
 				const onUIObject = [
-					layerX - targets[0].x,
-					layerY - targets[0].y,
+					layerX - targets[0].relX,
+					layerY - targets[0].relY,
 				];
 
 				data.onUIObject = onUIObject;
