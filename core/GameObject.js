@@ -57,7 +57,7 @@ class GameObject extends Core {
 			Math.round(camera.y * pY),
 		];
 
-		return [this.x - adjustedCameraX, this.y - adjustedCameraY]; // Position relative to camera.
+		return [this.relX - adjustedCameraX, this.relY - adjustedCameraY]; // Position relative to camera.
 	}
 
 	/**

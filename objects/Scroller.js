@@ -118,7 +118,7 @@ class Scroller extends UIObject {
 		if (!left || !onLayer[this.layer.label]) return;
 
 		const [x, y] = onLayer[this.layer.label];
-		const [scrollerX, scrollerY] = [x - this.x, y - this.y];
+		const [scrollerX, scrollerY] = [x - this.relX, y - this.relY];
 
 		if (verticalScrollbar && scrollerX >= this.width - 1) {
 			const thumbSize = Math.round(
