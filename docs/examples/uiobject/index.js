@@ -75,33 +75,20 @@ new Menu(scene, {
 	items: [
 		new Menu.Button({
 			label: "Button G",
-			callback: () => console.log("G CLICKED"),
 		}),
 		new Menu.Button({
 			label: "Button H",
-			callback: () => console.log("H CLICKED"),
 		}),
 		new Menu.Button({
 			label: "Button I",
-			callback: () => console.log("I CLICKED"),
-		}),
-		new Menu.Slider({
-			label: "Slider",
-			callback: () => console.log("SLIDER CLICKED"),
-			step: 0.01,
-		}),
-		new Menu.Toggle({
-			label: "Checkbox",
-			callback: () => console.log("CHECKBOX CLICKED"),
 		}),
 	],
 	title: "Menu 3",
 	layer: "system",
 	gamepad: -1,
-	autoFocus: true,
 });
 
-// new ScrollTo(menuCenter);
+new ScrollTo(menuCenter);
 
 // class FocusIndicator extends UIObject {
 // 	constructor(scene, config) {
@@ -158,14 +145,14 @@ new Menu(scene, {
 // new FocusIndicator(scene, { x: 2, y: 12, layer: "BOTTOM", tabIndex: 0 });
 // new FocusIndicator(scene, { x: 2, y: 12, layer: "TOP", tabIndex: 0 });
 
-new TextInput(scene, {
-	x: 2,
-	y: 12,
-	value: "Hello world!",
-	layer: "system",
-	maxWidth: 32,
-	autoFocus: true,
-	// maintainFocus: true,
-});
+// new TextInput(scene, {
+// 	x: 2,
+// 	y: 12,
+// 	value: "Hello world!",
+// 	layer: "system",
+// 	maxWidth: 32,
+// 	autoFocus: true,
+// 	// maintainFocus: true,
+// });
 
 runtime.loadScene(scene);

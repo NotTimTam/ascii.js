@@ -2,7 +2,7 @@ var Oe = Object.defineProperty, Le = Object.defineProperties;
 var Ie = Object.getOwnPropertyDescriptors;
 var fe = Object.getOwnPropertySymbols;
 var je = Object.prototype.hasOwnProperty, Te = Object.prototype.propertyIsEnumerable;
-var $ = Math.pow, ne = (c, e, t) => e in c ? Oe(c, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : c[e] = t, v = (c, e) => {
+var z = Math.pow, ne = (c, e, t) => e in c ? Oe(c, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : c[e] = t, x = (c, e) => {
   for (var t in e || (e = {}))
     je.call(e, t) && ne(c, t, e[t]);
   if (fe)
@@ -12,38 +12,38 @@ var $ = Math.pow, ne = (c, e, t) => e in c ? Oe(c, e, { enumerable: !0, configur
 }, L = (c, e) => Le(c, Ie(e));
 var m = (c, e, t) => ne(c, typeof e != "symbol" ? e + "" : e, t);
 var me = (c, e, t) => new Promise((r, i) => {
-  var n = (l) => {
+  var n = (h) => {
     try {
-      o(t.next(l));
-    } catch (h) {
-      i(h);
+      o(t.next(h));
+    } catch (l) {
+      i(l);
     }
-  }, s = (l) => {
+  }, s = (h) => {
     try {
-      o(t.throw(l));
-    } catch (h) {
-      i(h);
+      o(t.throw(h));
+    } catch (l) {
+      i(l);
     }
-  }, o = (l) => l.done ? r(l.value) : Promise.resolve(l.value).then(n, s);
+  }, o = (h) => h.done ? r(h.value) : Promise.resolve(h.value).then(n, s);
   o((t = t.apply(c, e)).next());
 });
-const F = (c) => `[${c.map((e) => {
+const W = (c) => `[${c.map((e) => {
   switch (typeof e) {
     case "string":
       return `"${e}"`;
     default:
       return e;
   }
-}).join(", ")}]`, P = (c) => c && typeof c == "object" && !(c instanceof Array), be = (c, e, t = !1) => {
+}).join(", ")}]`, B = (c) => c && typeof c == "object" && !(c instanceof Array), be = (c, e, t = !1) => {
   const r = c.split(" ");
   let i = [], n = "";
   for (const s of r)
     if ((n + s).length > e)
       if (t && s.length > e) {
         let o = Math.ceil(s.length / e);
-        for (let l = 0; l < o; l++) {
-          const h = s.slice(l * e, (l + 1) * e);
-          n.trim() && i.push(n.trim()), n = h + " ";
+        for (let h = 0; h < o; h++) {
+          const l = s.slice(h * e, (h + 1) * e);
+          n.trim() && i.push(n.trim()), n = l + " ";
         }
       } else
         n && i.push(n.trim()), n = s + " ";
@@ -53,8 +53,8 @@ const F = (c) => `[${c.map((e) => {
 `);
 }, Ke = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  displayArray: F,
-  isPlainObject: P,
+  displayArray: W,
+  isPlainObject: B,
   wrapString: be
 }, Symbol.toStringTag, { value: "Module" })), q = class q {
   /**
@@ -64,7 +64,7 @@ const F = (c) => `[${c.map((e) => {
    * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
    */
   constructor(e) {
-    if (!P(e))
+    if (!B(e))
       throw new TypeError(
         "Expected a plain object for PixelMesh constructor config parameter."
       );
@@ -171,7 +171,7 @@ const J = class J {
    * @param {Array<number>} config.origin An array of display offsets to apply when rendering this pixel.
    */
   constructor(e) {
-    if (!P(e))
+    if (!B(e))
       throw new TypeError(
         "Expected a plain object for Pixel constructor config parameter."
       );
@@ -217,7 +217,7 @@ const J = class J {
  */
 m(J, "fromString", (e) => new J({ value: e }));
 let _ = J;
-const Y = class Y {
+const X = class X {
   /**
    * A display frame.
    * @param {Array<Pixel>} data The frame's 1-dimensional (left-to-right, top-to-bottom) data array.
@@ -232,13 +232,13 @@ const Y = class Y {
  * @param {string} string The string to convert.
  * @returns {Frame} the generated Frame.
  */
-m(Y, "fromString", (e) => new Y(e.split("").map((t) => new _({ value: t })))), /**
+m(X, "fromString", (e) => new X(e.split("").map((t) => new _({ value: t })))), /**
  * Convert a 2D array of `Pixel`s to a Frame.
  * @param {Array<Array<Pixel>} array The array to convert.
  */
-m(Y, "from2DArray", (e) => new Y(e.flat()));
-let R = Y;
-const z = (c, e, t, r, i, n, s, o) => c < i + s && c + t > i && e < n + o && e + r > n, j = (c, e, t) => Math.max(e, Math.min(c, t)), he = (c) => c * (180 / Math.PI), oe = (c) => c * (Math.PI / 180), Se = (c, e) => Math.floor(Math.random() * (e - c + 1)) + c, Ae = (c) => {
+m(X, "from2DArray", (e) => new X(e.flat()));
+let $ = X;
+const Y = (c, e, t, r, i, n, s, o) => c < i + s && c + t > i && e < n + o && e + r > n, I = (c, e, t) => Math.max(e, Math.min(c, t)), he = (c) => c * (180 / Math.PI), oe = (c) => c * (Math.PI / 180), Se = (c, e) => Math.floor(Math.random() * (e - c + 1)) + c, Ae = (c) => {
   if (c === 0 || c === 1) return 1;
   for (let e = c - 1; e >= 1; e--)
     c *= e;
@@ -248,13 +248,13 @@ const z = (c, e, t, r, i, n, s, o) => c < i + s && c + t > i && e < n + o && e +
   e * Math.sin(oe(c))
 ], Pe = (c, e) => [
   he(Math.atan2(e, c)),
-  Math.sqrt($(c, 2) + $(e, 2))
-], We = (c, e, t, r) => he(Math.atan2(r - e, t - c)), Fe = (c, e, t, r) => Math.sqrt($(t - c, 2) + $(r - e, 2)), Ve = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
+  Math.sqrt(z(c, 2) + z(e, 2))
+], We = (c, e, t, r) => he(Math.atan2(r - e, t - c)), Fe = (c, e, t, r) => Math.sqrt(z(t - c, 2) + z(r - e, 2)), Ve = /* @__PURE__ */ Object.freeze(/* @__PURE__ */ Object.defineProperty({
   __proto__: null,
-  aabb: z,
+  aabb: Y,
   angleBetweenPoints: We,
   cartesianToVector: Pe,
-  clamp: j,
+  clamp: I,
   degreeToRadian: oe,
   distanceBetweenPoints: Fe,
   fact: Ae,
@@ -315,7 +315,7 @@ class De {
       throw new Error(
         `Invalid volume value provided to "Sound" instance: ${e}. Must be of type "number".`
       );
-    this.element.volume = j(e, 0, 1);
+    this.element.volume = I(e, 0, 1);
   }
   /**
    * Get whether the audio is playing.
@@ -446,7 +446,7 @@ class we {
     return this.scene.runtime;
   }
 }
-class N extends we {
+class R extends we {
   /**
    * A core object that can have its runtime methods managed by the runtime itself, or another object.
    *
@@ -684,7 +684,7 @@ class Xe {
      * @param {?number} parallaxX Optional parallax x-value.
      * @param {?number} parallaxY Optional parallax y-value.
      */
-    m(this, "isOnScreen", (e, t, r, i, n = 1, s = 1) => z(
+    m(this, "isOnScreen", (e, t, r, i, n = 1, s = 1) => Y(
       e,
       t,
       r,
@@ -729,7 +729,7 @@ class Xe {
     this.__rawY = e;
   }
 }
-class B extends N {
+class A extends R {
   /**
    * Extends the `GameObject` class to include several methods and properties for treating the object as a UI element.
    *
@@ -738,7 +738,7 @@ class B extends N {
    * @param {UIObjectConfig} config The `UIObject`'s config object.
    */
   constructor(t, r) {
-    if (!P(r))
+    if (!B(r))
       throw new TypeError(
         "Expected a plain object for UIObject constructor config parameter."
       );
@@ -747,8 +747,8 @@ class B extends N {
       y: n,
       layer: s,
       tabIndex: o = 0,
-      autoFocus: l = !1,
-      maintainFocus: h = !1
+      autoFocus: h = !1,
+      maintainFocus: l = !1
     } = r;
     super(t, i, n, s);
     /**
@@ -771,7 +771,7 @@ class B extends N {
       t,
       r.bind(this)
     ));
-    this.inputManager = t.inputManager, this.tabIndex = o || 0, this.maintainFocus = !!h, t.inputManager.addUIObject(this), l && this.focus();
+    this.inputManager = t.inputManager, this.tabIndex = o || 0, this.maintainFocus = !!l, t.inputManager.addUIObject(this), h && this.focus();
   }
   /**
    * Determine if this element is focusable.
@@ -831,7 +831,7 @@ class B extends N {
 /**
  * A collection of default methods for input handling.
  */
-m(B, "eventDefaults", {
+m(A, "eventDefaults", {
   keydown: (t, r, { preventBrowserDefault: i, keys: { shift: n, tab: s } }) => {
     if (s) i();
     else return;
@@ -1162,7 +1162,7 @@ const Z = class Z {
         'InputManager uIObjects property must be an array of "UIObject"s.'
       );
     for (const t of e)
-      if (!t instanceof B)
+      if (!t instanceof A)
         throw new TypeError(
           'InputManager uIObjects must be of type "UIObject".'
         );
@@ -1302,37 +1302,37 @@ const Z = class Z {
     const { clientX: t, clientY: r, movementX: i, movementY: n } = e, {
       scene: {
         camera: { x: s, y: o },
-        layerManager: { layers: l },
+        layerManager: { layers: h },
         runtime: {
           renderer: {
-            width: h,
+            width: l,
             height: a,
-            element: f
+            element: d
           }
         }
       }
     } = this, {
-      x: d,
-      y: u,
+      x: u,
+      y: f,
       width: p,
       height: g
-    } = f.getBoundingClientRect(), [x, k] = [t - d, r - u], [C, E] = [x / p, k / g];
+    } = d.getBoundingClientRect(), [E, k] = [t - u, r - f], [C, v] = [E / p, k / g];
     if (this.hasPointerLock)
       this.mouse.velocity = [i, n];
     else {
-      this.mouse.velocity = [i, n], this.mouse.rawX = t, this.mouse.rawY = r, this.mouse.canvasX = x, this.mouse.canvasY = k, this.mouse.floatX = j(C * h, 0, h), this.mouse.floatY = j(
-        E * a,
+      this.mouse.velocity = [i, n], this.mouse.rawX = t, this.mouse.rawY = r, this.mouse.canvasX = E, this.mouse.canvasY = k, this.mouse.floatX = I(C * l, 0, l), this.mouse.floatY = I(
+        v * a,
         0,
         a
       ), this.mouse.x = Math.floor(this.mouse.floatX), this.mouse.y = Math.floor(this.mouse.floatY), this.mouse.onLayer = {};
-      for (const I of l) {
+      for (const D of h) {
         const {
           label: H,
-          parallax: [X, D]
-        } = I;
+          parallax: [F, N]
+        } = D;
         this.mouse.onLayer[H] = [
-          this.mouse.x + s * X,
-          this.mouse.y + o * D
+          this.mouse.x + s * F,
+          this.mouse.y + o * N
         ];
       }
     }
@@ -1396,7 +1396,7 @@ const Z = class Z {
     ])
       i(t);
     if (Z.mouseEvents.includes(e)) {
-      const i = t.targets && t.targets.map((n) => this.scene.findGameObjectById(n)).filter((n) => n instanceof B).sort(
+      const i = t.targets && t.targets.map((n) => this.scene.findGameObjectById(n)).filter((n) => n instanceof A).sort(
         (n, s) => this.scene.layerManager.layers.indexOf(s.layer) - this.scene.layerManager.layers.indexOf(n.layer)
       );
       if (e === "click")
@@ -1411,13 +1411,17 @@ const Z = class Z {
           n - i[0].x,
           s - i[0].y
         ];
-        t.onUIObject = o, t.target = i[0];
+        t.onUIObject = o, t.target = i[0], this.__triggerUIObjectEvents(
+          i[0].id,
+          e,
+          t,
+          r
+        );
       }
-    }
-    this.focusTarget && this.__triggerUIObjectEvents(
+    } else this.focusTarget && this.__triggerUIObjectEvents(
       this.focusTarget.id,
       e,
-      L(v({}, t), {
+      L(x({}, t), {
         target: this.focusTarget
       }),
       r
@@ -1435,23 +1439,23 @@ const Z = class Z {
     if (!n) return;
     const s = this.scene.findGameObjectById(e);
     if (!s) return;
-    r = L(v({}, r), {
+    r = L(x({}, r), {
       preventBrowserDefault: i ? i.preventDefault.bind(i) : () => {
       }
     });
     let o = !1;
-    const l = () => {
+    const h = () => {
       o = !0;
     };
-    n[t] && n[t].forEach((h) => {
+    n[t] && n[t].forEach((l) => {
       const a = () => {
-        r.preventBrowserDefault(), l();
+        r.preventBrowserDefault(), h();
       };
-      h(L(v({}, r), {
+      l(L(x({}, r), {
         preventDefault: a,
-        preventEngineDefault: l
+        preventEngineDefault: h
       }));
-    }), !o && B.eventDefaults[t] && B.eventDefaults[t](s, this, r);
+    }), !o && A.eventDefaults[t] && A.eventDefaults[t](s, this, r);
   }
   /**
    * Manages different events firing, and maps them to the proper method.
@@ -1480,28 +1484,28 @@ const Z = class Z {
       const r = [...this.mouse.targets || []], { onLayer: i } = this.mouse;
       this.mouse.targets = [];
       for (const [n, [s, o]] of Object.entries(i)) {
-        const l = this.scene.layerManager.getAtPosition(
+        const h = this.scene.layerManager.getAtPosition(
           s,
           o,
           n
         );
-        this.mouse.targets = [...this.mouse.targets, ...l];
+        this.mouse.targets = [...this.mouse.targets, ...h];
       }
       this.mouse.targets && (this.mouse.targets = this.mouse.targets.map(
         ({ gameObject: n }) => n.id
       )), [...this.mouse.targets].filter((n) => !r.includes(n)).forEach(
         (n) => this.__triggerEvents(
           "mouseenter",
-          v({ type: t }, this.mouse),
+          x({ type: t }, this.mouse),
           e
         )
       ), r.filter((n) => !this.mouse.targets.includes(n)).forEach(
         (n) => this.__triggerEvents(
           "mouseleave",
-          L(v({ type: t }, this.mouse), { targets: [n] }),
+          L(x({ type: t }, this.mouse), { targets: [n] }),
           e
         )
-      ), this.__triggerEvents(t, v({ type: t }, this.mouse), e), this.__resetMouseWheel();
+      ), this.__triggerEvents(t, x({ type: t }, this.mouse), e), this.__resetMouseWheel();
     } else if (e instanceof KeyboardEvent) {
       const { type: t } = e;
       switch (t) {
@@ -1512,7 +1516,7 @@ const Z = class Z {
           this.__onKeyUp(e);
           break;
       }
-      this.__triggerEvents(t, v({ type: t }, this.keyboard), e), delete this.keyboard.keyCode, delete this.keyboard.key, delete this.keyboard.rawKey;
+      this.__triggerEvents(t, x({ type: t }, this.keyboard), e), delete this.keyboard.keyCode, delete this.keyboard.key, delete this.keyboard.rawKey;
     } else if (e instanceof GamepadEvent) {
       const { type: t } = e;
       switch (t) {
@@ -1541,7 +1545,7 @@ const Z = class Z {
    * @param {UIObject} uIObject The `UIObject` instance to add.
    */
   addUIObject(e) {
-    if (!(e instanceof B))
+    if (!(e instanceof A))
       throw new TypeError(
         `Only instances of "UIObject" can be added to the InputManager's uIObject list.`
       );
@@ -1557,7 +1561,7 @@ const Z = class Z {
   addEventListener(e, t) {
     if (!this.types.includes(e))
       throw new Error(
-        `"${e}" is not a valid event type. Must be one of: ${F(
+        `"${e}" is not a valid event type. Must be one of: ${W(
           this.types
         )}`
       );
@@ -1575,7 +1579,7 @@ const Z = class Z {
   removeEventListener(e, t) {
     if (!this.types.includes(e))
       throw new Error(
-        `"${e}" is not a valid event type. Must be one of: ${F(
+        `"${e}" is not a valid event type. Must be one of: ${W(
           this.types
         )}`
       );
@@ -1608,7 +1612,7 @@ const Z = class Z {
       );
     if (!this.types.includes(t))
       throw new Error(
-        `"${t}" is not a valid event type. Must be one of: ${F(
+        `"${t}" is not a valid event type. Must be one of: ${W(
           this.types
         )}`
       );
@@ -1631,7 +1635,7 @@ const Z = class Z {
       );
     if (!this.types.includes(t))
       throw new Error(
-        `"${t}" is not a valid event type. Must be one of: ${F(
+        `"${t}" is not a valid event type. Must be one of: ${W(
           this.types
         )}`
       );
@@ -1724,9 +1728,9 @@ const Z = class Z {
             index: i,
             axes: r
           };
-          this.__triggerEvents("gamepadaxes", L(v({}, s), {
+          this.__triggerEvents("gamepadaxes", L(x({}, s), {
             type: "gamepadaxes"
-          })), this.__triggerEvents("all", L(v({}, s), {
+          })), this.__triggerEvents("all", L(x({}, s), {
             type: "gamepadaxes"
           }));
         }
@@ -1736,8 +1740,8 @@ const Z = class Z {
       const r = performance.now() - (this.__lastGamepadButtonEvent || 0) > K.gamepadButtonIntervals;
       for (const i of e) {
         const { buttons: n, index: s } = i;
-        for (const [o, { pressed: l }] of Object.entries(n)) {
-          const h = this.__gamepadButtonHistory[s] && this.__gamepadButtonHistory[s][o];
+        for (const [o, { pressed: h }] of Object.entries(n)) {
+          const l = this.__gamepadButtonHistory[s] && this.__gamepadButtonHistory[s][o];
           this.__gamepadButtonHistory[s] || (this.__gamepadButtonHistory[s] = {});
           const a = {
             gamepad: i,
@@ -1745,17 +1749,17 @@ const Z = class Z {
             button: o,
             buttons: this.__gamepadButtonHistory[s]
           };
-          l ? (this.__gamepadButtonHistory[s][o] = !0, r && (this.__triggerEvents("gamepadbuttondown", L(v({}, a), {
+          h ? (this.__gamepadButtonHistory[s][o] = !0, r && (this.__triggerEvents("gamepadbuttondown", L(x({}, a), {
             type: "gamepadbuttondown"
-          })), this.__triggerEvents("all", L(v({}, a), {
+          })), this.__triggerEvents("all", L(x({}, a), {
             type: "gamepadbuttondown"
-          })))) : (h && (this.__triggerEvents("gamepadbuttonpressed", L(v({}, a), {
+          })))) : (l && (this.__triggerEvents("gamepadbuttonpressed", L(x({}, a), {
             type: "gamepadbuttonpressed"
-          })), this.__triggerEvents("all", L(v({}, a), {
+          })), this.__triggerEvents("all", L(x({}, a), {
             type: "gamepadbuttonpressed"
-          }))), this.__gamepadButtonHistory[s][o] = !1, r && (this.__triggerEvents("gamepadbuttonup", L(v({}, a), {
+          }))), this.__gamepadButtonHistory[s][o] = !1, r && (this.__triggerEvents("gamepadbuttonup", L(x({}, a), {
             type: "gamepadbuttonup"
-          })), this.__triggerEvents("all", L(v({}, a), {
+          })), this.__triggerEvents("all", L(x({}, a), {
             type: "gamepadbuttonup"
           }))));
         }
@@ -1784,7 +1788,7 @@ class pe {
    * @param {Array<function>} config.gameObjectConstructors An array of functions that return game objects.
    */
   constructor(e, t) {
-    if (!P(t))
+    if (!B(t))
       throw new TypeError(
         "Expected a plain object for Layer constructor config parameter."
       );
@@ -1806,13 +1810,13 @@ class pe {
       const r = t(
         this.layerManager.scene
       );
-      if (!(r instanceof N))
+      if (!(r instanceof R))
         throw new TypeError(
           'Each gameObjectConstructor function must return an object of type "GameObject".'
         );
       return r;
     }).filter(
-      (t) => t && t instanceof N
+      (t) => t && t instanceof R
     );
     for (const t of this.gameObjects)
       t.layer = this.label;
@@ -1844,47 +1848,47 @@ class pe {
     } = this, [n, s] = [
       Math.round(e.x * r),
       Math.round(e.y * i)
-    ], o = (h, a, f) => {
-      if (!h || !(h instanceof _) || !e.isOnScreen(a, f, 1, 1, r, i) || (!h.value || h.value.trim() === "") && (!h.backgroundColor || h.backgroundColor === "transparent"))
+    ], o = (l, a, d) => {
+      if (!l || !(l instanceof _) || !e.isOnScreen(a, d, 1, 1, r, i) || (!l.value || l.value.trim() === "") && (!l.backgroundColor || l.backgroundColor === "transparent"))
         return;
-      const [d, u] = [a - n, f - s], p = t.coordinatesToIndex(d, u);
-      l[p] = h;
-    }, l = [];
-    for (const h of this.gameObjects.filter(
+      const [u, f] = [a - n, d - s], p = t.coordinatesToIndex(u, f);
+      h[p] = l;
+    }, h = [];
+    for (const l of this.gameObjects.filter(
       ({ visible: a }) => a
     )) {
-      const { renderable: a } = h;
-      let { x: f, y: d } = h;
+      const { renderable: a } = l;
+      let { x: d, y: u } = l;
       if (a) {
         if (a.origin) {
-          const [u, p] = a.origin;
-          f -= u, d -= p, f = Math.round(f), d = Math.round(d);
+          const [f, p] = a.origin;
+          d -= f, u -= p, d = Math.round(d), u = Math.round(u);
         }
         if (a instanceof _)
-          o(a, f, d);
+          o(a, d, u);
         else if (a instanceof b) {
           if (!e.isOnScreen(
-            f,
             d,
+            u,
             a.width,
             a.height,
             r,
             i
           ))
             continue;
-          for (let u = 0; u < a.data.length; u++) {
-            const p = a.data[u];
+          for (let f = 0; f < a.data.length; f++) {
+            const p = a.data[f];
             if (!(!p || p.length === 0))
               for (let g = 0; g < p.length; g++) {
-                const x = p[g];
-                o(x, f + g, d + u);
+                const E = p[g];
+                o(E, d + g, u + f);
               }
           }
         }
       } else
         continue;
     }
-    return new R(l);
+    return new $(h);
   }
   __onTick() {
     const {
@@ -1932,26 +1936,26 @@ class Ye {
       throw new Error(`No layer exists with label "${r}".`);
     const n = r ? [i] : this.layers, s = [];
     for (const o of n) {
-      const { gameObjects: l } = o;
-      for (const h of l) {
-        const { renderable: a, x: f, y: d } = h;
-        if (a instanceof _ && f === e && d === t)
-          s.push({ gameObject: h, pixel: a });
-        else if (a instanceof b && z(
+      const { gameObjects: h } = o;
+      for (const l of h) {
+        const { renderable: a, x: d, y: u } = l;
+        if (a instanceof _ && d === e && u === t)
+          s.push({ gameObject: l, pixel: a });
+        else if (a instanceof b && Y(
           e,
           t,
           1,
           1,
-          f,
           d,
+          u,
           a.width,
           a.height
         )) {
-          const u = a.data[t - d] && a.data[t - d][e - f];
-          if (!u) continue;
+          const f = a.data[t - u] && a.data[t - u][e - d];
+          if (!f) continue;
           s.push({
-            gameObject: h,
-            pixel: u
+            gameObject: l,
+            pixel: f
           });
         }
       }
@@ -2062,7 +2066,7 @@ class Q {
    * @param {Object} config The config object to validate.
    */
   static validateConfig(e) {
-    if (!P(e))
+    if (!B(e))
       throw new TypeError(
         "Expected a plain object for Scene constructor config parameter."
       );
@@ -2187,7 +2191,7 @@ class ze {
    * @param {Object} config The config object to validate.
    */
   validateConfig(e) {
-    if (!P(e))
+    if (!B(e))
       throw new TypeError(
         "Expected a plain object for Runtime constructor config parameter."
       );
@@ -2353,7 +2357,7 @@ class le {
       const t = ["off", "letterbox"];
       if (!t.includes(e.scaling))
         throw new Error(
-          `Invalid scaling value provided, must be one of: ${F(
+          `Invalid scaling value provided, must be one of: ${W(
             t
           )}`
         );
@@ -2362,7 +2366,7 @@ class le {
       const t = ["stacked", "merged"];
       if (!t.includes(e.renderMode))
         throw new Error(
-          `Provided render mode is invalid. Must be of type: ${F(
+          `Provided render mode is invalid. Must be of type: ${W(
             t
           )}`
         );
@@ -2422,13 +2426,13 @@ class le {
       width: n,
       fontBoundingBoxAscent: s,
       fontBoundingBoxDescent: o
-    } = this.ctx.measureText("█"), l = s + o;
-    this.characterSize = [n, l];
-    const [h, a] = [
+    } = this.ctx.measureText("█"), h = s + o;
+    this.characterSize = [n, h];
+    const [l, a] = [
       n * this.width,
-      l * this.height
+      h * this.height
     ];
-    i.canvas.width = h, i.canvas.height = a, i.canvas.style.width = `${h}px`, i.canvas.style.height = `${a}px`;
+    i.canvas.width = l, i.canvas.height = a, i.canvas.style.width = `${l}px`, i.canvas.style.height = `${a}px`;
   }
   /**
    * Rescale the display to fit the screen.
@@ -2443,11 +2447,11 @@ class le {
       return;
     }
     e.style.transform = "translateX(-50%) translateY(-50%) scale(1)";
-    const { width: r, height: i } = e.parentElement.getBoundingClientRect(), { width: n, height: s } = e.getBoundingClientRect(), [o, l] = [
+    const { width: r, height: i } = e.parentElement.getBoundingClientRect(), { width: n, height: s } = e.getBoundingClientRect(), [o, h] = [
       r / n,
       i / s
-    ], h = Math.min(o, l);
-    e.style.transform = `translateX(-50%) translateY(-50%) scale(${h})`;
+    ], l = Math.min(o, h);
+    e.style.transform = `translateX(-50%) translateY(-50%) scale(${l})`;
   }
   /**
    * Clear the screen;
@@ -2499,7 +2503,7 @@ class le {
     if (!this.drawing) {
       this.hasDrawn || (this.hasDrawn = !0), this.drawing = !0, this.useWebWorkers ? this.buffer = [] : this.clearDisplay();
       for (const t of e) {
-        if (!(t instanceof R))
+        if (!(t instanceof $))
           throw new Error(
             "Provided frame object is not an instance of the Frame constructor."
           );
@@ -2526,17 +2530,17 @@ class le {
             width: o
           } = this;
           s.textAlign = "left", s.textBaseline = "top";
-          for (let l = 0; l < this.width; l++)
-            for (let h = 0; h < this.height; h++) {
-              const a = h * this.width + l, f = t.data[a];
-              if (!f || !(f instanceof _)) continue;
-              const { value: d, color: u, fontWeight: p, backgroundColor: g } = f;
+          for (let h = 0; h < this.width; h++)
+            for (let l = 0; l < this.height; l++) {
+              const a = l * this.width + h, d = t.data[a];
+              if (!d || !(d instanceof _)) continue;
+              const { value: u, color: f, fontWeight: p, backgroundColor: g } = d;
               g && (s.beginPath(), s.fillStyle = g, s.fillRect(
-                l * i,
-                h * n,
+                h * i,
+                l * n,
                 i + Math.max(1 / o, 1),
                 n
-              ), s.closePath()), s.beginPath(), s.font = `${p || "normal"} ${r} monospace`, s.fillStyle = u || "#FFFFFF", s.fillText(d, l * i, h * n), s.closePath();
+              ), s.closePath()), s.beginPath(), s.font = `${p || "normal"} ${r} monospace`, s.fillStyle = f || "#FFFFFF", s.fillText(u, h * i, l * n), s.closePath();
             }
         }
       }
@@ -2556,7 +2560,7 @@ class le {
         n && (t[s] = n);
       });
     }
-    return new R(t);
+    return new $(t);
   }
   /**
    * Code that runs when the render is created.
@@ -2587,7 +2591,7 @@ const se = {
     ["╚", "═", "╝"]
   ]
 };
-class ee extends N {
+class ee extends R {
   /**
    * A box that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -2602,7 +2606,7 @@ class ee extends N {
    * @param {string} config.layer The label of the layer to start the `Box` on.
    */
   constructor(e, t) {
-    if (!P(t))
+    if (!B(t))
       throw new TypeError(
         "Expected a plain object for Box constructor config parameter."
       );
@@ -2612,17 +2616,17 @@ class ee extends N {
       width: n,
       height: s,
       color: o = "#ffffff",
-      backgroundColor: l,
-      style: h = "double",
+      backgroundColor: h,
+      style: l = "double",
       layer: a
     } = t;
-    if (super(e, r, i, a), this.__rawWidth = n, this.__rawHeight = s, this.color = o, this.backgroundColor = l, !Object.keys(se).includes(h))
+    if (super(e, r, i, a), this.__rawWidth = n, this.__rawHeight = s, this.color = o, this.backgroundColor = h, !Object.keys(se).includes(l))
       throw new Error(
-        `Invalid box style "${h}" provided. Must be one of: ${F(
+        `Invalid box style "${l}" provided. Must be one of: ${W(
           Object.keys(se)
         )}`
       );
-    this.style = h;
+    this.style = l;
   }
   get width() {
     return Math.round(this.__rawWidth);
@@ -2657,22 +2661,22 @@ class ee extends N {
    */
   static asPixelMesh(e, t, r, i, n) {
     const s = se[n], o = [];
-    for (let l = 0; l < t; l++) {
-      const h = [];
+    for (let h = 0; h < t; h++) {
+      const l = [];
       for (let a = 0; a < e; a++) {
-        let f = 0, d = 0;
-        a === e - 1 ? f = 2 : a > 0 && (f = 1), l === t - 1 ? d = 2 : l > 0 && (d = 1);
-        let u = s[d][f];
-        h.push(
-          u && new _({
-            value: u,
+        let d = 0, u = 0;
+        a === e - 1 ? d = 2 : a > 0 && (d = 1), h === t - 1 ? u = 2 : h > 0 && (u = 1);
+        let f = s[u][d];
+        l.push(
+          f && new _({
+            value: f,
             color: r,
             backgroundColor: i,
             solid: !1
           })
         );
       }
-      o.push(h);
+      o.push(l);
     }
     return new b({ data: o });
   }
@@ -2725,16 +2729,15 @@ class Re extends te {
     const {
       menu: {
         index: e,
-        availableContentSpace: [t],
-        focused: r
+        availableContentSpace: [t]
       },
-      index: i,
-      label: n,
-      wrap: s
-    } = this, o = b.fromString(
-      s ? be(n, t, !0) : n.slice(0, t)
+      index: r,
+      label: i,
+      wrap: n
+    } = this, s = b.fromString(
+      n ? be(i, t, !0) : i.slice(0, t)
     );
-    return e === i && r ? o.setColor("white") : o.setColor("grey"), o;
+    return e === r ? s.setColor("white") : s.setColor("grey"), s;
   }
 }
 class Ne extends te {
@@ -2760,8 +2763,8 @@ class Ne extends te {
       max: n = 100,
       step: s = 1,
       onChange: o,
-      callback: l,
-      showValue: h = !0,
+      callback: h,
+      showValue: l = !0,
       showPercentage: a = !0
     } = e;
     if (t && typeof t != "string")
@@ -2788,7 +2791,7 @@ class Ne extends te {
       throw new Error(
         "Menu.Slider config.min cannot be greater than config.max."
       );
-    this.showValue = !!h, this.showPercentage = !!a, this.label = t && t.trim(), this.min = i, this.max = n, this.value = r, this.step = s, this.callback = l, this.onChange = o;
+    this.showValue = !!l, this.showPercentage = !!a, this.label = t && t.trim(), this.min = i, this.max = n, this.value = r, this.step = s, this.callback = h, this.onChange = o;
   }
   /**
    * Get the value of this `Slider`.
@@ -2797,7 +2800,7 @@ class Ne extends te {
     return this.__rawValue;
   }
   set value(e) {
-    e = j(e, this.min, this.max);
+    e = I(e, this.min, this.max);
     let t = e !== this.__rawValue;
     this.__rawValue = e, this.onChange && t && this.onChange(this.value);
   }
@@ -2821,7 +2824,7 @@ class Ne extends te {
     let [t] = e.onUIObject;
     t -= V.borderWidth + V.horizontalSpacing, this.label && (t -= this.label.length);
     const r = this.snapToStep(
-      j(t / this.sliderWidth * this.max, this.min, this.max)
+      I(t / this.sliderWidth * this.max, this.min, this.max)
     );
     this.value = r;
   }
@@ -2836,7 +2839,7 @@ class Ne extends te {
    */
   get sliderWidth() {
     const e = (this.max - this.min) / this.step + 1;
-    return e <= 10 ? Math.round(e) : j(
+    return e <= 10 ? Math.round(e) : I(
       e,
       10,
       this.menu.runtime.renderer.width / 4
@@ -2844,72 +2847,72 @@ class Ne extends te {
   }
   get renderable() {
     const {
-      menu: { index: e, focused: t },
-      index: r,
-      value: i,
-      min: n,
-      max: s,
-      step: o,
-      label: l,
+      menu: { index: e },
+      index: t,
+      value: r,
+      min: i,
+      max: n,
+      step: s,
+      label: o,
       showValue: h,
-      showPercentage: a,
-      sliderWidth: f
-    } = this, d = e === r;
+      showPercentage: l,
+      sliderWidth: a
+    } = this, d = e === t;
     let u = [];
-    if (l) {
-      const I = b.fromString(this.label + " ");
-      (!d || !t) && I.setColor("grey"), u.push(I.data[0]);
+    if (o) {
+      const v = b.fromString(this.label + " ");
+      d || v.setColor("grey"), u.push(v.data[0]);
     }
-    const p = f - 1, g = Math.floor(
-      (i - n) / (s - n) * p
-    ), x = new _({
+    const f = a - 1, p = Math.floor(
+      (r - i) / (n - i) * f
+    ), g = new _({
       value: "─",
-      color: d && t ? "white" : "grey"
-    }), [k, C] = [
-      new Array(g).fill(x),
-      new Array(p - g).fill(x)
-    ], E = new b({
+      color: d ? "white" : "grey"
+    }), [E, k] = [
+      new Array(p).fill(g),
+      new Array(f - p).fill(g)
+    ], C = new b({
       data: [
-        ...k,
+        ...E,
         new _({
           value: "█",
-          color: d && t ? "green" : "grey"
+          color: d ? "green" : "grey"
         }),
-        ...C
+        ...k
       ]
     });
-    if (u[0] = [...u[0], ...E.data], h) {
-      const I = Number.isInteger(o) ? s : s.toString() + "." + "".padStart(
-        Math.min(o.toString().split(".")[1].length, 20),
+    if (u[0] = [...u[0], ...C.data], h) {
+      const v = Number.isInteger(s) ? n : n.toString() + "." + "".padStart(
+        Math.min(s.toString().split(".")[1].length, 20),
         "0"
-      ), H = Number.isInteger(o) ? 0 : Math.min(o.toString().split(".")[1].length, 20), X = j(
-        I.length,
+      ), D = Number.isInteger(s) ? 0 : Math.min(s.toString().split(".")[1].length, 20), H = I(
+        v.length,
         1,
         this.menu.availableContentSpace[0]
-      ), D = b.fromString(
-        " " + String(i.toFixed(H)).padEnd(
-          X,
+      ), F = b.fromString(
+        " " + String(r.toFixed(D)).padEnd(
+          H,
           " "
         )
       );
-      (!d || !t) && D.setColor("grey"), u[0].push(...D.data[0]);
+      d || F.setColor("grey"), u[0].push(...F.data[0]);
     }
-    if (h && a && u[0].push(
+    if (h && l && u[0].push(
       null,
       new _({
         value: "-",
-        color: d && t ? "white" : "grey"
+        color: d ? "white" : "grey"
       })
-    ), a) {
-      const I = b.fromString(
-        (" " + Math.round(i / s * 100) + "%").padEnd(5, " ")
+    ), l) {
+      const v = b.fromString(
+        (" " + Math.round(r / n * 100) + "%").padEnd(5, " ")
       );
-      (!d || !t) && I.setColor("grey"), u[0].push(...I.data[0]);
+      d || v.setColor("grey"), u[0].push(...v.data[0]);
     }
     return new b({ data: u });
   }
 }
-class Ge extends te {
+class Ue extends te {
   /**
    * A checkbox that can be toggled.
    * @param {Object} config The `Toggle`'s config object.
@@ -2954,7 +2957,7 @@ class Ge extends te {
     return e === t ? s.setColor("white") : s.setColor("grey"), s;
   }
 }
-const y = class y extends B {
+const y = class y extends A {
   /**
    * A menu of various items that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -2973,11 +2976,11 @@ const y = class y extends B {
       throw new TypeError(
         '"Menu" constructor config.items object should be an array of "Menu.Item" instances.'
       );
-    if (this.items = i, this.__rawIndex = 0, r && typeof r != "string")
+    if (this.items = i, this.__rawIndex = -1, r && typeof r != "string")
       throw new Error(
         `Provided menu title "${r}" is not of type "string".`
       );
-    this.title = r, this.gamepad = n, this.addEventListener("keydown", this.__onKeyDown), this.addEventListener("mousemove", this.__onMouseMove), this.addEventListener("click", this.__onClick), this.addEventListener("blur", this.__onBlur), this.__inputMode = "keyboard";
+    this.title = r, this.gamepad = n, this.addEventListener("keydown", this.__onKeyDown), this.addEventListener("mousemove", this.__onMouseMove), this.addEventListener("click", this.__onClick), this.addEventListener("mouseleave", this.__onMouseLeave), this.addEventListener("blur", this.__onBlur), this.addEventListener("focus", this.__onFocus), this.__inputMode = "keyboard";
   }
   /**
    * Get the menu items instantiated in this `Menu`.
@@ -3037,7 +3040,7 @@ const y = class y extends B {
     if (typeof e != "number" || !Number.isInteger(e))
       throw new TypeError("Menu index must be an integer.");
     const t = this.items.length - 1;
-    e < 0 && (e = t), e > t && (e = 0), this.__rawIndex = e;
+    e < -1 && (e = -1), e > t && (e = t), this.__rawIndex = e;
   }
   /**
    * Get the screen-space available to the content of the menu.
@@ -3124,14 +3127,19 @@ const y = class y extends B {
       keys: { up: t, down: r, escape: i }
     } = e;
     if (i) return this.blur();
-    r ? this.index++ : t ? this.index-- : this.currentItem && this.currentItem.onKeyDown(e);
+    {
+      let n = this.index;
+      r ? n++ : t ? n-- : this.currentItem && this.currentItem.onKeyDown(e);
+      const s = this.items.length - 1;
+      n < 0 && (n = s), n > s && (n = 0), n !== this.index && (this.index = n);
+    }
   }
   /**
    * Handle the mouse being moved.
    * @param {Event} event The event that triggered this method.
    */
   __onMouseMove(e) {
-    if (!this.isOnScreen || !this.visible) return;
+    if (console.log("MOUSE MOVE"), !this.isOnScreen || !this.visible) return;
     const { onLayer: t } = e, [r, i] = t[this.layer.label], [n, s] = [r - this.x, i - this.y];
     n >= 0 && n <= this.width && s >= 0 && s < this.height && (this.__inputMode = "mouse"), this.__determineMouseOverInput(e), this.__inputMode === "mouse" && this.currentItem && this.currentItem.onMouseMove(e);
   }
@@ -3160,6 +3168,18 @@ const y = class y extends B {
   __onBlur() {
     this.index = -1;
   }
+  /**
+   * Handle the `Menu` being focused.
+   */
+  __onFocus() {
+    this.index = 0;
+  }
+  /**
+   * Handle the mouse leaving the `Menu`.
+   */
+  __onMouseLeave() {
+    this.index = -1;
+  }
   __handleGamepadButtonPressed(e) {
     if (this.gamepad !== e.index && this.gamepad !== -1) return;
     const {
@@ -3179,8 +3199,8 @@ const y = class y extends B {
     if (this.border) {
       const {
         data: o,
-        width: l,
-        height: h
+        width: h,
+        height: l
       } = ee.asPixelMesh(
         r,
         i,
@@ -3192,27 +3212,27 @@ const y = class y extends B {
     }
     if (t) {
       let o = this.border || this.title ? y.borderWidth : 0;
-      for (const { renderable: l } of t)
-        if (l)
-          if (l instanceof b) {
-            if (l.width > this.availableContentSpace[0])
+      for (const { renderable: h } of t)
+        if (h)
+          if (h instanceof b) {
+            if (h.width > this.availableContentSpace[0])
               throw new Error(
                 `Menu.Item renderable.width is greater than the Menu's maximum content width of ${this.availableContentSpace[0]}.`
               );
-            l.data.forEach((h) => {
+            h.data.forEach((l) => {
               s[o] || (s[o] = this.border ? [] : new Array(n).fill(null)), s[o].splice(
                 Math.round(
-                  this.alignCenter ? n / 2 - h.length / 2 : 0
+                  this.alignCenter ? n / 2 - l.length / 2 : 0
                 ) + (this.border ? y.horizontalSpacing : 0),
-                h.length,
-                ...h
+                l.length,
+                ...l
               ), o++;
             });
           } else
             s[o] || (s[o] = []), s[o].splice(
               n % 2 === 0 && this.alignCenter ? (this.border ? y.horizontalSpacing : 0) + (this.border ? y.borderWidth : 0) : Math.round(n / 2),
               1,
-              l
+              h
             ), o++;
     }
     if (e) {
@@ -3221,19 +3241,19 @@ const y = class y extends B {
       );
       this.border || o.setFontWeight(800);
       const {
-        data: [l]
-      } = o, h = this.border || this.alignCenter ? Math.floor((n - l.length) / 2) : 0;
-      for (let a = 0; a < l.length; a++)
-        s[0] || (s[0] = []), s[0][a + h + (this.border ? y.horizontalSpacing : 0)] = l[a];
+        data: [h]
+      } = o, l = this.border || this.alignCenter ? Math.floor((n - h.length) / 2) : 0;
+      for (let a = 0; a < h.length; a++)
+        s[0] || (s[0] = []), s[0][a + l + (this.border ? y.horizontalSpacing : 0)] = h[a];
     }
     return new b({ data: s });
   }
   set renderable(e) {
   }
 };
-m(y, "Item", te), m(y, "Button", Re), m(y, "Slider", Ne), m(y, "Toggle", Ge), m(y, "horizontalSpacing", 1), m(y, "borderWidth", 1);
+m(y, "Item", te), m(y, "Button", Re), m(y, "Slider", Ne), m(y, "Toggle", Ue), m(y, "horizontalSpacing", 1), m(y, "borderWidth", 1);
 let V = y;
-class _e extends N {
+class _e extends R {
   /**
    * A string of text that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -3249,7 +3269,7 @@ class _e extends N {
    * @param {string} config.layer The label of the layer to start the `Text` on.
    */
   constructor(e, t) {
-    if (!P(t))
+    if (!B(t))
       throw new TypeError(
         "Expected a plain object for Text constructor config parameter."
       );
@@ -3259,19 +3279,19 @@ class _e extends N {
       value: n = "Hello, world!",
       wrap: s = !0,
       color: o = "#ffffff",
-      backgroundColor: l,
-      fontWeight: h = 400,
+      backgroundColor: h,
+      fontWeight: l = 400,
       maxWidth: a = e.runtime.renderer.width,
-      layer: f
+      layer: d
     } = t;
-    if (super(e, r, i, f), a) {
+    if (super(e, r, i, d), a) {
       if (typeof a != "number" || !Number.isInteger(a) || a < 1)
         throw new TypeError(
           "Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
         );
       this.maxWidth = a;
     }
-    this.__rawValue = n, this.wrap = s, this.color = o, this.backgroundColor = l, this.fontWeight = h;
+    this.__rawValue = n, this.wrap = s, this.color = o, this.backgroundColor = h, this.fontWeight = l;
   }
   /**
    * Get the value of the text object.
@@ -3312,11 +3332,11 @@ class _e extends N {
    */
   static asPixelMesh(e, t, r, i, n, s) {
     const o = e.split(`
-`), l = [];
-    for (const h of o)
-      if (!r && h.length > t)
-        l.push(
-          h.substring(0, t).split("").map(
+`), h = [];
+    for (const l of o)
+      if (!r && l.length > t)
+        h.push(
+          l.substring(0, t).split("").map(
             (a) => new _({
               value: a,
               color: i,
@@ -3326,28 +3346,28 @@ class _e extends N {
           )
         );
       else {
-        let a = [], f = 0;
-        for (const d of h) {
-          if (f >= t)
+        let a = [], d = 0;
+        for (const u of l) {
+          if (d >= t)
             if (r)
-              l.push(
+              h.push(
                 a.map(
-                  (u) => new _({
-                    value: u,
+                  (f) => new _({
+                    value: f,
                     color: i,
                     backgroundColor: n,
                     fontWeight: s
                   })
                 )
-              ), a = [], f = 0;
+              ), a = [], d = 0;
             else
               break;
-          a.push(d), f++;
+          a.push(u), d++;
         }
-        a.length > 0 && l.push(
+        a.length > 0 && h.push(
           a.map(
-            (d) => new _({
-              value: d,
+            (u) => new _({
+              value: u,
               color: i,
               backgroundColor: n,
               fontWeight: s
@@ -3355,12 +3375,12 @@ class _e extends N {
           )
         );
       }
-    return new b({ data: l });
+    return new b({ data: h });
   }
   set renderable(e) {
   }
 }
-class qe extends B {
+class qe extends A {
   /**
    * A text input that can be rendered on screen.
    * @param {Scene} scene The scene this Object is a part of.
@@ -3374,12 +3394,12 @@ class qe extends B {
       blurColor: n = "grey",
       backgroundColor: s = "transparent",
       backgroundColorActive: o = "white",
-      onChange: l,
-      onKeyDown: h,
+      onChange: h,
+      onKeyDown: l,
       maxLength: a,
-      wrap: f,
-      fontWeight: d,
-      maxWidth: u
+      wrap: d,
+      fontWeight: u,
+      maxWidth: f
     } = t;
     if (r) {
       if (typeof r != "string")
@@ -3416,19 +3436,19 @@ class qe extends B {
         );
       this.backgroundColorActive = o;
     }
-    if (l) {
-      if (typeof l != "function")
-        throw new TypeError(
-          "Expected a function for TextInput config.onChange value."
-        );
-      this.onChange = l;
-    }
     if (h) {
       if (typeof h != "function")
         throw new TypeError(
+          "Expected a function for TextInput config.onChange value."
+        );
+      this.onChange = h;
+    }
+    if (l) {
+      if (typeof l != "function")
+        throw new TypeError(
           "Expected a function for TextInput config.onKeyDown value."
         );
-      this.onKeyDown = h;
+      this.onKeyDown = l;
     }
     if (a) {
       if (typeof a != "number" || !Number.isInteger(a) || a < 0)
@@ -3437,14 +3457,14 @@ class qe extends B {
         );
       this.maxLength = a;
     }
-    if (u) {
-      if (typeof u != "number" || !Number.isInteger(u) || u < 1)
+    if (f) {
+      if (typeof f != "number" || !Number.isInteger(f) || f < 1)
         throw new TypeError(
           "Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
         );
-      this.maxWidth = u;
+      this.maxWidth = f;
     }
-    this.scroll = 0, this.value = t.value, this.caret = this.value ? this.value.length : 0, this.wrap = f, this.backgroundColor = s, this.fontWeight = d, this.addEventListener("click", this.__onClick), this.addEventListener("keydown", this.__onKeyDown), this.addEventListener("focus", () => {
+    this.scroll = 0, this.value = t.value, this.caret = this.value ? this.value.length : 0, this.wrap = d, this.backgroundColor = s, this.fontWeight = u, this.addEventListener("click", this.__onClick), this.addEventListener("keydown", this.__onKeyDown), this.addEventListener("focus", () => {
       this.caret = this.value.length;
     });
   }
@@ -3480,7 +3500,7 @@ class qe extends B {
    */
   __onKeyDown(e) {
     const { caret: t } = this, { key: r, rawKey: i } = e, n = this.value;
-    r === "backspace" ? (this.value = this.value.slice(0, t - 1) + this.value.slice(t), this.caret !== this.value.length && this.caret--) : r === "delete" ? this.value = this.value.slice(0, t) + this.value.slice(t + 1) : r === "escape" ? this.focused = !1 : r === "left" ? this.caret-- : r === "right" ? this.caret++ : r === "end" || r === "down" ? this.caret = this.value.length : r === "home" || r === "up" ? this.caret = 0 : /^[\x20-\x7E]$/.test(i) && (typeof this.maxLength != "number" || this.value.length < this.maxLength) && (this.value = this.value.slice(0, this.caret) + i + this.value.slice(this.caret), this.caret++), this.__updateScrollPosition(), n !== this.value && this.onChange && this.onChange(v({ target: this }, e)), this.onKeyDown && this.onKeyDown(v({ target: this }, e));
+    r === "backspace" ? (this.value = this.value.slice(0, t - 1) + this.value.slice(t), this.caret !== this.value.length && this.caret--) : r === "delete" ? this.value = this.value.slice(0, t) + this.value.slice(t + 1) : r === "escape" ? this.focused = !1 : r === "left" ? this.caret-- : r === "right" ? this.caret++ : r === "end" || r === "down" ? this.caret = this.value.length : r === "home" || r === "up" ? this.caret = 0 : /^[\x20-\x7E]$/.test(i) && (typeof this.maxLength != "number" || this.value.length < this.maxLength) && (this.value = this.value.slice(0, this.caret) + i + this.value.slice(this.caret), this.caret++), this.__updateScrollPosition(), n !== this.value && this.onChange && this.onChange(x({ target: this }, e)), this.onKeyDown && this.onKeyDown(x({ target: this }, e));
   }
   /**
    * Update the position of this `TextInput`'s `scroll` property to properly scroll to the caret in the input.
@@ -3506,18 +3526,18 @@ class qe extends B {
       color: n,
       activeColor: s,
       backgroundColor: o,
-      backgroundColorActive: l,
-      focused: h
-    } = this, a = [], f = e.length - r + 1;
-    this.scroll > f && (this.scroll = f), this.scroll < 0 && (this.scroll = 0);
-    const { scroll: d } = this, u = e.substring(d, d + r).padEnd(r, " ").split("");
-    for (let p = 0; p < u.length; p++) {
-      const g = u[p], x = p + d === i && h;
+      backgroundColorActive: h,
+      focused: l
+    } = this, a = [], d = e.length - r + 1;
+    this.scroll > d && (this.scroll = d), this.scroll < 0 && (this.scroll = 0);
+    const { scroll: u } = this, f = e.substring(u, u + r).padEnd(r, " ").split("");
+    for (let p = 0; p < f.length; p++) {
+      const g = f[p], E = p + u === i && l;
       a.push(
         new _({
           value: g,
-          color: this.focused ? x ? s : n : this.blurColor,
-          backgroundColor: x ? l : o,
+          color: this.focused ? E ? s : n : this.blurColor,
+          backgroundColor: E ? h : o,
           fontWeight: t
         })
       );
@@ -3525,7 +3545,7 @@ class qe extends B {
     return new b({ data: [a] });
   }
 }
-const A = class A extends B {
+const S = class S extends A {
   /**
    * A box that can be scrolled.
    * @param {Scene} scene The scene this Object is a part of.
@@ -3576,26 +3596,26 @@ const A = class A extends B {
         horizontalScrollbarLength: o
       }
     } = this, {
-      onLayer: l,
-      buttons: { left: h }
+      onLayer: h,
+      buttons: { left: l }
     } = e;
-    if (!h || !l[this.layer.label]) return;
-    const [a, f] = l[this.layer.label], [d, u] = [a - this.x, f - this.y];
-    if (r && d >= this.width - 1) {
+    if (!l || !h[this.layer.label]) return;
+    const [a, d] = h[this.layer.label], [u, f] = [a - this.x, d - this.y];
+    if (r && u >= this.width - 1) {
       const p = Math.round(
         s * (this.viewportSize[1] / (this.spans.down - this.spans.up))
-      ), g = j(
-        u - i,
+      ), g = I(
+        f - i,
         p / 2,
         s - p / 2
       );
       this.scrollY = (g - p / 2) * (this.spans.down - this.spans.up) / (s - p);
     }
-    if (t && u >= this.height - 1) {
+    if (t && f >= this.height - 1) {
       const p = Math.round(
         o * (this.viewportSize[0] / (this.spans.right - this.spans.left))
-      ), g = j(
-        d - n,
+      ), g = I(
+        u - n,
         p / 2,
         o - p / 2
       );
@@ -3634,7 +3654,7 @@ const A = class A extends B {
       spans: { left: t, right: r },
       viewportSize: [i]
     } = this;
-    this.__rawScrollX = j(e, t, r - i);
+    this.__rawScrollX = I(e, t, r - i);
   }
   /**
    * Get the `Scroller`'s scroll y position.
@@ -3650,7 +3670,7 @@ const A = class A extends B {
       spans: { up: t, down: r },
       viewportSize: [i, n]
     } = this;
-    this.__rawScrollY = j(e, t, r - n);
+    this.__rawScrollY = I(e, t, r - n);
   }
   /**
    * Get the `Scroller`'s width.
@@ -3710,8 +3730,8 @@ const A = class A extends B {
     for (let { x: t, y: r, renderable: i } of this.gameObjects) {
       const { origin: n } = i, { width: s, height: o } = i instanceof b ? i : { width: 1, height: 1 };
       if (n) {
-        const [l, h] = n;
-        t -= l, r -= h, t = Math.round(t), r = Math.round(r);
+        const [h, l] = n;
+        t -= h, r -= l, t = Math.round(t), r = Math.round(r);
       }
       t < e.left && (e.left = t), r < e.up && (e.up = r), t + s > e.right && (e.right = t + s), r + o > e.down && (e.down = r + o);
     }
@@ -3721,7 +3741,7 @@ const A = class A extends B {
    * Get the scrollbars that are currently usable. This is determined by what content is overflowing.
    */
   get activeScrollbars() {
-    const { width: e, height: t, spans: r } = this, { borderWidth: i } = A;
+    const { width: e, height: t, spans: r } = this, { borderWidth: i } = S;
     return {
       horizontalScrollbar: r.right - r.left > e - i * 2,
       verticalScrollbar: r.down - r.up > t - i * 2
@@ -3731,7 +3751,7 @@ const A = class A extends B {
    * Get the x, y, width, and height of the content area.
    */
   get viewportSize() {
-    const { width: e, height: t } = this, { borderWidth: r } = A;
+    const { width: e, height: t } = this, { borderWidth: r } = S;
     return [e - r * 2, t - r * 2];
   }
   /**
@@ -3753,75 +3773,75 @@ const A = class A extends B {
       spans: i,
       scrollX: n,
       scrollY: s,
-      activeScrollbars: { horizontalScrollbar: o, verticalScrollbar: l },
-      viewportSize: [h, a],
+      activeScrollbars: { horizontalScrollbar: o, verticalScrollbar: h },
+      viewportSize: [l, a],
       scrollBarRect: {
-        verticalScrollbarY: f,
-        horizontalScrollbarX: d,
-        verticalScrollbarLength: u,
+        verticalScrollbarY: d,
+        horizontalScrollbarX: u,
+        verticalScrollbarLength: f,
         horizontalScrollbarLength: p
       }
-    } = this, { track: g, thumb: x, borderWidth: k } = A, [C, E] = [k, k], [I, H] = [
+    } = this, { track: g, thumb: E, borderWidth: k } = S, [C, v] = [k, k], [D, H] = [
       Math.max(
         1,
         Math.round(
-          u * (a / (i.down - i.up))
+          f * (a / (i.down - i.up))
         )
       ),
       Math.max(
         1,
         Math.round(
-          p * (h / (i.right - i.left))
+          p * (l / (i.right - i.left))
         )
       )
-    ], [X, D] = [
-      s / (i.down - i.up - a) * (u - I),
-      n / (i.right - i.left - h) * (p - H)
+    ], [F, N] = [
+      s / (i.down - i.up - a) * (f - D),
+      n / (i.right - i.left - l) * (p - H)
     ], [xe, Ee] = [
-      X,
-      X + I
+      F,
+      F + D
     ], [ke, Me] = [
-      D,
-      D + H
+      N,
+      N + H
     ];
     let O = ee.asPixelMesh(e, t, "white", null, "line").data;
-    if (l)
-      for (let M = f; M < f + u; M++) {
+    if (h)
+      for (let M = d; M < d + f; M++) {
         O[M] || (O[M] = []);
-        const T = M - f;
+        const j = M - d;
         O[M][this.width - 1] = new _({
           value: "█",
-          color: T >= xe && T < Ee ? x : g
+          color: j >= xe && j < Ee ? E : g
         });
       }
     if (o) {
       O[this.height - 1] || (O[this.height - 1] = []);
-      for (let M = d; M < d + p; M++) {
-        const T = M - d;
+      for (let M = u; M < u + p; M++) {
+        const j = M - u;
         O[this.height - 1][M] = new _({
           value: "▀",
-          color: T >= ke && T < Me ? x : g
+          color: j >= ke && j < Me ? E : g
         });
       }
     }
     for (const M of r) {
-      const { renderable: T, x: re, y: ie } = M;
-      if (T instanceof _) {
-        const [W, S] = [re + C - n, ie + E - s];
-        if (!z(W, S, 1, 1, C, E, h, a) || W > C + h || S > E + a)
+      const { renderable: j, x: re, y: ie } = M;
+      if (j instanceof _) {
+        const [P, T] = [re + C - n, ie + v - s];
+        if (!Y(P, T, 1, 1, C, v, l, a) || P > C + l || T > v + a)
           continue;
-        O[S] || (O[S] = []), O[S][W] = T;
-      } else if (T instanceof b) {
-        if (!z(re, ie, M.width, M.height, C, E, h, a)) continue;
-        for (let W = 0; W < T.data.length; W++) {
-          const S = T.data[W];
-          if (!(!S || S.length === 0))
-            for (let G = 0; G < S.length; G++) {
-              const Ce = S[G], [de, U] = [
-                re + C + G - n,
-                ie + E + W - s
+        O[T] || (O[T] = []), O[T][P] = j;
+      } else if (j instanceof b) {
+        if (!Y(re, ie, M.width, M.height, C, v, l, a)) continue;
+        for (let P = 0; P < j.data.length; P++) {
+          const T = j.data[P];
+          if (!(!T || T.length === 0))
+            for (let U = 0; U < T.length; U++) {
+              const Ce = T[U], [ue, G] = [
+                re + C + U - n,
+                ie + v + P - s
               ];
-              z(de, U, 1, 1, C, E, h, a) && (O[U] || (O[U] = []), O[U][de] = Ce);
+              Y(ue, G, 1, 1, C, v, l, a) && (O[G] || (O[G] = []), O[G][ue] = Ce);
             }
         }
       }
@@ -3832,17 +3852,17 @@ const A = class A extends B {
 /**
  * The color of the scrollbar track.
  */
-m(A, "track", "grey"), /**
+m(S, "track", "grey"), /**
  * The color of the scrollbar thumb.
  */
-m(A, "thumb", "white"), /**
+m(S, "thumb", "white"), /**
  * The width of the `Scroller` container's border.
  */
-m(A, "borderWidth", 1), /**
+m(S, "borderWidth", 1), /**
  * The width of the scrollbars.
  */
-m(A, "scrollbarWidth", 1);
-let ge = A;
+m(S, "scrollbarWidth", 1);
+let ge = S;
 class Je extends ce {
   /**
    * Scroll the camera to a `GameObject`.
@@ -3865,11 +3885,11 @@ class Je extends ce {
       scene: {
         camera: o,
         runtime: {
-          renderer: { width: l, height: h }
+          renderer: { width: h, height: l }
         }
       }
     } = this;
-    o.x = e - n + r / 2 - l / 2, o.y = t - s + i / 2 - h / 2;
+    o.x = e - n + r / 2 - h / 2, o.y = t - s + i / 2 - l / 2;
   }
 }
 class ye extends ce {
@@ -3958,31 +3978,31 @@ class ye extends ce {
       gameObject: {
         width: n,
         height: s,
-        origin: [o, l]
+        origin: [o, h]
       },
-      scene: { layerManager: h }
+      scene: { layerManager: l }
     } = this;
     if (n <= 1 && s <= 1) {
-      const g = h.solidAtPosition(t, r);
+      const g = l.solidAtPosition(t, r);
       (!g || g.gameObject === i) && (i.x = t, i.y = r);
       return;
     }
     let a = !0;
-    const f = t > i.x, d = t < i.x, u = r > i.y, p = r < i.y;
-    if (f || d) {
-      const g = i.y - l, x = g + s - 1;
-      for (let k = g; k <= x; k++) {
-        const C = f ? t + n - 1 - o : t - o, E = h.solidAtPosition(C, k);
-        if (E && E.gameObject !== i) {
+    const d = t > i.x, u = t < i.x, f = r > i.y, p = r < i.y;
+    if (d || u) {
+      const g = i.y - h, E = g + s - 1;
+      for (let k = g; k <= E; k++) {
+        const C = d ? t + n - 1 - o : t - o, v = l.solidAtPosition(C, k);
+        if (v && v.gameObject !== i) {
           a = !1;
           break;
         }
       }
-    } else if (u || p) {
-      const g = i.x - o, x = g + n - 1;
-      for (let k = g; k <= x; k++) {
-        const C = u ? r + s - 1 - l : r - l, E = h.solidAtPosition(k, C);
-        if (E && E.gameObject !== i) {
+    } else if (f || p) {
+      const g = i.x - o, E = g + n - 1;
+      for (let k = g; k <= E; k++) {
+        const C = f ? r + s - 1 - h : r - h, v = l.solidAtPosition(k, C);
+        if (v && v.gameObject !== i) {
           a = !1;
           break;
         }
@@ -4011,7 +4031,7 @@ class Ze {
     this.duration = t, this.renderable = e;
   }
 }
-class ue {
+class de {
   /**
    * An animation. The `Animate` behavior operates on the data in this object.
    * @param {Object} config The configuration for this `Animation`.
@@ -4030,7 +4050,7 @@ class ue {
     repeatCount: 1,
     pingPong: !1
   }) {
-    ue.validateConfig(e);
+    de.validateConfig(e);
     const {
       label: t = "Unnamed Animation",
       animationFrames: r,
@@ -4168,7 +4188,7 @@ class ve extends ce {
     if (!e.animations || !(e.animations instanceof Array))
       throw new Error("No animations configured for Animate behavior.");
     for (const t of e.animations)
-      if (!(t instanceof ue))
+      if (!(t instanceof de))
         throw new Error(
           'Item in "animations" array is not an instance of "Animation".'
         );
@@ -4194,13 +4214,13 @@ class ve extends ce {
 export {
   Ve as AdvMath,
   ve as Animate,
-  ue as Animation,
+  de as Animation,
   Ze as AnimationFrame,
   ce as Behavior,
   ee as Box,
   we as Core,
-  R as Frame,
-  N as GameObject,
+  $ as Frame,
+  R as GameObject,
   pe as Layer,
   V as Menu,
   _ as Pixel,

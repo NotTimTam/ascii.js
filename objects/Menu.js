@@ -445,7 +445,7 @@ class Menu extends UIObject {
 
 		this.items = items;
 
-		this.__rawIndex = 0;
+		this.__rawIndex = -1;
 
 		if (title && typeof title !== "string")
 			throw new Error(
@@ -461,6 +461,7 @@ class Menu extends UIObject {
 		this.addEventListener("click", this.__onClick);
 		this.addEventListener("mouseleave", this.__onMouseLeave);
 		this.addEventListener("blur", this.__onBlur);
+		this.addEventListener("focus", this.__onFocus);
 
 		this.__inputMode = "keyboard";
 	}
@@ -769,6 +770,13 @@ class Menu extends UIObject {
 	 */
 	__onBlur() {
 		this.index = -1;
+	}
+
+	/**
+	 * Handle the `Menu` being focused.
+	 */
+	__onFocus() {
+		this.index = 0;
 	}
 
 	/**
