@@ -789,8 +789,6 @@ class InputManager {
 
 		// Trigger mouse events for any UIObject, even if the UIObject is not focused.
 		if (InputManager.mouseEvents.includes(type)) {
-			console.log(data.targets);
-
 			const targets =
 				data.targets &&
 				data.targets
