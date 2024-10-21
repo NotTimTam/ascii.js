@@ -75,18 +75,24 @@ new Menu(scene, {
 	items: [
 		new Menu.Button({
 			label: "Button G",
+			callback: () => console.log("G CLICKED"),
 		}),
 		new Menu.Button({
 			label: "Button H",
+			callback: () => console.log("H CLICKED"),
 		}),
 		new Menu.Button({
 			label: "Button I",
+			callback: () => console.log("I CLICKED"),
 		}),
 		new Menu.Slider({
 			label: "Slider",
+			callback: () => console.log("SLIDER CLICKED"),
+			step: 0.1,
 		}),
 		new Menu.Toggle({
 			label: "Checkbox",
+			callback: () => console.log("CHECKBOX CLICKED"),
 		}),
 	],
 	title: "Menu 3",

@@ -278,14 +278,28 @@ class Slider extends Item {
 		data[0] = [...data[0], ...sliderMesh.data];
 
 		if (showValue) {
+			const maxWithDecimal = Number.isInteger(step)
+				? max
+				: max.toString() +
+				  "." +
+				  "".padStart(
+						Math.min(step.toString().split(".")[1].length, 20),
+						"0"
+				  );
+			const decimalPlaces = Number.isInteger(step)
+				? 0
+				: Math.min(step.toString().split(".")[1].length, 20);
+
+			const potentialLength = clamp(
+				maxWithDecimal.length,
+				1,
+				this.menu.availableContentSpace[0]
+			);
+
 			const valueMesh = PixelMesh.fromString(
 				" " +
-					String(value).padEnd(
-						Math.max(
-							String(max - max / step + (step < 1 ? step : 0))
-								.length - 1,
-							1
-						),
+					String(value.toFixed(decimalPlaces)).padEnd(
+						potentialLength,
 						" "
 					)
 			);
