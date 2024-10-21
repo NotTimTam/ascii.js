@@ -59,7 +59,6 @@ class Button extends Item {
 			menu: {
 				index: activeIndex,
 				availableContentSpace: [width],
-				focused,
 			},
 			index,
 			label,
@@ -70,7 +69,7 @@ class Button extends Item {
 			wrap ? wrapString(label, width, true) : label.slice(0, width)
 		);
 
-		if (activeIndex === index && focused) display.setColor("white");
+		if (activeIndex === index) display.setColor("white");
 		else display.setColor("grey");
 
 		return display;
@@ -226,7 +225,7 @@ class Slider extends Item {
 
 	get renderable() {
 		const {
-			menu: { index: activeIndex, focused },
+			menu: { index: activeIndex },
 			index,
 			value,
 			min,
@@ -244,7 +243,7 @@ class Slider extends Item {
 
 		if (label) {
 			const labelMesh = PixelMesh.fromString(this.label + " ");
-			if (!active || !focused) labelMesh.setColor("grey");
+			if (!active) labelMesh.setColor("grey");
 			data.push(labelMesh.data[0]);
 		}
 
@@ -256,7 +255,7 @@ class Slider extends Item {
 
 		const track = new Pixel({
 			value: "─",
-			color: active && focused ? "white" : "grey",
+			color: active ? "white" : "grey",
 		});
 
 		const [leftSide, rightSide] = [
@@ -269,7 +268,7 @@ class Slider extends Item {
 				...leftSide,
 				new Pixel({
 					value: "█",
-					color: active && focused ? "green" : "grey",
+					color: active ? "green" : "grey",
 				}),
 				...rightSide,
 			],
@@ -303,7 +302,7 @@ class Slider extends Item {
 						" "
 					)
 			);
-			if (!active || !focused) valueMesh.setColor("grey");
+			if (!active) valueMesh.setColor("grey");
 			data[0].push(...valueMesh.data[0]);
 		}
 
@@ -312,7 +311,7 @@ class Slider extends Item {
 				null,
 				new Pixel({
 					value: "-",
-					color: active && focused ? "white" : "grey",
+					color: active ? "white" : "grey",
 				})
 			);
 
@@ -320,7 +319,7 @@ class Slider extends Item {
 			const percentageMesh = PixelMesh.fromString(
 				(" " + Math.round((value / max) * 100) + "%").padEnd(5, " ")
 			);
-			if (!active || !focused) percentageMesh.setColor("grey");
+			if (!active) percentageMesh.setColor("grey");
 			data[0].push(...percentageMesh.data[0]);
 		}
 
@@ -460,6 +459,7 @@ class Menu extends UIObject {
 		this.addEventListener("keydown", this.__onKeyDown);
 		this.addEventListener("mousemove", this.__onMouseMove);
 		this.addEventListener("click", this.__onClick);
+		this.addEventListener("mouseleave", this.__onMouseLeave);
 		this.addEventListener("blur", this.__onBlur);
 
 		this.__inputMode = "keyboard";
@@ -540,8 +540,8 @@ class Menu extends UIObject {
 			throw new TypeError("Menu index must be an integer.");
 
 		const topIndex = this.items.length - 1;
-		if (n < 0) n = topIndex;
-		if (n > topIndex) n = 0;
+		if (n < -1) n = -1;
+		if (n > topIndex) n = topIndex;
 
 		this.__rawIndex = n;
 	}
@@ -677,9 +677,17 @@ class Menu extends UIObject {
 
 		if (escape) return this.blur();
 		else {
-			if (down) this.index++;
-			else if (up) this.index--;
+			let newIndex = this.index;
+
+			if (down) newIndex++;
+			else if (up) newIndex--;
 			else this.currentItem && this.currentItem.onKeyDown(event);
+
+			const topIndex = this.items.length - 1;
+			if (newIndex < 0) newIndex = topIndex;
+			if (newIndex > topIndex) newIndex = 0;
+
+			if (newIndex !== this.index) this.index = newIndex;
 		}
 	}
 
@@ -688,6 +696,8 @@ class Menu extends UIObject {
 	 * @param {Event} event The event that triggered this method.
 	 */
 	__onMouseMove(event) {
+		console.log("MOUSE MOVE");
+
 		if (!this.isOnScreen || !this.visible) return;
 
 		// Determine if the mouse is moving over the menu.
@@ -758,6 +768,13 @@ class Menu extends UIObject {
 	 * Handle the `Menu` being blurred.
 	 */
 	__onBlur() {
+		this.index = -1;
+	}
+
+	/**
+	 * Handle the mouse leaving the `Menu`.
+	 */
+	__onMouseLeave() {
 		this.index = -1;
 	}
 

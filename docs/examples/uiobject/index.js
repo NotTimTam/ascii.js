@@ -88,7 +88,7 @@ new Menu(scene, {
 		new Menu.Slider({
 			label: "Slider",
 			callback: () => console.log("SLIDER CLICKED"),
-			step: 0.1,
+			step: 0.01,
 		}),
 		new Menu.Toggle({
 			label: "Checkbox",

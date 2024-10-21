@@ -821,6 +821,13 @@ class InputManager {
 
 				data.onUIObject = onUIObject;
 				data.target = targets[0];
+
+				this.__triggerUIObjectEvents(
+					targets[0].id,
+					type,
+					data,
+					browserEvent
+				);
 			}
 		}
 
