@@ -35,8 +35,8 @@ const scene = new Scene(runtime, {
 const { width, height } = runtime.renderer;
 
 const scroller = new Scroller(scene, {
-	x: 0,
-	y: 0,
+	x: 5,
+	y: 5,
 	layer: "system",
 	width: 32,
 	height: 16,

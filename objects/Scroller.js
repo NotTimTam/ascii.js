@@ -9,7 +9,7 @@ import Box from "./Box.js";
  * @typedef {Object} ScrollerConfig
  * @property {number} width The width of the `Scroller`. Defaults to `8`. **Note:** This is the width of the `Scroller` "window", not the width of the view area.
  * @property {number} height The height of the `Scroller`. Defaults to `8`. **Note:** This is the height of the `Scroller` "window", not the height of the view area.
- * @property {?string} gameObjects The `GameObject`s to display in the `Scroller`. **Note:** These `GameObject`s will be removed from any layer they are a part of, and their `x` and `y` coordinates and renderable will be displayed relative to the scroller.
+ * @property {?string} gameObjects The `GameObject`s to display in the `Scroller`.
  * @property {?string} backgroundColor Optional background color.
  */
 
@@ -62,7 +62,7 @@ class Scroller extends UIObject {
 
 		this.height = height;
 
-		this.gameObjects = gameObjects;
+		this.children = gameObjects;
 
 		if (backgroundColor) {
 			if (typeof backgroundColor !== "string")
@@ -72,25 +72,13 @@ class Scroller extends UIObject {
 			this.backgroundColor = backgroundColor;
 		}
 
-		scene.inputManager.addEventListener(
-			"mousemove",
-			this.__handleMouse.bind(this)
-		);
-		scene.inputManager.addEventListener(
-			"mousedown",
-			this.__handleMouse.bind(this)
-		);
-		scene.inputManager.addEventListener(
-			"keydown",
-			this.__handleKeyDown.bind(this)
-		);
-		scene.inputManager.addEventListener(
-			"wheel",
-			this.__handleMouseWheel.bind(this)
-		);
-		scene.inputManager.addEventListener(
+		this.addEventListener("mousemove", this.__handleMouse);
+		this.addEventListener("mousedown", this.__handleMouse);
+		this.addEventListener("keydown", this.__handleKeyDown);
+		this.addEventListener("wheel", this.__handleMouseWheel);
+		this.addEventListener(
 			"gamepadbuttonpressed",
-			this.__handleGamepadButtonPressed.bind(this)
+			this.__handleGamepadButtonPressed
 		);
 	}
 
@@ -252,33 +240,6 @@ class Scroller extends UIObject {
 	}
 
 	/**
-	 * Set the `Scroller`'s associated `GameObject`s.
-	 */
-	set gameObjects(arr) {
-		if (!arr) return (this.__rawGameObjects = []);
-
-		if (!(arr instanceof Array))
-			throw new TypeError(
-				'Expected an array for Scroller "gameObjects" property.'
-			);
-
-		for (const object of arr.filter(({ layer }) => layer))
-			object.layer = undefined;
-
-		this.__rawGameObjects = arr;
-	}
-
-	/**
-	 * Get the `Scroller`'s associated `GameObject`s.
-	 */
-	get gameObjects() {
-		for (const object of this.__rawGameObjects.filter(({ layer }) => layer))
-			object.layer = undefined;
-
-		return this.__rawGameObjects;
-	}
-
-	/**
 	 * Get the dimensions displayed inside the scroller.
 	 */
 	get spans() {
@@ -289,7 +250,7 @@ class Scroller extends UIObject {
 			down: 0,
 		};
 
-		for (let { x, y, renderable } of this.gameObjects) {
+		for (let { x, y, renderable } of this.children) {
 			const { origin } = renderable;
 			const { width, height } =
 				renderable instanceof PixelMesh
@@ -355,7 +316,7 @@ class Scroller extends UIObject {
 		const {
 			width,
 			height,
-			gameObjects,
+			children,
 			spans,
 			scrollX,
 			scrollY,
@@ -368,7 +329,12 @@ class Scroller extends UIObject {
 				horizontalScrollbarLength,
 			},
 		} = this;
-		const { track, thumb, borderWidth } = Scroller;
+		let { track, thumb, borderWidth } = Scroller;
+
+		if (!this.focused) {
+			thumb = "grey";
+			track = "#424242";
+		}
 
 		const [vX, vY] = [borderWidth, borderWidth];
 
@@ -405,7 +371,7 @@ class Scroller extends UIObject {
 			horizontalTrackX + horizontalThumbLength,
 		];
 
-		let data = Box.asPixelMesh(width, height, "white", null, "line").data;
+		let data = Box.asPixelMesh(width, height, thumb, null, "line").data;
 
 		// Drawing the vertical scrollbar
 		if (verticalScrollbar) {
@@ -451,7 +417,7 @@ class Scroller extends UIObject {
 			}
 		}
 
-		for (const go of gameObjects) {
+		for (const go of children) {
 			const { renderable, x, y } = go;
 
 			if (renderable instanceof Pixel) {

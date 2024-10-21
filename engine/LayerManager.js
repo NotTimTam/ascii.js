@@ -133,7 +133,7 @@ export class Layer {
 		const frameData = [];
 
 		for (const gameObject of this.gameObjects.filter(
-			({ visible }) => visible
+			({ visible, parent }) => visible && !parent
 		)) {
 			const { renderable } = gameObject;
 			let { x, y } = gameObject;

@@ -210,6 +210,63 @@ class GameObject extends Core {
 	}
 
 	/**
+	 * Get this `GameObject`'s child `GameObject`s.
+	 */
+	get children() {
+		return this.__rawChildren || [];
+	}
+
+	/**
+	 * Set this `GameObject`'s child `GameObject`s.
+	 */
+	set children(arr) {
+		if (!arr) arr = [];
+
+		if (!(arr instanceof Array))
+			throw new TypeError(
+				`A GameObject's "children" property must be an array.`
+			);
+
+		for (const gA of arr) {
+			if (!(gA instanceof GameObject))
+				throw new TypeError(
+					`Each object in a GameObject's "children" array must be an instance of GameObject.`
+				);
+		}
+
+		this.__rawChildren = arr;
+	}
+
+	/**
+	 * Get this `GameObject`'s parent `GameObject`.
+	 */
+	get parent() {
+		return this.scene.gameObjects.find(({ children }) =>
+			children.includes(this)
+		);
+	}
+
+	/**
+	 * Set this `GameObject`'s parent `GameObject`.
+	 */
+	set parent(gameObject) {
+		if (gameObject) {
+			if (!(gameObject instanceof GameObject) || gameObject === this)
+				throw new TypeError(
+					`A GameObject's "parent" property must be an instance of GameObject, or null. The GameObject cannot parent itself.`
+				);
+
+			if (gameObject.children.includes(this)) return;
+
+			gameObject.children.push(this);
+		} else {
+			gameObject.children = gameObject.children.filter(
+				(gA) => gA !== this
+			);
+		}
+	}
+
+	/**
 	 * The object's renderable element.
 	 */
 	get renderable() {
