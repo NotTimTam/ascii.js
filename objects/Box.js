@@ -41,16 +41,13 @@ class Box extends GameObject {
 			);
 
 		const {
-			x,
-			y,
 			width,
 			height,
 			color = "#ffffff",
 			backgroundColor,
 			style = "double",
-			layer,
 		} = config;
-		super(scene, x, y, layer);
+		super(scene, config);
 
 		this.__rawWidth = width;
 		this.__rawHeight = height;

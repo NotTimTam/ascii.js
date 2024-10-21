@@ -40,6 +40,57 @@ export class Layer {
 	}
 
 	/**
+	 * Get this `Layer`'s `GameObject`s.
+	 */
+	get gameObjects() {
+		return this.__rawGameObjects || [];
+	}
+
+	/**
+	 * `INTERNAL METHOD` **Do not use unless you know what you're doing.**
+	 * @param {GameObject} gA The `GameObject` to get the index of. Either the `zIndex` or index in layer if no `zIndex` is provided.
+	 * @returns {number} The display index of the `GameObject`.
+	 */
+	__getGameObjectIndex = (gA) =>
+		gA.hasOwnProperty("__rawZIndex")
+			? gA.__rawZIndex
+			: this.gameObjects.indexOf(gA);
+
+	/**
+	 * Get this `Layer`'s `GameObject`s in the order they should appear on screen, top-to-bottom.
+	 */
+	get gameObjectsInOrder() {
+		return this.gameObjects.sort(
+			(a, b) =>
+				this.__getGameObjectIndex(b) - this.__getGameObjectIndex(a)
+		);
+	}
+
+	/**
+	 * Get this `Layer`'s `GameObject`s in the order they should appear on screen, bottom-to-top. This property is used for rendering, as they have to be drawn in reverse order.
+	 */
+	get gameObjectsInReverseOrder() {
+		return this.gameObjects.sort(
+			(a, b) =>
+				this.__getGameObjectIndex(a) - this.__getGameObjectIndex(b)
+		);
+	}
+
+	/**
+	 * Set this `Layer`'s `GameObject`s.
+	 */
+	set gameObjects(arr) {
+		if (!(arr instanceof Array))
+			throw new TypeError(
+				'A Layer\'s "gameObjects" property must be an array of GameObject instances.'
+			);
+
+		this.__rawGameObjects = arr.filter(
+			(gA) => gA && gA instanceof GameObject
+		);
+	}
+
+	/**
 	 * Converts the config array of gameObjects into active `GameObject`s.
 	 * @param {Array<Function|GameObject>} gameObjectConstructors The array of `GameObject` population functions to run. Each function is passed the current `Scene` instance.
 	 * @returns {Array<GameObject>} The new array of `GameObject`s.
@@ -132,8 +183,8 @@ export class Layer {
 
 		const frameData = [];
 
-		for (const gameObject of this.gameObjects.filter(
-			({ visible, parent }) => visible && !parent
+		for (const gameObject of this.gameObjectsInReverseOrder.filter(
+			(gA) => gA.visible && !gA.parent
 		)) {
 			const { renderable } = gameObject;
 			let { x, y } = gameObject;
@@ -236,8 +287,10 @@ class LayerManager {
 	 * @param {number} x The x-coordinate to check.
 	 * @param {number} y The y-coordinate to check.
 	 * @param {?string} layer An optional layer to check. If no layer is provided, all layer's are checked.
+	 * @param {boolean} includeNull Include `GameObject`s even if the position clicked in the `GameObject`'s renderable is `null`, and not a `Pixel` instance. Default `true`.
+	 * @returns {Array<GameObject>} An array of `GameObject`s at this position, sorted by `zIndex`.
 	 */
-	getAtPosition(x, y, layer) {
+	getAtPosition(x, y, layer, includeNull = true) {
 		const layerWithLabel = this.layers.find(({ label }) => label === layer);
 		if (layer && !layerWithLabel)
 			throw new Error(`No layer exists with label "${layer}".`);
@@ -247,9 +300,7 @@ class LayerManager {
 		const atPosition = [];
 
 		for (const layer of layersToCheck) {
-			const { gameObjects } = layer;
-
-			for (const gameObject of gameObjects) {
+			for (const gameObject of layer.gameObjectsInOrder) {
 				const { renderable, relX: gX, relY: gY } = gameObject;
 
 				if (renderable instanceof Pixel && gX === x && gY === y)
@@ -271,7 +322,7 @@ class LayerManager {
 						renderable.data[y - gY] &&
 						renderable.data[y - gY][x - gX];
 
-					if (!pixel) continue;
+					if (!pixel && !includeNull) continue;
 
 					atPosition.push({
 						gameObject,

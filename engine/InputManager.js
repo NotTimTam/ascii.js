@@ -670,16 +670,7 @@ class InputManager {
 				0,
 				characterHeight
 			);
-			// this.mouse.x = clamp(
-			// 	Math.floor(relX * characterWidth),
-			// 	0,
-			// 	characterWidth
-			// );
-			// this.mouse.y = clamp(
-			// 	Math.floor(relY * characterHeight),
-			// 	0,
-			// 	characterHeight
-			// );
+
 			this.mouse.x = Math.floor(this.mouse.floatX);
 			this.mouse.y = Math.floor(this.mouse.floatY);
 
@@ -793,41 +784,35 @@ class InputManager {
 				data.targets &&
 				data.targets
 					.map((targetId) => this.scene.findGameObjectById(targetId)) // Get all target instances.
-					.filter((target) => target instanceof UIObject) // Only UIObject instances are considered targets for UIObject events..
-					.sort(
-						(a, b) =>
-							this.scene.layerManager.layers.indexOf(b.layer) -
-							this.scene.layerManager.layers.indexOf(a.layer)
-					); // Sort by layer so topmost items recieve the inputs first.
+					.filter((target) => target && target instanceof UIObject) // Only UIObject instances are considered targets for UIObject events..
+					.sort((a, b) => b.zIndex - a.zIndex); // Sort by layer so topmost items recieve the inputs last.
 
-			// If the user clicks the screen.
-			if (type === "click") {
-				if (targets && targets.length > 0 && targets[0].focusable) {
-					targets[0].focus();
-				} else {
-					if (this.focusTarget) this.focusTarget.blur();
-					else this.focusIndex = -1; // When empty space is clicked, we blur any focused object and exit the event handler.
-					return;
+			if (targets)
+				for (const target of targets) {
+					// If the user clicks the screen.
+					if (type === "click") target.focus();
+
+					// Get mouse position on the target.
+					const [layerX, layerY] = data.onLayer[target.layerLabel];
+					const onUIObject = [
+						layerX - target.relX,
+						layerY - target.relY,
+					];
+
+					data.onUIObject = onUIObject;
+					data.target = target;
+
+					this.__triggerUIObjectEvents(
+						targets[0].id,
+						type,
+						data,
+						browserEvent
+					);
 				}
-			}
-
-			if (targets && targets.length > 0) {
-				// Get mouse position on the target.
-				const [layerX, layerY] = data.onLayer[targets[0].layerLabel];
-				const onUIObject = [
-					layerX - targets[0].relX,
-					layerY - targets[0].relY,
-				];
-
-				data.onUIObject = onUIObject;
-				data.target = targets[0];
-
-				this.__triggerUIObjectEvents(
-					targets[0].id,
-					type,
-					data,
-					browserEvent
-				);
+			else if (type === "click") {
+				if (this.focusTarget) this.focusTarget.blur();
+				else this.focusIndex = -1; // When empty space is clicked, we blur any focused object and exit the event handler.
+				return;
 			}
 		}
 
@@ -849,9 +834,19 @@ class InputManager {
 	 * @param {string} uIObjectId The `UIObject` to trigger events on.
 	 * @param {string} type The type of event to trigger for.
 	 * @param {*} data The data to send to that event.
+	 * @param {*} __recursivePassthrough An internal parameter used for recursion. Modifying this parameter can have unforseen consequences.
 	 * @param {Event} browserEvent The browser event object.
 	 */
-	__triggerUIObjectEvents(uIObjectId, type, data, browserEvent) {
+	__triggerUIObjectEvents(
+		uIObjectId,
+		type,
+		data,
+		browserEvent,
+		__recursivePassthrough = {
+			propagationStopped: false,
+			defaultPrevented: false,
+		}
+	) {
 		const objectEvents = this.getUIObjectEventListeners(uIObjectId);
 
 		if (!objectEvents) return;
@@ -860,14 +855,23 @@ class InputManager {
 
 		if (!uIObject) return;
 
+		let propagationStopped = __recursivePassthrough.propagationStopped;
+
+		const stopPropagation = () => {
+			propagationStopped = true;
+		};
+
+		// console.log("HANDLE PROPAGATION");
+
 		data = {
 			...data,
 			preventBrowserDefault: browserEvent
 				? browserEvent.preventDefault.bind(browserEvent)
 				: () => {},
+			stopPropagation,
 		};
 
-		let defaultPrevented = false;
+		let defaultPrevented = __recursivePassthrough.defaultPrevented;
 
 		const preventEngineDefault = () => {
 			defaultPrevented = true;
@@ -893,6 +897,19 @@ class InputManager {
 		// Run default event behavior if it has not been prevented.
 		if (!defaultPrevented && UIObject.eventDefaults[type])
 			UIObject.eventDefaults[type](uIObject, this, data);
+
+		// Run event for parent of object if it has not been prevented.
+		if (!propagationStopped && uIObject.parent)
+			this.__triggerUIObjectEvents(
+				uIObject.parent.id,
+				type,
+				data,
+				browserEvent,
+				{
+					propagationStopped,
+					defaultPrevented,
+				}
+			);
 	}
 
 	/**

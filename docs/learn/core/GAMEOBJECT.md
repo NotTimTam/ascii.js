@@ -8,13 +8,14 @@ A core object that can have its runtime methods managed by the runtime itself, o
 
 ## Constructor
 
-`new GameObject(scene, x = 0, y = 0)`
+`new GameObject(scene, {x = 0, y = 0})`
 
 Initializes the game object, associating it with a specific scene and setting its coordinates.
 
 ### Arguments
 
 -   `scene` &mdash; `Scene` The scene this object is a part of.
+-	`config` &mdash; `Object` This GameObject FIX ME FIX ME FIX ME FIX ME FIX ME FIX ME
 -   `x` &mdash; `number` This GameObject's x-coordinate. Default: `0`.
 -   `y` &mdash; `number` This GameObject's y-coordinate. Default: `0`.
 
@@ -98,7 +99,7 @@ However, when extending the `GameObject` class, you can override the getter to r
 ```js
 class MyObject extends GameObject() {
 	constructor(scene, x, y, layer) {
-		super(scene, x, y, layer);
+		super(scene, { x, y, layer });
 
 		new Animate(scene, this, true, myAnimateConfigObject);
 	}

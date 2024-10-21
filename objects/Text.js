@@ -24,17 +24,14 @@ class Text extends GameObject {
 			);
 
 		const {
-			x,
-			y,
 			value = "Hello, world!",
 			wrap = true,
 			color = "#ffffff",
 			backgroundColor,
 			fontWeight = 400,
 			maxWidth = scene.runtime.renderer.width,
-			layer,
 		} = config;
-		super(scene, x, y, layer);
+		super(scene, config);
 
 		if (maxWidth) {
 			if (

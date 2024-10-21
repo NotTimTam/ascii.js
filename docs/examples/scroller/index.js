@@ -1,14 +1,9 @@
 import Runtime, {
-	GameObject,
-	Menu,
-	Pixel,
-	PixelMesh,
 	Scene,
 	Scroller,
 	ScrollTo,
 	Text,
-} from "../../../index.js";
-// "https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/build.js";
+} from "https://cdn.jsdelivr.net/gh/nottimtam/ascii.js/dist/build.js";
 
 const runtime = new Runtime({
 	renderer: {
@@ -23,13 +18,11 @@ const runtime = new Runtime({
 	},
 });
 
-runtime.start((runtime) => {});
+runtime.start();
 
 const scene = new Scene(runtime, {
 	label: "game",
 	layers: [],
-	// onLoad: (scene) => {},
-	// onTick: (scene) => {},
 });
 
 const { width, height } = runtime.renderer;
@@ -60,47 +53,6 @@ A jolly fox danced by the quaint village, vexing everyone with its antics.\n
 The lazy dog chased a quick, elusive rabbit through the verdant park.\n
 Amazingly, the curious bird flew over the jumbled, vibrant garden maze.\n
 Six big, joyful penguins quickly waddled around the frozen lake, amusing all.\n`,
-		}),
-		new Menu(scene, {
-			x: 0,
-			y: 0,
-			items: [
-				new Menu.Button({
-					label: "Reload Objects",
-				}),
-				new Menu.Slider({
-					value: 0,
-					min: 0,
-					max: 10,
-					step: 1,
-					label: "Volume",
-					showValue: false,
-					showPercentage: true,
-					onChange: (v) => {
-						console.log("CHANGED", v);
-					},
-					callback: (v) => console.log("ENTER ON SLIDER", v),
-				}),
-				new Menu.Toggle({
-					label: "Mute Audio",
-					callback: (checked) =>
-						console.log(
-							"CHECKBOX",
-							checked ? "CHECKED" : "UNCHECKED"
-						),
-				}),
-				new Menu.Button({
-					label: "Save Changes",
-					callback: () => console.log("SAVE BUTTON PRESSED"),
-				}),
-				new Menu.Button({
-					label: "Exit",
-					callback: () => console.log("EXIT BUTTON PRESSED"),
-				}),
-			],
-			title: "Example Menu",
-			layer: "system",
-			gamepad: -1,
 		}),
 	],
 });

@@ -177,6 +177,14 @@ class Pixel {
 		this.origin = origin;
 	}
 
+	get width() {
+		return 1;
+	}
+
+	get height() {
+		return 1;
+	}
+
 	get origin() {
 		return this.__rawOrigin;
 	}

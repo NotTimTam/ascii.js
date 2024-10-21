@@ -1,6 +1,17 @@
 import Core from "./Core.js";
 import Pixel, { PixelMesh } from "./Pixel.js";
 
+/**
+ * Configuration data for the `GameObject` class.
+ * @typedef {Object} GameObjectConfig
+ * @property {number} x This `GameObject` object's x-coordinate.
+ * @property {number} y This `GameObject` object's y-coordinate.
+ * @property {number} zIndex A numeric value determining the rendering heirarchy position this `GameObject` should fall in.
+ *
+ * `GameObject`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
+ * @property {?string} layer The (optional) label of the layer to initialize the `GameObject` on.
+ */
+
 class GameObject extends Core {
 	/**
 	 * A core object that can have its runtime methods managed by the runtime itself, or another object.
@@ -10,31 +21,43 @@ class GameObject extends Core {
 	 * `GameObject`s will not be rendered unless they are added to a layer.
 	 *
 	 * @param {Scene} scene The scene this `GameObject` is a part of.
-	 * @param {number} x This `GameObject`'s x-coordinate.
-	 * @param {number} y This  `GameObject`'s y-coordinate.
-	 * @param {string} layer The label of the layer to start the `GameObject` on.
+	 * @param {GameObjectConfig} config This `GameObject`'s configuration object.
 	 */
-	constructor(scene, x = 0, y = 0, layer) {
+	constructor(scene, config) {
 		super(scene);
 
-		if (typeof x !== "number")
-			throw new Error(
-				"GameObject x-coordinate value must be of type 'number'."
-			);
+		const { x, y, zIndex = 0, layer } = config;
 
-		if (typeof y !== "number")
-			throw new Error(
-				"GameObject y-coordinate value must be of type 'number'."
-			);
-
-		this.__rawX = x;
-		this.__rawY = y;
+		this.x = x;
+		this.y = y;
+		this.zIndex = zIndex;
 		this.__rawVisible = true;
 		this.__rawRenderable = new Pixel({ value: "#", color: "magenta" });
 
 		this.behaviors = [];
 
 		if (layer) this.layer = layer;
+	}
+
+	/**
+	 * Get this object's tab index.
+	 */
+	get zIndex() {
+		return this.hasOwnProperty("__rawZIndex")
+			? this.__rawZIndex
+			: this.layer.gameObjects.indexOf(this);
+	}
+
+	/**
+	 * Set this object's tab index.
+	 */
+	set zIndex(n) {
+		if (typeof n !== "number" || !Number.isInteger(n))
+			throw new TypeError(
+				"GameObject instance zIndex property must be an integer."
+			);
+
+		this.__rawZIndex = n;
 	}
 
 	/**
@@ -64,20 +87,8 @@ class GameObject extends Core {
 	 * Get whether the game object is on-screen.
 	 */
 	get isOnScreen() {
-		if (!this.scene || !this.layer) return false;
-
-		const {
-			scene: { camera },
-			x,
-			y,
-		} = this;
-
-		if (!this.renderable) return false;
-
-		const { width, height } = this.renderable;
-		const [pX, pY] = this.layer.parallax;
-
-		return camera.isOnScreen(x, y, width, height, pX, pY);
+		if (!this.scene) return false;
+		return this.scene.camera.isGameObjectOnScreen(this);
 	}
 
 	/**
@@ -112,7 +123,7 @@ class GameObject extends Core {
 	get relY() {
 		if (this.positionInParent)
 			return this.parent.relY + this.positionInParent[1];
-		else return this.x;
+		else return this.y;
 	}
 
 	/**
@@ -157,8 +168,7 @@ class GameObject extends Core {
 	get width() {
 		if (!this.renderable) return 0;
 
-		if (this.renderable instanceof PixelMesh) return this.renderable.width;
-		else return 1;
+		return this.renderable.width;
 	}
 
 	/**
@@ -167,8 +177,7 @@ class GameObject extends Core {
 	get height() {
 		if (!this.renderable) return 0;
 
-		if (this.renderable instanceof PixelMesh) return this.renderable.height;
-		else return 1;
+		return this.renderable.height;
 	}
 
 	/**

@@ -573,10 +573,8 @@ class Menu extends UIObject {
 		for (const { renderable } of items) {
 			if (!renderable) continue;
 
-			const renderableWidth =
-				renderable instanceof PixelMesh ? renderable.width : 1;
-			if (renderableWidth > itemsWidth) {
-				itemsWidth = renderableWidth;
+			if (renderable.width > itemsWidth) {
+				itemsWidth = renderable.width;
 			}
 		}
 
@@ -697,21 +695,10 @@ class Menu extends UIObject {
 	 * @param {Event} event The event that triggered this method.
 	 */
 	__onMouseMove(event) {
-		if (!this.isOnScreen || !this.visible) return;
+		if (!this.visible) return;
 
 		// Determine if the mouse is moving over the menu.
-		const { onLayer } = event;
-		const [x, y] = onLayer[this.layer.label];
-		const [menuX, menuY] = [x - this.relX, y - this.relY];
-
-		if (
-			menuX >= 0 &&
-			menuX <= this.width &&
-			menuY >= 0 &&
-			menuY < this.height
-		) {
-			this.__inputMode = "mouse";
-		}
+		this.__inputMode = "mouse";
 
 		this.__determineMouseOverInput(event);
 
@@ -722,12 +709,8 @@ class Menu extends UIObject {
 	__determineMouseOverInput(event) {
 		if (this.__inputMode !== "mouse") return;
 
-		const { onLayer } = event;
-		const [x, y] = onLayer[this.layer.label];
-		const [menuX, menuY] = [
-			x - this.relX,
-			y - this.relY + (this.title || this.border ? 0 : 1),
-		];
+		const [x, y] = event.onUIObject;
+		const [menuX, menuY] = [x, y + (this.title || this.border ? 0 : 1)];
 
 		const mouseMenuIndex = this.items.indexOf(this.itemAtCoordinate(menuY));
 
@@ -748,19 +731,13 @@ class Menu extends UIObject {
 	 * @param {event} event The event that triggered this method.
 	 */
 	__onClick(event) {
-		if (!this.isOnScreen || !this.visible) return;
+		if (!this.visible) return;
 
-		if (this.focused && !event.targets.includes(this.id))
-			return this.blur();
-		else if (event.targets.includes(this.id)) {
-			this.__inputMode = "mouse";
-		}
+		this.__inputMode = "mouse";
 
-		if (this.__inputMode === "mouse") {
-			this.__determineMouseOverInput(event);
+		this.__determineMouseOverInput(event);
 
-			this.currentItem && this.currentItem.onClick(event);
-		}
+		this.currentItem && this.currentItem.onClick(event);
 	}
 
 	/**

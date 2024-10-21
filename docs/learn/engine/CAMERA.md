@@ -18,7 +18,7 @@ new Camera(scene);
 
 ## Methods
 
-### `isOnScreen(x, y, width, height, parallaxX, parallaxY)`
+### `isGameObjectOnScreen(gameObject)`
 
 Check if a bounding box is on screen.
 
