@@ -29,7 +29,7 @@ class Renderer {
 		if (!window.Worker && this.useWebWorkers)
 			throw new Error("This environment does not support webworkers.");
 
-		this.__createWorkerUIObject();
+		this.__createWorkerInterface();
 	}
 
 	/**
@@ -244,9 +244,9 @@ class Renderer {
 	}
 
 	/**
-	 * Create uIObjects for each web worker.
+	 * Create interfaces for each web worker.
 	 */
-	__createWorkerUIObject() {
+	__createWorkerInterface() {
 		this.webWorkers = {
 			drawFrame: new Worker(
 				URL.createObjectURL(
