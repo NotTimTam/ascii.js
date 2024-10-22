@@ -6,6 +6,10 @@ import Box from "./Box.js";
 import GameObject from "../core/GameObject.js";
 
 /**
+ * @typedef {import("../core/UIObject.js").UIObjectConfig).UIObjectConfig} UIObjectConfig
+ */
+
+/**
  * Configuration data for the `Scroller` class.
  * @typedef {Object} ScrollerConfig
  * @property {number} width The width of the `Scroller`. Defaults to `8`. **Note:** This is the width of the `Scroller` "window", not the width of the view area.
@@ -38,7 +42,7 @@ class Scroller extends UIObject {
 	/**
 	 * A box that can be scrolled.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {import("../core/UIObject.js").UIObjectConfig & ScrollerConfig} config The `Scroller`'s config object.
+	 * @param {UIObjectConfig & ScrollerConfig} config The `Scroller`'s config object.
 	 */
 	constructor(scene, config) {
 		super(scene, config);

@@ -400,6 +400,10 @@ class Toggle extends Item {
 }
 
 /**
+ * @typedef {import("../core/UIObject.js").UIObjectConfig).UIObjectConfig} UIObjectConfig
+ */
+
+/**
  * Configuration data for the `Menu` class.
  * @typedef {Object} MenuConfig
  * @property {Object} items An array of `Menu.Item` instances. You can extend the `Menu.Item` class to make your own items.
@@ -422,7 +426,7 @@ class Menu extends UIObject {
 	/**
 	 * A menu of various items that can be rendered on screen.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {import("../core/UIObject.js").UIObjectConfig & MenuConfig} config The `Menu`'s config object.
+	 * @param {UIObjectConfig & MenuConfig} config The `Menu`'s config object.
 	 */
 	constructor(scene, config) {
 		super(scene, config);

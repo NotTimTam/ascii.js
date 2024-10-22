@@ -2,6 +2,10 @@ import { isPlainObject } from "../util/data.js";
 import GameObject from "./GameObject.js";
 
 /**
+ * @typedef {import("./GameObject.js").GameObjectConfig} GameObjectConfig
+ */
+
+/**
  * Configuration data for the `UIObject` class.
  * @typedef {Object} UIObjectConfig
  * @property {number} tabIndex A numeric value determining the index in the focus array this `UIObject` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
@@ -38,7 +42,7 @@ class UIObject extends GameObject {
 	 *
 	 * Because `UIObject` contains all the features and expected functionality of a regular `GameObject`, this class can be used like a `GameObject`, just with more direct event listening.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {import("./GameObject.js").GameObjectConfig & UIObjectConfig} config The `UIObject`'s config object.
+	 * @param {GameObjectConfig & UIObjectConfig} config The `UIObject`'s config object.
 	 */
 	constructor(scene, config) {
 		if (!isPlainObject(config))

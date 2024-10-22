@@ -3,6 +3,10 @@ import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 
 /**
+ * @typedef {import("../core/UIObject.js").UIObjectConfig).UIObjectConfig} UIObjectConfig
+ */
+
+/**
  * Configuration data for the `TextInput` class.
  * @typedef {Object} TextInputConfig
  * @property {number} maxWidth The maximum width of the `TextInput`. Defaults to the viewport width.
@@ -23,7 +27,7 @@ class TextInput extends UIObject {
 	/**
 	 * A text input that can be rendered on screen.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {import("../core/UIObject.js").UIObjectConfig & TextInputConfig} config The `TextInput`'s config object.
+	 * @param {UIObjectConfig & TextInputConfig} config The `TextInput`'s config object.
 	 */
 	constructor(scene, config) {
 		config.wrap = false;
