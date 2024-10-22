@@ -5,7 +5,7 @@ import { aabb, clamp } from "../util/math.js";
 import Box from "./Box.js";
 import GameObject from "../core/GameObject.js";
 
-/** @typedef {import("../core/UIObject.js").UIObjectConfig} UIObjectConfig */
+/** @typedef {typeof import("../core/UIObject.js").UIObjectConfig} UIObjectConfig */
 
 /**
  * Configuration data for the `Scroller` class.
