@@ -94,8 +94,8 @@ class Scroller extends UIObject {
 			);
 
 		return [
-			child.x + Scroller.borderWidth - scrollX,
-			child.y + Scroller.borderWidth - scrollY,
+			child.x + Scroller.borderWidth - this.scrollX,
+			child.y + Scroller.borderWidth - this.scrollY,
 		];
 	}
 

@@ -1,4 +1,5 @@
 import UIObject from "../core/UIObject.js";
+import Menu from "../objects/Menu.js";
 import { displayArray } from "../util/data.js";
 import { clamp } from "../util/math.js";
 import Scene from "./Scene.js";
@@ -787,29 +788,25 @@ class InputManager {
 					.filter((target) => target && target instanceof UIObject) // Only UIObject instances are considered targets for UIObject events..
 					.sort((a, b) => b.zIndex - a.zIndex); // Sort by layer so topmost items recieve the inputs last.
 
-			if (targets)
-				for (const target of targets) {
-					// If the user clicks the screen.
-					if (type === "click") target.focus();
+			if (targets && targets.length !== 0) {
+				const target = targets[0];
 
-					// Get mouse position on the target.
-					const [layerX, layerY] = data.onLayer[target.layerLabel];
-					const onUIObject = [
-						layerX - target.relX,
-						layerY - target.relY,
-					];
+				// If the user clicks the screen.
+				if (type === "click") target.focus();
 
-					data.onUIObject = onUIObject;
-					data.target = target;
+				// Get mouse position on the target.
+				const [layerX, layerY] = data.onLayer[target.layerLabel];
 
-					this.__triggerUIObjectEvents(
-						target.id,
-						type,
-						data,
-						browserEvent
-					);
-				}
-			else if (type === "click") {
+				data.onUIObject = [layerX - target.relX, layerY - target.relY];
+				data.target = target;
+
+				this.__triggerUIObjectEvents(
+					target.id,
+					type,
+					data,
+					browserEvent
+				);
+			} else if (type === "click") {
 				if (this.focusTarget) this.focusTarget.blur();
 				else this.focusIndex = -1; // When empty space is clicked, we blur any focused object and exit the event handler.
 				return;
