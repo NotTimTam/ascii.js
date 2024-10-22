@@ -21,8 +21,9 @@ jobs:
               with:
                   source_dir: ./
                   output_dir: ./docs
+                  config_file: jsdoc.json
                   recurse: true
-                  template: minami
+                  template: better-docs
                   front_page: README.md
 
             - name: Deploy

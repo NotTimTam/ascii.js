@@ -1,9 +1,7 @@
 import { isPlainObject } from "../util/data.js";
 import GameObject from "./GameObject.js";
 
-/**
- * @typedef {import("./GameObject.js").GameObjectConfig} GameObjectConfig
- */
+/** @typedef {import("./GameObject.js").GameObjectConfig} GameObjectConfig */
 
 /**
  * Configuration data for the `UIObject` class.
