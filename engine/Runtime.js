@@ -28,6 +28,9 @@ class Runtime {
 	 * -   **Description:** Compiles all layer frames into a single frame before rendering.
 	 * -   **Behavior:** Characters cannot overlap as all layers are combined into one frame.
 	 * -   **Performance:** Faster rendering compared to stacked mode due to the compilation of all frames. Additionally, identifies and skips rendering frames that are identical to the currently drawn frame, saving processing time when the screen is static. Due to the nature of this rendering mode, some graphical issues can occur, and it should only be used on lower-end devices.
+	 * @param {Object} config.scene Configuration for the `Scene` class.
+	 * @param {Object} config.scene.inputManager Configuration for a `Scene`'s `InputManager` class instance.
+	 * 
 	 */
 	constructor(config) {
 		this.config = config;

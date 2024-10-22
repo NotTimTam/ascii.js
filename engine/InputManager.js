@@ -1,5 +1,4 @@
 import UIObject from "../core/UIObject.js";
-import Menu from "../objects/Menu.js";
 import { displayArray } from "../util/data.js";
 import { clamp } from "../util/math.js";
 import Scene from "./Scene.js";
@@ -657,37 +656,29 @@ class InputManager {
 		const [rX, rY] = [clientX - canvasX, clientY - canvasY];
 		const [relX, relY] = [rX / canvasWidth, rY / canvasHeight];
 
-		if (this.hasPointerLock) {
-			this.mouse.velocity = [movementX, movementY];
-		} else {
-			this.mouse.velocity = [movementX, movementY];
-			this.mouse.rawX = clientX;
-			this.mouse.rawY = clientY;
-			this.mouse.canvasX = rX;
-			this.mouse.canvasY = rY;
-			this.mouse.floatX = clamp(relX * characterWidth, 0, characterWidth);
-			this.mouse.floatY = clamp(
-				relY * characterHeight,
-				0,
-				characterHeight
-			);
+		this.mouse.velocity = [movementX, movementY];
+		this.mouse.rawX = clientX;
+		this.mouse.rawY = clientY;
+		this.mouse.canvasX = rX;
+		this.mouse.canvasY = rY;
+		this.mouse.floatX = clamp(relX * characterWidth, 0, characterWidth);
+		this.mouse.floatY = clamp(relY * characterHeight, 0, characterHeight);
 
-			this.mouse.x = Math.floor(this.mouse.floatX);
-			this.mouse.y = Math.floor(this.mouse.floatY);
+		this.mouse.x = Math.floor(this.mouse.floatX);
+		this.mouse.y = Math.floor(this.mouse.floatY);
 
-			this.mouse.onLayer = {};
+		this.mouse.onLayer = {};
 
-			for (const layer of layers) {
-				const {
-					label,
-					parallax: [parallaxX, parallaxY],
-				} = layer;
+		for (const layer of layers) {
+			const {
+				label,
+				parallax: [parallaxX, parallaxY],
+			} = layer;
 
-				this.mouse.onLayer[label] = [
-					this.mouse.x + cameraX * parallaxX,
-					this.mouse.y + cameraY * parallaxY,
-				];
-			}
+			this.mouse.onLayer[label] = [
+				this.mouse.x + cameraX * parallaxX,
+				this.mouse.y + cameraY * parallaxY,
+			];
 		}
 	}
 
