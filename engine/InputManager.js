@@ -779,6 +779,9 @@ class InputManager {
 		// 	data = JSON.parse(JSON.stringify(data));
 		// }
 
+		data.preventBrowserDefault =
+			browserEvent.preventDefault.bind(browserEvent);
+
 		// Trigger general events. Including "all" events.
 		for (const eventListener of [
 			...(this.__eventListeners[type] || []),
@@ -861,18 +864,10 @@ class InputManager {
 
 		let propagationStopped = __recursivePassthrough.propagationStopped;
 
-		const stopPropagation = () => {
-			propagationStopped = true;
-		};
-
 		// console.log("HANDLE PROPAGATION");
 
-		data = {
-			...data,
-			preventBrowserDefault: browserEvent
-				? browserEvent.preventDefault.bind(browserEvent)
-				: () => {},
-			stopPropagation,
+		data.stopPropagation = () => {
+			propagationStopped = true;
 		};
 
 		let defaultPrevented = __recursivePassthrough.defaultPrevented;

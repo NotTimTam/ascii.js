@@ -290,6 +290,7 @@ class Renderer {
 
 		if (!this.hasDrawn) this.hasDrawn = true;
 		this.drawing = true;
+		this.__stack = frames;
 
 		if (this.useWebWorkers) this.buffer = [];
 		else this.clearDisplay();
@@ -419,6 +420,103 @@ class Renderer {
 		this.__rescaleDisplay();
 
 		window.addEventListener("resize", () => this.__rescaleDisplay());
+	}
+
+	static dumpModes = ["frames", "text", "image", "html"];
+
+	/**
+	 * Grabs the current `Renderer` draw stack.
+	 * @param {"frames"|"text"|"image"|"html"} mode The mode used for dumping frame data. Default `"image"`.
+	 * - `"frames"` &mdash; Dumps the current `Frame` instances on the draw stack.
+	 * - `"text"` &mdash; Dumps the current draw stack as plaintext.
+	 * - `"image"` &mdash; Dumps the current draw stack as `ImageData`.
+	 * - `"html"` &mdash; Dumps the current draw stack as styled HTML elements.
+	 * @returns {Frame|string|ImageData} The dumped frame.
+	 */
+	capture(mode = "image") {
+		if (!mode || !Renderer.dumpModes.includes(mode))
+			throw new TypeError(
+				`Invalid frame dump mode requested. Expected one of: ${displayArray(
+					Renderer.dumpModes
+				)}`
+			);
+
+		if (!this.__stack)
+			throw new Error(
+				"An attempt to capture a Renderer instance's draw stack was made. But the renderer has not drawn a frame yet."
+			);
+
+		const data = JSON.parse(
+			JSON.stringify(this.__stack.map((frame) => frame.data))
+		);
+
+		switch (mode) {
+			case "frames":
+				return data;
+			case "text":
+				const framesAsStrings = data.map((frame) =>
+					frame.map(
+						(char, index) =>
+							`${char ? char.value : " "}${
+								index % this.width === this.width - 1
+									? "\n"
+									: ""
+							}`
+					)
+				);
+
+				return Array.from(
+					{ length: this.width * this.height },
+					(_, i) => {
+						return framesAsStrings.reduce((acc, arr) => {
+							const value = arr[i];
+							return !acc || acc === " " || value !== " "
+								? value
+								: acc;
+						}, " "); // Start with a space to allow it to be overwritten
+					}
+				)
+					.map(
+						(char, index) =>
+							char ||
+							(index % this.width === this.width - 1 ? "\n" : " ")
+					)
+					.join("");
+
+			case "image":
+				return this.element.toDataURL("image/png", 1);
+
+			case "html":
+				const container = document.createElement("div");
+
+				container.style = `background-color: black; width: min-content; height: min-content; font-family: monospace; display: grid; grid-template-columns: repeat(${this.width}, 1fr); grid-template-rows: repeat(${this.height}, 1fr);`;
+
+				frameLoop: for (const frame of data) {
+					indexLoop: for (const index in frame) {
+						const item = frame[index];
+
+						const [x, y] = this.indexToCoordinates(index);
+
+						const pixel = document.createElement("span");
+
+						if (item) {
+							pixel.innerHTML = item.value;
+							pixel.style.color = item.color;
+							pixel.style.fontWeight = item.fontWeight;
+							pixel.style.backgroundColor = item.backgroundColor;
+						} else {
+							pixel.innerHTML = " ";
+						}
+
+						pixel.style.gridRow = y + 1;
+						pixel.style.gridColumn = x + 1;
+
+						container.appendChild(pixel);
+					}
+				}
+
+				return container;
+		}
 	}
 }
 
