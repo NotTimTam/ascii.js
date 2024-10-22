@@ -6,6 +6,9 @@ on:
             - main
             - dev
 
+permissions:
+    contents: write
+
 jobs:
     deploy:
         runs-on: ubuntu-latest
@@ -17,7 +20,7 @@ jobs:
               uses: andstor/jsdoc-action@v1
               with:
                   source_dir: ./
-                  output_dir: ./out
+                  output_dir: ./docs
                   config_file: jsdoc.json
                   template: minami
                   front_page: README.md
@@ -25,5 +28,5 @@ jobs:
             - name: Deploy
               uses: peaceiris/actions-gh-pages@v3
               with:
-                  deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-                  publish_dir: ./out
+                  github_token: ${{ secrets.REPO_TOKEN }}
+                  publish_dir: ./docs
