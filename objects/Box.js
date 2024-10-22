@@ -20,19 +20,28 @@ const lineSource = {
 	],
 };
 
+/**
+ * Configuration data for the `Box` class.
+ * @typedef {Object} BoxConfig
+ * @property {number} x This `Box` object's x-coordinate.
+ * @property {number} y This `Box` object's y-coordinate.
+ * @property {number} zIndex A numeric value determining the rendering heirarchy position this `Box` should fall in.
+ *
+ * `Box`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
+ * @property {?string} layer The (optional) label of the layer to initialize the `Box` on.
+ * @property {number} width This `Box` object's width.
+ * @property {number} height This `Box` object's height.
+ * @property {string} color Option Box color.
+ * @property {?string} backgroundColor Optional background color.
+ * @property {string} style The box line style. `"line" || "double"`
+ * @property {string} layer The label of the layer to start the `Box` on.
+ */
+
 class Box extends GameObject {
 	/**
 	 * A box that can be rendered on screen.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {Object} config The `Box`'s config object.
-	 * @param {number} config.x This `Box` object's x-coordinate.
-	 * @param {number} config.y This `Box` object's y-coordinate.
-	 * @param {number} config.width This `Box` object's width.
-	 * @param {number} config.height This `Box` object's height.
-	 * @param {string} config.color Option Box color.
-	 * @param {?string} config.backgroundColor Optional background color.
-	 * @param {string} config.style The box line style. `"line" || "double"`
-	 * @param {string} config.layer The label of the layer to start the `Box` on.
+	 * @param {BoxConfig} config The `Box`'s config object.
 	 */
 	constructor(scene, config) {
 		if (!isPlainObject(config))

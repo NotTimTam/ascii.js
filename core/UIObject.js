@@ -1,19 +1,23 @@
 import { isPlainObject } from "../util/data.js";
 import GameObject from "./GameObject.js";
 
-/** @typedef {import("./GameObject.js").GameObjectConfig} GameObjectConfig */
-
-/**
- * Configuration data for the `UIObject` class.
- * @typedef {Object} UIObjectConfig
- * @property {number} tabIndex A numeric value determining the index in the focus array this `UIObject` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
- *
- * A `tabIndex` of `-1` will mark the `UIObject` instance as "unfocusable", meaning focus-based events, such as `keydown` events specific to this `UIObject`, will not be triggered. Default `0`.
- * @property {boolean} autoFocus Whether to automatically focus on this `UIObject` after its instantiation. Default `false`.
- * @property {boolean} maintainFocus Force the `InputManager` to keep this `UIObject` in focus, even if attempts are made to focus on other `UIObject`s. Default `false`.
- */
-
 class UIObject extends GameObject {
+	/**
+	 * Configuration data for the `UIObject` class.
+	 * @typedef {Object} UIObjectConfig
+	 * @property {number} x This `UIObject` object's x-coordinate.
+	 * @property {number} y This `UIObject` object's y-coordinate.
+	 * @property {number} zIndex A numeric value determining the rendering heirarchy position this `UIObject` should fall in.
+	 *
+	 * `UIObject`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
+	 * @property {?string} layer The (optional) label of the layer to initialize the `UIObject` on.
+	 * @property {number} tabIndex A numeric value determining the index in the focus array this `UIObject` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
+	 *
+	 * A `tabIndex` of `-1` will mark the `UIObject` instance as "unfocusable", meaning focus-based events, such as `keydown` events specific to this `UIObject`, will not be triggered. Default `0`.
+	 * @property {boolean} autoFocus Whether to automatically focus on this `UIObject` after its instantiation. Default `false`.
+	 * @property {boolean} maintainFocus Force the `InputManager` to keep this `UIObject` in focus, even if attempts are made to focus on other `UIObject`s. Default `false`.
+	 */
+
 	/**
 	 * A collection of default methods for input handling.
 	 */
@@ -40,7 +44,7 @@ class UIObject extends GameObject {
 	 *
 	 * Because `UIObject` contains all the features and expected functionality of a regular `GameObject`, this class can be used like a `GameObject`, just with more direct event listening.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {GameObjectConfig & UIObjectConfig} config The `UIObject`'s config object.
+	 * @param {UIObjectConfig} config The `UIObject`'s config object.
 	 */
 	constructor(scene, config) {
 		if (!isPlainObject(config))
@@ -52,6 +56,7 @@ class UIObject extends GameObject {
 			tabIndex = 0,
 			autoFocus = false,
 			maintainFocus = false,
+			layer,
 		} = config;
 
 		super(scene, config);

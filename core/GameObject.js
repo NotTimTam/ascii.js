@@ -1,18 +1,18 @@
 import Core from "./Core.js";
 import Pixel, { PixelMesh } from "./Pixel.js";
 
-/**
- * Configuration data for the `GameObject` class.
- * @typedef {Object} GameObjectConfig
- * @property {number} x This `GameObject` object's x-coordinate.
- * @property {number} y This `GameObject` object's y-coordinate.
- * @property {number} zIndex A numeric value determining the rendering heirarchy position this `GameObject` should fall in.
- *
- * `GameObject`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
- * @property {?string} layer The (optional) label of the layer to initialize the `GameObject` on.
- */
-
 class GameObject extends Core {
+	/**
+	 * Configuration data for the `GameObject` class.
+	 * @typedef {Object} GameObjectConfig
+	 * @property {number} x This `GameObject` object's x-coordinate.
+	 * @property {number} y This `GameObject` object's y-coordinate.
+	 * @property {number} zIndex A numeric value determining the rendering heirarchy position this `GameObject` should fall in.
+	 *
+	 * `GameObject`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
+	 * @property {?string} layer The (optional) label of the layer to initialize the `GameObject` on.
+	 */
+
 	/**
 	 * A core object that can have its runtime methods managed by the runtime itself, or another object.
 	 *

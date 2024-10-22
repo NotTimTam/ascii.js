@@ -24,11 +24,6 @@
 	},
 	"homepage": "https://github.com/NotTimTam/ascii.js#readme",
 	"devDependencies": {
-		"jsdoc": "^4.0.4",
-		"jsdoc-tsimport-plugin": "^1.0.5",
 		"vite": "^5.4.8"
-	},
-	"dependencies": {
-		"@types/react": "^18.3.11"
 	}
 }

@@ -5,11 +5,20 @@ import { aabb, clamp } from "../util/math.js";
 import Box from "./Box.js";
 import GameObject from "../core/GameObject.js";
 
-/** @typedef {import("../core/UIObject.js").UIObjectConfig} UIObjectConfig */
-
 /**
  * Configuration data for the `Scroller` class.
  * @typedef {Object} ScrollerConfig
+ * @property {number} x This `Scroller` object's x-coordinate.
+ * @property {number} y This `Scroller` object's y-coordinate.
+ * @property {number} zIndex A numeric value determining the rendering heirarchy position this `Scroller` should fall in.
+ *
+ * `Scroller`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
+ * @property {?string} layer The (optional) label of the layer to initialize the `Scroller` on.
+ * @property {number} tabIndex A numeric value determining the index in the focus array this `Scroller` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
+ *
+ * A `tabIndex` of `-1` will mark the `Scroller` instance as "unfocusable", meaning focus-based events, such as `keydown` events specific to this `Scroller`, will not be triggered. Default `0`.
+ * @property {boolean} autoFocus Whether to automatically focus on this `Scroller` after its instantiation. Default `false`.
+ * @property {boolean} maintainFocus Force the `InputManager` to keep this `Scroller` in focus, even if attempts are made to focus on other `Scroller`s. Default `false`.
  * @property {number} width The width of the `Scroller`. Defaults to `8`. **Note:** This is the width of the `Scroller` "window", not the width of the view area.
  * @property {number} height The height of the `Scroller`. Defaults to `8`. **Note:** This is the height of the `Scroller` "window", not the height of the view area.
  * @property {?string} gameObjects The `GameObject`s to display in the `Scroller`.
@@ -40,7 +49,7 @@ class Scroller extends UIObject {
 	/**
 	 * A box that can be scrolled.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {UIObjectConfig & ScrollerConfig} config The `Scroller`'s config object.
+	 * @param {ScrollerConfig} config The `Scroller`'s config object.
 	 */
 	constructor(scene, config) {
 		super(scene, config);

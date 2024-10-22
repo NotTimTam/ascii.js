@@ -399,11 +399,20 @@ class Toggle extends Item {
 	}
 }
 
-/** @typedef {import("../core/UIObject.js").UIObjectConfig} UIObjectConfig */
-
 /**
  * Configuration data for the `Menu` class.
  * @typedef {Object} MenuConfig
+ * @property {number} x This `Menu` object's x-coordinate.
+ * @property {number} y This `Menu` object's y-coordinate.
+ * @property {number} zIndex A numeric value determining the rendering heirarchy position this `Menu` should fall in.
+ *
+ * `Menu`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
+ * @property {?string} layer The (optional) label of the layer to initialize the `Menu` on.
+ * @property {number} tabIndex A numeric value determining the index in the focus array this `Menu` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
+ *
+ * A `tabIndex` of `-1` will mark the `Menu` instance as "unfocusable", meaning focus-based events, such as `keydown` events specific to this `Menu`, will not be triggered. Default `0`.
+ * @property {boolean} autoFocus Whether to automatically focus on this `Menu` after its instantiation. Default `false`.
+ * @property {boolean} maintainFocus Force the `InputManager` to keep this `Menu` in focus, even if attempts are made to focus on other `Menu`s. Default `false`.
  * @property {Object} items An array of `Menu.Item` instances. You can extend the `Menu.Item` class to make your own items.
  * @property {?string} title Optional menu title.
  * @property {boolean} alignCenter Whether or not to align the content to the center of the menu. Default `true`.
@@ -424,7 +433,7 @@ class Menu extends UIObject {
 	/**
 	 * A menu of various items that can be rendered on screen.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {UIObjectConfig & MenuConfig} config The `Menu`'s config object.
+	 * @param {MenuConfig} config The `Menu`'s config object.
 	 */
 	constructor(scene, config) {
 		super(scene, config);

@@ -2,11 +2,20 @@ import UIObject from "../core/UIObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 
-/** @typedef {import("../core/UIObject.js").UIObjectConfig} UIObjectConfig */
-
 /**
  * Configuration data for the `TextInput` class.
  * @typedef {Object} TextInputConfig
+ * @property {number} x This `TextInput` object's x-coordinate.
+ * @property {number} y This `TextInput` object's y-coordinate.
+ * @property {number} zIndex A numeric value determining the rendering heirarchy position this `TextInput` should fall in.
+ *
+ * `TextInput`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
+ * @property {?string} layer The (optional) label of the layer to initialize the `TextInput` on.
+ * @property {number} tabIndex A numeric value determining the index in the focus array this `TextInput` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
+ *
+ * A `tabIndex` of `-1` will mark the `TextInput` instance as "unfocusable", meaning focus-based events, such as `keydown` events specific to this `TextInput`, will not be triggered. Default `0`.
+ * @property {boolean} autoFocus Whether to automatically focus on this `TextInput` after its instantiation. Default `false`.
+ * @property {boolean} maintainFocus Force the `InputManager` to keep this `TextInput` in focus, even if attempts are made to focus on other `TextInput`s. Default `false`.
  * @property {number} maxWidth The maximum width of the `TextInput`. Defaults to the viewport width.
  * @property {string} value The text to display. (use `"\n"` for newlines)
  * @property {?string} color Optional text color for when the input is focused.
@@ -25,7 +34,7 @@ class TextInput extends UIObject {
 	/**
 	 * A text input that can be rendered on screen.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {UIObjectConfig & TextInputConfig} config The `TextInput`'s config object.
+	 * @param {TextInputConfig} config The `TextInput`'s config object.
 	 */
 	constructor(scene, config) {
 		config.wrap = false;

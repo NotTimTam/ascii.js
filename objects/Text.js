@@ -2,20 +2,28 @@ import GameObject from "../core/GameObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import { isPlainObject } from "../util/data.js";
 
+/**
+ * Configuration data for the `Text` class.
+ * @typedef {Object} TextConfig
+ * @property {number} x This `Text` object's x-coordinate.
+ * @property {number} y This `Text` object's y-coordinate.
+ * @property {number} zIndex A numeric value determining the rendering heirarchy position this `Text` should fall in.
+ *
+ * `Text`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
+ * @property {?string} layer The (optional) label of the layer to initialize the `Text` on.
+ * @property {number} maxWidth The maximum width of the `Text`. Defaults to `Renderer.width`.
+ * @property {string} value The text to display. (use `"\n"` for newlines)
+ * @property {boolean} wrap Whether to wrap the text if it overflows the screen.
+ * @property {string} color Option text color.
+ * @property {?string} backgroundColor Optional background color.
+ * @property {?string} fontWeight Optional font weight.
+ */
+
 class Text extends GameObject {
 	/**
 	 * A string of text that can be rendered on screen.
 	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {Object} config The `Text`'s config object.
-	 * @param {number} config.x This `Text` object's x-coordinate.
-	 * @param {number} config.y This `Text` object's y-coordinate.
-	 * @param {number} config.maxWidth The maximum width of the `Text`. Defaults to `Renderer.width`.
-	 * @param {string} config.value The text to display. (use `"\n"` for newlines)
-	 * @param {boolean} config.wrap Whether to wrap the text if it overflows the screen.
-	 * @param {string} config.color Option text color.
-	 * @param {?string} config.backgroundColor Optional background color.
-	 * @param {?string} config.fontWeight Optional font weight.
-	 * @param {string} config.layer The label of the layer to start the `Text` on.
+	 * @param {TextConfig} config The `Text`'s config object.
 	 */
 	constructor(scene, config) {
 		if (!isPlainObject(config))
