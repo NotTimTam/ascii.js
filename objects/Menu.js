@@ -400,7 +400,7 @@ class Toggle extends Item {
 }
 
 /**
- * @typedef {import("../core/UIObject.js").UIObjectConfig).UIObjectConfig} UIObjectConfig
+ * @typedef {import("../core/UIObject.js").UIObjectConfig} UIObjectConfig
  */
 
 /**

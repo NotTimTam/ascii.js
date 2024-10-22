@@ -3,7 +3,7 @@ import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 
 /**
- * @typedef {import("../core/UIObject.js").UIObjectConfig).UIObjectConfig} UIObjectConfig
+ * @typedef {import("../core/UIObject.js").UIObjectConfig} UIObjectConfig
  */
 
 /**

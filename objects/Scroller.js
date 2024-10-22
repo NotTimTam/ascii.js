@@ -6,7 +6,7 @@ import Box from "./Box.js";
 import GameObject from "../core/GameObject.js";
 
 /**
- * @typedef {import("../core/UIObject.js").UIObjectConfig).UIObjectConfig} UIObjectConfig
+ * @typedef {import("../core/UIObject.js").UIObjectConfig} UIObjectConfig
  */
 
 /**
