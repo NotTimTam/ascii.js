@@ -399,7 +399,7 @@ class Toggle extends Item {
 	}
 }
 
-/** @typedef {typeof import("../core/UIObject.js").UIObjectConfig} UIObjectConfig */
+/** @typedef {import("../core/UIObject.js").UIObjectConfig} UIObjectConfig */
 
 /**
  * Configuration data for the `Menu` class.

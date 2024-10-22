@@ -2,7 +2,7 @@ import UIObject from "../core/UIObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
 
-/** @typedef {typeof import("../core/UIObject.js").UIObjectConfig} UIObjectConfig */
+/** @typedef {import("../core/UIObject.js").UIObjectConfig} UIObjectConfig */
 
 /**
  * Configuration data for the `TextInput` class.
