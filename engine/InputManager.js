@@ -11,7 +11,7 @@ class GamepadUIObject {
 	 * Apply a deadzone value to a set of axes inputs.
 	 * @param {Object<number>} values The axis input values. In a key-value object.
 	 * @param {number} threshold The deadzone threshold value. (default `0.1`)
-	 * @returns
+	 * @returns {Array<number>}
 	 */
 	static applyDeadzone(
 		values,

@@ -46,4 +46,4 @@ static from2DArray(array)
 
 #### Arguments
 
--   `array` &mdash; `Array<Array<Pixel>>` The array to convert.
+-   `array` &mdash; `Pixel[][]` The array to convert.

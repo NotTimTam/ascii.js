@@ -20,7 +20,7 @@ class Frame {
 
 	/**
 	 * Convert a 2D array of `Pixel`s to a Frame.
-	 * @param {Array<Array<Pixel>} array The array to convert.
+	 * @param {Pixel[][]} array The array to convert.
 	 */
 	static from2DArray = (array) => new Frame(array.flat());
 }
