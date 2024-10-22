@@ -21,7 +21,6 @@ jobs:
               with:
                   source_dir: ./
                   output_dir: ./docs
-                  config_file: jsdoc.json
                   template: docdash
                   front_page: README.md
 
