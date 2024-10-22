@@ -4,6 +4,7 @@ import Scene from "../engine/Scene.js";
 import { aabb, clamp } from "../util/math.js";
 import Box from "./Box.js";
 import GameObject from "../core/GameObject.js";
+import Style from "../core/Style.js";
 
 /**
  * Configuration data for the `Scroller` class.
@@ -22,20 +23,10 @@ import GameObject from "../core/GameObject.js";
  * @property {number} width The width of the `Scroller`. Defaults to `8`. **Note:** This is the width of the `Scroller` "window", not the width of the view area.
  * @property {number} height The height of the `Scroller`. Defaults to `8`. **Note:** This is the height of the `Scroller` "window", not the height of the view area.
  * @property {?string} gameObjects The `GameObject`s to display in the `Scroller`.
- * @property {?string} backgroundColor Optional background color.
+ * @property {?Object<string, string|number>} style Optional style configuration object.
  */
 
 class Scroller extends UIObject {
-	/**
-	 * The color of the scrollbar track.
-	 */
-	static track = "grey";
-
-	/**
-	 * The color of the scrollbar thumb.
-	 */
-	static thumb = "white";
-
 	/**
 	 * The width of the `Scroller` container's border.
 	 */
@@ -46,6 +37,15 @@ class Scroller extends UIObject {
 	 */
 	static scrollbarWidth = 1;
 
+	static style = {
+		thumbFocus: new Style.Parameter("color", "white"),
+		thumbBlur: new Style.Parameter("color", "grey"),
+		trackFocus: new Style.Parameter("color", "gray"),
+		trackBlur: new Style.Parameter("color", "#3c3c3c"),
+		borderFocus: new Style.Parameter("color", "white"),
+		borderBlur: new Style.Parameter("color", "grey"),
+	};
+
 	/**
 	 * A box that can be scrolled.
 	 * @param {Scene} scene The scene this Object is a part of.
@@ -54,7 +54,9 @@ class Scroller extends UIObject {
 	constructor(scene, config) {
 		super(scene, config);
 
-		const { width = 8, height = 8, gameObjects, backgroundColor } = config;
+		const { width = 8, height = 8, gameObjects, style = {} } = config;
+
+		this.style = new Style(Scroller.style).hydrate(style);
 
 		if (typeof width !== "number" || !Number.isInteger(width) || width < 2)
 			throw new TypeError(
@@ -75,14 +77,6 @@ class Scroller extends UIObject {
 		this.height = height;
 
 		this.children = gameObjects;
-
-		if (backgroundColor) {
-			if (typeof backgroundColor !== "string")
-				return new TypeError(
-					"Expected a string for Text config.backgroundColor value."
-				);
-			this.backgroundColor = backgroundColor;
-		}
 
 		this.addEventListener("mousemove", this.__handleMouse);
 		this.addEventListener("mousedown", this.__handleMouse);
@@ -357,11 +351,17 @@ class Scroller extends UIObject {
 				horizontalScrollbarLength,
 			},
 		} = this;
-		let { track, thumb, borderWidth } = Scroller;
+		const { borderWidth } = Scroller;
+		let track, thumb, border;
 
 		if (!this.focused) {
-			thumb = "grey";
-			track = "#424242";
+			track = this.style.trackBlur;
+			thumb = this.style.thumbBlur;
+			border = this.style.borderBlur;
+		} else {
+			track = this.style.trackFocus;
+			thumb = this.style.thumbFocus;
+			border = this.style.borderFocus;
 		}
 
 		const [vX, vY] = [borderWidth, borderWidth];
@@ -399,7 +399,7 @@ class Scroller extends UIObject {
 			horizontalTrackX + horizontalThumbLength,
 		];
 
-		let data = Box.asPixelMesh(width, height, thumb, null, "line").data;
+		let data = Box.asPixelMesh(width, height, border, null, "line").data;
 
 		// Drawing the vertical scrollbar
 		if (verticalScrollbar) {
