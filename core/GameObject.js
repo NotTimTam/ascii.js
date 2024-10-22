@@ -26,7 +26,7 @@ class GameObject extends Core {
 	constructor(scene, config) {
 		super(scene);
 
-		const { x, y, zIndex = 0, layer } = config;
+		const { x = 0, y = 0, zIndex = 0, layer = "system" } = config;
 
 		this.x = x;
 		this.y = y;

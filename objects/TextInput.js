@@ -5,7 +5,7 @@ import Scene from "../engine/Scene.js";
 /**
  * Configuration data for the `TextInput` class.
  * @typedef {Object} TextInputConfig
- * @property {number} maxWidth The maximum width of the `TextInput`. Defaults to `8`.
+ * @property {number} maxWidth The maximum width of the `TextInput`. Defaults to the viewport width.
  * @property {string} value The text to display. (use `"\n"` for newlines)
  * @property {?string} color Optional text color for when the input is focused.
  * @property {?string} blurColor Optional text color for when the input is blurred.
@@ -16,6 +16,7 @@ import Scene from "../engine/Scene.js";
  * @property {function} onChange Callback that runs when the input's value changes.
  * @property {function} onKeyDown Callback that runs when the input recieves a keypress.
  * @property {?number} maxLength An optional maximum input length.
+ * @property {?string} placeholder An optional placeholder text value to display when the `value` property is "".
  */
 
 class TextInput extends UIObject {
@@ -26,7 +27,7 @@ class TextInput extends UIObject {
 	 */
 	constructor(scene, config) {
 		config.wrap = false;
-		if (!config.maxWidth) config.maxWidth = 8;
+		if (!config.maxWidth) config.maxWidth = scene.runtime.renderer.width;
 
 		super(scene, config);
 
@@ -40,9 +41,19 @@ class TextInput extends UIObject {
 			onKeyDown,
 			maxLength,
 			wrap,
-			fontWeight,
+			fontWeight = 400,
 			maxWidth,
+			value = "",
+			placeholder,
 		} = config;
+
+		if (placeholder) {
+			if (typeof placeholder !== "string")
+				return new TypeError(
+					"Expected a string for TextInput config.placeholder value."
+				);
+			this.placeholder = placeholder;
+		}
 
 		if (color) {
 			if (typeof color !== "string")
@@ -129,7 +140,7 @@ class TextInput extends UIObject {
 
 		this.scroll = 0;
 
-		this.value = config.value;
+		this.value = value;
 
 		this.caret = this.value ? this.value.length : 0;
 
@@ -157,7 +168,7 @@ class TextInput extends UIObject {
 	set value(value) {
 		if (typeof value !== "string")
 			throw new Error(
-				`Provided text value "${value}" is not of type "string".`
+				`TextInput "value" property must be of type "string".`
 			);
 
 		this.__rawValue = value;
@@ -259,6 +270,7 @@ class TextInput extends UIObject {
 			backgroundColor,
 			backgroundColorActive,
 			focused,
+			placeholder,
 		} = this;
 
 		const data = [];
@@ -269,7 +281,7 @@ class TextInput extends UIObject {
 
 		const { scroll } = this;
 
-		const display = value
+		const display = (value === "" && placeholder ? placeholder : value)
 			.substring(scroll, scroll + maxWidth)
 			.padEnd(maxWidth, " ")
 			.split("");
@@ -280,11 +292,12 @@ class TextInput extends UIObject {
 			data.push(
 				new Pixel({
 					value: char,
-					color: this.focused
-						? active
-							? activeColor
-							: color
-						: this.blurColor,
+					color:
+						this.focused && this.value !== ""
+							? active
+								? activeColor
+								: color
+							: this.blurColor,
 					backgroundColor: active
 						? backgroundColorActive
 						: backgroundColor,
