@@ -630,7 +630,7 @@ class InputManager {
 	 * @param {Event} event The listener's event.
 	 */
 	__onMouseMove(event) {
-		const { clientX, clientY, movementX, movementY } = event;
+		let { clientX, clientY, movementX, movementY } = event;
 
 		const {
 			scene: {
@@ -653,10 +653,26 @@ class InputManager {
 			height: canvasHeight,
 		} = element.getBoundingClientRect();
 
-		const [rX, rY] = [clientX - canvasX, clientY - canvasY];
+		this.mouse.velocity = [movementX, movementY];
+
+		if (this.hasPointerLock) {
+			clientX = clamp(
+				(this.mouse.rawX || 0) + this.mouse.velocity[0],
+				0,
+				canvasWidth
+			);
+			clientY = clamp(
+				(this.mouse.rawY || 0) + this.mouse.velocity[1],
+				0,
+				canvasHeight
+			);
+		}
+
+		const [rX, rY] = this.hasPointerLock
+			? [clientX, clientY]
+			: [clientX - canvasX, clientY - canvasY];
 		const [relX, relY] = [rX / canvasWidth, rY / canvasHeight];
 
-		this.mouse.velocity = [movementX, movementY];
 		this.mouse.rawX = clientX;
 		this.mouse.rawY = clientY;
 		this.mouse.canvasX = rX;
@@ -933,15 +949,16 @@ class InputManager {
 
 			this.mouse.targets = [];
 
-			for (const [label, [x, y]] of Object.entries(onLayer)) {
-				const targetsOnLayer = this.scene.layerManager.getAtPosition(
-					x,
-					y,
-					label
-				);
+			if (onLayer)
+				for (const [label, [x, y]] of Object.entries(onLayer)) {
+					const targetsOnLayer =
+						this.scene.layerManager.getAtPosition(x, y, label);
 
-				this.mouse.targets = [...this.mouse.targets, ...targetsOnLayer];
-			}
+					this.mouse.targets = [
+						...this.mouse.targets,
+						...targetsOnLayer,
+					];
+				}
 
 			// Convert target objects into an array of IDs.
 			if (this.mouse.targets)

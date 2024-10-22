@@ -1,3 +1,4 @@
+import Frame from "../engine/Frame.js";
 import { isPlainObject } from "../util/data.js";
 
 export class PixelMesh {

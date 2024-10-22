@@ -1,6 +1,6 @@
 import { displayArray } from "../util/data.js";
 
-import Pixel from "../core/Pixel.js";
+import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Frame from "./Frame.js";
 import Runtime from "./Runtime.js";
 import FrameToImageDataWorker from "../workers/FrameToImageDataWorker.js";
@@ -16,9 +16,6 @@ class Renderer {
 		this.config = this.runtime.config && this.runtime.config.renderer;
 
 		Renderer.validateConfig(this.config);
-
-		if (!this.config)
-			throw new Error("No config object provided to renderer.");
 
 		this.__onCreated();
 
@@ -51,6 +48,8 @@ class Renderer {
 	 * @param {Object} config The config object to validate.
 	 */
 	static validateConfig(config) {
+		if (!config) throw new Error("No config object provided to renderer.");
+
 		if (!config.resolution)
 			throw new Error(
 				"No resolution array defined in renderer config. [width, height]"
@@ -77,7 +76,7 @@ class Renderer {
 			const scalingEnum = ["off", "letterbox"];
 
 			if (!scalingEnum.includes(config.scaling))
-				throw new Error(
+				throw new TypeError(
 					`Invalid scaling value provided, must be one of: ${displayArray(
 						scalingEnum
 					)}`
@@ -87,7 +86,7 @@ class Renderer {
 		if (config.renderMode) {
 			const renderModes = ["stacked", "merged"];
 			if (!renderModes.includes(config.renderMode))
-				throw new Error(
+				throw new TypeError(
 					`Provided render mode is invalid. Must be of type: ${displayArray(
 						renderModes
 					)}`
@@ -108,11 +107,11 @@ class Renderer {
 				);
 		} else if (config.canvas instanceof Element) {
 			if (config.canvas.tagName.toLowerCase() !== "canvas")
-				throw new Error(
+				throw new TypeError(
 					`Renderer config provided HTML element for "canvas" field, but the element is not a canvas.`
 				);
 		} else
-			throw new Error(
+			throw new TypeError(
 				`Invalid "canvas" configuration provided to Renderer config. Must be a canvas element or query selector string that points to a canvas.`
 			);
 	}

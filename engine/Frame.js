@@ -1,4 +1,5 @@
-import Pixel from "../core/Pixel.js";
+import Pixel, { PixelMesh } from "../core/Pixel.js";
+import Renderer from "./Renderer.js";
 
 class Frame {
 	/**
@@ -21,6 +22,7 @@ class Frame {
 	/**
 	 * Convert a 2D array of `Pixel`s to a Frame.
 	 * @param {Pixel[][]} array The array to convert.
+	 * @returns {Frame} the generated Frame.
 	 */
 	static from2DArray = (array) => new Frame(array.flat());
 }

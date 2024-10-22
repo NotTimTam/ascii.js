@@ -1,9 +1,25 @@
+import Pixel, { PixelMesh } from "../core/Pixel.js";
 import { isPlainObject } from "../util/data.js";
 import AudioManager from "./AudioManager.js";
 import Renderer from "./Renderer.js";
 import Scene from "./Scene.js";
 
 class Runtime {
+	/**
+	 * A default configuration object that a `Runtime` instance will fall back to when a custom config is not provided.
+	 */
+	static defaultConfig = {
+		renderer: {
+			resolution: [96, 32],
+			canvas: document.querySelector("canvas"),
+			fontSize: "24px",
+			scaling: "letterbox",
+			renderMode: "stacked",
+			useWebWorkers: true,
+			forceParentStyles: true,
+		},
+	};
+
 	/**
 	 * The overall game state and management system.
 	 * @param {Object} config The game's config object.
@@ -28,11 +44,8 @@ class Runtime {
 	 * -   **Description:** Compiles all layer frames into a single frame before rendering.
 	 * -   **Behavior:** Characters cannot overlap as all layers are combined into one frame.
 	 * -   **Performance:** Faster rendering compared to stacked mode due to the compilation of all frames. Additionally, identifies and skips rendering frames that are identical to the currently drawn frame, saving processing time when the screen is static. Due to the nature of this rendering mode, some graphical issues can occur, and it should only be used on lower-end devices.
-	 * @param {Object} config.scene Configuration for the `Scene` class.
-	 * @param {Object} config.scene.inputManager Configuration for a `Scene`'s `InputManager` class instance.
-	 * 
 	 */
-	constructor(config) {
+	constructor(config = Runtime.defaultConfig) {
 		this.config = config;
 
 		this.validateConfig(config);
