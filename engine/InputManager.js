@@ -803,7 +803,7 @@ class InputManager {
 					data.target = target;
 
 					this.__triggerUIObjectEvents(
-						targets[0].id,
+						target.id,
 						type,
 						data,
 						browserEvent
