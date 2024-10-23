@@ -4,6 +4,7 @@ import Scene from "../engine/Scene.js";
 import { wrapString } from "../util/data.js";
 import { clamp } from "../util/math.js";
 import Box from "./Box.js";
+import Style from "../core/Style.js";
 
 class Item {
 	get renderable() {
@@ -205,6 +206,8 @@ class Slider extends Item {
 	onMouseMove(event) {
 		if (!event.buttons.left) return;
 
+		this.menu.focus();
+
 		this.__positionByMouse(event);
 	}
 
@@ -400,6 +403,16 @@ class Toggle extends Item {
 }
 
 /**
+ * Configuration data for the `Scroller`'s `configuration.style` property.
+ * @typedef {?Object<string, string|number>} MenuStyleConfig
+ * @property {?string} borderFocusColor The color of the `Menu`'s border when the `Menu` is in focus.
+ * @property {?string} borderBlurColor The color of the `Menu`'s border when the `Menu` is blurred.
+ * @property {?string} titleFocusColor The color of the `Menu`'s title text when the `Menu` is in focus.
+ * @property {?string} titleBlurColor The color of the `Menu`'s title text when the `Menu` is blurred.
+ * @property {?string} titleFontWeight The color of the `Menu`'s title text when the `Menu` is blurred.
+ */
+
+/**
  * Configuration data for the `Menu` class.
  * @typedef {Object} MenuConfig
  * @property {number} x This `Menu` object's x-coordinate.
@@ -419,6 +432,7 @@ class Toggle extends Item {
  * @property {boolean} border Whether or not to create a border around the menu. Default `true`.
  * @property {boolean} deleteOnBlur Whether to delete the menu when it becomes unfocused. Default `false`. **NOTE:** If `config.autoFocus` is set to false, the `Menu` will be deleted immediately!
  * @property {?number} gamepad An optional number indicating the gamepad (0-based index) this menu should accept input from. Set to `-1` to accept input from all gamepads.
+ * @property {MenuStyleConfig} style Optional style configuration object.
  */
 
 class Menu extends UIObject {
@@ -429,6 +443,14 @@ class Menu extends UIObject {
 
 	static horizontalSpacing = 1;
 	static borderWidth = 1;
+
+	static style = {
+		borderFocusColor: new Style.Parameter("color", "white"),
+		borderBlurColor: new Style.Parameter("color", "grey"),
+		titleFocusColor: new Style.Parameter("color", "white"),
+		titleBlurColor: new Style.Parameter("color", "grey"),
+		titleFontWeight: new Style.Parameter("fontWeight", 600),
+	};
 
 	/**
 	 * A menu of various items that can be rendered on screen.
@@ -444,7 +466,10 @@ class Menu extends UIObject {
 			gamepad,
 			alignCenter = true,
 			border = true,
+			style = {},
 		} = config;
+
+		this.style = new Style(Menu.style).hydrate(style);
 
 		this.alignCenter = Boolean(alignCenter);
 		this.border = Boolean(border);
@@ -804,7 +829,9 @@ class Menu extends UIObject {
 			} = Box.asPixelMesh(
 				width,
 				height,
-				this.focused ? "white" : "grey",
+				this.focused
+					? this.style.borderFocusColor
+					: this.style.borderBlurColor,
 				undefined,
 				"double"
 			);
@@ -863,7 +890,12 @@ class Menu extends UIObject {
 				title.slice(0, this.availableContentSpace[0])
 			);
 
-			if (!this.border) titleMesh.setFontWeight(800);
+			titleMesh.setFontWeight(this.style.titleFontWeight);
+			titleMesh.setColor(
+				this.focused
+					? this.style.titleFocusColor
+					: this.style.titleBlurColor
+			);
 
 			const {
 				data: [titleText],

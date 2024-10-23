@@ -1,6 +1,6 @@
 import { displayArray } from "../util/data.js";
 
-import Pixel, { PixelMesh } from "../core/Pixel.js";
+import Pixel from "../core/Pixel.js";
 import Frame from "./Frame.js";
 import Runtime from "./Runtime.js";
 import FrameToImageDataWorker from "../workers/FrameToImageDataWorker.js";

@@ -7,6 +7,17 @@ import GameObject from "../core/GameObject.js";
 import Style from "../core/Style.js";
 
 /**
+ * Configuration data for the `Scroller`'s `configuration.style` property.
+ * @typedef {?Object<string, string|number>} ScrollerStyleConfig
+ * @property {?string} thumbFocusColor The color of the `Scroller`'s scrollbar thumbs when the `Scroller` is in focus.
+ * @property {?string} thumbBlurColor The color of the `Scroller`'s scrollbar thumbs when the `Scroller` is blurred.
+ * @property {?string} trackFocusColor The color of the `Scroller`'s scrollbar tracks when the `Scroller` is in focus.
+ * @property {?string} trackBlurColor The color of the `Scroller`'s scrollbar tracks when the `Scroller` is blurred.
+ * @property {?string} borderFocusColor The color of the `Scroller`'s border when the `Scroller` is in focus.
+ * @property {?string} borderBlurColor The color of the `Scroller`'s border when the `Scroller` is blurred.
+ */
+
+/**
  * Configuration data for the `Scroller` class.
  * @typedef {Object} ScrollerConfig
  * @property {number} x This `Scroller` object's x-coordinate.
@@ -23,7 +34,7 @@ import Style from "../core/Style.js";
  * @property {number} width The width of the `Scroller`. Defaults to `8`. **Note:** This is the width of the `Scroller` "window", not the width of the view area.
  * @property {number} height The height of the `Scroller`. Defaults to `8`. **Note:** This is the height of the `Scroller` "window", not the height of the view area.
  * @property {?string} gameObjects The `GameObject`s to display in the `Scroller`.
- * @property {?Object<string, string|number>} style Optional style configuration object.
+ * @property {ScrollerStyleConfig} style Optional style configuration object.
  */
 
 class Scroller extends UIObject {
@@ -38,12 +49,12 @@ class Scroller extends UIObject {
 	static scrollbarWidth = 1;
 
 	static style = {
-		thumbFocus: new Style.Parameter("color", "white"),
-		thumbBlur: new Style.Parameter("color", "grey"),
-		trackFocus: new Style.Parameter("color", "gray"),
-		trackBlur: new Style.Parameter("color", "#3c3c3c"),
-		borderFocus: new Style.Parameter("color", "white"),
-		borderBlur: new Style.Parameter("color", "grey"),
+		thumbFocusColor: new Style.Parameter("color", "white"),
+		thumbBlurColor: new Style.Parameter("color", "grey"),
+		trackFocusColor: new Style.Parameter("color", "gray"),
+		trackBlurColor: new Style.Parameter("color", "#3c3c3c"),
+		borderFocusColor: new Style.Parameter("color", "white"),
+		borderBlurColor: new Style.Parameter("color", "grey"),
 	};
 
 	/**
@@ -355,13 +366,13 @@ class Scroller extends UIObject {
 		let track, thumb, border;
 
 		if (!this.focused) {
-			track = this.style.trackBlur;
-			thumb = this.style.thumbBlur;
-			border = this.style.borderBlur;
+			track = this.style.trackBlurColor;
+			thumb = this.style.thumbBlurColor;
+			border = this.style.borderBlurColor;
 		} else {
-			track = this.style.trackFocus;
-			thumb = this.style.thumbFocus;
-			border = this.style.borderFocus;
+			track = this.style.trackFocusColor;
+			thumb = this.style.thumbFocusColor;
+			border = this.style.borderFocusColor;
 		}
 
 		const [vX, vY] = [borderWidth, borderWidth];

@@ -3,7 +3,7 @@ import { displayArray } from "../util/data.js";
 class StyleParameter {
 	/**
 	 * A single parameter of a `Style` instance.
-	 * @param {string} type The `Style.types`-sourced style parameter type.
+	 * @param {"color"|"fontWeight"} type The `Style.types`-sourced style parameter type.
 	 * @param {string|number|null} fallback A fallback value to set if no value is configured.
 	 * @param {boolean} optional Whether or not this parameter is optional. Default `false`.
 	 */
