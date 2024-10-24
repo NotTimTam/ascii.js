@@ -187,6 +187,8 @@ class TextInput extends UIObject {
    * Listen to other input events.
    */
   __onKeyDown(event) {
+    event.preventBrowserDefault();
+
     const { caret } = this;
 
     const { key, rawKey } = event;
