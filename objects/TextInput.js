@@ -7,10 +7,16 @@ class TextInput extends UIObject {
   /**
    * Configuration data for the `TextInput`'s `configuration.style` property.
    * @typedef {Object} TextInputStyleConfig
-   * @property {?string} focusColor The color of the `Menu.Button` when it is in focus.
-   * @property {?string} blurColor The color of the `Menu.Button` when it is blurred.
-   * @property {?string|number} placeholderColor The font weight of the `Menu.Button` when it is in focus.
-   * @property {?string|number} caretColor The font weight of the `Menu.Button` when it is blurred.
+   * @property {?string|number} focusColor The color of the `TextInput`'s text when it is in focus.
+   * @property {?string|number} focusFontWeight The font weight of the `TextInput`'s text when it is in focus.
+   * @property {?string|number} blurColor The color of the `TextInput`'s text when it is blurred.
+   * @property {?string|number} blurFontWeight The font weight of the `TextInput`'s text when it is blurred.
+   * @property {?string|number} focusBackgroundColor The background color of the `TextInput` when it is in focus.
+   * @property {?string|number} blurBackgroundColor The background color of the `TextInput` when it is blurred.
+   * @property {?string|number} placeholderColor The color of the `TextInput`'s placeholder text.
+   * @property {?string|number} placeholderFontWeight The font weight of the `TextInput`'s placeholder text.
+   * @property {?string|number} caretColor The color of the text currently highlighted by the `TextInput`'s caret.
+   * @property {?string|number} caretBackgroundColor The color of the `TextInput`'s caret box.
    */
   static style = {
     focusColor: new Style.Parameter("color", "white"),
