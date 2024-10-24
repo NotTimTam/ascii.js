@@ -148,6 +148,7 @@ class Slider extends Item {
    * @param {number} config.step The amount the value will change by each input.
    * @param {function} config.onChange The function to call when the value of this `Slider` changes.
    * @param {function} config.callback The function to call when "enter" is pressed on the `Slider`. This callback is passed the current `Menu.Slider` value as an argument.
+   * @param {MenuSliderStyleConfig} config.style Optional style config object.
    */
   constructor(config) {
     super();
@@ -409,17 +410,49 @@ class Slider extends Item {
 
 class Toggle extends Item {
   /**
+   * Configuration data for the `Menu.Toggle`'s `configuration.style` property.
+   * @typedef {?Object<string, string|number>} MenuToggleStyleConfig
+   * @property {?string} labelFocusColor The color of the `Menu.Toggle`' label when it is in focus.
+   * @property {?string} labelBlurColor The color of the `Menu.Toggle`'s label when it is blurred.
+   * @property {?string|number} labelFocusFontWeight The font weight of the `Menu.Toggle`'s label when it is in focus.
+   * @property {?string|number} labelBlurFontWeight The font weight of the `Menu.Toggle`'s label when it is blurred.
+   * @property {?string} iconFocusColor The color of the `Menu.Toggle`'s icon when it is in focus.
+   * @property {?string} iconBlurColor The color of the `Menu.Toggle`'s icon when it is blurred.
+   * @property {?string|number} iconFocusFontWeight The font weight of the `Menu.Toggle`'s icon when it is in focus.
+   * @property {?string|number} iconBlurFontWeight The font weight of the `Menu.Toggle`'s icon when it is blurred.
+   */
+  static style = {
+    labelFocusColor: new Style.Parameter("color", "white"),
+    labelBlurColor: new Style.Parameter("color", "grey"),
+    labelFocusFontWeight: new Style.Parameter("fontWeight", 400),
+    labelBlurFontWeight: new Style.Parameter("fontWeight", 400),
+    iconFocusColor: new Style.Parameter("color", "white"),
+    iconBlurColor: new Style.Parameter("color", "grey"),
+    iconFocusFontWeight: new Style.Parameter("fontWeight", 800),
+    iconBlurFontWeight: new Style.Parameter("fontWeight", 800),
+    iconOn: new Style.Parameter("char", "☑"),
+    iconOff: new Style.Parameter("char", "☐"),
+  };
+
+  /**
    * A checkbox that can be toggled.
    * @param {Object} config The `Toggle`'s config object.
    * @param {string} config.label The `Toggle`'s display label.
    * @param {boolean} config.checked The initial status of the `Toggle`. Default: `false`.
    * @param {boolean} config.prepend Whether to put the checkbox icon at the start or end of the label. Default: `true`.
    * @param {function} config.callback The function to call when this item is toggled. This callback is passed the current `checked` state as an argument.
+   * @param {MenuToggleStyleConfig} config.style Optional style configuration object.
    */
   constructor(config) {
     super();
 
-    const { label, callback, checked = false, prepend = true } = config;
+    const {
+      label,
+      callback,
+      checked = false,
+      prepend = true,
+      style = {},
+    } = config;
 
     if (typeof label !== "string")
       throw new TypeError(
@@ -430,6 +463,7 @@ class Toggle extends Item {
     this.prepend = Boolean(prepend);
     this.checked = Boolean(checked);
     this.callback = callback;
+    this.style = new Style(Toggle.style).hydrate(style);
   }
 
   get checked() {
@@ -464,16 +498,41 @@ class Toggle extends Item {
       prepend,
     } = this;
 
-    const icon = checked ? "☑" : "☐";
+    const data = [];
 
-    const display = PixelMesh.fromString(
-      `${prepend ? icon + " " : ""}${this.label}${!prepend ? " " + icon : ""}`
+    data.push(
+      ...this.label.split("").map(
+        (value) =>
+          new Pixel({
+            value,
+            color:
+              activeIndex === index
+                ? this.style.labelFocusColor
+                : this.style.labelBlurColor,
+            fontWeight:
+              activeIndex === index
+                ? this.style.labelFocusFontWeight
+                : this.style.labelBlurFontWeight,
+          })
+      )
     );
 
-    if (activeIndex === index) display.setColor("white");
-    else display.setColor("grey");
+    const iconPixel = new Pixel({
+      value: checked ? this.style.iconOn : this.style.iconOff,
+      color:
+        activeIndex === index
+          ? this.style.iconFocusColor
+          : this.style.iconBlurColor,
+      fontWeight:
+        activeIndex === index
+          ? this.style.iconFocusFontWeight
+          : this.style.iconBlurFontWeight,
+    });
 
-    return display;
+    if (prepend) data.unshift(iconPixel, Pixel.fromString(" "));
+    else data.push(Pixel.fromString(" "), iconPixel);
+
+    return new PixelMesh({ data: [data] });
   }
 }
 
