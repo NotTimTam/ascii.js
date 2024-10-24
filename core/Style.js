@@ -3,7 +3,7 @@ import { displayArray } from "../util/data.js";
 class StyleParameter {
   /**
    * A single parameter of a `Style` instance.
-   * @param {"color"|"fontWeight"|"char"} type The `Style.types`-sourced style parameter type.
+   * @param {"color"|"backgroundColor"|"fontWeight"|"char"} type The `Style.types`-sourced style parameter type.
    * @param {string|number|null} fallback A fallback value to set if no value is configured.
    * @param {boolean} optional Whether or not this parameter is optional. Default `false`.
    */
@@ -51,6 +51,12 @@ class Style {
     color: (v) => {
       if (!v || typeof v !== "string")
         throw new TypeError("Expected a string for color value.");
+    },
+    backgroundColor: (v) => {
+      if (!v) return; // Characters are allowed to have no background color.
+
+      if (typeof v !== "string")
+        throw new TypeError("Expected a string for backgroundColor value.");
     },
     fontWeight: (v) => {
       if (!v || (typeof v !== "string" && typeof v !== "number"))

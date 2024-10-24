@@ -1,326 +1,306 @@
 import UIObject from "../core/UIObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
 import Scene from "../engine/Scene.js";
-
-/**
- * Configuration data for the `TextInput` class.
- * @typedef {Object} TextInputConfig
- * @property {number} x This `TextInput` object's x-coordinate.
- * @property {number} y This `TextInput` object's y-coordinate.
- * @property {number} zIndex A numeric value determining the rendering heirarchy position this `TextInput` should fall in.
- *
- * `TextInput`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
- * @property {?string} layer The (optional) label of the layer to initialize the `TextInput` on.
- * @property {number} tabIndex A numeric value determining the index in the focus array this `TextInput` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
- *
- * A `tabIndex` of `-1` will mark the `TextInput` instance as "unfocusable", meaning focus-based events, such as `keydown` events specific to this `TextInput`, will not be triggered. Default `0`.
- * @property {boolean} autoFocus Whether to automatically focus on this `TextInput` after its instantiation. Default `false`.
- * @property {boolean} maintainFocus Force the `InputManager` to keep this `TextInput` in focus, even if attempts are made to focus on other `TextInput`s. Default `false`.
- * @property {number} maxWidth The maximum width of the `TextInput`. Defaults to the viewport width.
- * @property {string} value The text to display. (use `"\n"` for newlines)
- * @property {?string} color Optional text color for when the input is focused.
- * @property {?string} blurColor Optional text color for when the input is blurred.
- * @property {?string} activeColor Optional text color for active character.
- * @property {?string} backgroundColor Optional background color.
- * @property {?string} backgroundColorActive Optional background color for active key.
- * @property {?string} fontWeight Optional font weight.
- * @property {function} onChange Callback that runs when the input's value changes.
- * @property {function} onKeyDown Callback that runs when the input recieves a keypress.
- * @property {?number} maxLength An optional maximum input length.
- * @property {?string} placeholder An optional placeholder text value to display when the `value` property is "".
- */
+import Style from "../core/Style.js";
 
 class TextInput extends UIObject {
-	/**
-	 * A text input that can be rendered on screen.
-	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {TextInputConfig} config The `TextInput`'s config object.
-	 */
-	constructor(scene, config) {
-		config.wrap = false;
-		if (!config.maxWidth) config.maxWidth = scene.runtime.renderer.width;
+  /**
+   * Configuration data for the `TextInput`'s `configuration.style` property.
+   * @typedef {?Object<string, string|number>} TextInputStyleConfig
+   * @property {?string} focusColor The color of the `Menu.Button` when it is in focus.
+   * @property {?string} blurColor The color of the `Menu.Button` when it is blurred.
+   * @property {?string|number} placeholderColor The font weight of the `Menu.Button` when it is in focus.
+   * @property {?string|number} caretColor The font weight of the `Menu.Button` when it is blurred.
+   */
+  static style = {
+    focusColor: new Style.Parameter("color", "white"),
+    focusFontWeight: new Style.Parameter("fontWeight", 600),
+    blurColor: new Style.Parameter("color", "grey"),
+    blurFontWeight: new Style.Parameter("fontWeight", 400),
+    focusBackgroundColor: new Style.Parameter("backgroundColor", null),
+    blurBackgroundColor: new Style.Parameter("backgroundColor", null),
+    placeholderColor: new Style.Parameter("color", "grey"),
+    placeholderFontWeight: new Style.Parameter("fontWeight", 200),
+    caretColor: new Style.Parameter("color", "black"),
+    caretBackgroundColor: new Style.Parameter("backgroundColor", "white"),
+  };
 
-		super(scene, config);
+  /**
+   * Configuration data for the `TextInput` class.
+   * @typedef {Object} TextInputConfig
+   * @property {number} x This `TextInput` object's x-coordinate.
+   * @property {number} y This `TextInput` object's y-coordinate.
+   * @property {number} zIndex A numeric value determining the rendering heirarchy position this `TextInput` should fall in.
+   *
+   * `TextInput`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
+   * @property {?string} layer The (optional) label of the layer to initialize the `TextInput` on.
+   * @property {number} tabIndex A numeric value determining the index in the focus array this `TextInput` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
+   *
+   * A `tabIndex` of `-1` will mark the `TextInput` instance as "unfocusable", meaning focus-based events, such as `keydown` events specific to this `TextInput`, will not be triggered. Default `0`.
+   * @property {boolean} autoFocus Whether to automatically focus on this `TextInput` after its instantiation. Default `false`.
+   * @property {boolean} maintainFocus Force the `InputManager` to keep this `TextInput` in focus, even if attempts are made to focus on other `TextInput`s. Default `false`.
+   * @property {number} maxWidth The maximum width of the `TextInput`. Defaults to the viewport width.
+   * @property {string} value The text to display. (use `"\n"` for newlines)
+   * @property {function} onChange Callback that runs when the input's value changes.
+   * @property {function} onKeyDown Callback that runs when the input recieves a keypress.
+   * @property {?number} maxLength An optional maximum input length.
+   * @property {?string} placeholder An optional placeholder text value to display when the `value` property is "".
+   * @property {TextInputStyleConfig} style Optional style config object.
+   */
 
-		const {
-			color = "white",
-			activeColor = "black",
-			blurColor = "grey",
-			backgroundColor = "transparent",
-			backgroundColorActive = "white",
-			onChange,
-			onKeyDown,
-			maxLength,
-			wrap,
-			fontWeight = 400,
-			maxWidth,
-			value = "",
-			placeholder,
-		} = config;
+  /**
+   * A text input that can be rendered on screen.
+   * @param {Scene} scene The scene this Object is a part of.
+   * @param {TextInputConfig} config The `TextInput`'s config object.
+   */
+  constructor(scene, config) {
+    config.wrap = false;
+    if (!config.maxWidth) config.maxWidth = scene.runtime.renderer.width;
 
-		if (placeholder) {
-			if (typeof placeholder !== "string")
-				return new TypeError(
-					"Expected a string for TextInput config.placeholder value."
-				);
-			this.placeholder = placeholder;
-		}
+    super(scene, config);
 
-		if (color) {
-			if (typeof color !== "string")
-				return new TypeError(
-					"Expected a string for TextInput config.color value."
-				);
-			this.color = color;
-		}
+    const {
+      onChange,
+      onKeyDown,
+      maxLength,
+      wrap,
+      maxWidth,
+      value = "",
+      placeholder,
+      style = {},
+    } = config;
 
-		if (activeColor) {
-			if (typeof activeColor !== "string")
-				return new TypeError(
-					"Expected a string for TextInput config.activeColor value."
-				);
-			this.activeColor = activeColor;
-		}
+    this.style = new Style(TextInput.style).hydrate(style);
 
-		if (blurColor) {
-			if (typeof blurColor !== "string")
-				return new TypeError(
-					"Expected a string for TextInput config.blurColor value."
-				);
-			this.blurColor = blurColor;
-		}
+    if (placeholder) {
+      if (typeof placeholder !== "string")
+        return new TypeError(
+          "Expected a string for TextInput config.placeholder value."
+        );
+      this.placeholder = placeholder;
+    }
 
-		if (backgroundColor) {
-			if (typeof backgroundColor !== "string")
-				return new TypeError(
-					"Expected a string for TextInput config.backgroundColor value."
-				);
-			this.backgroundColor = backgroundColor;
-		}
+    if (onChange) {
+      if (typeof onChange !== "function")
+        throw new TypeError(
+          "Expected a function for TextInput config.onChange value."
+        );
 
-		if (backgroundColorActive) {
-			if (typeof backgroundColorActive !== "string")
-				return new TypeError(
-					"Expected a string for TextInput config.backgroundColorActive value."
-				);
-			this.backgroundColorActive = backgroundColorActive;
-		}
+      this.onChange = onChange;
+    }
 
-		if (onChange) {
-			if (typeof onChange !== "function")
-				throw new TypeError(
-					"Expected a function for TextInput config.onChange value."
-				);
+    if (onKeyDown) {
+      if (typeof onKeyDown !== "function")
+        throw new TypeError(
+          "Expected a function for TextInput config.onKeyDown value."
+        );
 
-			this.onChange = onChange;
-		}
+      this.onKeyDown = onKeyDown;
+    }
 
-		if (onKeyDown) {
-			if (typeof onKeyDown !== "function")
-				throw new TypeError(
-					"Expected a function for TextInput config.onKeyDown value."
-				);
+    if (maxLength) {
+      if (
+        typeof maxLength !== "number" ||
+        !Number.isInteger(maxLength) ||
+        maxLength < 0
+      )
+        throw new TypeError(
+          "Invalid config.maxLength value provided to TextInput. Expected an integer greater than or equal to 0."
+        );
 
-			this.onKeyDown = onKeyDown;
-		}
+      this.maxLength = maxLength;
+    }
 
-		if (maxLength) {
-			if (
-				typeof maxLength !== "number" ||
-				!Number.isInteger(maxLength) ||
-				maxLength < 0
-			)
-				throw new TypeError(
-					"Invalid config.maxLength value provided to TextInput. Expected an integer greater than or equal to 0."
-				);
+    if (maxWidth) {
+      if (
+        typeof maxWidth !== "number" ||
+        !Number.isInteger(maxWidth) ||
+        maxWidth < 1
+      )
+        throw new TypeError(
+          "Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
+        );
+      this.maxWidth = maxWidth;
+    }
 
-			this.maxLength = maxLength;
-		}
+    this.scroll = 0;
 
-		if (maxWidth) {
-			if (
-				typeof maxWidth !== "number" ||
-				!Number.isInteger(maxWidth) ||
-				maxWidth < 1
-			)
-				throw new TypeError(
-					"Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
-				);
-			this.maxWidth = maxWidth;
-		}
+    this.value = value;
 
-		this.scroll = 0;
+    this.caret = this.value ? this.value.length : 0;
 
-		this.value = value;
+    this.wrap = wrap;
 
-		this.caret = this.value ? this.value.length : 0;
+    this.addEventListener("click", this.__onClick);
+    this.addEventListener("keydown", this.__onKeyDown);
+    this.addEventListener("focus", () => {
+      this.caret = this.value.length;
+    });
+  }
 
-		this.wrap = wrap;
-		this.backgroundColor = backgroundColor;
-		this.fontWeight = fontWeight;
+  /**
+   * Get the value of the `TextInput` object.
+   */
+  get value() {
+    return String(this.__rawValue);
+  }
 
-		this.addEventListener("click", this.__onClick);
-		this.addEventListener("keydown", this.__onKeyDown);
-		this.addEventListener("focus", () => {
-			this.caret = this.value.length;
-		});
-	}
+  /**
+   * Set the value of the `TextInput` object.
+   */
+  set value(value) {
+    if (typeof value !== "string")
+      throw new Error(`TextInput "value" property must be of type "string".`);
 
-	/**
-	 * Get the value of the `TextInput` object.
-	 */
-	get value() {
-		return String(this.__rawValue);
-	}
+    this.__rawValue = value;
+  }
 
-	/**
-	 * Set the value of the `TextInput` object.
-	 */
-	set value(value) {
-		if (typeof value !== "string")
-			throw new Error(
-				`TextInput "value" property must be of type "string".`
-			);
+  /**
+   * Renderable setter override.
+   */
+  set renderable(_) {
+    return;
+  }
 
-		this.__rawValue = value;
-	}
+  /**
+   * Listens to click events.
+   */
+  __onClick() {
+    this.caret = this.value.length;
+    this.__updateScrollPosition();
+  }
 
-	/**
-	 * Renderable setter override.
-	 */
-	set renderable(_) {
-		return;
-	}
+  /**
+   * Listen to other input events.
+   */
+  __onKeyDown(event) {
+    const { caret } = this;
 
-	/**
-	 * Listens to click events.
-	 */
-	__onClick() {
-		this.caret = this.value.length;
-		this.__updateScrollPosition();
-	}
+    const { key, rawKey } = event;
 
-	/**
-	 * Listen to other input events.
-	 */
-	__onKeyDown(event) {
-		const { caret } = this;
+    const startValue = this.value;
 
-		const { key, rawKey } = event;
+    // Only allow ASCII range typeable keys.
+    if (key === "backspace") {
+      this.value = this.value.slice(0, caret - 1) + this.value.slice(caret);
 
-		const startValue = this.value;
+      if (this.caret !== this.value.length) this.caret--;
+    } else if (key === "delete") {
+      this.value = this.value.slice(0, caret) + this.value.slice(caret + 1);
+    } else if (key === "escape") this.focused = false;
+    else if (key === "left") this.caret--;
+    else if (key === "right") this.caret++;
+    else if (key === "end" || key === "down") this.caret = this.value.length;
+    else if (key === "home" || key === "up") this.caret = 0;
+    else if (
+      /^[\x20-\x7E]$/.test(rawKey) &&
+      (typeof this.maxLength !== "number" || this.value.length < this.maxLength)
+    ) {
+      this.value =
+        this.value.slice(0, this.caret) + rawKey + this.value.slice(this.caret);
+      this.caret++;
+    }
 
-		// Only allow ASCII range typeable keys.
-		if (key === "backspace") {
-			this.value =
-				this.value.slice(0, caret - 1) + this.value.slice(caret);
+    this.__updateScrollPosition();
 
-			if (this.caret !== this.value.length) this.caret--;
-		} else if (key === "delete") {
-			this.value =
-				this.value.slice(0, caret) + this.value.slice(caret + 1);
-		} else if (key === "escape") this.focused = false;
-		else if (key === "left") this.caret--;
-		else if (key === "right") this.caret++;
-		else if (key === "end" || key === "down")
-			this.caret = this.value.length;
-		else if (key === "home" || key === "up") this.caret = 0;
-		else if (
-			/^[\x20-\x7E]$/.test(rawKey) &&
-			(typeof this.maxLength !== "number" ||
-				this.value.length < this.maxLength)
-		) {
-			this.value =
-				this.value.slice(0, this.caret) +
-				rawKey +
-				this.value.slice(this.caret);
-			this.caret++;
-		}
+    if (startValue !== this.value && this.onChange)
+      this.onChange({ target: this, ...event });
+    this.onKeyDown && this.onKeyDown({ target: this, ...event });
+  }
 
-		this.__updateScrollPosition();
+  /**
+   * Update the position of this `TextInput`'s `scroll` property to properly scroll to the caret in the input.
+   */
+  __updateScrollPosition() {
+    while (this.caret < this.scroll) this.scroll--;
+    while (this.caret > this.scroll + this.maxWidth - 2) this.scroll++;
+  }
 
-		if (startValue !== this.value && this.onChange)
-			this.onChange({ target: this, ...event });
-		this.onKeyDown && this.onKeyDown({ target: this, ...event });
-	}
+  get caret() {
+    if (this.__rawCaret < 0) this.__rawCaret = 0;
+    if (this.__rawCaret > this.value.length)
+      this.__rawCaret = this.value.length;
 
-	/**
-	 * Update the position of this `TextInput`'s `scroll` property to properly scroll to the caret in the input.
-	 */
-	__updateScrollPosition() {
-		while (this.caret < this.scroll) this.scroll--;
-		while (this.caret > this.scroll + this.maxWidth - 2) this.scroll++;
-	}
+    return this.__rawCaret;
+  }
 
-	get caret() {
-		if (this.__rawCaret < 0) this.__rawCaret = 0;
-		if (this.__rawCaret > this.value.length)
-			this.__rawCaret = this.value.length;
+  set caret(n) {
+    if (typeof n !== "number" || !Number.isInteger(n))
+      throw new TypeError("TextInput caret value should be an integer.");
 
-		return this.__rawCaret;
-	}
+    if (n < 0) n = 0;
+    if (n > this.value.length) n = this.value.length;
 
-	set caret(n) {
-		if (typeof n !== "number" || !Number.isInteger(n))
-			throw new TypeError("TextInput caret value should be an integer.");
+    this.__rawCaret = n;
+  }
 
-		if (n < 0) n = 0;
-		if (n > this.value.length) n = this.value.length;
+  get renderable() {
+    const {
+      value,
+      maxWidth,
+      caret,
+      focused,
+      placeholder,
+      style: {
+        focusColor,
+        focusFontWeight,
+        blurColor,
+        blurFontWeight,
+        focusBackgroundColor,
+        blurBackgroundColor,
+        placeholderColor,
+        placeholderFontWeight,
+        caretColor,
+        caretBackgroundColor,
+      },
+    } = this;
 
-		this.__rawCaret = n;
-	}
+    const data = [];
 
-	get renderable() {
-		const {
-			value,
-			fontWeight,
-			maxWidth,
-			caret,
-			color,
-			activeColor,
-			backgroundColor,
-			backgroundColorActive,
-			focused,
-			placeholder,
-		} = this;
+    const maxScroll = value.length - maxWidth + 1;
+    if (this.scroll > maxScroll) this.scroll = maxScroll;
+    if (this.scroll < 0) this.scroll = 0;
 
-		const data = [];
+    const { scroll } = this;
 
-		const maxScroll = value.length - maxWidth + 1;
-		if (this.scroll > maxScroll) this.scroll = maxScroll;
-		if (this.scroll < 0) this.scroll = 0;
+    const showPlaceholder = value === "" && placeholder;
 
-		const { scroll } = this;
+    const display = (showPlaceholder ? placeholder : value)
+      .substring(scroll, scroll + maxWidth)
+      .padEnd(maxWidth, " ")
+      .split("");
 
-		const display = (value === "" && placeholder ? placeholder : value)
-			.substring(scroll, scroll + maxWidth)
-			.padEnd(maxWidth, " ")
-			.split("");
+    for (let i = 0; i < display.length; i++) {
+      const char = display[i];
+      const active = i + scroll === caret && focused;
+      data.push(
+        new Pixel({
+          value: char,
+          color: showPlaceholder
+            ? placeholderColor
+            : this.focused && this.value !== ""
+            ? active
+              ? caretColor
+              : focusColor
+            : blurColor,
+          backgroundColor: focused
+            ? active
+              ? caretBackgroundColor
+              : focusBackgroundColor
+            : blurBackgroundColor,
+          fontWeight: showPlaceholder
+            ? placeholderFontWeight
+            : focused
+            ? focusFontWeight
+            : blurFontWeight,
+        })
+      );
+    }
 
-		for (let i = 0; i < display.length; i++) {
-			const char = display[i];
-			const active = i + scroll === caret && focused;
-			data.push(
-				new Pixel({
-					value: char,
-					color:
-						this.focused && this.value !== ""
-							? active
-								? activeColor
-								: color
-							: this.blurColor,
-					backgroundColor: active
-						? backgroundColorActive
-						: backgroundColor,
-					fontWeight,
-				})
-			);
-		}
+    // Push the remaining characters in the current line
 
-		// Push the remaining characters in the current line
-
-		return new PixelMesh({ data: [data] });
-	}
+    return new PixelMesh({ data: [data] });
+  }
 }
 
 export default TextInput;
