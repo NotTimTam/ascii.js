@@ -7,28 +7,35 @@ class TextInput extends UIObject {
   /**
    * Configuration data for the `TextInput`'s `configuration.style` property.
    * @typedef {Object} TextInputStyleConfig
-   * @property {?string|number} focusColor The color of the `TextInput`'s text when it is in focus.
-   * @property {?string|number} focusFontWeight The font weight of the `TextInput`'s text when it is in focus.
-   * @property {?string|number} blurColor The color of the `TextInput`'s text when it is blurred.
-   * @property {?string|number} blurFontWeight The font weight of the `TextInput`'s text when it is blurred.
-   * @property {?string|number} focusBackgroundColor The background color of the `TextInput` when it is in focus.
-   * @property {?string|number} blurBackgroundColor The background color of the `TextInput` when it is blurred.
+   * @property {Object} focused Styles to use when the `TextInput` is focused.
+   * @property {?string|number} focused.color The color of the `TextInput`'s text when it is in focus.
+   * @property {?string|number} focused.fontWeight The font weight of the `TextInput`'s text when it is in focus.
+   * @property {?string|number} focused.backgroundColor The background color of the `TextInput` when it is in focus.
+   * @property {Object} blurred Styles to use when the `TextInput` is out of focus.
+   * @property {?string|number} blurred.color The color of the `TextInput`'s text when it is blurred.
+   * @property {?string|number} blurred.fontWeight The font weight of the `TextInput`'s text when it is blurred.
+   * @property {?string|number} blurred.backgroundColor The background color of the `TextInput` when it is blurred.
    * @property {?string|number} placeholderColor The color of the `TextInput`'s placeholder text.
    * @property {?string|number} placeholderFontWeight The font weight of the `TextInput`'s placeholder text.
    * @property {?string|number} caretColor The color of the text currently highlighted by the `TextInput`'s caret.
    * @property {?string|number} caretBackgroundColor The color of the `TextInput`'s caret box.
    */
   static style = {
-    focusColor: new Style.Parameter("color", "white"),
-    focusFontWeight: new Style.Parameter("fontWeight", 600),
-    blurColor: new Style.Parameter("color", "grey"),
-    blurFontWeight: new Style.Parameter("fontWeight", 400),
-    focusBackgroundColor: new Style.Parameter("backgroundColor", null),
-    blurBackgroundColor: new Style.Parameter("backgroundColor", null),
     placeholderColor: new Style.Parameter("color", "grey"),
     placeholderFontWeight: new Style.Parameter("fontWeight", 200),
     caretColor: new Style.Parameter("color", "black"),
     caretBackgroundColor: new Style.Parameter("backgroundColor", "white"),
+
+    focused: new Style.State({
+      color: new Style.Parameter("color", "white"),
+      fontWeight: new Style.Parameter("fontWeight", 600),
+      backgroundColor: new Style.Parameter("backgroundColor", null),
+    }),
+    blurred: new Style.State({
+      color: new Style.Parameter("color", "grey"),
+      fontWeight: new Style.Parameter("fontWeight", 400),
+      backgroundColor: new Style.Parameter("backgroundColor", null),
+    }),
   };
 
   /**
@@ -247,19 +254,17 @@ class TextInput extends UIObject {
       caret,
       focused,
       placeholder,
+      style,
       style: {
-        focusColor,
-        focusFontWeight,
-        blurColor,
-        blurFontWeight,
-        focusBackgroundColor,
-        blurBackgroundColor,
         placeholderColor,
         placeholderFontWeight,
         caretColor,
         caretBackgroundColor,
       },
     } = this;
+
+    const { color, fontWeight, backgroundColor } =
+      style[focused ? "focused" : "blurred"];
 
     const data = [];
 
@@ -284,21 +289,11 @@ class TextInput extends UIObject {
           value: char,
           color: showPlaceholder
             ? placeholderColor
-            : this.focused && this.value !== ""
-            ? active
-              ? caretColor
-              : focusColor
-            : blurColor,
-          backgroundColor: focused
-            ? active
-              ? caretBackgroundColor
-              : focusBackgroundColor
-            : blurBackgroundColor,
-          fontWeight: showPlaceholder
-            ? placeholderFontWeight
-            : focused
-            ? focusFontWeight
-            : blurFontWeight,
+            : active
+            ? caretColor
+            : color,
+          backgroundColor: active ? caretBackgroundColor : backgroundColor,
+          fontWeight: showPlaceholder ? placeholderFontWeight : fontWeight,
         })
       );
     }
