@@ -25,7 +25,7 @@ class Item {
 class Button extends Item {
   /**
    * Configuration data for the `Menu.Button`'s `configuration.style` property.
-   * @typedef {?Object<string, string|number>} MenuButtonStyleConfig
+   * @typedef {Object} MenuButtonStyleConfig
    * @property {?string} focusColor The color of the `Menu.Button` when it is in focus.
    * @property {?string} blurColor The color of the `Menu.Button` when it is blurred.
    * @property {?string|number} focusFontWeight The font weight of the `Menu.Button` when it is in focus.
@@ -44,7 +44,7 @@ class Button extends Item {
    * @param {string} config.label The `Button`'s display label.
    * @param {function} config.callback The function to call when this item is clicked/activated. This callback is passed the `Menu` instance as an argument.
    * @param {boolean} config.wrap Whether or not to wrap the text if it overflows the container. Will break words. Default `false`.
-   * @param {MenuButtonStyleConfig} config.style Optional style config object.
+   * @param {?MenuButtonStyleConfig} config.style Optional style config object.
    */
   constructor(config) {
     super();
@@ -103,7 +103,7 @@ class Button extends Item {
 class Slider extends Item {
   /**
    * Configuration data for the `Menu.Slider`'s `configuration.style` property.
-   * @typedef {?Object<string, string|number>} MenuSliderStyleConfig
+   * @typedef {Object} MenuSliderStyleConfig
    * @property {?string} labelFocusColor The color of the `Menu.Slider`' label when it is in focus.
    * @property {?string} labelBlurColor The color of the `Menu.Slider`'s label when it is blurred.
    * @property {?string|number} labelFocusFontWeight The font weight of the `Menu.Slider`'s label when it is in focus.
@@ -148,7 +148,7 @@ class Slider extends Item {
    * @param {number} config.step The amount the value will change by each input.
    * @param {function} config.onChange The function to call when the value of this `Slider` changes.
    * @param {function} config.callback The function to call when "enter" is pressed on the `Slider`. This callback is passed the current `Menu.Slider` value as an argument.
-   * @param {MenuSliderStyleConfig} config.style Optional style config object.
+   * @param {?MenuSliderStyleConfig} config.style Optional style config object.
    */
   constructor(config) {
     super();
@@ -411,7 +411,7 @@ class Slider extends Item {
 class Toggle extends Item {
   /**
    * Configuration data for the `Menu.Toggle`'s `configuration.style` property.
-   * @typedef {?Object<string, string|number>} MenuToggleStyleConfig
+   * @typedef {Object} MenuToggleStyleConfig
    * @property {?string} labelFocusColor The color of the `Menu.Toggle`' label when it is in focus.
    * @property {?string} labelBlurColor The color of the `Menu.Toggle`'s label when it is blurred.
    * @property {?string|number} labelFocusFontWeight The font weight of the `Menu.Toggle`'s label when it is in focus.
@@ -441,7 +441,7 @@ class Toggle extends Item {
    * @param {boolean} config.checked The initial status of the `Toggle`. Default: `false`.
    * @param {boolean} config.prepend Whether to put the checkbox icon at the start or end of the label. Default: `true`.
    * @param {function} config.callback The function to call when this item is toggled. This callback is passed the current `checked` state as an argument.
-   * @param {MenuToggleStyleConfig} config.style Optional style configuration object.
+   * @param {?MenuToggleStyleConfig} config.style Optional style configuration object.
    */
   constructor(config) {
     super();
@@ -556,7 +556,7 @@ class Toggle extends Item {
  * @property {boolean} border Whether or not to create a border around the menu. Default `true`.
  * @property {boolean} deleteOnBlur Whether to delete the menu when it becomes unfocused. Default `false`. **NOTE:** If `config.autoFocus` is set to false, the `Menu` will be deleted immediately!
  * @property {?number} gamepad An optional number indicating the gamepad (0-based index) this menu should accept input from. Set to `-1` to accept input from all gamepads.
- * @property {MenuStyleConfig} style Optional style configuration object.
+ * @property {?MenuStyleConfig} style Optional style configuration object.
  */
 
 class Menu extends UIObject {
@@ -570,7 +570,7 @@ class Menu extends UIObject {
 
   /**
    * Configuration data for the `Scroller`'s `configuration.style` property.
-   * @typedef {?Object<string, string|number>} MenuStyleConfig
+   * @typedef {Object} MenuStyleConfig
    * @property {?string} borderFocusColor The color of the `Menu`'s border when the `Menu` is in focus.
    * @property {?string} borderBlurColor The color of the `Menu`'s border when the `Menu` is blurred.
    * @property {?string} titleFocusColor The color of the `Menu`'s title text when the `Menu` is in focus.

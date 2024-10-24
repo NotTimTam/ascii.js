@@ -8,7 +8,7 @@ import Style from "../core/Style.js";
 
 /**
  * Configuration data for the `Scroller`'s `configuration.style` property.
- * @typedef {?Object<string, string|number>} ScrollerStyleConfig
+ * @typedef {Object} ScrollerStyleConfig
  * @property {?string} thumbFocusColor The color of the `Scroller`'s scrollbar thumbs when the `Scroller` is in focus.
  * @property {?string} thumbBlurColor The color of the `Scroller`'s scrollbar thumbs when the `Scroller` is blurred.
  * @property {?string} trackFocusColor The color of the `Scroller`'s scrollbar tracks when the `Scroller` is in focus.
@@ -34,7 +34,7 @@ import Style from "../core/Style.js";
  * @property {number} width The width of the `Scroller`. Defaults to `8`. **Note:** This is the width of the `Scroller` "window", not the width of the view area.
  * @property {number} height The height of the `Scroller`. Defaults to `8`. **Note:** This is the height of the `Scroller` "window", not the height of the view area.
  * @property {?string} gameObjects The `GameObject`s to display in the `Scroller`.
- * @property {ScrollerStyleConfig} style Optional style configuration object.
+ * @property {?ScrollerStyleConfig} style Optional style configuration object.
  */
 
 class Scroller extends UIObject {

@@ -6,7 +6,7 @@ import Style from "../core/Style.js";
 class TextInput extends UIObject {
   /**
    * Configuration data for the `TextInput`'s `configuration.style` property.
-   * @typedef {?Object<string, string|number>} TextInputStyleConfig
+   * @typedef {Object} TextInputStyleConfig
    * @property {?string} focusColor The color of the `Menu.Button` when it is in focus.
    * @property {?string} blurColor The color of the `Menu.Button` when it is blurred.
    * @property {?string|number} placeholderColor The font weight of the `Menu.Button` when it is in focus.
@@ -45,7 +45,7 @@ class TextInput extends UIObject {
    * @property {function} onKeyDown Callback that runs when the input recieves a keypress.
    * @property {?number} maxLength An optional maximum input length.
    * @property {?string} placeholder An optional placeholder text value to display when the `value` property is "".
-   * @property {TextInputStyleConfig} style Optional style config object.
+   * @property {?TextInputStyleConfig} style Optional style config object.
    */
 
   /**
