@@ -7,11 +7,11 @@ class TextInput extends UIObject {
   /**
    * Configuration data for the `TextInput`'s `configuration.style` property.
    * @typedef {Object} TextInputStyleConfig
-   * @property {Object} focused Styles to use when the `TextInput` is focused.
+   * @property {?Object} focused Styles to use when the `TextInput` is focused.
    * @property {?string} focused.color The color of the `TextInput`'s text when it is in focus.
    * @property {?string|number} focused.fontWeight The font weight of the `TextInput`'s text when it is in focus.
    * @property {?string} focused.backgroundColor The background color of the `TextInput` when it is in focus.
-   * @property {Object} blurred Styles to use when the `TextInput` is out of focus.
+   * @property {?Object} blurred Styles to use when the `TextInput` is out of focus.
    * @property {?string} blurred.color The color of the `TextInput`'s text when it is blurred.
    * @property {?string|number} blurred.fontWeight The font weight of the `TextInput`'s text when it is blurred.
    * @property {?string} blurred.backgroundColor The background color of the `TextInput` when it is blurred.
