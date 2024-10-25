@@ -1,5 +1,5 @@
 export default `
-self.onmessage = function ({ data: { data: frame, characterSize: [cW, cH], width, height, fontSize, lastFrame } }) {
+self.onmessage = function ({ data: { data: frame, characterSize: [cW, cH], width, height, fontSize, fontFamily, lastFrame } }) {
 	const canvas = new OffscreenCanvas(cW * width, cH * height);
 	const ctx = canvas.getContext('2d');
 	ctx.textAlign = "left";
@@ -34,7 +34,7 @@ self.onmessage = function ({ data: { data: frame, characterSize: [cW, cH], width
 
 			ctx.font = \`\${
 				fontWeight || "normal"
-			} \${fontSize} monospace\`;
+			} \${fontSize} \${fontFamily}\`;
 
 			ctx.fillStyle = color || "#FFFFFF";
 

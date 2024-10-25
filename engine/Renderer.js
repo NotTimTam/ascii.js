@@ -72,6 +72,11 @@ class Renderer {
 				"Invalid fontSize parameter provided to renderer config. Must be of type 'string'"
 			);
 
+		if (config.fontFamily && typeof config.fontFamily !== "string")
+			throw new Error(
+				"Invalid fontFamily parameter provided to renderer config. Must be of type 'string'"
+			);
+
 		if (config.scaling) {
 			const scalingEnum = ["off", "letterbox"];
 
@@ -123,7 +128,12 @@ class Renderer {
 		this.drawing = false;
 		this.hasDrawn = false;
 
-		const { fontSize, canvas, forceParentStyles = true } = this.config;
+		const {
+			fontSize = "32px",
+			fontFamily = "monospace",
+			canvas,
+			forceParentStyles = true,
+		} = this.config;
 
 		// Load in the renderer's canvas.
 		if (typeof canvas === "string")
@@ -136,31 +146,31 @@ class Renderer {
 
 		if (forceParentStyles)
 			this.element.parentElement.style = `
-			width: 100vw;
-			height: 100vh;
-			overflow: hidden;
-			background-color: black;
-			padding: 0;
-			margin: 0;
-			box-sizing: border-box;
-			position: relative;
-		`;
+width: 100vw;
+height: 100vh;
+overflow: hidden;
+background-color: black;
+padding: 0;
+margin: 0;
+box-sizing: border-box;
+position: relative;
+`;
 
 		this.element.style = `
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translateX(-50%) translateY(-50%);
+position: absolute;
+top: 50%;
+left: 50%;
+transform: translateX(-50%) translateY(-50%);
 
-			box-sizing: border-box;
-			padding: 0;
-			margin: 0;
+box-sizing: border-box;
+padding: 0;
+margin: 0;
 
-			width: 100%;
-			height: 100%;
+width: 100%;
+height: 100%;
 
-			background-color: black;
-		`;
+background-color: black;
+`;
 
 		this.ctx = this.element.getContext("2d");
 
@@ -171,7 +181,7 @@ class Renderer {
 		ctx.canvas.style.width = `${window.innerWidth}px`;
 		ctx.canvas.style.height = `${window.innerHeight}px`;
 
-		ctx.font = `${fontSize} monospace`;
+		ctx.font = `${fontSize} ${fontFamily}`;
 		const {
 			width: characterWidth,
 			fontBoundingBoxAscent,
@@ -306,7 +316,7 @@ class Renderer {
 					characterSize,
 					width,
 					height,
-					config: { fontSize },
+					config: { fontSize = "32px", fontFamily = "monospace" },
 				} = this;
 
 				this.webWorkers.drawFrame.postMessage({
@@ -315,11 +325,12 @@ class Renderer {
 					width,
 					height,
 					fontSize,
+					fontFamily,
 					lastFrame: frames.indexOf(frame) === frames.length - 1,
 				});
 			} else {
 				const {
-					config: { fontSize = "32px" },
+					config: { fontSize = "32px", fontFamily = "monospace" },
 
 					characterSize: [cW, cH],
 
@@ -361,7 +372,7 @@ class Renderer {
 
 						ctx.font = `${
 							fontWeight || "normal"
-						} ${fontSize} monospace`;
+						} ${fontSize} ${fontFamily}`;
 
 						ctx.fillStyle = color || "#FFFFFF";
 
