@@ -88,19 +88,18 @@ class Button extends Item {
       index,
       label,
       wrap,
+      style,
     } = this;
+
+    const { color, fontWeight } =
+      style[activeIndex === index ? "focused" : "blurred"];
 
     const display = PixelMesh.fromString(
       wrap ? wrapString(label, width, true) : label.slice(0, width)
     );
 
-    if (activeIndex === index) {
-      display.setColor(this.style.focusColor);
-      display.setFontWeight(this.style.focusFontWeight);
-    } else {
-      display.setColor(this.style.blurColor);
-      display.setFontWeight(this.style.blurFontWeight);
-    }
+    display.setColor(color);
+    display.setFontWeight(fontWeight);
 
     return display;
   }
@@ -110,36 +109,42 @@ class Slider extends Item {
   /**
    * Configuration data for the `Menu.Slider`'s `configuration.style` property.
    * @typedef {Object} MenuSliderStyleConfig
-   * @property {?string} labelFocusColor The color of the `Menu.Slider`' label when it is in focus.
-   * @property {?string} labelBlurColor The color of the `Menu.Slider`'s label when it is blurred.
-   * @property {?string|number} labelFocusFontWeight The font weight of the `Menu.Slider`'s label when it is in focus.
-   * @property {?string|number} labelBlurFontWeight The font weight of the `Menu.Slider`'s label when it is blurred.
-   * @property {?string} thumbFocusColor The color of the `Menu.Slider`'s thumb when it is in focus.
-   * @property {?string} thumbBlurColor The color of the `Menu.Slider`'s thumb when it is blurred.
-   * @property {?string|number} thumbFocusFontWeight The font weight of the `Menu.Slider`'s thumb when it is in focus.
-   * @property {?string|number} thumbBlurFontWeight The font weight of the `Menu.Slider`'s thumb when it is blurred.
    * @property {?string} thumb The character for the `Menu.Slider`'s thumb.
-   * @property {?string} trackFocusColor The color of the `Menu.Slider`'s track when it is in focus.
-   * @property {?string} trackBlurColor The color of the `Menu.Slider`'s track when it is blurred.
-   * @property {?string|number} trackFocusFontWeight The font weight of the `Menu.Slider`'s track when it is in focus.
-   * @property {?string|number} trackBlurFontWeight The font weight of the `Menu.Slider`'s track when it is blurred.
    * @property {?string} track The character for the `Menu.Slider`'s track.
+   * @property {?Object} focused The styles to use when the `Menu.Slider` is in focus.
+   * @property {?string} focused.labelColor The color of the `Menu.Slider`' label when it is in focus.
+   * @property {?string|number} focused.labelFontWeight The font weight of the `Menu.Slider`'s label when it is in focus.
+   * @property {?string} focused.thumbColor The color of the `Menu.Slider`'s thumb when it is in focus.
+   * @property {?string|number} focused.thumbFontWeight The font weight of the `Menu.Slider`'s thumb when it is in focus.
+   * @property {?string} focused.trackColor The color of the `Menu.Slider`'s track when it is in focus.
+   * @property {?string|number} focused.trackFontWeight The font weight of the `Menu.Slider`'s track when it is in focus.
+   * @property {?Object} blurred The styles to use when the `Menu.Slider` is blurred.
+   * @property {?string} blurred.labelColor The color of the `Menu.Slider`'s label when it is blurred.
+   * @property {?string|number} blurred.labelFontWeight The font weight of the `Menu.Slider`'s label when it is blurred.
+   * @property {?string} blurred.thumbColor The color of the `Menu.Slider`'s thumb when it is blurred.
+   * @property {?string|number} blurred.thumbFontWeight The font weight of the `Menu.Slider`'s thumb when it is blurred.
+   * @property {?string} blurred.trackColor The color of the `Menu.Slider`'s track when it is blurred.
+   * @property {?string|number} blurred.trackFontWeight The font weight of the `Menu.Slider`'s track when it is blurred.
    */
   static style = {
-    labelFocusColor: new Style.Parameter("color", "white"),
-    labelBlurColor: new Style.Parameter("color", "grey"),
-    labelFocusFontWeight: new Style.Parameter("fontWeight", 400),
-    labelBlurFontWeight: new Style.Parameter("fontWeight", 400),
-    thumbFocusColor: new Style.Parameter("color", "green"),
-    thumbBlurColor: new Style.Parameter("color", "grey"),
-    thumbFocusFontWeight: new Style.Parameter("fontWeight", 800),
-    thumbBlurFontWeight: new Style.Parameter("fontWeight", 400),
     thumb: new Style.Parameter("char", "█"),
-    trackFocusColor: new Style.Parameter("color", "white"),
-    trackBlurColor: new Style.Parameter("color", "grey"),
-    trackFocusFontWeight: new Style.Parameter("fontWeight", 400),
-    trackBlurFontWeight: new Style.Parameter("fontWeight", 400),
     track: new Style.Parameter("char", "─"),
+    focused: new Style({
+      labelColor: new Style.Parameter("color", "white"),
+      labelFontWeight: new Style.Parameter("fontWeight", 400),
+      thumbColor: new Style.Parameter("color", "green"),
+      thumbFontWeight: new Style.Parameter("fontWeight", 800),
+      trackColor: new Style.Parameter("color", "white"),
+      trackFontWeight: new Style.Parameter("fontWeight", 400),
+    }),
+    blurred: new Style({
+      labelColor: new Style.Parameter("color", "grey"),
+      labelFontWeight: new Style.Parameter("fontWeight", 400),
+      thumbColor: new Style.Parameter("color", "grey"),
+      thumbFontWeight: new Style.Parameter("fontWeight", 400),
+      trackColor: new Style.Parameter("color", "grey"),
+      trackFontWeight: new Style.Parameter("fontWeight", 400),
+    }),
   };
 
   /**
@@ -296,37 +301,28 @@ class Slider extends Item {
       showValue,
       showPercentage,
       sliderWidth,
-      style: {
-        labelFocusColor,
-        labelBlurColor,
-        labelFocusFontWeight,
-        labelBlurFontWeight,
-        thumbFocusColor,
-        thumbBlurColor,
-        thumbFocusFontWeight,
-        thumbBlurFontWeight,
-        thumb: thumbChar,
-        trackFocusColor,
-        trackBlurColor,
-        trackFocusFontWeight,
-        trackBlurFontWeight,
-        track: trackChar,
-      },
+      style: { thumb: thumbChar, track: trackChar },
+      style,
     } = this;
 
     const active = activeIndex === index;
+
+    const {
+      labelColor,
+      labelFontWeight,
+      thumbColor,
+      thumbFontWeight,
+      trackColor,
+      trackFontWeight,
+    } = style[active ? "focused" : "blurred"];
 
     let data = [];
 
     if (label) {
       const labelMesh = PixelMesh.fromString(this.label + " ");
-      if (active) {
-        labelMesh.setColor(labelFocusColor);
-        labelMesh.setFontWeight(labelFocusFontWeight);
-      } else {
-        labelMesh.setColor(labelBlurColor);
-        labelMesh.setFontWeight(labelBlurFontWeight);
-      }
+      labelMesh.setColor(labelColor);
+      labelMesh.setFontWeight(labelFontWeight);
+
       data.push(labelMesh.data[0]);
     }
 
@@ -338,8 +334,8 @@ class Slider extends Item {
 
     const track = new Pixel({
       value: trackChar,
-      color: active ? trackFocusColor : trackBlurColor,
-      fontWeight: active ? trackFocusFontWeight : trackBlurFontWeight,
+      color: trackColor,
+      fontWeight: trackFontWeight,
     });
 
     const [leftSide, rightSide] = [
@@ -352,8 +348,8 @@ class Slider extends Item {
         ...leftSide,
         new Pixel({
           value: thumbChar,
-          color: active ? thumbFocusColor : thumbBlurColor,
-          fontWeight: active ? thumbFocusFontWeight : thumbBlurFontWeight,
+          color: thumbColor,
+          fontWeight: thumbFontWeight,
         }),
         ...rightSide,
       ],
@@ -389,8 +385,8 @@ class Slider extends Item {
         null,
         new Pixel({
           value: "-",
-          color: active ? labelFocusColor : labelBlurColor,
-          fontWeight: active ? labelFocusFontWeight : labelBlurFontWeight,
+          color: labelColor,
+          fontWeight: labelFontWeight,
         })
       );
 
@@ -399,13 +395,8 @@ class Slider extends Item {
         (" " + Math.round((value / max) * 100) + "%").padEnd(5, " ")
       );
 
-      if (active) {
-        percentageMesh.setColor(labelFocusColor);
-        percentageMesh.setFontWeight(labelFocusFontWeight);
-      } else {
-        percentageMesh.setColor(labelBlurColor);
-        percentageMesh.setFontWeight(labelBlurFontWeight);
-      }
+      percentageMesh.setColor(labelColor);
+      percentageMesh.setFontWeight(labelFontWeight);
 
       data[0].push(...percentageMesh.data[0]);
     }
