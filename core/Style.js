@@ -4,165 +4,201 @@ import { displayArray, isPlainObject } from "../util/data.js";
  * A single parameter of a `Style` instance.
  */
 class Parameter {
-  /**
-   * Creates a new `Style.Parameter` instance.
-   * @param {"color"|"backgroundColor"|"fontWeight"|"char"} type The `Style.types`-sourced style parameter type.
-   * @param {string|number|null} fallback A fallback value to set if no value is configured.
-   * @param {boolean} optional Whether or not this parameter is optional. Default `false`.
-   */
-  constructor(type, fallback, optional = false) {
-    if (!Style.types.includes(type))
-      throw new SyntaxError(
-        `Invalid type provided to Style.Parameter. Expected one of: ${displayArray(
-          Style.types
-        )}`
-      );
+	/**
+	 * Creates a new `Style.Parameter` instance.
+	 * @param {"color"|"backgroundColor"|"fontWeight"|"char"} type The `Style.types`-sourced style parameter type.
+	 * @param {string|number|null} fallback A fallback value to set if no value is configured.
+	 * @param {boolean} optional Whether or not this parameter is optional. Default `false`.
+	 */
+	constructor(type, fallback, optional = false) {
+		if (!Style.types.includes(type))
+			throw new SyntaxError(
+				`Invalid type provided to Style.Parameter. Expected one of: ${displayArray(
+					Style.types
+				)}`
+			);
 
-    Style.validators[type](fallback);
+		Style.validators[type](fallback);
 
-    this.__rawType = type;
-    this.__rawFallback = fallback;
-    this.__rawOptional = Boolean(optional);
-  }
+		this.__rawType = type;
+		this.__rawFallback = fallback;
+		this.__rawOptional = Boolean(optional);
+	}
 
-  /**
-   * Get this `Parameter`'s type value.
-   */
-  get type() {
-    return this.__rawType;
-  }
+	/**
+	 * Get this `Parameter`'s type value.
+	 */
+	get type() {
+		return this.__rawType;
+	}
 
-  /**
-   * Get this `Parameter`'s fallback value.
-   */
-  get fallback() {
-    return this.__rawFallback;
-  }
+	/**
+	 * Get this `Parameter`'s fallback value.
+	 */
+	get fallback() {
+		return this.__rawFallback;
+	}
 
-  /**
-   * Get this `Parameter`'s option value.
-   */
-  get option() {
-    return this.__rawOptional;
-  }
+	/**
+	 * Get this `Parameter`'s option value.
+	 */
+	get option() {
+		return this.__rawOptional;
+	}
 }
 
 /**
  * Manages styling attributes for `Pixel`s.
  */
 class Style {
-  static Parameter = Parameter;
+	static Parameter = Parameter;
 
-  /**
-   * Methods for validating style types.
-   */
-  static validators = {
-    color: (v) => {
-      if (!v || typeof v !== "string")
-        throw new TypeError("Expected a string for color value.");
-    },
-    backgroundColor: (v) => {
-      if (!v) return; // Characters are allowed to have no background color.
+	/**
+	 * Methods for validating style types.
+	 */
+	static validators = {
+		color: (v) => {
+			if (!v || typeof v !== "string")
+				throw new TypeError("Expected a string for color value.");
+		},
+		backgroundColor: (v) => {
+			if (!v) return; // Characters are allowed to have no background color.
 
-      if (typeof v !== "string")
-        throw new TypeError("Expected a string for backgroundColor value.");
-    },
-    fontWeight: (v) => {
-      if (!v || (typeof v !== "string" && typeof v !== "number"))
-        throw new TypeError("Expected a string or number for color value.");
-    },
-    char: (v) => {
-      if (!v || typeof v !== "string" || v.length !== 1)
-        throw new SyntaxError("Expected a 1-character string for char value.");
-    },
-  };
+			if (typeof v !== "string")
+				throw new TypeError(
+					"Expected a string for backgroundColor value."
+				);
+		},
+		fontWeight: (v) => {
+			if (!v || (typeof v !== "string" && typeof v !== "number"))
+				throw new TypeError(
+					"Expected a string or number for color value."
+				);
 
-  /**
-   * Names of each allowed style type.
-   */
-  static types = Object.keys(Style.validators);
+			const validStrings = ["normal", "bold", "lighter", "bolder"];
 
-  /**
-   * Creates a new `Style` instance.
-   * @param {Object<string, Style|Style.Parameter>} config An object where the key is the name of the state, and the value is an instance of `Style` or `Style.Parameter`.
-   */
-  constructor(config) {
-    this.config = config;
-  }
+			// Handle number inputs.
+			if (
+				typeof v === "number" &&
+				(v < 1 || v > 1000 || !Number.isInteger(v))
+			)
+				throw new SyntaxError(
+					"Numeric font weights must be an integer between 1-1000."
+				);
+			// Handle string inputs.
+			else if (typeof v === "string" && !validStrings.includes(v))
+				throw new SyntaxError(
+					`Text-based font weights must be one of: ${displayArray(
+						validStrings
+					)}`
+				);
+		},
+		char: (v) => {
+			if (!v || typeof v !== "string" || v.length !== 1)
+				throw new SyntaxError(
+					"Expected a 1-character string for char value."
+				);
+		},
+	};
 
-  /**
-   * Get this `Style` instance's `config` object.
-   */
-  get config() {
-    return this.__rawConfig;
-  }
+	/**
+	 * Names of each allowed style type.
+	 */
+	static types = Object.keys(Style.validators);
 
-  /**
-   * Set this `Style` instance's `config` object.
-   */
-  set config(obj) {
-    if (!obj) throw new Error('No "config" object provided to Style instance.');
+	/**
+	 * Creates a new `Style` instance.
+	 * @param {Object<string, Style|Style.Parameter>} config An object where the key is the name of the state, and the value is an instance of `Style` or `Style.Parameter`.
+	 */
+	constructor(config) {
+		this.config = config;
+	}
 
-    // Validate config.
-    for (const [key, value] of Object.entries(obj)) {
-      if (key === "config")
-        throw new SyntaxError('"config" is a reserved Style field name.');
-      if (!(value instanceof Style.Parameter) && !(value instanceof Style))
-        throw new TypeError(
-          `Each value in a Style instance's "config" object must be an instance of "Style" or "Style.Parameter".`
-        );
-    }
+	/**
+	 * Get this `Style` instance's `config` object.
+	 */
+	get config() {
+		return this.__rawConfig;
+	}
 
-    // Erase old config.
-    Object.keys({ ...this.config })
-      .filter((key) => !obj.hasOwnProperty(key))
-      .forEach((key) => delete this[key]);
+	/**
+	 * Set this `Style` instance's `config` object.
+	 */
+	set config(obj) {
+		if (!obj)
+			throw new Error('No "config" object provided to Style instance.');
 
-    // Apply config.
-    for (const [key, value] of Object.entries(obj)) {
-      Object.defineProperty(this, key, {
-        get: function () {
-          if (value instanceof Style.Parameter)
-            return this[`__raw${key}`] ? this[`__raw${key}`] : value.fallback;
-          else if (value instanceof Style)
-            return this[`__raw${key}`] ? this[`__raw${key}`] : value;
-        },
-        set: function (v) {
-          try {
-            Style.validators[value.type](v);
-          } catch (err) {
-            throw new Error(`Failed to set "${key}": ${err.message}`);
-          }
+		// Validate config.
+		for (const [key, value] of Object.entries(obj)) {
+			if (key === "config")
+				throw new SyntaxError(
+					'"config" is a reserved Style field name.'
+				);
+			if (
+				!(value instanceof Style.Parameter) &&
+				!(value instanceof Style)
+			)
+				throw new TypeError(
+					`Each value in a Style instance's "config" object must be an instance of "Style" or "Style.Parameter".`
+				);
+		}
 
-          this[`__raw${key}`] = v;
-        },
-      });
-    }
+		// Erase old config.
+		Object.keys({ ...this.config })
+			.filter((key) => !obj.hasOwnProperty(key))
+			.forEach((key) => delete this[key]);
 
-    this.__rawConfig = obj;
-  }
+		// Apply config.
+		for (const [key, value] of Object.entries(obj)) {
+			Object.defineProperty(this, key, {
+				get: function () {
+					if (value instanceof Style.Parameter)
+						return this[`__raw${key}`]
+							? this[`__raw${key}`]
+							: value.fallback;
+					else if (value instanceof Style)
+						return this[`__raw${key}`]
+							? this[`__raw${key}`]
+							: value;
+				},
+				set: function (v) {
+					try {
+						Style.validators[value.type](v);
+					} catch (err) {
+						throw new Error(
+							`Failed to set "${key}": ${err.message}`
+						);
+					}
 
-  /**
-   * Update this `Style` instance's style values from an object.
-   * @param {Object<string, string|number>} obj The style object to set.
-   */
-  hydrate(obj = {}) {
-    if (!obj)
-      throw new TypeError('No "obj" provided to "Style.hydrate" method.');
+					this[`__raw${key}`] = v;
+				},
+			});
+		}
 
-    for (const [key, value] of Object.entries(obj)) {
-      if (!this.config.hasOwnProperty(key))
-        throw new Error(
-          `This Style configuration has no property named "${key}".`
-        );
+		this.__rawConfig = obj;
+	}
 
-      // If value is a sub-style configuration.
-      if (isPlainObject(value)) this[key].hydrate(value);
-      else this[key] = value; // If value is a parameter definition.
-    }
+	/**
+	 * Update this `Style` instance's style values from an object.
+	 * @param {Object<string, string|number>} obj The style object to set.
+	 */
+	hydrate(obj = {}) {
+		if (!obj)
+			throw new TypeError('No "obj" provided to "Style.hydrate" method.');
 
-    return this;
-  }
+		for (const [key, value] of Object.entries(obj)) {
+			if (!this.config.hasOwnProperty(key))
+				throw new Error(
+					`This Style configuration has no property named "${key}".`
+				);
+
+			// If value is a sub-style configuration.
+			if (isPlainObject(value)) this[key].hydrate(value);
+			else this[key] = value; // If value is a parameter definition.
+		}
+
+		return this;
+	}
 }
 
 export default Style;
