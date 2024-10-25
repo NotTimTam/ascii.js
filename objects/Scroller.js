@@ -6,37 +6,6 @@ import Box from "./Box.js";
 import GameObject from "../core/GameObject.js";
 import Style from "../core/Style.js";
 
-/**
- * Configuration data for the `Scroller`'s `configuration.style` property.
- * @typedef {Object} ScrollerStyleConfig
- * @property {?string} thumbFocusColor The color of the `Scroller`'s scrollbar thumbs when the `Scroller` is in focus.
- * @property {?string} thumbBlurColor The color of the `Scroller`'s scrollbar thumbs when the `Scroller` is blurred.
- * @property {?string} trackFocusColor The color of the `Scroller`'s scrollbar tracks when the `Scroller` is in focus.
- * @property {?string} trackBlurColor The color of the `Scroller`'s scrollbar tracks when the `Scroller` is blurred.
- * @property {?string} borderFocusColor The color of the `Scroller`'s border when the `Scroller` is in focus.
- * @property {?string} borderBlurColor The color of the `Scroller`'s border when the `Scroller` is blurred.
- */
-
-/**
- * Configuration data for the `Scroller` class.
- * @typedef {Object} ScrollerConfig
- * @property {number} x This `Scroller` object's x-coordinate.
- * @property {number} y This `Scroller` object's y-coordinate.
- * @property {number} zIndex A numeric value determining the rendering heirarchy position this `Scroller` should fall in.
- *
- * `Scroller`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
- * @property {?string} layer The (optional) label of the layer to initialize the `Scroller` on.
- * @property {number} tabIndex A numeric value determining the index in the focus array this `Scroller` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
- *
- * A `tabIndex` of `-1` will mark the `Scroller` instance as "unfocusable", meaning focus-based events, such as `keydown` events specific to this `Scroller`, will not be triggered. Default `0`.
- * @property {boolean} autoFocus Whether to automatically focus on this `Scroller` after its instantiation. Default `false`.
- * @property {boolean} maintainFocus Force the `InputManager` to keep this `Scroller` in focus, even if attempts are made to focus on other `Scroller`s. Default `false`.
- * @property {number} width The width of the `Scroller`. Defaults to `8`. **Note:** This is the width of the `Scroller` "window", not the width of the view area.
- * @property {number} height The height of the `Scroller`. Defaults to `8`. **Note:** This is the height of the `Scroller` "window", not the height of the view area.
- * @property {?string} gameObjects The `GameObject`s to display in the `Scroller`.
- * @property {?ScrollerStyleConfig} style Optional style configuration object.
- */
-
 class Scroller extends UIObject {
   /**
    * The width of the `Scroller` container's border.
@@ -48,19 +17,56 @@ class Scroller extends UIObject {
    */
   static scrollbarWidth = 1;
 
+  /**
+   * Configuration data for the `Scroller`'s `configuration.style` property.
+   * @typedef {Object} ScrollerStyleConfig
+   * @property {Object} focused Styles to use when the `Scroller` is focused.
+   * @property {?string} focused.thumbColor The color of the `Scroller`'s scrollbar thumbs when the `Scroller` is in focus.
+   * @property {?string} focused.trackColor The color of the `Scroller`'s scrollbar tracks when the `Scroller` is in focus.
+   * @property {?string} focused.borderColor The color of the `Scroller`'s border when the `Scroller` is in focus.
+   *
+   * @property {Object} blurred Styles to use when the `Scroller` is blurred.
+   * @property {?string} blurred.thumbColor The color of the `Scroller`'s scrollbar thumbs when the `Scroller` is blurred.
+   * @property {?string} blurred.trackColor The color of the `Scroller`'s scrollbar tracks when the `Scroller` is blurred.
+   * @property {?string} blurred.borderColor The color of the `Scroller`'s border when the `Scroller` is blurred.
+   */
   static style = {
-    thumbFocusColor: new Style.Parameter("color", "white"),
-    thumbBlurColor: new Style.Parameter("color", "grey"),
-    trackFocusColor: new Style.Parameter("color", "gray"),
-    trackBlurColor: new Style.Parameter("color", "#3c3c3c"),
-    borderFocusColor: new Style.Parameter("color", "white"),
-    borderBlurColor: new Style.Parameter("color", "grey"),
+    focused: new Style({
+      thumbColor: new Style.Parameter("color", "white"),
+      trackColor: new Style.Parameter("color", "gray"),
+      borderColor: new Style.Parameter("color", "white"),
+    }),
+    blurred: new Style({
+      thumbColor: new Style.Parameter("color", "grey"),
+      trackColor: new Style.Parameter("color", "#3c3c3c"),
+      borderColor: new Style.Parameter("color", "grey"),
+    }),
   };
+
+  /**
+   * Configuration data for the `Scroller` class.
+   * @typedef {Object} ScrollerConfig
+   * @property {number} x This `Scroller` object's x-coordinate.
+   * @property {number} y This `Scroller` object's y-coordinate.
+   * @property {number} zIndex A numeric value determining the rendering heirarchy position this `Scroller` should fall in.
+   *
+   * `Scroller`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
+   * @property {?string} layer The (optional) label of the layer to initialize the `Scroller` on.
+   * @property {number} tabIndex A numeric value determining the index in the focus array this `Scroller` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
+   *
+   * A `tabIndex` of `-1` will mark the `Scroller` instance as "unfocusable", meaning focus-based events, such as `keydown` events specific to this `Scroller`, will not be triggered. Default `0`.
+   * @property {boolean} autoFocus Whether to automatically focus on this `Scroller` after its instantiation. Default `false`.
+   * @property {boolean} maintainFocus Force the `InputManager` to keep this `Scroller` in focus, even if attempts are made to focus on other `Scroller`s. Default `false`.
+   * @property {number} width The width of the `Scroller`. Defaults to `8`. **Note:** This is the width of the `Scroller` "window", not the width of the view area.
+   * @property {number} height The height of the `Scroller`. Defaults to `8`. **Note:** This is the height of the `Scroller` "window", not the height of the view area.
+   * @property {?string} gameObjects The `GameObject`s to display in the `Scroller`.
+   * @property {?ScrollerStyleConfig} style Optional style configuration object.
+   */
 
   /**
    * A box that can be scrolled.
    * @param {Scene} scene The scene this Object is a part of.
-   * @param {ScrollerConfig} config The `Scroller`'s config object.
+   * @param {?ScrollerConfig} config The `Scroller`'s config object.
    */
   constructor(scene, config) {
     super(scene, config);
@@ -351,19 +357,13 @@ class Scroller extends UIObject {
         verticalScrollbarLength,
         horizontalScrollbarLength,
       },
+      style,
+      focused,
     } = this;
     const { borderWidth } = Scroller;
-    let track, thumb, border;
 
-    if (!this.focused) {
-      track = this.style.trackBlurColor;
-      thumb = this.style.thumbBlurColor;
-      border = this.style.borderBlurColor;
-    } else {
-      track = this.style.trackFocusColor;
-      thumb = this.style.thumbFocusColor;
-      border = this.style.borderFocusColor;
-    }
+    const { trackColor, thumbColor, borderColor } =
+      style[focused ? "focused" : "blurred"];
 
     const [vX, vY] = [borderWidth, borderWidth];
 
@@ -397,7 +397,7 @@ class Scroller extends UIObject {
       horizontalTrackX + horizontalThumbLength,
     ];
 
-    let data = Box.asPixelMesh(width, height, border, null, "line").data;
+    let data = Box.asPixelMesh(width, height, borderColor, null, "line").data;
 
     // Drawing the vertical scrollbar
     if (verticalScrollbar) {
@@ -414,8 +414,8 @@ class Scroller extends UIObject {
           value: "█",
           color:
             adjustedY >= verticalThumbTop && adjustedY < verticalThumbBottom
-              ? thumb
-              : track,
+              ? thumbColor
+              : trackColor,
         });
       }
     }
@@ -435,8 +435,8 @@ class Scroller extends UIObject {
           value: "▀",
           color:
             adjustedX >= horizontalThumbLeft && adjustedX < horizontalThumbRight
-              ? thumb
-              : track,
+              ? thumbColor
+              : trackColor,
         });
       }
     }
