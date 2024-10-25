@@ -1,192 +1,199 @@
 import GameObject from "../core/GameObject.js";
 import Pixel, { PixelMesh } from "../core/Pixel.js";
+import Style from "../core/Style.js";
 import { isPlainObject } from "../util/data.js";
 
-/**
- * Configuration data for the `Text` class.
- * @typedef {Object} TextConfig
- * @property {number} x This `Text` object's x-coordinate.
- * @property {number} y This `Text` object's y-coordinate.
- * @property {number} zIndex A numeric value determining the rendering heirarchy position this `Text` should fall in.
- *
- * `Text`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
- * @property {?string} layer The (optional) label of the layer to initialize the `Text` on.
- * @property {number} maxWidth The maximum width of the `Text`. Defaults to `Renderer.width`.
- * @property {string} value The text to display. (use `"\n"` for newlines)
- * @property {boolean} wrap Whether to wrap the text if it overflows the screen.
- * @property {string} color Option text color.
- * @property {?string} backgroundColor Optional background color.
- * @property {?string} fontWeight Optional font weight.
- */
-
 class Text extends GameObject {
-	/**
-	 * A string of text that can be rendered on screen.
-	 * @param {Scene} scene The scene this Object is a part of.
-	 * @param {TextConfig} config The `Text`'s config object.
-	 */
-	constructor(scene, config) {
-		if (!isPlainObject(config))
-			throw new TypeError(
-				"Expected a plain object for Text constructor config parameter."
-			);
+  /**
+   * Configuration data for the `Text`'s `configuration.style` property.
+   * @typedef {Object} TextStyleConfig
+   * @property {?string} color The color of the `Text`.
+   * @property {?string} backgroundColor The background color of the `Text`.
+   */
+  static style = {
+    color: new Style.Parameter("color", "white"),
+    backgroundColor: new Style.Parameter("backgroundColor", null),
+  };
 
-		const {
-			value = "Hello, world!",
-			wrap = true,
-			color = "#ffffff",
-			backgroundColor,
-			fontWeight = 400,
-			maxWidth = scene.runtime.renderer.width,
-		} = config;
-		super(scene, config);
+  /**
+   * Configuration data for the `Text` class.
+   * @typedef {Object} TextConfig
+   * @property {number} x This `Text` object's x-coordinate.
+   * @property {number} y This `Text` object's y-coordinate.
+   * @property {number} zIndex A numeric value determining the rendering heirarchy position this `Text` should fall in.
+   *
+   * `Text`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
+   * @property {?string} layer The (optional) label of the layer to initialize the `Text` on.
+   * @property {number} maxWidth The maximum width of the `Text`. Defaults to `Renderer.width`.
+   * @property {string} value The text to display. (use `"\n"` for newlines)
+   * @property {boolean} wrap Whether to wrap the text if it overflows the screen.
+   * @property {?string} fontWeight Optional font weight.
+   * @property {?TextStyleConfig} style Optional style configuration object.
+   */
 
-		if (maxWidth) {
-			if (
-				typeof maxWidth !== "number" ||
-				!Number.isInteger(maxWidth) ||
-				maxWidth < 1
-			)
-				throw new TypeError(
-					"Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
-				);
-			this.maxWidth = maxWidth;
-		}
+  /**
+   * A string of text that can be rendered on screen.
+   * @param {Scene} scene The scene this Object is a part of.
+   * @param {TextConfig} config The `Text`'s config object.
+   */
+  constructor(scene, config) {
+    const {
+      value = "Hello, world!",
+      wrap = true,
+      fontWeight = 400,
+      maxWidth = scene.runtime.renderer.width,
+      style = {},
+    } = config;
+    super(scene, config);
 
-		this.__rawValue = value;
-		this.wrap = wrap;
-		this.color = color;
-		this.backgroundColor = backgroundColor;
-		this.fontWeight = fontWeight;
-	}
+    if (maxWidth) {
+      if (
+        typeof maxWidth !== "number" ||
+        !Number.isInteger(maxWidth) ||
+        maxWidth < 1
+      )
+        throw new TypeError(
+          "Invalid config.maxWidth value provided to Text. Expected an integer greater than 0."
+        );
+      this.maxWidth = maxWidth;
+    }
 
-	/**
-	 * Get the value of the text object.
-	 */
-	get value() {
-		return String(this.__rawValue);
-	}
+    this.__rawValue = value;
+    this.wrap = wrap;
+    this.fontWeight = fontWeight;
+    this.style = new Style(Text.style).hydrate(style);
+  }
 
-	/**
-	 * Set the value of the text object.
-	 */
-	set value(value) {
-		if (typeof value !== "string")
-			throw new Error(
-				`Provided text value "${value}" is not of type "string".`
-			);
+  /**
+   * Get the value of the text object.
+   */
+  get value() {
+    return String(this.__rawValue);
+  }
 
-		this.__rawValue = value;
-	}
+  /**
+   * Set the value of the text object.
+   */
+  set value(value) {
+    if (typeof value !== "string")
+      throw new Error(
+        `Provided text value "${value}" is not of type "string".`
+      );
 
-	get renderable() {
-		const { wrap, value, maxWidth, color, backgroundColor, fontWeight } =
-			this;
+    this.__rawValue = value;
+  }
 
-		return Text.asPixelMesh(
-			value,
-			maxWidth,
-			wrap,
-			color,
-			backgroundColor,
-			fontWeight
-		);
-	}
+  get renderable() {
+    const { wrap, value, maxWidth, style, fontWeight } = this;
 
-	/**
-	 * Get just the renderable `PixelMesh` portion of a `Text` instance.
-	 * @param {string} config.value The text to display. (use `"\n"` for newlines)
-	 * @param {number} config.maxWidth The maximum width of the `Text`. Defaults to `Renderer.width`.
-	 * @param {boolean} config.wrap Whether to wrap the text if it overflows the screen.
-	 * @param {string} config.color Option text color.
-	 * @param {?string} config.backgroundColor Optional background color.
-	 * @param {?string} config.fontWeight Optional font weight.
-	 * @returns {PixelMesh} The generated `PixelMesh`.
-	 */
-	static asPixelMesh(
-		value,
-		maxWidth,
-		wrap,
-		color,
-		backgroundColor,
-		fontWeight
-	) {
-		const lines = value.split("\n");
+    return Text.asPixelMesh(
+      value,
+      maxWidth,
+      wrap,
+      style.color,
+      style.backgroundColor,
+      fontWeight
+    );
+  }
 
-		const data = [];
+  /**
+   * Get just the renderable `PixelMesh` portion of a `Text` instance.
+   * @param {string} config.value The text to display. (use `"\n"` for newlines)
+   * @param {number} config.maxWidth The maximum width of the `Text`. Defaults to `Renderer.width`.
+   * @param {boolean} config.wrap Whether to wrap the text if it overflows the screen.
+   * @param {string} config.color Option text color.
+   * @param {?string} config.backgroundColor Optional background color.
+   * @param {?string} config.fontWeight Optional font weight.
+   * @returns {PixelMesh} The generated `PixelMesh`.
+   */
+  static asPixelMesh(
+    value,
+    maxWidth,
+    wrap,
+    color,
+    backgroundColor,
+    fontWeight
+  ) {
+    const lines = value.split("\n");
 
-		for (const line of lines) {
-			if (!wrap && line.length > maxWidth) {
-				// If wrap is false and line length exceeds maxWidth, ignore overflowing text
-				data.push(
-					line
-						.substring(0, maxWidth)
-						.split("")
-						.map(
-							(char) =>
-								new Pixel({
-									value: char,
-									color,
-									backgroundColor,
-									fontWeight,
-								})
-						)
-				);
-			} else {
-				// Handle wrapping or normal behavior
-				let currentLine = [];
-				let currentLength = 0;
+    const data = [];
 
-				for (const char of line) {
-					if (currentLength >= maxWidth) {
-						if (wrap) {
-							// If wrap is true, move to the next line
-							data.push(
-								currentLine.map(
-									(char) =>
-										new Pixel({
-											value: char,
-											color,
-											backgroundColor,
-											fontWeight,
-										})
-								)
-							);
-							currentLine = [];
-							currentLength = 0;
-						} else {
-							// If wrap is false, break the loop as we ignore overflow
-							break;
-						}
-					}
+    for (const line of lines) {
+      if (!wrap && line.length > maxWidth) {
+        // If wrap is false and line length exceeds maxWidth, ignore overflowing text
+        data.push(
+          line === ""
+            ? []
+            : line
+                .substring(0, maxWidth)
+                .split("")
+                .map(
+                  (char) =>
+                    new Pixel({
+                      value: char,
+                      color,
+                      backgroundColor,
+                      fontWeight,
+                    })
+                )
+        );
+      } else {
+        // Handle wrapping or normal behavior
+        let currentLine = [];
+        let currentLength = 0;
 
-					currentLine.push(char);
-					currentLength++;
-				}
+        if (line === "") data.push([]);
+        else
+          for (const char of line) {
+            if (currentLength >= maxWidth) {
+              if (wrap) {
+                // If wrap is true, move to the next line
+                data.push(
+                  currentLine.map(
+                    (char) =>
+                      new Pixel({
+                        value: char,
+                        color,
+                        backgroundColor,
+                        fontWeight,
+                      })
+                  )
+                );
+                currentLine = [];
+                currentLength = 0;
+              } else {
+                // If wrap is false, break the loop as we ignore overflow
+                break;
+              }
+            }
 
-				// Push the remaining characters in the current line
-				if (currentLine.length > 0) {
-					data.push(
-						currentLine.map(
-							(char) =>
-								new Pixel({
-									value: char,
-									color,
-									backgroundColor,
-									fontWeight,
-								})
-						)
-					);
-				}
-			}
-		}
+            currentLine.push(char);
+            currentLength++;
+          }
 
-		return new PixelMesh({ data });
-	}
+        // Push the remaining characters in the current line
+        if (currentLine.length > 0) {
+          data.push(
+            currentLine.map(
+              (char) =>
+                new Pixel({
+                  value: char,
+                  color,
+                  backgroundColor,
+                  fontWeight,
+                })
+            )
+          );
+        }
+      }
+    }
 
-	set renderable(_) {
-		return;
-	}
+    return new PixelMesh({ data });
+  }
+
+  set renderable(_) {
+    return;
+  }
 }
 
 export default Text;

@@ -26,10 +26,10 @@ class Button extends Item {
   /**
    * Configuration data for the `Menu.Button`'s `configuration.style` property.
    * @typedef {Object} MenuButtonStyleConfig
-   * @property {?Object} focused Styles to use when the `Menu.Button` is focused.
+   * @property {Object} focused Styles to use when the `Menu.Button` is focused.
    * @property {?string} focused.color The color of the `Menu.Button` when it is in focus.
    * @property {?string|number} focused.fontWeight The font weight of the `Menu.Button` when it is in focus.
-   * @property {?Object} blurred Styles to use when the `Menu.Button` is blurred.
+   * @property {Object} blurred Styles to use when the `Menu.Button` is blurred.
    * @property {?string} blurred.color The color of the `Menu.Button` when it is blurred.
    * @property {?string|number} blurred.fontWeight The font weight of the `Menu.Button` when it is blurred.
    */
@@ -111,14 +111,14 @@ class Slider extends Item {
    * @typedef {Object} MenuSliderStyleConfig
    * @property {?string} thumb The character for the `Menu.Slider`'s thumb.
    * @property {?string} track The character for the `Menu.Slider`'s track.
-   * @property {?Object} focused The styles to use when the `Menu.Slider` is in focus.
+   * @property {Object} focused The styles to use when the `Menu.Slider` is in focus.
    * @property {?string} focused.labelColor The color of the `Menu.Slider`' label when it is in focus.
    * @property {?string|number} focused.labelFontWeight The font weight of the `Menu.Slider`'s label when it is in focus.
    * @property {?string} focused.thumbColor The color of the `Menu.Slider`'s thumb when it is in focus.
    * @property {?string|number} focused.thumbFontWeight The font weight of the `Menu.Slider`'s thumb when it is in focus.
    * @property {?string} focused.trackColor The color of the `Menu.Slider`'s track when it is in focus.
    * @property {?string|number} focused.trackFontWeight The font weight of the `Menu.Slider`'s track when it is in focus.
-   * @property {?Object} blurred The styles to use when the `Menu.Slider` is blurred.
+   * @property {Object} blurred The styles to use when the `Menu.Slider` is blurred.
    * @property {?string} blurred.labelColor The color of the `Menu.Slider`'s label when it is blurred.
    * @property {?string|number} blurred.labelFontWeight The font weight of the `Menu.Slider`'s label when it is blurred.
    * @property {?string} blurred.thumbColor The color of the `Menu.Slider`'s thumb when it is blurred.
@@ -409,18 +409,18 @@ class Toggle extends Item {
   /**
    * Configuration data for the `Menu.Toggle`'s `configuration.style` property.
    * @typedef {Object} MenuToggleStyleConfig
-   * @property {?Object} checked Styles to use when the `Menu.Toggle` is focused, and checked.
+   * @property {Object} checked Styles to use when the `Menu.Toggle` is focused, and checked.
    * @property {?string} checked.icon The character that will indicate "checked" for the `Menu.Toggle`'s icon.
    * @property {?string} checked.iconColor The color of the `Menu.Toggle`'s icon when it is checked and in focus.
    * @property {?string|number} checked.iconFontWeight The font weight of the `Menu.Toggle`'s icon when it is checked and in focus.
-   * @property {?Object} unchecked Styles to use when the `Menu.Toggle` is focused, and unchecked.
+   * @property {Object} unchecked Styles to use when the `Menu.Toggle` is focused, and unchecked.
    * @property {?string} unchecked.icon The character that will indicate "unchecked" for the `Menu.Toggle`'s icon.
    * @property {?string} unchecked.iconColor The color of the `Menu.Toggle`'s icon when it is unchecked and in focus.
    * @property {?string|number} unchecked.iconFontWeight The font weight of the `Menu.Toggle`'s icon when it is unchecked and in focus.
-   * @property {?Object} focused Styles to use when the `Menu.Toggle` is focused.
+   * @property {Object} focused Styles to use when the `Menu.Toggle` is focused.
    * @property {?string} focused.labelColor The color of the `Menu.Toggle`' label when it is in focus.
    * @property {?string|number} focused.labelFontWeight The font weight of the `Menu.Toggle`'s label when it is in focus.
-   * @property {?Object} blurred Styles to use when the `Menu.Toggle` is blurred.
+   * @property {Object} blurred Styles to use when the `Menu.Toggle` is blurred.
    * @property {?string} blurred.labelColor The color of the `Menu.Toggle`'s label when it is blurred.
    * @property {?string|number} blurred.labelFontWeight The font weight of the `Menu.Toggle`'s label when it is blurred.
    * @property {?string} blurred.iconColor The color of the `Menu.Toggle`'s icon when it is blurred.
@@ -563,10 +563,10 @@ class Menu extends UIObject {
   /**
    * Configuration data for the `Menu`'s `configuration.style` property.
    * @typedef {Object} MenuStyleConfig
-   * @property {?Object} focused Styles to use when the `Menu` is focused.
+   * @property {Object} focused Styles to use when the `Menu` is focused.
    * @property {?string} focused.titleColor The color of the `Menu`'s title text when the `Menu` is in focus.
    * @property {?string} focused.borderColor The color of the `Menu`'s border when the `Menu` is in focus.
-   * @property {?Object} blurred Styles to use when the `Menu` is blurred.
+   * @property {Object} blurred Styles to use when the `Menu` is blurred.
    * @property {?string} blurred.titleColor The color of the `Menu`'s title text when the `Menu` is blurred.
    * @property {?string} blurred.borderColor The color of the `Menu`'s border when the `Menu` is blurred.
    * @property {?string|number} titleFontWeight The font weight of the `Menu`'s title text.
