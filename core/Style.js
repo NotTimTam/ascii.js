@@ -156,7 +156,7 @@ class Style {
           `This Style configuration has no property named "${key}".`
         );
 
-      // If value is a state configuration.
+      // If value is a sub-style configuration.
       if (isPlainObject(value)) this[key].hydrate(value);
       else this[key] = value; // If value is a parameter definition.
     }
