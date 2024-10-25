@@ -412,26 +412,48 @@ class Toggle extends Item {
   /**
    * Configuration data for the `Menu.Toggle`'s `configuration.style` property.
    * @typedef {Object} MenuToggleStyleConfig
+   * @property {Object} checked Styles to use when the `Menu.Toggle` is focused, and checked.
+   * @property {?string} icon The character that will indicate "checked" for the `Menu.Toggle`'s icon.
+   * @property {?string} iconColor The color of the `Menu.Toggle`'s icon when it is checked and in focus.
+   * @property {?string|number} iconFontWeight The font weight of the `Menu.Toggle`'s icon when it is checked and in focus.
+   *
+   * @property {Object} unchecked Styles to use when the `Menu.Toggle` is focused, and unchecked.
+   * @property {?string} icon The character that will indicate "unchecked" for the `Menu.Toggle`'s icon.
+   * @property {?string} iconColor The color of the `Menu.Toggle`'s icon when it is unchecked and in focus.
+   * @property {?string|number} iconFontWeight The font weight of the `Menu.Toggle`'s icon when it is unchecked and in focus.
+   *
+   * @property {Object} focused Styles to use when the `Menu.Toggle` is focused.
    * @property {?string} labelFocusColor The color of the `Menu.Toggle`' label when it is in focus.
-   * @property {?string} labelBlurColor The color of the `Menu.Toggle`'s label when it is blurred.
    * @property {?string|number} labelFocusFontWeight The font weight of the `Menu.Toggle`'s label when it is in focus.
-   * @property {?string|number} labelBlurFontWeight The font weight of the `Menu.Toggle`'s label when it is blurred.
-   * @property {?string} iconFocusColor The color of the `Menu.Toggle`'s icon when it is in focus.
-   * @property {?string} iconBlurColor The color of the `Menu.Toggle`'s icon when it is blurred.
-   * @property {?string|number} iconFocusFontWeight The font weight of the `Menu.Toggle`'s icon when it is in focus.
-   * @property {?string|number} iconBlurFontWeight The font weight of the `Menu.Toggle`'s icon when it is blurred.
+   *
+   * @property {Object} blurred Styles to use when the `Menu.Toggle` is blurred.
+   * @property {?string} labelColor The color of the `Menu.Toggle`'s label when it is blurred.
+   * @property {?string|number} labelFontWeight The font weight of the `Menu.Toggle`'s label when it is blurred.
+   * @property {?string} iconColor The color of the `Menu.Toggle`'s icon when it is blurred.
+   * @property {?string|number} iconFontWeight The font weight of the `Menu.Toggle`'s icon when it is blurred.
+   *
    */
   static style = {
-    labelFocusColor: new Style.Parameter("color", "white"),
-    labelBlurColor: new Style.Parameter("color", "grey"),
-    labelFocusFontWeight: new Style.Parameter("fontWeight", 400),
-    labelBlurFontWeight: new Style.Parameter("fontWeight", 400),
-    iconFocusColor: new Style.Parameter("color", "white"),
-    iconBlurColor: new Style.Parameter("color", "grey"),
-    iconFocusFontWeight: new Style.Parameter("fontWeight", 800),
-    iconBlurFontWeight: new Style.Parameter("fontWeight", 800),
-    iconOn: new Style.Parameter("char", "☑"),
-    iconOff: new Style.Parameter("char", "☐"),
+    checked: new Style({
+      icon: new Style.Parameter("char", "☑"),
+      iconColor: new Style.Parameter("color", "white"),
+      iconFontWeight: new Style.Parameter("fontWeight", 800),
+    }),
+    unchecked: new Style({
+      icon: new Style.Parameter("char", "☐"),
+      iconColor: new Style.Parameter("color", "white"),
+      iconFontWeight: new Style.Parameter("fontWeight", 800),
+    }),
+    focused: new Style({
+      labelColor: new Style.Parameter("color", "white"),
+      labelFontWeight: new Style.Parameter("fontWeight", 400),
+    }),
+    blurred: new Style({
+      labelColor: new Style.Parameter("color", "grey"),
+      labelFontWeight: new Style.Parameter("fontWeight", 400),
+      iconColor: new Style.Parameter("color", "grey"),
+      iconFontWeight: new Style.Parameter("fontWeight", 800),
+    }),
   };
 
   /**
@@ -496,7 +518,18 @@ class Toggle extends Item {
       index,
       checked,
       prepend,
+      style,
     } = this;
+
+    const focused = activeIndex === index;
+
+    const { labelColor, labelFontWeight } =
+      style[focused ? "focused" : "blurred"];
+
+    const { icon } = style[checked ? "checked" : "unchecked"];
+
+    const { iconColor, iconFontWeight } =
+      style[focused ? (checked ? "checked" : "unchecked") : "blurred"];
 
     const data = [];
 
@@ -505,28 +538,16 @@ class Toggle extends Item {
         (value) =>
           new Pixel({
             value,
-            color:
-              activeIndex === index
-                ? this.style.labelFocusColor
-                : this.style.labelBlurColor,
-            fontWeight:
-              activeIndex === index
-                ? this.style.labelFocusFontWeight
-                : this.style.labelBlurFontWeight,
+            color: labelColor,
+            fontWeight: labelFontWeight,
           })
       )
     );
 
     const iconPixel = new Pixel({
-      value: checked ? this.style.iconOn : this.style.iconOff,
-      color:
-        activeIndex === index
-          ? this.style.iconFocusColor
-          : this.style.iconBlurColor,
-      fontWeight:
-        activeIndex === index
-          ? this.style.iconFocusFontWeight
-          : this.style.iconBlurFontWeight,
+      value: icon,
+      color: iconColor,
+      fontWeight: iconFontWeight,
     });
 
     if (prepend) data.unshift(iconPixel, Pixel.fromString(" "));
@@ -535,29 +556,6 @@ class Toggle extends Item {
     return new PixelMesh({ data: [data] });
   }
 }
-
-/**
- * Configuration data for the `Menu` class.
- * @typedef {Object} MenuConfig
- * @property {number} x This `Menu` object's x-coordinate.
- * @property {number} y This `Menu` object's y-coordinate.
- * @property {number} zIndex A numeric value determining the rendering heirarchy position this `Menu` should fall in.
- *
- * `Menu`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
- * @property {?string} layer The (optional) label of the layer to initialize the `Menu` on.
- * @property {number} tabIndex A numeric value determining the index in the focus array this `Menu` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
- *
- * A `tabIndex` of `-1` will mark the `Menu` instance as "unfocusable", meaning focus-based events, such as `keydown` events specific to this `Menu`, will not be triggered. Default `0`.
- * @property {boolean} autoFocus Whether to automatically focus on this `Menu` after its instantiation. Default `false`.
- * @property {boolean} maintainFocus Force the `InputManager` to keep this `Menu` in focus, even if attempts are made to focus on other `Menu`s. Default `false`.
- * @property {Object} items An array of `Menu.Item` instances. You can extend the `Menu.Item` class to make your own items.
- * @property {?string} title Optional menu title.
- * @property {boolean} alignCenter Whether or not to align the content to the center of the menu. Default `true`.
- * @property {boolean} border Whether or not to create a border around the menu. Default `true`.
- * @property {boolean} deleteOnBlur Whether to delete the menu when it becomes unfocused. Default `false`. **NOTE:** If `config.autoFocus` is set to false, the `Menu` will be deleted immediately!
- * @property {?number} gamepad An optional number indicating the gamepad (0-based index) this menu should accept input from. Set to `-1` to accept input from all gamepads.
- * @property {?MenuStyleConfig} style Optional style configuration object.
- */
 
 class Menu extends UIObject {
   static Item = Item;
@@ -569,21 +567,50 @@ class Menu extends UIObject {
   static borderWidth = 1;
 
   /**
-   * Configuration data for the `Scroller`'s `configuration.style` property.
+   * Configuration data for the `Menu`'s `configuration.style` property.
    * @typedef {Object} MenuStyleConfig
-   * @property {?string} borderFocusColor The color of the `Menu`'s border when the `Menu` is in focus.
-   * @property {?string} borderBlurColor The color of the `Menu`'s border when the `Menu` is blurred.
-   * @property {?string} titleFocusColor The color of the `Menu`'s title text when the `Menu` is in focus.
-   * @property {?string} titleBlurColor The color of the `Menu`'s title text when the `Menu` is blurred.
-   * @property {?string} titleFontWeight The color of the `Menu`'s title text when the `Menu` is blurred.
+   * @property {Object} focused Styles to use when the `Menu` is focused.
+   * @property {?string} focused.titleColor The color of the `Menu`'s title text when the `Menu` is in focus.
+   * @property {?string} focused.borderColor The color of the `Menu`'s border when the `Menu` is in focus.
+   * @property {Object} blurred Styles to use when the `Menu` is blurred.
+   * @property {?string} blurred.titleColor The color of the `Menu`'s title text when the `Menu` is blurred.
+   * @property {?string} blurred.borderColor The color of the `Menu`'s border when the `Menu` is blurred.
+   * @property {?string|number} titleFontWeight The color of the `Menu`'s title text when the `Menu` is blurred.
    */
   static style = {
-    borderFocusColor: new Style.Parameter("color", "white"),
-    borderBlurColor: new Style.Parameter("color", "grey"),
-    titleFocusColor: new Style.Parameter("color", "white"),
-    titleBlurColor: new Style.Parameter("color", "grey"),
+    focused: new Style({
+      titleColor: new Style.Parameter("color", "white"),
+      borderColor: new Style.Parameter("color", "white"),
+    }),
+    blurred: new Style({
+      titleColor: new Style.Parameter("color", "grey"),
+      borderColor: new Style.Parameter("color", "grey"),
+    }),
     titleFontWeight: new Style.Parameter("fontWeight", 600),
   };
+
+  /**
+   * Configuration data for the `Menu` class.
+   * @typedef {Object} MenuConfig
+   * @property {number} x This `Menu` object's x-coordinate.
+   * @property {number} y This `Menu` object's y-coordinate.
+   * @property {number} zIndex A numeric value determining the rendering heirarchy position this `Menu` should fall in.
+   *
+   * `Menu`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
+   * @property {?string} layer The (optional) label of the layer to initialize the `Menu` on.
+   * @property {number} tabIndex A numeric value determining the index in the focus array this `Menu` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
+   *
+   * A `tabIndex` of `-1` will mark the `Menu` instance as "unfocusable", meaning focus-based events, such as `keydown` events specific to this `Menu`, will not be triggered. Default `0`.
+   * @property {boolean} autoFocus Whether to automatically focus on this `Menu` after its instantiation. Default `false`.
+   * @property {boolean} maintainFocus Force the `InputManager` to keep this `Menu` in focus, even if attempts are made to focus on other `Menu`s. Default `false`.
+   * @property {Object} items An array of `Menu.Item` instances. You can extend the `Menu.Item` class to make your own items.
+   * @property {?string} title Optional menu title.
+   * @property {boolean} alignCenter Whether or not to align the content to the center of the menu. Default `true`.
+   * @property {boolean} border Whether or not to create a border around the menu. Default `true`.
+   * @property {boolean} deleteOnBlur Whether to delete the menu when it becomes unfocused. Default `false`. **NOTE:** If `config.autoFocus` is set to false, the `Menu` will be deleted immediately!
+   * @property {?number} gamepad An optional number indicating the gamepad (0-based index) this menu should accept input from. Set to `-1` to accept input from all gamepads.
+   * @property {?MenuStyleConfig} style Optional style configuration object.
+   */
 
   /**
    * A menu of various items that can be rendered on screen.
@@ -941,7 +968,12 @@ class Menu extends UIObject {
       width,
       height,
       currentContentSpace: [currentContentWidth],
+      style: { titleFontWeight },
+      style,
     } = this;
+
+    const { titleColor, borderColor } =
+      style[this.focused ? "focused" : "blurred"];
 
     let data = [];
 
@@ -950,13 +982,7 @@ class Menu extends UIObject {
         data: box,
         width: boxWidth,
         height: boxHeight,
-      } = Box.asPixelMesh(
-        width,
-        height,
-        this.focused ? this.style.borderFocusColor : this.style.borderBlurColor,
-        undefined,
-        "double"
-      );
+      } = Box.asPixelMesh(width, height, borderColor, undefined, "double");
 
       data = box;
     }
@@ -1010,10 +1036,8 @@ class Menu extends UIObject {
         title.slice(0, this.availableContentSpace[0])
       );
 
-      titleMesh.setFontWeight(this.style.titleFontWeight);
-      titleMesh.setColor(
-        this.focused ? this.style.titleFocusColor : this.style.titleBlurColor
-      );
+      titleMesh.setFontWeight(titleFontWeight);
+      titleMesh.setColor(titleColor);
 
       const {
         data: [titleText],

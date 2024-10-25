@@ -48,93 +48,10 @@ class Parameter {
 }
 
 /**
- * A `Style` state, such as `"focused"`.
- */
-class State {
-  /**
-   * Creates a new `Style.State` instance.
-   * @param {Object<string, Style.Parameter>} config An object where the key is the name of the field, and the value is an instance of `Style.Parameter`.
-   */
-  constructor(config) {
-    this.config = config;
-  }
-
-  /**
-   * Get this `Style` instance's `config` object.
-   */
-  get config() {
-    return this.__rawConfig;
-  }
-
-  /**
-   * Set this `Style` instance's `config` object.
-   */
-  set config(obj) {
-    if (!obj) throw new Error('No "config" object provided to State instance.');
-
-    // Validate config.
-    for (const [key, value] of Object.entries(obj)) {
-      if (key === "config")
-        throw new SyntaxError('"config" is a reserved State field name.');
-      if (!(value instanceof Style.Parameter))
-        throw new TypeError(
-          `Each value in a State instance's "config" object must be an instance of "Style.Parameter".`
-        );
-    }
-
-    // Erase old config.
-    Object.keys({ ...this.config })
-      .filter((key) => !obj.hasOwnProperty(key))
-      .forEach((key) => delete this[key]);
-
-    // Apply config.
-    for (const [key, value] of Object.entries(obj)) {
-      Object.defineProperty(this, key, {
-        get: function () {
-          return this[`__raw${key}`] ? this[`__raw${key}`] : value.fallback;
-        },
-        set: function (v) {
-          try {
-            Style.validators[value.type](v);
-          } catch (err) {
-            throw new Error(`Failed to set "${key}": ${err.message}`);
-          }
-
-          this[`__raw${key}`] = v;
-        },
-      });
-    }
-
-    this.__rawConfig = obj;
-  }
-
-  /**
-   * Update this `State` instance's style values from an object.
-   * @param {Object<string, string|number>} obj The style object to set.
-   */
-  hydrate(obj = {}) {
-    if (!obj)
-      throw new TypeError('No "obj" provided to "State.hydrate" method.');
-
-    for (const [key, value] of Object.entries(obj)) {
-      if (!this.config.hasOwnProperty(key))
-        throw new Error(
-          `This Style.State configuration has no property named "${key}".`
-        );
-
-      this[key] = value;
-    }
-
-    return this;
-  }
-}
-
-/**
  * Manages styling attributes for `Pixel`s.
  */
 class Style {
   static Parameter = Parameter;
-  static State = State;
 
   /**
    * Methods for validating style types.
@@ -167,12 +84,10 @@ class Style {
 
   /**
    * Creates a new `Style` instance.
-   * @param {Object<string, Style.State>} config An object where the key is the name of the state, and the value is an instance of `Style.State`.
+   * @param {Object<string, Style|Style.Parameter>} config An object where the key is the name of the state, and the value is an instance of `Style` or `Style.Parameter`.
    */
   constructor(config) {
     this.config = config;
-
-    console.log(this);
   }
 
   /**
@@ -192,12 +107,9 @@ class Style {
     for (const [key, value] of Object.entries(obj)) {
       if (key === "config")
         throw new SyntaxError('"config" is a reserved Style field name.');
-      if (
-        !(value instanceof Style.Parameter) &&
-        !(value instanceof Style.State)
-      )
+      if (!(value instanceof Style.Parameter) && !(value instanceof Style))
         throw new TypeError(
-          `Each value in a Style instance's "config" object must be an instance of "Style.State" or "Style.Parameter".`
+          `Each value in a Style instance's "config" object must be an instance of "Style" or "Style.Parameter".`
         );
     }
 
@@ -212,7 +124,7 @@ class Style {
         get: function () {
           if (value instanceof Style.Parameter)
             return this[`__raw${key}`] ? this[`__raw${key}`] : value.fallback;
-          else if (value instanceof Style.State)
+          else if (value instanceof Style)
             return this[`__raw${key}`] ? this[`__raw${key}`] : value;
         },
         set: function (v) {

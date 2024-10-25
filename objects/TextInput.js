@@ -8,17 +8,17 @@ class TextInput extends UIObject {
    * Configuration data for the `TextInput`'s `configuration.style` property.
    * @typedef {Object} TextInputStyleConfig
    * @property {Object} focused Styles to use when the `TextInput` is focused.
-   * @property {?string|number} focused.color The color of the `TextInput`'s text when it is in focus.
+   * @property {?string} focused.color The color of the `TextInput`'s text when it is in focus.
    * @property {?string|number} focused.fontWeight The font weight of the `TextInput`'s text when it is in focus.
-   * @property {?string|number} focused.backgroundColor The background color of the `TextInput` when it is in focus.
+   * @property {?string} focused.backgroundColor The background color of the `TextInput` when it is in focus.
    * @property {Object} blurred Styles to use when the `TextInput` is out of focus.
-   * @property {?string|number} blurred.color The color of the `TextInput`'s text when it is blurred.
+   * @property {?string} blurred.color The color of the `TextInput`'s text when it is blurred.
    * @property {?string|number} blurred.fontWeight The font weight of the `TextInput`'s text when it is blurred.
-   * @property {?string|number} blurred.backgroundColor The background color of the `TextInput` when it is blurred.
-   * @property {?string|number} placeholderColor The color of the `TextInput`'s placeholder text.
+   * @property {?string} blurred.backgroundColor The background color of the `TextInput` when it is blurred.
+   * @property {?string} placeholderColor The color of the `TextInput`'s placeholder text.
    * @property {?string|number} placeholderFontWeight The font weight of the `TextInput`'s placeholder text.
-   * @property {?string|number} caretColor The color of the text currently highlighted by the `TextInput`'s caret.
-   * @property {?string|number} caretBackgroundColor The color of the `TextInput`'s caret box.
+   * @property {?string} caretColor The color of the text currently highlighted by the `TextInput`'s caret.
+   * @property {?string} caretBackgroundColor The color of the `TextInput`'s caret box.
    */
   static style = {
     placeholderColor: new Style.Parameter("color", "grey"),
@@ -26,12 +26,12 @@ class TextInput extends UIObject {
     caretColor: new Style.Parameter("color", "black"),
     caretBackgroundColor: new Style.Parameter("backgroundColor", "white"),
 
-    focused: new Style.State({
+    focused: new Style({
       color: new Style.Parameter("color", "white"),
       fontWeight: new Style.Parameter("fontWeight", 600),
       backgroundColor: new Style.Parameter("backgroundColor", null),
     }),
-    blurred: new Style.State({
+    blurred: new Style({
       color: new Style.Parameter("color", "grey"),
       fontWeight: new Style.Parameter("fontWeight", 400),
       backgroundColor: new Style.Parameter("backgroundColor", null),
