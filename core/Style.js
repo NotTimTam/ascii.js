@@ -6,7 +6,7 @@ import { displayArray, isPlainObject } from "../util/data.js";
 class Parameter {
 	/**
 	 * Creates a new `Style.Parameter` instance.
-	 * @param {"color"|"backgroundColor"|"fontWeight"|"char"} type The `Style.types`-sourced style parameter type.
+	 * @param {"color"|"backgroundColor"|"fontWeight"|"char"|"bool"} type The `Style.types`-sourced style parameter type.
 	 * @param {string|number|null} fallback A fallback value to set if no value is configured.
 	 * @param {boolean} optional Whether or not this parameter is optional. Default `false`.
 	 */
@@ -99,6 +99,10 @@ class Style {
 					"Expected a 1-character string for char value."
 				);
 		},
+		bool: (v) => {
+			if (v !== true && v !== false)
+				throw new TypeError("Expected a boolean for bool value.");
+		},
 	};
 
 	/**
@@ -153,7 +157,7 @@ class Style {
 			Object.defineProperty(this, key, {
 				get: function () {
 					if (value instanceof Style.Parameter)
-						return this[`__raw${key}`]
+						return this[`__raw${key}`] != null
 							? this[`__raw${key}`]
 							: value.fallback;
 					else if (value instanceof Style)

@@ -49,12 +49,10 @@ export class PixelMesh {
 	 * Get the `PixelMesh`'s width.
 	 */
 	get width() {
-		let length = -1;
-
-		for (const row of this.data.filter((row) => row))
-			if (row.length > length) length = row.length;
-
-		return length === -1 ? undefined : length;
+		return this.data.reduce(
+			(maxLength, currentRow) => Math.max(maxLength, currentRow.length),
+			0
+		);
 	}
 
 	/**
