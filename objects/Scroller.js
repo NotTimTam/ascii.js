@@ -340,20 +340,43 @@ class Scroller extends UIObject {
 	 * Get the x, y, width, and height of the content area.
 	 */
 	get viewportSize() {
-		const { width, height, borderWidth } = this;
+		const {
+			width,
+			height,
+			borderSizes: { borderWidthHorizontal, borderWidthVertical },
+		} = this;
 
-		return [width - borderWidth * 2, height - borderWidth * 2];
+		return [width - borderWidthHorizontal, height - borderWidthVertical];
+	}
+
+	/**
+	 * Get the size of the border horizontally and vertically.
+	 */
+	get borderSizes() {
+		const {
+			style: { border },
+			activeScrollbars: { horizontalScrollbar, verticalScrollbar },
+		} = this;
+
+		return {
+			borderWidthHorizontal: border ? 2 : horizontalScrollbar ? 1 : 0,
+			borderWidthVertical: border ? 2 : verticalScrollbar ? 1 : 0,
+		};
 	}
 
 	/**
 	 * Get the position and size of each scrollbar.
 	 */
 	get scrollBarRect() {
+		const {
+			style: { border },
+		} = this;
+
 		return {
-			verticalScrollbarY: 1,
-			horizontalScrollbarX: 1,
-			verticalScrollbarLength: this.height - 2,
-			horizontalScrollbarLength: this.width - 2,
+			verticalScrollbarY: border ? 1 : 0,
+			horizontalScrollbarX: border ? 1 : 0,
+			verticalScrollbarLength: this.height - (border ? 2 : 1),
+			horizontalScrollbarLength: this.width - (border ? 2 : 1),
 		};
 	}
 
