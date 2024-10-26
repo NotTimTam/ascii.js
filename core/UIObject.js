@@ -1,169 +1,179 @@
 import GameObject from "./GameObject.js";
 
 class UIObject extends GameObject {
-  /**
-   * Configuration data for the `UIObject` class.
-   * @typedef {Object} UIObjectConfig
-   * @property {number} x This `UIObject` object's x-coordinate.
-   * @property {number} y This `UIObject` object's y-coordinate.
-   * @property {number} zIndex A numeric value determining the rendering heirarchy position this `UIObject` should fall in.
-   *
-   * `UIObject`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
-   * @property {?string} layer The (optional) label of the layer to initialize the `UIObject` on.
-   * @property {number} tabIndex A numeric value determining the index in the focus array this `UIObject` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
-   *
-   * A `tabIndex` of `-1` will mark the `UIObject` instance as "unfocusable", meaning focus-based events, such as `keydown` events specific to this `UIObject`, will not be triggered. Default `0`.
-   * @property {boolean} autoFocus Whether to automatically focus on this `UIObject` after its instantiation. Default `false`.
-   * @property {boolean} maintainFocus Force the `InputManager` to keep this `UIObject` in focus, even if attempts are made to focus on other `UIObject`s. Default `false`.
-   */
+	/**
+	 * Configuration data for the `UIObject` class.
+	 * @typedef {Object} UIObjectConfig
+	 * @property {number} x This `UIObject` object's x-coordinate.
+	 * @property {number} y This `UIObject` object's y-coordinate.
+	 * @property {number} zIndex A numeric value determining the rendering heirarchy position this `UIObject` should fall in.
+	 *
+	 * `UIObject`s with higher z-indeces will be drawn on top of those with lower z-indeces. Default `0`.
+	 * @property {?string} layer The (optional) label of the layer to initialize the `UIObject` on.
+	 * @property {number} tabIndex A numeric value determining the index in the focus array this `UIObject` should fall at. The higher an instance's `tabIndex`, the further down the list it will be.
+	 *
+	 * A `tabIndex` of `-1` will mark the `UIObject` instance as "unfocusable", meaning focus-based events, such as `keydown` events specific to this `UIObject`, will not be triggered. Default `0`.
+	 * @property {boolean} autoFocus Whether to automatically focus on this `UIObject` after its instantiation. Default `false`.
+	 * @property {boolean} maintainFocus Force the `InputManager` to keep this `UIObject` in focus, even if attempts are made to focus on other `UIObject`s. Default `false`.
+	 */
 
-  /**
-   * A collection of default methods for input handling.
-   */
-  static eventDefaults = {
-    keydown: (
-      uIObjectInstance,
-      inputManager,
-      { preventBrowserDefault, keys: { shift, tab } }
-    ) => {
-      if (tab) preventBrowserDefault();
-      else return;
+	/**
+	 * A collection of default methods for input handling.
+	 */
+	static eventDefaults = {
+		keydown: (
+			uIObjectInstance,
+			inputManager,
+			{ preventBrowserDefault, keys: { shift, tab } }
+		) => {
+			if (tab) preventBrowserDefault();
+			else return;
 
-      if (uIObjectInstance.maintainFocus) return;
+			if (uIObjectInstance.maintainFocus) return;
 
-      // Shift + Tab.
-      if (shift) inputManager.focusPrevious();
-      // Shift only.
-      else inputManager.focusNext();
-    },
-  };
+			// Shift + Tab.
+			if (shift) inputManager.focusPrevious();
+			// Shift only.
+			else inputManager.focusNext();
+		},
+	};
 
-  /**
-   * Extends the `GameObject` class to include several methods and properties for treating the object as a UI element.
-   *
-   * Because `UIObject` contains all the features and expected functionality of a regular `GameObject`, this class can be used like a `GameObject`, just with more direct event listening.
-   * @param {Scene} scene The scene this Object is a part of.
-   * @param {UIObjectConfig} config The `UIObject`'s config object.
-   */
-  constructor(scene, config) {
-    super(scene, config);
+	/**
+	 * Extends the `GameObject` class to include several methods and properties for treating the object as a UI element.
+	 *
+	 * Because `UIObject` contains all the features and expected functionality of a regular `GameObject`, this class can be used like a `GameObject`, just with more direct event listening.
+	 * @param {Scene} scene The scene this Object is a part of.
+	 * @param {UIObjectConfig} config The `UIObject`'s config object.
+	 */
+	constructor(scene, config) {
+		super(scene, config);
 
-    const {
-      tabIndex = 0,
-      autoFocus = false,
-      maintainFocus = false,
-      layer,
-    } = config;
+		const {
+			tabIndex = 0,
+			autoFocus = false,
+			maintainFocus = false,
+			layer,
+		} = config;
 
-    this.inputManager = scene.inputManager;
-    this.tabIndex = tabIndex || 0;
-    this.maintainFocus = Boolean(maintainFocus);
+		this.inputManager = scene.inputManager;
+		this.tabIndex = tabIndex || 0;
+		this.maintainFocus = Boolean(maintainFocus);
 
-    scene.inputManager.addUIObject(this);
+		scene.inputManager.addUIObject(this);
 
-    if (Boolean(autoFocus)) this.focus();
-  }
+		if (Boolean(autoFocus)) this.focus();
+	}
 
-  /**
-   * Determine if this element is focusable.
-   */
-  get focusable() {
-    return Boolean(this.tabIndex !== -1);
-  }
+	/**
+	 * Get whether or not this `UIObject` has captured the mouse pointer.
+	 */
+	get capturedPointer() {
+		return (
+			this.scene.inputManager.pointerCaptured &&
+			this.scene.inputManager.mouse.capturer === this
+		);
+	}
 
-  /**
-   * Get this object's tab index.
-   */
-  get tabIndex() {
-    return this.__rawTabIndex;
-  }
+	/**
+	 * Determine if this element is focusable.
+	 */
+	get focusable() {
+		return Boolean(this.tabIndex !== -1);
+	}
 
-  /**
-   * Set this object's tab index.
-   */
-  set tabIndex(n) {
-    if (typeof n !== "number" || !Number.isInteger(n))
-      throw new TypeError(
-        "UIObject instance tabIndex property must be an integer."
-      );
+	/**
+	 * Get this object's tab index.
+	 */
+	get tabIndex() {
+		return this.__rawTabIndex;
+	}
 
-    if (n < -1) n = -1;
+	/**
+	 * Set this object's tab index.
+	 */
+	set tabIndex(n) {
+		if (typeof n !== "number" || !Number.isInteger(n))
+			throw new TypeError(
+				"UIObject instance tabIndex property must be an integer."
+			);
 
-    this.__rawTabIndex = n;
-  }
+		if (n < -1) n = -1;
 
-  /**
-   * Get all event listeners associated with this `UIObject`.
-   */
-  get eventListeners() {
-    return this.inputManager.getUIObjectEventListeners(this.id);
-  }
+		this.__rawTabIndex = n;
+	}
 
-  /**
-   * Check if this instance is currently in focus.
-   */
-  get focused() {
-    const { focusTarget } = this.scene.inputManager;
+	/**
+	 * Get all event listeners associated with this `UIObject`.
+	 */
+	get eventListeners() {
+		return this.inputManager.getUIObjectEventListeners(this.id);
+	}
 
-    return Boolean(focusTarget && focusTarget === this);
-  }
+	/**
+	 * Check if this instance is currently in focus.
+	 */
+	get focused() {
+		const { focusTarget } = this.scene.inputManager;
 
-  /**
-   * Set the focus state of this instance.
-   */
-  set focused(bool) {
-    const { uIObjects, focusTarget } = this.scene.inputManager;
+		return Boolean(focusTarget && focusTarget === this);
+	}
 
-    bool = Boolean(bool);
+	/**
+	 * Set the focus state of this instance.
+	 */
+	set focused(bool) {
+		const { uIObjects, focusTarget } = this.scene.inputManager;
 
-    if (!this.focusable)
-      bool = false; // Always set focused to false if the instance cannot be focused on.
-    else if (this.maintainFocus) bool = true; // Don't allow focus to be lost if maintainFocus is true.
+		bool = Boolean(bool);
 
-    if (bool && focusTarget && focusTarget.maintainFocus) return; // Don't focus on this UIObject if one is focused on that has maintainFocus set to true.
+		if (!this.focusable)
+			bool = false; // Always set focused to false if the instance cannot be focused on.
+		else if (this.maintainFocus) bool = true; // Don't allow focus to be lost if maintainFocus is true.
 
-    if (bool) this.scene.inputManager.focusIndex = uIObjects.indexOf(this);
-    // Focus on this element.
-    else if (this.focused) this.scene.inputManager.focusIndex = -1; // Otherwise blur this element if it is focused.
-  }
+		if (bool && focusTarget && focusTarget.maintainFocus) return; // Don't focus on this UIObject if one is focused on that has maintainFocus set to true.
 
-  /**
-   * Focus on this element.
-   */
-  focus() {
-    this.focused = true;
-  }
+		if (bool) this.scene.inputManager.focusIndex = uIObjects.indexOf(this);
+		// Focus on this element.
+		else if (this.focused) this.scene.inputManager.focusIndex = -1; // Otherwise blur this element if it is focused.
+	}
 
-  /**
-   * Blur this element if it is focused.
-   */
-  blur() {
-    this.focused = false;
-  }
+	/**
+	 * Focus on this element.
+	 */
+	focus() {
+		this.focused = true;
+	}
 
-  /**
-   * Add an event listener to the `UIObject`.
-   * @param {string} type The type of event to add.
-   * @param {function} listener The event listener function.
-   */
-  addEventListener = (type, listener) =>
-    this.inputManager.addUIObjectEventListener(
-      this.id,
-      type,
-      listener.bind(this)
-    );
+	/**
+	 * Blur this element if it is focused.
+	 */
+	blur() {
+		this.focused = false;
+	}
 
-  /**
-   * Remove an event listener from the `UIObject`.
-   * @param {string} type The type of event to remove.
-   * @param {function} listener The event listener function that was added to the event listener.
-   */
-  removeEventListener = (type, listener) =>
-    this.inputManager.removeUIObjectEventListener(
-      this.id,
-      type,
-      listener.bind(this)
-    );
+	/**
+	 * Add an event listener to the `UIObject`.
+	 * @param {string} type The type of event to add.
+	 * @param {function} listener The event listener function.
+	 */
+	addEventListener = (type, listener) =>
+		this.inputManager.addUIObjectEventListener(
+			this.id,
+			type,
+			listener.bind(this)
+		);
+
+	/**
+	 * Remove an event listener from the `UIObject`.
+	 * @param {string} type The type of event to remove.
+	 * @param {function} listener The event listener function that was added to the event listener.
+	 */
+	removeEventListener = (type, listener) =>
+		this.inputManager.removeUIObjectEventListener(
+			this.id,
+			type,
+			listener.bind(this)
+		);
 }
 
 export default UIObject;

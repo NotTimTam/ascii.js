@@ -149,42 +149,56 @@ class Scroller extends UIObject {
 
 		const [x, y] = onLayer[this.layer.label];
 		const [scrollerX, scrollerY] = [x - this.relX, y - this.relY];
+		const [onHorizontalScrollbar, onVerticalScrollbar] = [
+			horizontalScrollbar && scrollerY >= this.height - 1,
+			verticalScrollbar && scrollerX >= this.width - 1,
+		];
 
-		if (verticalScrollbar && scrollerX >= this.width - 1) {
-			const thumbSize = Math.round(
-				verticalScrollbarLength *
-					(this.viewportSize[1] / (this.spans.down - this.spans.up))
-			);
-			const newThumbY = clamp(
-				scrollerY - verticalScrollbarY,
-				thumbSize / 2,
-				verticalScrollbarLength - thumbSize / 2
-			);
+		// Handle events for pointer capture.
+		if (
+			(onHorizontalScrollbar || onVerticalScrollbar) &&
+			!this.capturedPointer
+		)
+			event.capturePointer(onVerticalScrollbar ? 0 : 1);
 
-			// Adjust scrollY based on the new thumb position
-			this.scrollY =
-				((newThumbY - thumbSize / 2) *
-					(this.spans.down - this.spans.up)) /
-				(verticalScrollbarLength - thumbSize);
-		}
+		if (this.capturedPointer) {
+			const { captureMode } = event;
 
-		if (horizontalScrollbar && scrollerY >= this.height - 1) {
-			const thumbSize = Math.round(
-				horizontalScrollbarLength *
-					(this.viewportSize[0] /
-						(this.spans.right - this.spans.left))
-			);
-			const newThumbX = clamp(
-				scrollerX - horizontalScrollbarX,
-				thumbSize / 2,
-				horizontalScrollbarLength - thumbSize / 2
-			);
+			if (captureMode === 0) {
+				const thumbSize = Math.round(
+					verticalScrollbarLength *
+						(this.viewportSize[1] /
+							(this.spans.down - this.spans.up))
+				);
+				const newThumbY = clamp(
+					scrollerY - verticalScrollbarY,
+					thumbSize / 2,
+					verticalScrollbarLength - thumbSize / 2
+				);
 
-			// Adjust scrollX based on the new thumb position
-			this.scrollX =
-				((newThumbX - thumbSize / 2) *
-					(this.spans.right - this.spans.left)) /
-				(horizontalScrollbarLength - thumbSize);
+				// Adjust scrollY based on the new thumb position
+				this.scrollY =
+					((newThumbY - thumbSize / 2) *
+						(this.spans.down - this.spans.up)) /
+					(verticalScrollbarLength - thumbSize);
+			} else if (captureMode === 1) {
+				const thumbSize = Math.round(
+					horizontalScrollbarLength *
+						(this.viewportSize[0] /
+							(this.spans.right - this.spans.left))
+				);
+				const newThumbX = clamp(
+					scrollerX - horizontalScrollbarX,
+					thumbSize / 2,
+					horizontalScrollbarLength - thumbSize / 2
+				);
+
+				// Adjust scrollX based on the new thumb position
+				this.scrollX =
+					((newThumbX - thumbSize / 2) *
+						(this.spans.right - this.spans.left)) /
+					(horizontalScrollbarLength - thumbSize);
+			}
 		}
 	}
 

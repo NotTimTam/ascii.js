@@ -65,8 +65,6 @@ class Text extends GameObject {
 		this.wrap = wrap;
 		this.fontWeight = fontWeight;
 		this.style = new Style(Text.style).hydrate(style);
-
-		console.log(this.renderable.width, this.renderable.data);
 	}
 
 	/**
