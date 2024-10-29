@@ -652,7 +652,7 @@ class Menu extends UIObject {
 
 		this.items = items;
 
-		this.__rawIndex = -1;
+		this.index = -1;
 
 		if (title && typeof title !== "string")
 			throw new Error(
@@ -670,6 +670,7 @@ class Menu extends UIObject {
 		this.addEventListener("blur", this.__onBlur);
 		this.addEventListener("focus", this.__onFocus);
 		this.addEventListener("mousedown", this.__onMouseDown);
+		this.addEventListener("pointerreleased", this.__onPointerReleased);
 
 		this.__inputMode = "keyboard";
 	}
@@ -907,7 +908,7 @@ class Menu extends UIObject {
 
 		this.__inputMode = "mouse";
 
-		if (!this.capturedPointer) this.__determineMouseOverInput(event);
+		this.__determineMouseOverInput(event);
 
 		this.currentItem && this.currentItem.onMouseMove(event);
 	}
@@ -917,6 +918,7 @@ class Menu extends UIObject {
 	 * @param {Event} event The event that triggered this method.
 	 */
 	__onMouseDown(event) {
+		this.__inputMode = "mouse";
 		this.__determineMouseOverInput(event);
 
 		if (!event.buttons.left || !event.capturePointer) return;
@@ -927,6 +929,11 @@ class Menu extends UIObject {
 
 	__determineMouseOverInput(event) {
 		if (this.__inputMode !== "mouse") return;
+
+		if (this.capturedPointer) {
+			this.index = this.scene.inputManager.mouse.captureMode;
+			return;
+		}
 
 		const [x, y] = event.onUIObject;
 		const [menuX, menuY] = [x, y + (this.title || this.border ? 0 : 1)];
@@ -941,7 +948,7 @@ class Menu extends UIObject {
 		) {
 			this.index = mouseMenuIndex;
 		} else {
-			this.__rawIndex = -1;
+			this.index = -1;
 		}
 	}
 
@@ -964,6 +971,13 @@ class Menu extends UIObject {
 	 */
 	__onBlur() {
 		this.index = -1;
+	}
+
+	/**
+	 * Handle when the UIObject releases the pointer.
+	 */
+	__onPointerReleased() {
+		this.focus();
 	}
 
 	/**

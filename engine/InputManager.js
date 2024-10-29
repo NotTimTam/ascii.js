@@ -374,6 +374,14 @@ class InputManager {
 
 		this.mouse.capturer = uiObject;
 		uiObject.focus();
+
+		// Trigger pointer release events.
+		this.__triggerUIObjectEvents(
+			this.mouse.capturer.id,
+			"pointercaptured",
+			{ ...this.mouse, target: this.mouse.capturer },
+			null
+		);
 	}
 
 	/**
@@ -381,6 +389,14 @@ class InputManager {
 	 */
 	releasePointer() {
 		if (!this.pointerCaptured) return;
+
+		// Trigger pointer release events.
+		this.__triggerUIObjectEvents(
+			this.mouse.capturer.id,
+			"pointerreleased",
+			{ ...this.mouse, target: this.mouse.capturer },
+			null
+		);
 
 		delete this.mouse.capturer; // Remove capturer from mouse data.
 		delete this.mouse.captureMode; // Remove capturer data from mouse data.
@@ -539,6 +555,8 @@ class InputManager {
 			"all",
 			"mouseenter",
 			"mouseleave",
+			"pointercaptured",
+			"pointerreleased",
 		];
 	}
 
